@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <meta name="author" content="Emma Fuller" />
+  <meta name="date" content="2014-09-17" />
+  <title>Defining Fisheries</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #2a211c; color: #bdae9d; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; background-color: #2a211c; color: #bdae9d; border-right: 1px solid #bdae9d; }
+td.sourceCode { padding-left: 5px; }
+pre, code { color: #bdae9d; background-color: #2a211c; }
+code > span.kw { color: #43a8ed; font-weight: bold; }
+code > span.dt { text-decoration: underline; }
+code > span.dv { color: #44aa43; }
+code > span.bn { color: #44aa43; }
+code > span.fl { color: #44aa43; }
+code > span.ch { color: #049b0a; }
+code > span.st { color: #049b0a; }
+code > span.co { color: #0066ff; font-style: italic; }
+code > span.al { color: #ffff00; }
+code > span.fu { color: #ff9358; font-weight: bold; }
+code > span.er { font-weight: bold; }
+  </style>
+  <link rel="stylesheet" type="text/css" media="screen, projection, print"
+    href="Fisheries_def_files/Slidy2/styles/slidy.css" />
+  <link rel="stylesheet" type="text/css" media="screen, projection, print"
+   href="mystyle.css" />
+  <script src="Fisheries_def_files/jquery-1.11.0/jquery.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="Fisheries_def_files/bootstrap-2.3.2/css/journal.min.css" rel="stylesheet" />
+  <link href="Fisheries_def_files/bootstrap-2.3.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+  <script src="Fisheries_def_files/bootstrap-2.3.2/js/bootstrap.min.js"></script>
+  <script src="Fisheries_def_files/Slidy2/scripts/slidy.js"
+    charset="utf-8" type="text/javascript"></script>
+</head>
+<body>
+<div class="slide titlepage">
+  <h1 class="title">Defining Fisheries</h1>
+  <p class="author">
+Emma Fuller
+  </p>
+  <p class="date">September 17, 2014</p>
+</div>
+<div id="introduction" class="slide section level1">
+<h1>Introduction</h1>
+<p>type: exclaim</p>
+<p>Based on grey literature, fishermen interviews, discussions with NMFS scientists and managers I have a general impression of the structure of the fisheries on the west coast. The big points are</p>
+<ul>
+<li>There is a giant pacific whiting (hake) fishery – single species, uses midwater trawls</li>
+<li>There is a pink shrimp fishery – very clean, double or single rigged shrimp trawls</li>
+<li>There is a large crab fishery – single species, uses crab pots</li>
+<li>There is an albacore tuna fishery – uses trolls, not observered, thus “clean”</li>
+<li>There is a salmon fishery – uses trools, not observed, thus “clean”</li>
+<li>There is a pacific halibut fishery – very small due to catch restrictions, “clean”, uses troll</li>
+<li>There is a fixed gear groundfish fishery</li>
+<li>Focuses on sablefish uses fish pots and/or long lines</li>
+<li>There is a mobile gear groundfish fishery</li>
+<li>Possibly nearshore and deeper water segments</li>
+<li>Dover sole, sablefish, and thornyheads are a common target of deeper water</li>
+</ul>
+<p>The more my revealed structure resembles what I know the better. The insight will come from how groundfish are split up.</p>
+<h2 id="latent-dirichlet-analysis">Latent Dirichlet Analysis</h2>
+<h2 id="target-composition">Target composition</h2>
+<iframe src="/Users/efuller/1/CNH/Analysis/Metiers/results/2014-09-06/topic_model_runs/astoria_lda_/index.html" width = 1250 height=750></iframe>
+
+<h2 id="are-there-targets-that-are-always-targetted-together">Are there targets that are always targetted together?</h2>
+<p>Clustering targets by co-occurance</p>
+<h2 id="cluster-composition">Cluster composition</h2>
+<h2 id="external-validation-how-does-gear-line-up">External validation: how does gear line up?</h2>
+</div>
+<div id="define-fisheries" class="slide section level1">
+<h1>Define fisheries</h1>
+<p>Unique combinations of gear and fish target that happen at least 10 times.</p>
+<h2 id="whos-making-which-trips">Who’s making which trips?</h2>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(igraph)</code></pre>
+<h2 id="appendix-hellinger-transformation">Appendix: hellinger transformation</h2>
+<h2 id="appendidix-clustering">Appendidix: clustering</h2>
+</div>
+
+  <!-- dynamically load mathjax for compatibility with self-contained -->
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+      document.getElementsByTagName("head")[0].appendChild(script);
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+---
+title: "Writing notes"
+author: "Emma Fuller"
+date: "August 17th, 2014"
+output: rmarkdown::tufte_handout
+bibliography: references.bib
+---
+
+
+# Post discussion with Peter
+
+Two project-lines
+
+1. What determines how fishermen forage? Use management, gear, port, catch composition as predictors for foraging statistics. \marginnote{{\bf task:} come up with list of predictor variables that would be important, can use location choice literature for this.}
+  + Still need to think more about foraging statistics but ideas include: search time, total distance traveled, number of patches visited, catch volume. \marginnote{{\bf task:} come up with list of foraging statistics that are useful}
+  + Result would tell me whether or not foraging strategy is different, and what relationships are among predictor and response variables. 
+  + Not totally sure how this would be useful in the grand scheme.. But seems important
+  + One thing it is important for is probably for looking at before and after catch shares, and saying that it definitely changed movement behavior. This can translate into direct economic costs, but also into ecological impacts. Which leads more to the second question of... exactly where are fishermen explicitly allocating this pressure in space. 
+2. Do fishermen locally depelete? Series of questions about how fishermen allocate across space, mostly geared at whether (and how quickly) fishermen respond to changes in abundance and distribution. 
+  + Look at pattern of fishing within a season. Do they always go to the same patches and mow over them? Therefore more like passive measurements of what's present? \marginnote{{\bf task:} need to write up code to define patches, and then label when vessel is in a "patch."}
+  + Do they go in seasonally predicted way? Spring one place, fall another? Would be hard to know if this is due to depletion or that they know another place will be better, but to get at that... \marginnote{{\bf task:} sounds like a statistical model: what predicts location choice, includes time of year, LCS.. this is a location choice model}
+  + Look at different fishermen fishing in the same places: do they get the same amount? Is evidence of fishermen coming later getting less? Or more? Is that explained by fishermen identity (some fishermen are always going to get a ton), particular seasonal conditions (chlA? LCS?), or whether someone was there first, and with what time lag. \marginnote{this is like a location choice model, but instead it's predicting volume and composition of catch. i suppose this would be related to the foraging strategy above. But trying to get at fine scale variation in catch, and whether it's affected by other people visiting the same site, or by time of year. }
+  + Ideally this line of investigation leads towards being able to say: there is evidence that fishermen seasonally deplete these species. Because we don't know for sure what the population structure is (how connected is everyone?), then could model say, if the population structure is like $y$, it doesn't matter how they fish spatially, and if it's like $x$ is still doesn't matter. So we don't need to care about this. Which is vaguely surprising because of the narrative about how spatial structure matters. But maybe if it's like $z$ it totally matters, so we better spend some research dollars and figure out if it's like $z$. 
+  + This is more related to the diversity work, which may show that fishing is a predictor of biodiversity, which would then make it matter where people fished, and what affects how they choose where to fish. So that's very useful. 
+  
+# Next steps
+
+In general, I need to work on these ideas to make sure they're clear, and then get James and possibly Jameal to comment. Ideally I will also make a set of goals, and a timeline and give to James to get feedback. Since that's what he's asked for originally. 
+
+# Why define fisheries?
+\marginnote{I think one of the reasons this has been so hard, is deep down I'm not totally sure why I'm doing it.}
+
+How spatially autocorrelated is harvesting pressure?  Or is it not spatial, but predicted by environmental covariates? Or predicted by gear type? Or by management? Imagine that the larger the scale that autocorrelation occurs, the worse it is. Because that means bigger spots are hit by fishing. But similarly, if it's just due to environmetal covariates, that may also erase habitat niches universally. 
+
+I know that there seems to be different patterns in search for different vessels. Salmon and tuna trips look different than shrimp trawlers. This could be explained by gear. What about groundfish trips, since they go after multiple species, are they all the same? Or do they vary? And does that variation correlate with differences in composition of catch?
+
+Is spatial distribution of effort predictable from system characteristics? Can you predict how vessels will re-allocate effort? But more importantly, are there some conditions in which if predators track prey directly you can cause extinction of prey. But if you go to the same patches over and over, then there would be some lag. 
+
+Is time spent searching for fish a good proxy for abundance? This was inspired by [@mangel1994spatial]. I can test that with catch volume and time spent searching over the year. 
+
+I'm interested in the spatial distribution of fishing effort because I think that will affect fish. 
+
+There are obvious management implications summarized [here](https://www.st.nmfs.noaa.gov/economics/fisheries/commercial/spatial-choice-behavior/index) nicely. They are:
+
++ Different vessels experience very different costs from spatial closures, depending on their size and flexibility to adjust where they fish.
++ Fishermen are risk averse, preferring "safer returns" to more risky returns, all else equal.
++ It is harder to predict where fishermen will go in response to closures that close their primary fishing locations than closures that restrict a number of less visited areas.
+
+But the question remains, besides economic importance to fishermen (differential costs), are there ecological reasons to be concered about the pattern of fishing effort?
+
+One is whether depletion is possible, and thus whether stock assessements could be influenced by patterns in fishing pressure. 
+
+How do fishermen find fish? What search strategies do they use? Do they go to the same place at the same time each season/year/etc. Do they copy each other? Do they search? How fishermen allocate their effort across space is important because the effect fishing has ecologically. Trawlers mow over sea floors, changing their physical structure, and cause localized depletions of targeted prey and bycatch. Little is known about the spatial structure of marine fisheries, but understanding the spatial structure of fishing mortality and its determinants could be a useful first step in understanding the factors influencing distribution, abundance and diversity of marine fish. 
+
+Management of biological systems have evolved from single species approaches to multispecies to ecosystem approaches. Understanding how species population dynamics are affected by other species is important. But a similar approach needs to consider the diversity of users in a single marine system. Fishing mortality was first conceptualized as aggregate effort, not even resolved to the number of vessels. This has changed from aggregate effort to number of vessels, and per-vessel effort measures. However fishing vessels are still conceptualized as a single user, a tuna fishermen has no intrinsic relationship with a crab fishermen. However it's often the same fishermen .. \marginnote{this doesn't get me to why i care about metiers..}
+
+metiers are required for quantifying "fishing diversity," the number of different fisheries which fish in the same area. 
+
+There are also management implications
+
+I seek to determine whether foraging behavior varies systematically across different target fish ecologies, gear, and management, and the implications of these different searching strategies. In order to do so, 
+
+One option is to not define communities a priori, and instead look at movement statistics, and then see if the number of a particular species in the catch explains the movement statistics. Or if the gear does, or the management. 
+
+That gets me back to what "characterizing a foraging strategy" actually means. One option is using @grunbaum1998using's statistics: "expected payoff" and "expected travel time" [^@grunbaum1998using]. 
+
+Another option is "search efficiency"[^@spiegel2013factors]
+
+[^@grunbaum1998using]: @grunbaum1998using
+[^@spiegel2013factors]: @spiegel2013factors
+
+
+
+I need to establish defensible observational units: groups of fishermen that are more similar to each other than they are to the entire group. 
+
+
+## @grunbaum2003black
+
+Seabirds, like fishermen, depend on prey that are patchy, cryptic, ephemeral and possibly unpredictable in location. \marginnote{How unpredictable are fishing patterns? that seems like an easy and predictable first question}
+
+## predictability in foraging 
+
+(using @grunbaum2003black as a template)
+
+Fishermen are assumed to be exploiting cryptic, patchy, ephemeral and unpredictable prey. How unpredictable are their fishing patterns?  Fishermen find fish based on fish-finder detection, memory or indirect detection by sighting other fishermen that are already exploiting a patch. We develop a set of predictions for how foraging success should vary with fishermen density, prey abundance and detectability. 
+
+We expect that the unpredictable-ness of fishing activity would be related to the ecology of the targeted species. Species that are predictably associated with habitat/depth/temperature/seasonality, fishermen should not vary. Unless local depletion is an issue. 
+
+# Review of the definition of "community"
+
+Communities are a way of simplifying and organizing ecological data, and can then be used to then interpret the phenomenon that gives the assemblages their shape. To do this, analyses are conducted to quantify the relationships between the structure of the data and potentially explanatory desriptors [^@legendre2012numerical].
+
+
+
+Community ecology is an assemblage of two or more species occupying the same geographical area in a particular time [^wikipedia]
+
+[^wikipedia]: http://en.wikipedia.org/wiki/Community_(ecology)
+
+[^@legendre2012numerical]: @legendre2012numerical
+
+# My goal
+
+My goal is explanation 
+
+## References

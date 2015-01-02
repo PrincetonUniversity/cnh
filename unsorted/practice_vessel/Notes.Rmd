@@ -1,0 +1,302 @@
+---
+title: "Day 3 - afternoon"
+output: html_document
+---
+
+## Complex numbers
+Should record your data in complex numbers because they are the single most efficient ways to deal with 2d vectors, both in math notation and in `R` code. 
+
+$$ Z = X+iY $$
+
+where $X$ is the real part, $Y$ is the imaginary part. So the same number can be written as
+
+$$ Z = Re^{i\theta} $$
+
+Where $R$ is the length of the vector (the *modulus*), and $\theta$ is the orientation vector (the *argument*, the angle away from the real number line). 
+
+### An example
+```{r example}
+# make some imaginary numbers
+X <- c(3,4,-2)
+Y <- c(0,3,2)
+Z <- X+1i*Y
+
+# or
+Z <- complex(re = X, im = Y)
+
+plot(Z, pch=19, col=1:3, asp=1)
+arrows(rep(0,length(Z)), rep(0,length(Z)), Re(Z), Im(Z), lwd=2, col=1:3)
+# asp=1 means that the aspect ratio should be 1:1 in your figure. Which is true for all movement data.
+```
+The length of a vector, the modulus of the vector, is the distance from $O$ to $R$. This is given by `Mod(Z)` which are `r Mod(Z)` and the angles are given with `Arg(Z)` and are given in radians. 
+
+```{r}
+# lengths
+Mod(Z)
+# angles (in radians), where 0 is forward, 90 degrees is pi/2, 180 is pi and 270 is 3pi/2
+Arg(Z)
+```
+For absolute angles in geographic coordinates (like you'd find on a compass where you have 90 as east, 270 for west): 
+
+```{r}
+90 - (Arg(Z)*180)/pi # converts to degrees and then subtracts from 90
+```
+
+Simulate a random walk
+```{r}
+Y <- cumsum(arima.sim(n=100, model=list(ar=.7)))
+X <- cumsum(arima.sim(n=100, model=list(ar=.7)))
+Z <- X + 1i*Y
+```
+
+### Instant summary statistics of a trajectory
+```{r}
+# what's the mean location?
+mean(Z) # because vectors add, can take the average (average of Xs and Ys)
+plot(Z, type="o", asp = 1, pch=19, bty="n")
+points(mean(Z), cex=4, pch=4, col=2,lwd=4)
+
+# can also look at the step vectors (the displacement and velocity)
+# you want the difference of the Zs
+dZ <- diff(Z)
+# this gives you the steps, the orientation and the length
+plot(dZ,asp=1)
+arrows(rep(0, length(dZ)), rep(0, length(dZ)), Re(dZ), Im(dZ), col = rgb(0,0,0, 0.5),lwd=2, length=0.1)
+# doesn't look like they're any particular orientation for this individual and a range of magnitudes
+```
+
+Quick aside: you can animate just by overplotting, but the below won't work in RStudio. Can also save in PDF with tons of pages and have a nice video. 
+
+```{r, eval=FALSE}
+Y <- cumsum(arima.sim(n=200, model=list(ar=.7)))
+X <- cumsum(arima.sim(n=200, model=list(ar=.7)))
+Z <- X + 1i*Y
+
+for(i in 1:length(Z)){
+  plot(Z[1:i], type="o", asp=1)
+}
+```
+
+### Back to statistics
+Want step lengths and turning angles
+
+```{r}
+S <- Mod(dZ) # This gives steplengths
+Phi <- Arg(dZ) # cardinal direction in which those steps take place (absolute orientation)
+Theta <- diff(Phi) # turning angles
+# remember that the turning angles are going to displaced forward 1. So it goes to n - 2
+summary(S)
+hist(S, col="grey", bor="darkgrey", freq=FALSE, main="Distribution of Step Lengths")
+lines(density(S), col=2, lwd=2)
+```
+
+### What about angles?
+```{r}
+# The absolute orientations
+hist(Phi, col="grey", bor="darkgrey", freq=FALSE, breaks=seq(-pi, pi,pi/3))
+  # interpretation: equally likely to go E/W/N/S
+
+# Turning angles
+hist(Theta, col="grey", bor="darkgrey", freq=FALSE)
+  # turning angles clustered around 0s, you're more likely to keep going in the same direction
+  # but the range here goes to way too big and too small > 2pi
+  # to fix you'd have to add everything that's less than 2pi and add it.. (to where..?)
+
+# Orientation 
+hist((90 - (Phi*180)/pi), col="grey",bor="darkgrey",freq=FALSE, main="Distribution of absolute direction")
+```
+
+But the real problem with $\theta$ is that it shouldn't be displayed on a numberline. It should be done in a circle, these variables are "wrapped". Should be shown as a circular distribution (rose diagram)
+
+```{r}
+require(circular)
+Theta <- as.circular(Theta)
+Phi <- as.circular(Phi)
+rose.diag(Phi, bins=16, col="grey", prop=2, main=expression(Phi))
+rose.diag(Theta, bins=16, col="grey",prop=2, main=expression(Theta))
+```
+
+So that sums up the 1 dimensional variables that you can extract from movement variables. 
+
+
+### More perks of complex manipulations
+Addition and subtraction of vectors:
+
+$$Z_1 = X_1 + iY_1; Z_2=X_2 +iY_2$$
+$$Z_1 + Z_2 = (X_1 + X_2) + i(Y_1 + Y_2)
+
+Useful for shifting locations
+
+```{r}
+
+```
+
+You can also rotate, multiplication of complex vectors:
+
+$$Z_1 = R_1e^{i\theta_1}; Z_2 = R_2e^{i\theta_2}$$
+Z_1Z_2 = R_1R_2e^{i(\theta_1+\theta_2)}$$
+
+```{r}
+Rot1 <- complex(mod=1, arg=pi/4)
+Rot2 <- complex(mod=1, arg=-pi/4)
+plot(Z, asp=1, type="l", col="darkgrey",lwd=3)
+lines(Z*Rot1, col=2, lwd=2)
+lines(Z*Rot2, col=3,lwd=3)
+```
+
+why would you want to rotate your data? Instead: Null Sets for pseudo absences. As an example take this wolf study. Questions related to habitat use, had landscape data (bogs, coniferous forests, clearcuts, rivers, forest roads, paved roads, etc.). How is movement related to these elements? 
+
+#### Defining null sets
+When you're doing inference, all we have are presences. If that's all you have, you also need absence data. So we want to compare where the individual goes relative to where it could go we need to have a null set. We can create an empirical null set based on the indivdiual's own movement data. You use the turning angles and step lengths, then you rotate them relative to the time step you're at now. 
+
+
+###### Calculating null sets in R
+```{r}
+# obtain all steps and turning angles
+# rotate them bythe orientation of the last step (Arg(Z1-Z0))
+# get pieces
+n <- length(Z)
+S <- Mod(diff(Z))
+Phi <- Arg(diff(Z))
+Theta <- diff(Phi)
+RelSteps <- complex(mod = S[-1], arg=Theta)
+
+# calculate null set
+Z0 <- Z[-((n-1):n)]
+Z1 <- Z[-c(1,n)]
+Rotate <- complex(mod =1, arg=Arg(Z1-Z0))
+Z.null <- matrix(0, ncol=n-2, nrow=n-2)
+for(i in 1:length(Z1)){
+  Z.null[i,] <- Z1[i] + RelSteps * Rotate[i]}
+
+# plot
+plot(Z, type="o", col=1:10, pch=19, asp=1)
+for(i in 1:nrow(Z.null)){
+  segments(rep(Re(Z1[i]), n-2), rep(Im(Z1[i]), n-2), 
+           Re(Z.null[i,]), Im(Z.null[i,]), col=i+1)
+  }
+```
+
+The use of the null set is away to test a narrower null hypothesis that accounts for autocorrelation in the data. The places the animal could have but did not go are pseudo-absences, against which you can fint e.g., logistic regression models (aka Step selection functions). Or just be simple/lazy and compare observed locations with Chi-squared tests. But this won't work if you have irregularly sampled data. Instead one way is to use simulated movement models and then use your simulations to generate null sets. 
+
+
+## Likelihood Theory and Review
+Most methods like resource selection functions depend on likelihoods. 
+
+  + Motivation
+    + Likelihoods are the link between Data -> Probability Models -> Inference. 
+    + The most important tool, in practice, for fitting models, i.e. whenever we estimate parameters we like to *Maximize the Likelihood*. 
+      + There are good reasons for this - MLE's are proven to be **consistent** and have the **lowest variance** of any other estimator. 
+    + Provide a flexible/general framewokr for comparing/selecting models, via Likelihood Ratio Tests, Information Criteria (AIC, BIC, etc.)
+
+Likelihoods turn probabilities on their heads. Likelihoods are inverses of probabilities. A probability statement is: the average height of a human male is $X \~ N(\mu_0=6, \sigma_0=0.5)$. This is a probability model, i.e., it tells us that $P(x <X<x+dx)=f(x\mid\m,\sigma)dx$. 
+
+This probability statement means: If you take (for example) a single 7 foot tall person, you can say with certainty that: 1. the probability that a person is exactly 7 feet tall is exactly 0.2, but the per-foot "probability" that he's around 7 feet tall is $f(7\|\mu=6, \sigma=0.5)=0.111/foot
+
+```{r}
+dnorm(7,6,.5)
+# 1/foot
+dnorm(7,6,.5)/12
+# less than 1%
+```
+
+But go the other way: say we have one data point and it's one man and he's 7 feet tall. 
+
+$$X_1=\{7\}$$
+
+So to "flip this on its head", we ask: What is the likelihood that the mean and standard deviation of human heights are 6 and 0.5, respectively, given that we observed a man who is $X_1=7$ feet tall. 
+
+$$L(\mu, \sigma \mid x)$$
+
+Which is the same as probabilities, you just switch around what we know and don't know
+
+$$L_0 = L(\mu_0, \sigma_0 \mid X_1) = f(X_1 \mid \mu_0, \sigma_0) = 0.11$$
+
++ A probability tells you something about a random event given parameter values
++ A likelihood tells you something about parameter values given the observations
+
+In practice we have observations. 
+
+### Using the likelihood concept
+The actual value means nothing, we care about its value as compared to other likelihoods of other models/parameter values. 
+
+For example, we can compre the likelihood of the parameters of $\mu=6$ and $\sigma=0.5$ given the observeration of $X_1 = 7$, with an alternative probability model that $\mu_1=7$ and $\sigma_1=0.001$. That likelihood is given by
+
+$$L_1 = L(\mu_1,\sigma_1\mid X_1=7) = f(7\mid 7, 0.001)$$
+
+```{r}
+(L1 <- dnorm(7,7,0.001))
+```
+
+$L_1$ is clearly much greater than our original likelihood, i.e. this set of parameters is much likelier than the original set of parameters. Indeed the ratio of $\frac{L_1}{L_0}=3693..$
+
++ So we can say that model 3 is more than 3000x more likely than model 1
++ of course, the likelihood ratio test for these two likelihoods has zero power, because we only have one dta point. But we can still quantify their relative likelihoods
+
+Adding more data
+
++ lets say we sample 5 more individuals off the basketball court and observer heights of 6.6, 6.8, 7.0, 7.2, and 7.4 feelt tall. We might be suspicious that our original model may nto work. 
+
+
+Joint likelihood II
+
++ Now we can compute the likelihood of the null parameters given all of these observations. The likelihood (a joint likelihood) is just the product of the likelihood for each of these points, because it is equal to the joint density distribution (which )
+```{r}
+mu0 <- 6
+sigma0 <- 0.5
+X <- c(6.6, 6.8, 7.0, 7.2, 7.4)
+  # ... fill in later!
+#curve <- dnorm(x, mu0, sigma0)
+#xlim = c(4, )
+
+mus <- seq(6,8,0.05)
+sigmas <- seq(0.1,1,0.02)
+Likelihood <- function(mu, sigma){
+    prod(dnorm(X, mu, sigma))
+}
+L.matrix <- outer(mus, sigmas, Vectorize(Likelihood))
+
+image(L.matrix)
+persp(L.matrix)
+
+# find the maximum likelihood
+(max.indices <- which(L.matrix== max(L.matrix), arr.ind = TRUE))
+(mu.hat <- mus[max.indices[[1]]])
+(sigma.hat <- sigmas[max.indices[2]])
+```
+
+The other usually irrelevant value of the likelihood is the max. 
+
+### Numerically finding the MLE
+We don't need to do this search ourselves, `optim()` is a good function with syntax `optim(p, FUN, ...)`. `p` is the initial guess for the parameters, `FUN` is the name of the likelihood function (it's anything you want to minimize). `...` refers to any ohter object that is passed to `FUN`, this will be data!
+
+```{r}
+optim(c(6,1),function(p) -Likelihood(p[1], p[2]))
+```
+
+### Comparing the Method of Moment Estimators (MME's)
+The mean is the first moment, the variance is related to the second moment. For the MLE, the mean matches the arithmatic mean, but it's slightly biased in the sense that the variance for the MLE is different from the standard deviation of X. 
+
+## Back to movement
+Likelihood of parameters given data is equal to the product of the probabilities. And because of computational constraints, it's computationally easier to sum things rather than multiply. And when you take the log of multiplication, it becomes addition (hence the `log=TRUE`)
+
+```{r}
+X <- cumsum(arima.sim(n=100, model=list(ar=.7)))
+Y <- cumsum(arima.sim(n=100, model=list(ar=.7)))
+Z <- X + 1i*Y
+plot(Z, type="o", asp=1)
+
+Weibull.Like <- function(p, Z)
+{ 
+  S = Mod(diff(Z))
+  -sum(dweibull(S, p[1], p[2], log=TRUE))
+}
+
+(Weibull.fit <- optim(c(1,1), Weibull.Like, Z=Z))
+
+hist(Mod(diff(Z)), freq=FALSE, col="grey", breaks=10)
+curve(dweibull(x, Weibull.fit$par[1], Weibull.fit$par[2]), add=TRUE, col=2, lwd=2)
+```
+
+
+why are estimating turning angles MLEs not robust to irregularly sampled data?

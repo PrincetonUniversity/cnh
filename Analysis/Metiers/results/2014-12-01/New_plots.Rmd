@@ -1,0 +1,192 @@
+---
+title: "New plots"
+author: "Emma Fuller"
+date: "December 1, 2014"
+output: beamer_presentation
+bibliography: refs.bib
+---
+
+## Box and whiskers
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+yrdf <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/writing/code/3_analyzeMetiers/yrdf2.RDS")
+library(scales)
+# make binned diversity 
+yrdf[[2]]$simpCat <- cut(yrdf[[2]]$mean_simpson, seq(0,.8,.05),right = FALSE)
+boxplot(cv_revenue ~ simpCat, yrdf[[2]], pch=19, cex=.75, col=alpha("steelblue",1), xlab="Binned Simpson Index", ylab="CV(revenue)",border=alpha("black",.75))
+```
+
+## Panel regression
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+yrdf[[2]]$quartiles <- with(yrdf[[2]], .bincode(mean_simpson, breaks = quantile(yrdf[[2]]$mean_simpson), include.lowest = TRUE)) # instead of cut because non-unique cut points
+# slightly awkward
+q4 <- subset(yrdf[[2]], quartiles == 4)
+q3 <- subset(yrdf[[2]], quartiles == 3)
+q2 <- subset(yrdf[[2]], quartiles == 2)
+q1 <- subset(yrdf[[2]], quartiles == 1) # doesn't really work, because one value for simpson
+
+par(mfrow=c(1,3))
+with(q2, plot(mean_simpson, cv_revenue,pch=19, col=alpha("black",.5), ylim=c(0,2)))
+abline(lm(cv_revenue ~ mean_simpson, q2),lwd=4, col="indianred")
+title(paste("slope:",round(lm(cv_revenue ~ mean_simpson, q2)$coefficients[2],2)))
+
+with(q3, plot(mean_simpson, cv_revenue,col=alpha("black",.5),pch=19, ylim=c(0,2)))
+abline(lm(cv_revenue ~ mean_simpson, q3),lwd=4, col="indianred")
+title(paste("slope:",round(lm(cv_revenue ~ mean_simpson, q3)$coefficients[2],2)))
+
+with(q4, plot(mean_simpson, cv_revenue,col=alpha("black",.5),pch=19, ylim=c(0,2)))
+abline(lm(cv_revenue ~ mean_simpson, q4),lwd=4, col="indianred")
+title(paste("slope:",round(lm(cv_revenue ~ mean_simpson, q4)$coefficients[2],2)))
+
+# definitely looks like there is a breakpoint here around simpsons=0.2
+```
+
+## Hockey stick model
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+par(mfrow=c(1,2))
+library(segmented)
+lin.mod <- lm(cv_revenue~mean_simpson, subset(yrdf[["yr_stats"]], !is.na(cv_revenue)))
+segmented.mod <- segmented(lin.mod, seg.Z = ~mean_simpson, psi=.1)
+
+
+plot(segmented.mod, add=F,col="tomato",lwd=4,res=TRUE,conf.level=.95,shade=TRUE,rug=FALSE,res.col=alpha('black',.5),pch=19,cex=.5,ylab="cv(revenue)",bty="n")
+
+simp1 <- lm(cv_revenue ~ mean_simpson, subset(yrdf[["yr_stats"]], !is.na(cv_revenue)))
+simp2 <- lm(cv_revenue ~ mean_simpson + I(mean_simpson^2), subset(yrdf[["yr_stats"]], !is.na(cv_revenue)))
+
+aic = array(dim=c(3,5))
+colnames(aic) = c("model", "k","Likelihood","AIC",expression(delta))
+aic[1,1] <- "linear"; aic[2,1]  <- "quadratic"; aic[3,1] <- "hockey-stick"
+aic[1,2] <- 3; aic[2,2] <- 4; aic[3,2] <- 5
+aic[1,3] <- round(logLik(simp1),2); aic[2,3] <- round(logLik(simp2),2); aic[3,3] <- round(logLik(segmented.mod))
+aic[1:3,4] <- c(round(AIC(simp1),2), round(AIC(simp2),2),round(AIC(segmented.mod),2))
+aic[1:3,5] <- c(round(AIC(simp1)-AIC(segmented.mod),2),round(AIC(simp2)-AIC(segmented.mod),2), 0)
+
+plot(1:10, col="white",axes=F,xlab="",ylab="",asp=1)
+library(plotrix)
+addtable2plot(0,5,as.data.frame(aic),lwd=2, bty="o",cex=1.25,hlines=TRUE,box.col="slategrey")
+
+# confirmed, breakpoint = 0.1703
+```
+
+## Univariate plots
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+panel.hist <- function(x, ...)
+{
+  usr <- par("usr"); on.exit(par(usr))
+  par(usr = c(usr[1:2], 0, 1.5) )
+  h <- hist(x, plot = FALSE)
+  breaks <- h$breaks; nB <- length(breaks)
+  y <- h$counts; y <- y/max(y)
+  rect(breaks[-nB], 0, breaks[-1], y, col = "slategrey",bor=FALSE)
+}
+
+panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...)
+{
+    usr <- par("usr"); on.exit(par(usr))
+    par(usr = c(0, 1, 0, 1))
+    r <- abs(cor(x, y, use = "complete.obs"))
+    txt <- format(c(r, 0.123456789), digits = digits)[1]
+    txt <- paste0(prefix, txt)
+    if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
+    text(0.5, 0.5, txt, cex = cex.cor * r)
+}
+
+# plot pairs
+pairs(yrdf[[2]][,c("cv_revenue", "mean_simpson","hp","len","grosswt","netwt","breadth","depth","mean_landing","simpsons_port_diversity","simpsons_processor_diversity")], upper.panel= panel.smooth, diag.panel = panel.hist, lower.panel=panel.cor,lwd=3, pch=19,cex=.75, col=alpha("slategray",.25))
+abline(v=.1703)
+```
+
+
+
+## Dropping highly correlated variables - just keeping length
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+pairs(yrdf[[2]][,c("cv_revenue", "mean_simpson","len","mean_landing","simpsons_port_diversity","simpsons_processor_diversity")], upper.panel= panel.smooth, diag.panel = panel.hist, lower.panel=panel.smooth,lwd=3, pch=19,cex=.75, col=alpha("slategray",.25))
+```
+
+## Smaller boats are more general than larger boats
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+# bin length
+yrdf[[2]]$bin_len <- cut(yrdf[[2]]$len, seq(10,150,70),right = FALSE)
+boxplot(mean_simpson ~ bin_len, yrdf[[2]], pch=19, cex=.75, col=alpha("steelblue",1), xlab="Binned Vessel Length", ylab="Simpson Index",border=alpha("black",.75))
+```
+
+## Bigger boats land farther north
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+par(oma=rep(0,4))
+yrdf[[2]]$bin_landing <- cut(yrdf[[2]]$mean_landing, seq(32,50,2), right=FALSE)
+boxplot(len ~ bin_landing, yrdf[[2]], pch=19, cex=.75,xlab="binned landings latitude",ylab="vessel length",ylim=c(0,150))
+abline(v=6.5,lwd=2)
+text(x = 6, y=120, "Florence, OR\nand south\nn=445",cex=.75)
+abline(v=7.5,lwd=2)
+text(x = 7, y = 130, "Waldport to\nCannon Beach\nn=548",cex=.75)
+abline(v=8.5, lwd=2)
+text(x = 8, y = 130, "Astoria to\nEverett\nn=946",cex=.75)
+text(x = 9, y = 100, "Sequim to\nBlaine\nn=171",cex=.75)
+
+#Might be due to missing CA data. 
+
+```
+
+
+## Bimodal distribution of diversity with mean landing?
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+boxplot(mean_simpson ~ bin_landing, yrdf[[2]],pch=19,cex=.75,ylab="Simpsons Index",xlab="binned landings latitude")
+text(x=7,y=.8,"38-42 lat is northern CA,\nSonoma County and up")
+
+#Boats that land further N. and S. tend to have higher diversity in fisheries participation. 
+```
+
+## Bowed distribution of variability with mean landing?
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+boxplot(cv_revenue ~ bin_landing, yrdf[[2]],pch=19, cex=.75)
+#If you're really generous with it, you might think there's a slight bow in that same region. 
+```
+
+## Diversity of ports and processors are related
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+library(RColorBrewer)
+paint <- brewer.pal(9, "Spectral")
+with(yrdf[[2]],plot(simpsons_processor_diversity, simpsons_port_diversity,pch=19,col=alpha(paint[bin_landing],.75),ylim=c(0,1.05),cex=.85,bty="n"))
+legend(x=0, y=1.1, legend=levels(yrdf[[2]]$bin_landing),col=paint, pch=19,bty="n",ncol=3,title="landings latitude")
+
+#Makes sense that you'd go to a new port to see a new processor, but surprised at how many vessels only stay in one port and go to multiple processors (along x-axis). In general vessels are going to more processors than they are ports. 
+```
+
+## Diversity of processors and mean landing
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+#I'm surprised by how diverse the landings are up north. Our verbal impression was that you landed at only one processor. Which is why I'm wondering if `processorID` is something unexpected. Although the really low bin contains Astoria, which is where we heard it more there. While other annecdotes suggest much more processor flexibility and diversity in CA, which is what we see. 
+
+with(yrdf[[2]], boxplot(simpsons_processor_diversity ~ bin_landing, yrdf[[2]], xlab="mean landing latitude",ylab="Simpson Index of processor diversity"))
+```
+
+## Diversity of processors and fisheries
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+# I'm confused by vessels that land at lots of `processorIDs` but have very low catch diversity. 
+
+with(yrdf[[2]], plot(simpsons_processor_diversity, mean_simpson))
+mystery_boats <- subset(yrdf[[2]],simpsons_processor_diversity>.6 & mean_simpson < .2)
+# looking at some of these boats
+#tail(mystery_boats)
+# choose one
+#subset(tickets, veid=="OR943AEJ")
+# appears that they're doing tuna, crab and chinook. which accords with what we expected. can go anywhere. this still suggests strong control by the processors. maybe think about removing those vessels that do those fisheries, and instead focus on them as two seperate populations with different constraints? 
+# but also what's happening in california? -- still looks like tuna, chinook, crab
+```
+
+## Other thoughts, next steps
+
+Also important to keep in mind distribution of risk and diversity for vessels for which I don't have data about characteristics -- seemingly all of CA for vessel statistics. 
+
+Should think about how to seperate those vessels that primarily do `TLS_1` (chinook), `TLS_2` (albacore) and `POT_1`. I suspect those guys have the highest mobility, and face a set of constraints different from those guys who do groundfish and shrimp more regularly.  
+
+Still need to compute trophic level of catch. 
+
+
+
+## running model with mean latitude, mean reveune, vessel length, fisheries diversity
+```{r, echo=FALSE,warning=FALSE, message=FALSE,eval=FALSE}
+simp1 <- gam(cv_revenue ~ len + mean_landing + mean_revenue, subset(yrdf[["yr_stats"]], !is.na(cv_revenue)), family=gaussian)
+simp2 <- gam(cv_revenue ~  len + mean_landing + mean_revenue + mean_simpson, subset(yrdf[["yr_stats"]], !is.na(cv_revenue)), family=gaussian)
+
+```

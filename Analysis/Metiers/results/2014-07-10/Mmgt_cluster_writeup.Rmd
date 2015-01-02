@@ -1,0 +1,259 @@
+---
+title: "Mgmt_grp clusters"
+author: "Emma Fuller"
+date: "July 10, 2014"
+output:
+  html_document:
+    fig_caption: yes
+  pdf_document:
+    fig_crop: no
+    keep_tex: yes
+---
+
+## Methods
+Using all trips landed between 2009-2013 in Washington, Oregon and California found proportion (in lbs) of landing that constituted of each of 8 management groups assigned by PacFin. 
+
+```{r,echo=FALSE,message=FALSE,warnings=FALSE,results='asis'}
+require(pander); require(reshape2); require(ggplot2)
+spid <- read.csv("/Volumes/NOAA_Data/CNH/Analysis/Metiers/data/spid.csv",stringsAsFactors=FALSE)
+table <- subset(spid, X==3 & SPID!="NONE",select=c(SPID,common_name))
+row.names(table) <-NULL
+foo <- unlist(strsplit(table[,2],"__"))
+bar <- foo[foo!=""]
+table[,2] <- tolower(bar)
+set.caption("Management groups")
+pander(table, style='rmarkdown')
+```
+
+Using this dataset, I first performed a PCA to reduce down to 5 principal components (retaining > 80% of the original variation) and then used `clara()`[^1] to search for characteristic landings profiles. `clara()` requires the number of existing clusters to given a priori, so I tried from 1-30 possible clusters. Because clustering algorithms are exploratory approaches, there is no "correct" number of clusters known. In order to evaluate the fit of each possible cluster solution (1-30) I look at the objective function and the average silhouette width. The objective function measures how tightly clumped the data are around each cluster center. The best clustering solutions are ones which minimize this objective function. The average silhouette is a measure of how well seperated each cluster is, and ranges from 0 (unseperated) to 1 (completely seperated). Clustering solutions with an average silhouette width < 0.6 should not be considered. 
+
+[^1]: will flesh this out
+
+## Results
+
+Examining how the objective function and average silhouette width vary with the number of clusters given to `clara()`, 8 clusters looks like the minimum number of clusters which satisfies both minimizing the objective function and maximizing the average silhouette width. 
+
+```{r, echo=FALSE,fig.align='center',fig.width=7, fig.cap="8 cluster solution highlighted"}
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/data/all_tickets/clust_prop_2014-07-11.Rdata")
+
+  par(mfrow=c(1,2),omi=c(0,0,0,0))
+  plot(clust_prop$objectives, type="o",pch=19, cex=0.35,bty="n", main="Objective function",col="tomato1")
+  points(8,clust_prop$objectives[8],lwd=4, col="tomato4")
+  plot(clust_prop$asw, type="o", pch=19, cex=0.35, bty="n", main="Silhouette Width",col="turquoise")
+  points(8,clust_prop$asw[8],lwd=4,col="turquoise4")
+```
+
+Finding that 8 clusters is the best fit is not surprising, as there are 8 different management groups.
+
+```{r, echo=FALSE,message=FALSE,warning=FALSE, fig.align='center'}
+  plot_clusters <- function(to_plot){
+    to_plot <- to_plot[2:ncol(to_plot)]
+    one_df <- melt(c,id="cluster")
+    
+    one_df <- melt(to_plot,id="c8")
+    one_df <- one_df[one_df$value>0,]
+    colnames(one_df) <- c("cluster","species","catch_proportion")
+    
+   print( ggplot(one_df, aes(x=species,y=catch_proportion,fill=species)) + geom_bar(stat="identity") + facet_wrap(~ cluster,scales="free_x") + theme(axis.text.x  = element_text(angle=0, vjust=0.5)) + guides(fill=FALSE))
+  }
+  
+  plot_clusters(clust_prop[["mediods"]])
+  barplot(table(clust_prop$clustering),bor=F)
+```
+
+The 8 cluster solution is futher coroborated by the fact that as we go above 8 clusters, only a very small number of trips are placed in the new clusters.
+
+```{r, echo=FALSE, message=FALSE,warning=FALSE, fig.align='center'}
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/data/all_tickets/clustdatprop_2014-07-11.Rdata")
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/data/all_tickets/prop_table_2014-07-11.Rdata")
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/data/all_tickets/dat_setup_2014-07-11.Rdata")
+mediods9 <- prop_table[dat_setup[,"row"][clust.dat.prop[[9]]$i.med],]
+mediods9$c8 <- 1:9
+  plot_clusters(mediods9)
+  barplot(table(clust.dat.prop[[9]]$clustering), bor=F)
+```
+
+### Examining cluster contents
+
+```{r, echo=FALSE, message= FALSE, warning=FALSE, fig.width=10, fig.align='center'}
+source("/Volumes/NOAA_Data/CNH/Analysis/Metiers/bin/2_plotClusters.R")
+plot_cp(target_mgmt = "SAMN", cp = 1, prop_table = prop_table)
+plot_cp(target_mgmt = "CRAB", cp = 2, prop_table = prop_table)
+plot_cp(target_mgmt = "SHLL", cp = 3, prop_table = prop_table)
+plot_cp(target_mgmt = "OTHR", cp = 4, prop_table = prop_table)
+plot_cp(target_mgmt = "SRMP", cp = 5, prop_table = prop_table)
+plot_cp(target_mgmt = "GRND", cp = 6, prop_table = prop_table)
+plot_cp(target_mgmt = "HMSP", cp = 7, prop_table = prop_table)
+plot_cp(target_mgmt = "CPEL", cp = 8, prop_table = prop_table)
+plot_cp(target_mgmt = "ECHN", cp = 9, prop_table = prop_table)
+```
+
+Now `CPEL` looks extremely clean, but `SHLL` doesn't. In fact, all the trips that are not 100% `SHLL` don't have any `SHLL in them (except for 1). Instead they all are at least half shrimp. To investigate, I look at trips which caught shellfish. What else do they catch on those trips?
+
+```{r}
+load('/Volumes/NOAA_Data/CNH/Analysis/Metiers/data/all_tickets/tickets_2014-07-11.Rdata')
+prop_grp <- function(sp, tickets){
+shll_ftids <- subset(tickets, mgmt_grp==sp, select=ftid)$ftid
+shll_trips <- subset(tickets, ftid %in% shll_ftids)
+
+barplot(table(shll_trips$mgmt_grp)/nrow(shll_trips), bor=F, main = paste("In trips returning with some ", sp,"\nproportion of other groups landed",sep=""))
+}
+prop_grp("SHLL",tickets)
+```
+
+This doesn't explain it, look at shrimp 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+prop_grp("SRMP",tickets)
+prop_grp("OTHR", tickets)
+```
+
+These don't really explain it either. Let's look just at the trips that are labeled as catch profile 7
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+cp7 <- subset(prop_table, c8==7)
+```
+
+Would a simple heuristic be more effective? If I take a trip to be in a given fishery if > 50% of a particular catch falls into a particular mgmt_grp. Are any trips left?
+
+```{r}
+take_away <- prop_table # to be cut from
+SHLL <- subset(take_away, SHLL > 0.5)
+take_away <- subset(take_away, SHLL <= 0.5) # remove those trips
+nrow(SHLL) + nrow(take_away) == nrow(prop_table) # check didn't loose anything
+
+SRMP <- subset(take_away, SRMP > 0.5)
+take_away <- subset(take_away, SRMP <= 0.5)
+nrow(SHLL) + nrow(SRMP) + nrow(take_away) == nrow(prop_table) # check didn't loose anything
+
+SAMN <- subset(take_away, SAMN > 0.5)
+take_away <- subset(take_away, SAMN <= 0.5)
+nrow(SHLL) + nrow(SRMP) + nrow(take_away) + nrow(SAMN) == nrow(prop_table) # check didn't loose anything
+
+GRND <- subset(take_away, GRND > 0.5)
+take_away <- subset(take_away, GRND <= 0.5)
+nrow(SHLL) + nrow(SRMP) + nrow(take_away) + nrow(SAMN) + nrow(GRND) == nrow(prop_table) # check didn't loose anything
+
+HMSP <- subset(take_away, HMSP > 0.5)
+take_away <- subset(take_away, HMSP <= 0.5)
+nrow(SHLL) + nrow(SRMP) + nrow(SAMN) + nrow(GRND) + nrow(HMSP) + nrow(take_away) == nrow(prop_table)
+
+CPEL <- subset(take_away, CPEL > 0.5)
+take_away <- subset(take_away, CPEL <= 0.5)
+nrow(SHLL) + nrow(SRMP) + nrow(SAMN) + nrow(GRND) + nrow(HMSP) + nrow(CPEL) + nrow(take_away) == nrow(prop_table)
+
+CRAB <- subset(take_away, CRAB > 0.5)
+take_away <- subset(take_away, CRAB <= 0.5)
+nrow(SHLL) + nrow(SRMP) + nrow(SAMN) + nrow(GRND) + nrow(HMSP) + nrow(CPEL) + nrow(CRAB) + nrow(take_away) == nrow(prop_table)
+
+OTHR <- subset(take_away, OTHR > 0.5)
+take_away <- subset(take_away, OTHR <=0.5)
+nrow(SHLL) + nrow(SRMP) + nrow(SAMN) + nrow(GRND) + nrow(HMSP) + nrow(CPEL) + nrow(CRAB) + nrow(OTHR) + nrow(take_away) == nrow(prop_table)
+
+```
+
+I think the `OTHR` is really screwing things up. Halibut is often caught with salmon (causing trips split between salmon and othr), lingcod is caught with halibut (cuasing trips split between grnd and othr), and then unspecified mollusks are caught with shellfish causing splits between shellfish and othr. 
+
+But also have shrimp trawls pulling up huge amounts of groundfish, along with sharks (hmsp), such that it gets called a hmsp trip. 
+
+```{r}
+subset(tickets, ftid=="N203132")
+```
+
+The 50% heurestic for HMSP does pretty well. I wonder if mgmt_grps caught with one type of gear tend to be cleaner. i.e. tuna are only caught with trolls. So anything that's more than 50% tuna was a troll. But trawls are much less selective, and can have significant bycatch in another management group. 
+
+Crab is hard because octopus and spotted prawn will show up in pots. But again, can be pretty sure tht with a pot, targeting crab. Just like with trolling, targeting tuna, salmon, maybe halibut. 
+
+Might be best to seperate out by gear types. Trawls, shrimp trawls, pots, seines, other. Midwater and bottom trawls can be seperated out. Crab pots and fish pots can be seperated out. 
+
+The other approach is to drop rare species. For example, thresher sharks. When they get pulled up, the do get sold for something
+```{r, echo=FALSE,message=FALSE,warning=FALSE}
+plot(density(subset(tickets,spid=="TSRK")$ppp),main="$ per lb for thresher shark",lwd=2,col="dodgerblue",bty="n")
+```
+
+But this is not a targeted species, as most of them come up in nets.
+
+```{r}
+table(subset(tickets,spid=="TSRK")$grgroup)
+```
+
+And those nets tend to target coastal pelagics
+
+```{r}
+nets <- subset(tickets, grgroup=="NET")
+barplot(table(nets$mgmt_grp),bor=F, main="number or occurances of each mgmt_grp\nin trips that used nets")
+```
+
+Let's look at species distribution of occurence to get a feel for which species rarely make it in
+```{r}
+species_ord <- sort(table(tickets$spid)/nrow(tickets),decreasing=T)
+barplot(species_ord, bor=F)
+```
+
+Subset to species showing up fewer than 1% of the time
+
+```{r}
+barplot(species_ord[species_ord<0.001],bor=F,las=2,cex.names=0.85)
+```
+
+However, thresher sharks are not part of this subsetted list. And I'm pretty sure they're not targetted commercially, but harvested opportunistically. But there are things in this very small tail end of the spectrum that are targetted, I think. Like manilla clams. 
+
+Really from my own feeling is that there are 10 different groups in the fishery:
+
+1. people fishing for shellfish with miscellaneous gear (i.e. not a boat)
+2. people trolling for tuna
+3. people seining for tuna
+4. people trolling for salmon
+5. people trawling for shrimp
+6. people seining for coastal pelagics
+7. people trawling for groundfish
+8. people longlining for groundfish
+9. people using fish pots for groundfish
+10. people crabbing with crab pots
+
+Now the question is, how to show that this is the case. One idea is to do a cluster with the grgroup and management group. The only problem with grgroup is that some trips use more than 1. 
+
+```{r}
+gears <- ddply(tickets, .(ftid), summarize, length(unique(grgroup)), .progress='text' )
+names(gears)<- c("ftid","num_gears")
+length(which(gears$num_gears>1)) # some that have more than one gear
+table(gears$num_gears[which(gears$num_gears>1)]) # most only have 2 though. What are these gears?
+
+plural_gears <- subset(tickets, ftid %in% gears$ftid[which(gears$num_gears>1)])
+```
+
+Plan of attack is to first try to classify `OTHR` species down to complex level and re-cluster and evaluate. Hopefully that will be enough. If not, then I may need to include gear. Or at least get a feel for which are the most common combinations of gear. 
+
+```{r}
+gear_codes <- ddply(plural_gears, .(ftid), summarize, gear_code=paste(sort(unique(grgroup)),collapse=""), .progress='text')
+names(gear_codes) <- c("ftid","gear_code")
+multiple_codes <- subset(gear_codes, ftid %in% plural_gears$ftid)
+
+table(multiple_codes$gear_code)
+```
+
+To further this, I think if I identify in the `OTHR` category which are sharks and which are echnioderms (complexes that are already listed), that might help as it leaves mostly fish. That might remove some confusion with that category in showing how sharks that are identifeid as HMSP show up with OTHR that are sharks, which are different types of trips than OTHR echnioderms that show up with SHLL. 
+
+Alternatively, could cluster now on gear, to see if I get the 10 categories I expect. Although OTHR and HMSP clusters are pretty messed up, and so could obscure the fisheries that are present. 
+
+After expanding the `OTHR` group, get a new echinoderm group and a new bass group. Both look very robust. The `CPEL` group looks good, has a complement of sharks. But the crab and salmon groups no longer look so good. The `HMSP` group looks awful. 
+
+A new idea is to use the complex information provided from PacFin to get a course level of ecological organization
+
+```{r}
+code_spid <- subset(spid, X==1)
+code_spid$code <- rep(0,nrow(code_spid))
+for(i in 1:nrow(code_spid)){
+code_spid$code[i] <-paste(code_spid$complex[i], code_spid$mgmt_grp[i], code_spid$complex2[i], collapse="")
+                        }
+barplot(sort(table(code_spid$code)),las=2)
+
+
+```
+
+Could use these as a way to break down catch. 
+
+```{r}
+
+tickets <- merge(tickets, code_spid[,c("SPID","code")],by.x="spid", by.y="SPID",all.x=TRUE, all.y=FALSE)
+```

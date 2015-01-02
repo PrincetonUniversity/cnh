@@ -1,0 +1,106 @@
+---
+title: "Examining CG info"
+author: "Emma Fuller"
+date: "May 6, 2014"
+output: html_document
+---
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+require(plyr)
+require(dplyr)
+
+# load vessel IDs
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-05-06/log_tripTable_2014-05-06.Rdata")
+
+# load coastguard data
+cg <- read.csv("/Volumes/NOAA_Data/CNH/Data/Catch/cg_2009-2013_2014-03-21.csv",as.is=TRUE)
+colnames(cg) <- tolower(colnames(cg))
+
+```
+
+Would like to link catch profiles to vessel data in the fish ticket and coast guard databases. The coastguard data is huge (like `r nrow(cg)` rows). First step is to reduce the coastguard entries to vessel IDs we have in the fish ticket data. 
+
+## Subsetting CG data
+
+```{r}
+# reduce cg just to vessel IDs that we have in FTL
+veid <- log_tripTable[[2]]$veid
+veid <- unique(veid)
+cg_sub <- subset(cg, vid %in% veid, select=c("vid","grosswt","netwt","len","breadth","depth")) 
+
+#remove straight duplicates 
+cg_sub <- cg_sub[-which(duplicated(cg_sub)),]
+any(duplicated(cg_sub$vid))
+```
+
+But there are duplicates in the coastguard data, why is that? Are there differences in the vessel measurements? 
+
+## Examining duplicates
+By finding those vessels that have more than one record, look at the mean and standard deviation of these relevant vessel characteristics. If there was a standard deviation of 0, would mean that there's no change. 
+
+```{r,echo=FALSE,warning=FALSE}
+# some duplicates - are there differences between vessel measurements?
+dup_cg <- cg_sub[which((duplicated(cg_sub$vid) | duplicated(cg_sub$vid, fromLast=TRUE))),]
+dup_cg <- dup_cg[order(dup_cg$vid),]
+
+# how different are the vessel measurements?
+means <- ddply(dup_cg, .(vid), summarize, mean_gw = mean(grosswt), sd_gw = sd(grosswt), mean_nw = mean(netwt), sd_nw = sd(netwt), mean_len = mean(len), sd_len = sd(len), mean_brd = mean(breadth), sd_brd = sd(breadth), mean_dep = mean(depth), sd_dep = sd(depth))
+  
+par(mfrow=c(2,3))
+for(i in seq(2,10,by=2)){
+  plot(1:12, means[,i], pch=19, xlab="vessel",main=colnames(means)[i],ylim=c(0,max(means[,i]+means[,i+1])))
+  arrows(1:12, means[,i]+means[,i+1], 1:12, means[,i]-means[,i+1], code=3, angle=90, length=0.1)
+}
+```
+There's quite a lot of variance in these different records. There are no vessels that don't have a change in any of these records. Why would these vessel characteristics change? Regardless it suggests that I should drop these vessels from the metier analysis
+
+```{r}
+# drop vessels that have changing measurements
+  var_vids <- unique(means$vid)
+  # remove from cg_sub
+  cg_sub <- cg_sub[which(!cg_sub$vid %in% var_vids),]
+  # remove from veids
+  veid <- veid[which(!veid %in% var_vids)]
+
+# now, which vessels are missing (excluding weird vessels)?
+  missing <- veid[!veid %in% cg_sub$vid]
+  # check that I have a correct length
+  length(veid)-length(missing) == nrow(cg_sub)
+```
+There now are only about `r round(nrow(cg_sub)/length(veid),2)*100`% of vessels are in the coastguard data that's also in the fish ticket data. What types are captured, which ones are not?
+
+## Examining coverage of CG
+The possible metier clusters could be on catch profile, gross weight, net weight, length, breadth and depth, and gear type. The first question is whether net weight, length, breadth and depth are each useful to include.
+
+```{r}
+# find gear information 
+missing_info <- subset(log_tripTable[[2]],log_tripTable[[2]]$veid %in% missing,select=c("veid","grgroup","grid"))
+missing_info <- missing_info[-which(duplicated(missing_info)),]
+
+# still more entries from the FTL then there are vessel ids
+length(missing) < nrow(missing_info)
+# but there are the same number of different vessels
+length(missing) == length(unique(missing_info$veid))
+
+# which means that there are some with different gear codes. To find that, find the vessels that are duplicated
+
+dup_gears <- missing_info[which((duplicated(missing_info$veid) | duplicated(missing_info$veid, fromLast = TRUE))),]
+dup_gears <- dup_gears[order(dup_gears$veid),]
+```
+Ah, but actually the gear shifting is okay, I might expect that to happen, this was the whole point, after all, to look at metiers. So it won't be perfect, but I'll just take the first record of `grgroup` because that seems slightly more general. 
+
+```{r,echo=FALSE}
+missing_info <- missing_info[-which(duplicated(missing_info[,1])),]
+
+# merge coastgaurd data with FTL data
+FTL_ref <- select(log_tripTable[[2]], veid, grgroup, grid)
+FTL_ref <- FTL_ref[-which(duplicated(FTL_ref$veid)),]
+
+cg_FTL <- merge(cg_sub,FTL_ref, by.x="vid",by.y="veid" )
+
+gear_missing <- table(missing_info$grgroup)
+gear_captured <- table(cg_FTL$grgroup)
+
+barplot(gear_missing/(gear_missing+gear_captured), main="Proportion of vessels missing",col="indianred",bor=FALSE)
+```
+
+This doesn't look like it tells me too much, it doesn't look like a particular gear is well represented. For now I'll just do metiers with gear type. C

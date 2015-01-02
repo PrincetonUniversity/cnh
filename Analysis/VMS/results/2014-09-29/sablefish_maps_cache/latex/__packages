@@ -1,0 +1,10 @@
+base
+lattice
+mapdata
+maps
+maptools
+raster
+RColorBrewer
+rgeos
+scales
+sp

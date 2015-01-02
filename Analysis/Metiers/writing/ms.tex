@@ -1,0 +1,4303 @@
+\documentclass[]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+% Set line spacing
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+    \usepackage{xltxtra,xunicode}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+  \newcommand{\euro}{€}
+\fi
+% use microtype if available
+\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{longtable,booktabs}
+\usepackage{graphicx}
+% Redefine \includegraphics so that, unless explicit options are
+% given, the image width will not exceed the width of the page.
+% Images get their normal width if they fit onto the page, but
+% are scaled down if they would overflow the margins.
+\makeatletter
+\def\ScaleIfNeeded{%
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+\let\Oldincludegraphics\includegraphics
+{%
+ \catcode`\@=11\relax%
+ \gdef\includegraphics{\@ifnextchar[{\Oldincludegraphics}{\Oldincludegraphics[width=\ScaleIfNeeded]}}%
+}%
+\ifxetex
+  \usepackage[setpagesize=false, % page size defined by xetex
+              unicode=false, % unicode breaks when used with xetex
+              xetex]{hyperref}
+\else
+  \usepackage[unicode=true]{hyperref}
+\fi
+\hypersetup{breaklinks=true,
+            bookmarks=true,
+            pdfauthor={Emma Fuller},
+            pdftitle={Risk and foodwebs},
+            colorlinks=true,
+            citecolor=blue,
+            urlcolor=blue,
+            linkcolor=magenta,
+            pdfborder={0 0 0}}
+\urlstyle{same}  % don't use monospace font for urls
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\setcounter{secnumdepth}{5}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+\setlength{\droptitle}{-2em}
+  \title{Risk and foodwebs}
+  \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+  \author{Emma Fuller}
+  \preauthor{\centering\large\emph}
+  \postauthor{\par}
+  \predate{\centering\large\emph}
+  \postdate{\par}
+  \date{October 6, 2014}
+
+
+
+
+\begin{document}
+
+\maketitle
+
+
+\section{Introduction}\label{introduction}
+
+Previous work has suggested that fishermen participate in a diverse set
+of fisheries to reduce exposure to risk. In Alaska, Sethi, Reimer, and
+Knapp (2014) found that the larger and more diverse a community's
+fishing portfolio was, the less variable yearly revenues were.
+Similarly, Kasperski and Holland (2013) found a dome-shaped relationship
+between annual revenue variability and revenue diversification in the US
+Westcoast groundfish and Alaskan fisheries.
+
+Here we use a metier analysis to define fisheries and determine whether
+diversity in fisheries participation affects variability in revenue. We
+are able to expand previous analyses of the US Westcoast groundfish
+fishery (Kasperski and Holland 2013) to all commercial fisheries on the
+US Westcoast by using a metier approach to define fisheries based on
+catch composition. This approach lets us seemlessly integrate data on
+participation in both state and federal fisheries. We find that
+diversity of revenue decreases year-to-year variance across US Westcoast
+commercial fisheries.
+
+\section{Data and Methods}\label{data-and-methods}
+
+\subsection{Catch Data}\label{catch-data}
+
+This work uses fish ticket data from the US Westcoast commercial
+fisheries from 2009-2013, a total of 501,386 trips and 5,982 vessels.
+PacFin records species by ``market category''. For most easily
+identifiable and highly marketable species this is equivalent to species
+name. However for a number of rockfish that are difficult to
+distinguish, their market category is some flavor of ``unspecified
+rockfish''. We keep the raw market categories in this analysis with the
+argument that the resolution of the market and the targeting behavior of
+fishermen are equivalent.
+
+Catch by species was totaled for each trip. We drop species from
+consideration that are caught in fewer than 100 trips over 5 years and
+with a median catch off less than 100 lbs. This drops 121 trips (less
+than half of one percent of total trips) and 60 market categories
+(i.e.~species). A list of these species, along with median catch and
+number of trips found in is in the Appendix. We also drop any trips with
+the \texttt{grgroup} of \texttt{DRG} (dredge) as there are fewer than 5
+trips overall for this gear type.
+
+\subsection{Fisheries definition}\label{fisheries-definition}
+
+Income diversity is typically defined as an index which integrates both
+number of fisheries and proportion of trips a vessel partipates within
+annually (Kasperski and Holland 2013; Sethi, Reimer, and Knapp 2014).
+This metric therefore requires some definition of a ``fishery''.
+Fisheries are commonly defined as
+
+\begin{quote}
+A unit determined by an authority or other entity that isengaged in
+raising and/or harvesting fish. Typically, the unit is defined in terms
+of some or all of the following: people involved, species or type of
+fish, area of water or seabed, method of fishing, class of boats and
+purpose of the activities (\href{http://www.fao.org/fi/glossary/}{FA0},
+Fletcher et al. (2005)).
+\end{quote}
+
+Previous work on risk and revenue diversity on the US West Coast and
+Alaska tends to make use of gear, area and type of fish to define
+fisheries (Kasperski and Holland 2013), or existing management
+jurisdictions (Sethi, Reimer, and Knapp 2014). Federally managed
+groundfish fisheries require vessels to submit logbooks which include
+permits. However for the state-managed fisheries we frequently only have
+the the fish ticket. This means our primary source of information about
+the fishery comes from the composition of catch. In order to use of the
+non-groundfish data we needed a way to classify to which fishery a trip
+belonged by composition of catch. To address these issues we used a
+metier analysis approach to define fisheries (gear-species target
+combinations) (Deporte et al. 2012). Thus in the following analysis we
+are considering a metier equivalent to a fishery.
+
+Metier-like analyes have been performed in the Northeast US, classifying
+fishing data to define ``operational fisheries'' of New England (Lucey
+and Fogarty 2013). While promising as a way to classify fisheries for
+use in ecosystem-based management, these methods introduced spatial and
+temporal structure prior to defining fisheries. In our analysis such
+structure emerges from the data, and we are able to recover the commonly
+recognized major fisheries and their seasonality, along with more
+spatially and temporally restricted fisheries. These methods have the
+additional benefit of only requiring the catch composition of trips,
+making it possible to integrate data from both state and federal
+management databases.
+
+\subsubsection{Metier analysis}\label{metier-analysis}
+
+A metier is defined as a gear-species target combination (Deporte et al.
+2012). We first define species targets and then assign these targets to
+gear to make the final metier designation.
+
+To find species target data we classify target species assemblages by
+first subsetting to all 2010 trips and searching for characteristic
+catch assemblages. To find these assemblages we first split trips by
+gear type (using PacFin \texttt{grgroups} designation) and calcluate a
+pairwise dissimiliarity index for each trip within a gear/year subset
+using the Bray-Curtis dissimilarity index. This metric has the advantage
+of avoiding the double-0 problem common in species count data. The
+Bray-Curtis dissimilarity index is defined as
+
+\[ BC_{ij} = \frac{2C_{ij}}{S_i+S_j} \]
+
+where $C_{ij}$ is the biomass of the lesser value for only those two
+species in common between both sites. $S_i$ and $S_j$ are the total
+number of individuals counted in both trips. This index ranges between 0
+and 1, with 0 meaning the sites have the same composition and 1 meaning
+they share no species.
+
+We transform the disimilarity index to be a measure of similarity
+
+\[ \text{Similarity}= 1 - \mid BC\mid \]
+
+and build an undirected, weighted network in which nodes are trips, and
+edge widths are the similarity in species composition between trips.
+With this network we use the \emph{infoMap} algorithm to find
+communities (clusters or subgraphs) within the network (using the
+implementation in the \texttt{R} package \texttt{igraph})(Rosvall and
+Bergstrom 2008; Rosvall, Axelsson, and Bergstrom 2009).
+
+\emph{InfoMap} is an information theoretic approach, which uses the
+probability flow of a random walker on a network as a proxy for the
+information flows in a real system. The objective of \emph{infoMap} is
+to compress the description of the probability flow, and in doing so
+partitions the network into modules. \emph{InfoMap} works by computing
+the fraction of time a node is visted by a random walker using a
+deterministically greedy search algorithm. Merges between modules that
+give the largest decrease in description length are made until further
+merging leads to increases of description length. Results are refined
+with a simulated annealing approach, starting at several different
+temperatures, with the run selected as the one that gives the shortest
+description of the network.
+
+We found that other commonly used clustering algorithms (i.e.~k-means,
+hierarchical clustering) did poorly with this data. Many clustering
+algorithms do best when clusters are spherical in n-dimensional space,
+and/or require the number of clusters decided \emph{a priori}. In this
+data we have fisheries participation may vary by an order of magnitude
+(100s of trips to 100,000s of trips), and we wanted to avoid having to
+decide subjectively on the number of clusters.
+
+After dropping any modules that have fewer than 5 trips, we use a
+\texttt{knn} classifier to assign all other trips of each gear subset to
+those possible metiers.\footnote{In 2011 ITQs went in to a subset of the
+  fisheries, namely the trawl groundfish fisheries. This change in
+  management may change the assemblage of species caught together. To
+  check for sensitivity based on year chosen as training year, we
+  trained the \texttt{knn} classifier on both pre- (2010) and post-
+  (2012) catch share implementation. We found no significant difference
+  in how trips were assigned to metiers. But see the appendix for futher
+  details.} The nearest neighbor to each trip was found using the
+Bray-Curtis dissimilarity index (transformed into a similarity) and all
+analyses were performed using \texttt{R}.
+
+\subsection{Income diversity}\label{income-diversity}
+
+We measure income diversity (or portfolio diversification) with the
+Simpson's diversity index\footnote{But see the Appendix for an
+  equivalent analysis using the Shannon-Weaver index.} (Kasperski and
+Holland 2013; Sethi, Reimer, and Knapp 2014). Simpson's diversity index
+is calculated per vessel; i.e.~have an index of $j=1,\dots,N$ where $N$
+is the number of vessels. Thus $S_j$ is defined as
+
+\[S_j = 1- \sum_{i=1}^k  p_i^2\]
+
+for $k$ fisheries with $p_i$ as the proportion of total gross revenue
+from fishery $i$. Here values of 0 indicate no diversity (a single
+fishery), where values close to 1 indicate high levels of diversity.
+
+We calculate the diversity indices each year a vessel is active and
+averaged across years. Diversity indices are calculated using the
+\texttt{vegan()} package in \texttt{R}. Vessels had to be active for at
+least 2 years in order to be included in this analysis.
+
+\subsection{Income variability}\label{income-variability}
+
+Income variability is calculated as the coefficient of variation in
+annual revenues. For a single vessel $j$ , the coefficient of variation
+($CV$) is calculated as
+
+\[CV_j = \frac{\text{sd}(x)}{\text{mean}(x)},\]
+
+where $x$ is a vector of the annual revenues for vessel $j$.
+
+\section{Results}\label{results}
+
+\subsection{Metier analysis}\label{metier-analysis-1}
+
+There were between 102 and 112 metiers represented each year, and a
+total of 114 metiers total. These metiers, along with the most commonly
+caught species, number of vessels, and number of trips made, as well as
+their spatial distribution, are listed in the Appendix. The table is
+structured to record the metier, the major species, major gear types
+used, the percentage of trips falling in California (CA), Oregon (OR),
+and Washington (WA), the number of trips, and the number of vessels. The
+table is ordered from metiers with most trips to fewest. Major species
+are defined in one of two ways:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  More than 50\% of the trips have a majority of this species by weight
+\item
+  No species is the majority in more than 50\% of the trips, the species
+  listed are the majority in at least 19\% of the trips
+\end{enumerate}
+
+If there is no species present as a majority catch in more than 50\% of
+the trips it's considered a multispecies fishery, this is noted in the
+table.
+
+Familiar structure emerges from these metiers, which is reassuring. In
+particular commonly recognized fisheries are all present: dungeness crab
+pot fishery (\texttt{POT\_1}), red sea urchin diving fishery
+(\texttt{MSC \_1}), albacore trolling (\texttt{TLS\_2}), salmon trolling
+(\texttt{TLS\_1}), sablefish fixed gear (longline \texttt{HKL\_1}, pot
+\texttt{POT\_4}), pacific whiting midwater trawl (\texttt{TWL\_3}), pink
+shrimp (\texttt{TWS\_1}), among others.
+
+One of the more interesting angles is the trawl fisheries. Trips using
+trawls are managed in aggregate in accordance to what they're not (i.e.
+``non-whiting groundfish''). However there seems to be some structure to
+this unifomly managed population.
+
+\begin{longtable}[c]{@{}lrrcccccc@{}}
+\toprule\addlinespace
+\begin{minipage}[b]{0.07\columnwidth}\raggedright
+Metier
+\end{minipage} & \begin{minipage}[b]{0.19\columnwidth}\raggedleft
+Major species
+\end{minipage} & \begin{minipage}[b]{0.16\columnwidth}\raggedleft
+Major gear types
+\end{minipage} & \begin{minipage}[b]{0.04\columnwidth}\centering
+CA
+\end{minipage} & \begin{minipage}[b]{0.04\columnwidth}\centering
+OR
+\end{minipage} & \begin{minipage}[b]{0.04\columnwidth}\centering
+WA
+\end{minipage} & \begin{minipage}[b]{0.06\columnwidth}\centering
+trips
+\end{minipage} & \begin{minipage}[b]{0.08\columnwidth}\centering
+multisp.
+\end{minipage} & \begin{minipage}[b]{0.08\columnwidth}\centering
+vessels
+\end{minipage}
+\\\addlinespace
+\midrule\endhead
+\begin{minipage}[t]{0.07\columnwidth}\raggedright
+TWL\_1
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedleft
+dover sole
+\end{minipage} & \begin{minipage}[t]{0.16\columnwidth}\raggedleft
+rlr-trawl
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+58
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+19
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+23
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+9324
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+180
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.07\columnwidth}\raggedright
+TWL\_2
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedleft
+calif halibut
+\end{minipage} & \begin{minipage}[t]{0.16\columnwidth}\raggedleft
+gftrawl\textless{}8
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+73
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+12
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+15
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+4845
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+67
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.07\columnwidth}\raggedright
+TWL\_3
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedleft
+pacific whiting
+\end{minipage} & \begin{minipage}[t]{0.16\columnwidth}\raggedleft
+mid-trawl
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+62
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+23
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+15
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+4159
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+70
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.07\columnwidth}\raggedright
+TWL\_5
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedleft
+unsp. sea cucumbers
+\end{minipage} & \begin{minipage}[t]{0.16\columnwidth}\raggedleft
+gfsh-trawl
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+2122
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+49
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.07\columnwidth}\raggedright
+TWL\_4
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedleft
+unsp. bait shrimp
+\end{minipage} & \begin{minipage}[t]{0.16\columnwidth}\raggedleft
+beam trawl
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+71
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+29
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+1984
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+11
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.07\columnwidth}\raggedright
+TWL\_8
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedleft
+chinook salmon
+\end{minipage} & \begin{minipage}[t]{0.16\columnwidth}\raggedleft
+mid-trawl
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+17
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+50
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+33
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+858
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+41
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.07\columnwidth}\raggedright
+TWL\_7
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedleft
+yellowtail rockfish
+\end{minipage} & \begin{minipage}[t]{0.16\columnwidth}\raggedleft
+mid-trawl
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+33
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+25
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+42
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+712
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+71
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.07\columnwidth}\raggedright
+TWL\_6
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedleft
+spiny dogfish
+\end{minipage} & \begin{minipage}[t]{0.16\columnwidth}\raggedleft
+mid-trawl
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+56
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+33
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+11
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+599
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+49
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.07\columnwidth}\raggedright
+TWL\_11
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedleft
+lingcod
+\end{minipage} & \begin{minipage}[t]{0.16\columnwidth}\raggedleft
+sel ff twl
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+14
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+43
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+43
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+158
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+34
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.07\columnwidth}\raggedright
+TWL\_15
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedleft
+other crab
+\end{minipage} & \begin{minipage}[t]{0.16\columnwidth}\raggedleft
+gfsh-trawl
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+149
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+13
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.07\columnwidth}\raggedright
+TWL\_16
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedleft
+pacific halibut
+\end{minipage} & \begin{minipage}[t]{0.16\columnwidth}\raggedleft
+mid-trawl
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+60
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+40
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+127
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+36
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.07\columnwidth}\raggedright
+TWL\_12
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedleft
+canary rockfish
+\end{minipage} & \begin{minipage}[t]{0.16\columnwidth}\raggedleft
+mid-trawl
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+60
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+40
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+59
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+29
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.07\columnwidth}\raggedright
+TWL\_14
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedleft
+nor. unsp. shelf rockfish
+\end{minipage} & \begin{minipage}[t]{0.16\columnwidth}\raggedleft
+mid-trawl
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+50
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+50
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+58
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+11
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.07\columnwidth}\raggedright
+TWL\_9
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedleft
+nor. unsp. slope rockfish
+\end{minipage} & \begin{minipage}[t]{0.16\columnwidth}\raggedleft
+mid-trawl
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+75
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+25
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+48
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+32
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.07\columnwidth}\raggedright
+TWL\_13
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedleft
+pop
+\end{minipage} & \begin{minipage}[t]{0.16\columnwidth}\raggedleft
+rlr-trawl
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+50
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+50
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+45
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+21
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.07\columnwidth}\raggedright
+TWL\_10
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedleft
+petrale sole, sand sole
+\end{minipage} & \begin{minipage}[t]{0.16\columnwidth}\raggedleft
+sel ff twl, gftrawl\textless{}8
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+75
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+25
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+14
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+yes
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+9
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.07\columnwidth}\raggedright
+TWL\_19
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedleft
+unsp. flatfish
+\end{minipage} & \begin{minipage}[t]{0.16\columnwidth}\raggedleft
+diving gr, gftrawl\textless{}8
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+1
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering
+1
+\end{minipage}
+\\\addlinespace
+\bottomrule
+\end{longtable}
+
+It should also be noted that major species is not necessarily the same
+as targeted species. Because this is a reflection of only the catch
+data, I only list the majority in the catch.\footnote{But this is
+  something I think might be useful for better characterizing these
+  metiers. I would expect target species would have a high relative
+  abundance within a catch (i.e.~be a majority species) and/or have a
+  high relative price. I could imagine some targetting index for species
+  $i$ in trip $j$ like
+  $T_{ij} = \left(\frac{\text{lbs }sp_{ij}}{\text{mean lbs } s_j}\right)\left(\frac{\text{price }sp_{ij}}{\text{mean price }s_j}\right)$}
+This probably examples \texttt{TWL\_1}. With at least 40\% of trips
+coming back with a majority of dover sole, the other species are likely
+sablefish and thornyheads. However they are caught in lower abundances,
+despite being targeted.
+
+\subsection{Diversity and Risk}\label{diversity-and-risk}
+
+We find a negative relationship between income variability and diversity
+of fisheries. Shaded areas are 95\% confidence intervals.
+
+\includegraphics{ms_files/figure-latex/unnamed-chunk-2-1.pdf}
+
+\subsection{Other plots}\label{other-plots}
+
+Residuals are definitely heteroscedastic.
+
+\includegraphics{ms_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+Wonder if there's a real divide between amount of revenue that's brought
+in.
+
+\includegraphics{ms_files/figure-latex/unnamed-chunk-4-1.pdf}
+
+30\% of the boats are responsible for 90\% of the cumulative mean
+revenue. This suggests to me that perhaps I should pull the highest
+earning boats from the rest of the population and see if the patterns
+still hold.
+
+Plotting mean revenue versus fisheries diversity. There's one outlier
+who makes more than 8 million dollars on average. Removing that boat and
+plotting both mean(revenue) and sd(revenue) and fisheries diversity.
+
+\includegraphics{ms_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+\section{Discussion}\label{discussion}
+
+I find a negative relationship between diversity of fisheries and
+year-to-year variation in annual revenues. This is broadly predicted by
+portfolio theory that portfolios with more assets will tend to have
+lower variance, especially if assets (here fisheries) vary
+asynchronously. Further I have expanded previous work on the US
+Westcoast to demonstrate that this relationship holds broadly across all
+US Westcoast commercial fisheries.
+
+I have also developed a new approach to define metiers, or operational
+fisheries, for the US West coast commerical fisheries. This approach has
+the benefit of not placing \emph{a priori} assumptions about the spatial
+or temporal nature of the fisheries, allowing such structure to emerge
+from the data.
+
+\section{Appendix}\label{appendix}
+
+\subsection{Filtered species}\label{filtered-species}
+
+To focus on species commonly caught, we remove species that were caught
+in fewer than 100 trips with a median catch weight of less than 100 lbs.
+Boxplots showing distribution of catch by species is shown, red boxes
+are species that were dropped from the analysis.
+
+\includegraphics{ms_files/figure-latex/1_cleaningData-1.pdf} Species
+excluded are shown below with the number of trips they were found in and
+their median catch in pounds.
+
+\begin{longtable}[c]{@{}llll@{}}
+\toprule\addlinespace
+\begin{minipage}[b]{0.08\columnwidth}\raggedright
+spid
+\end{minipage} & \begin{minipage}[b]{0.36\columnwidth}\raggedright
+common name
+\end{minipage} & \begin{minipage}[b]{0.21\columnwidth}\raggedright
+number of trips
+\end{minipage} & \begin{minipage}[b]{0.23\columnwidth}\raggedright
+median catch (lbs)
+\end{minipage}
+\\\addlinespace
+\midrule\endhead
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+EELS
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+unsp. eels
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+96
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+46.5
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+CWCD
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+cowcod rockfish
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+92
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+4
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+BSOL
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+butter sole
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+84
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+6
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+RSTN
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+rosethorn rockfish
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+83
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+9
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+MEEL
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+monkeyface prickleback (eel)
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+82
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+3
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+SPKL
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+speckled rockfish
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+82
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+5
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+OGRN
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+other groundfish
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+80
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+62
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+UTCR
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+unsp. tanner crab
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+71
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+4
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+WEEL
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+wolf eel
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+70
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+9
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+DRDO
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+dorado/dolphinfish
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+59
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+58
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+ISRK
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+bigeye thresher shark
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+58
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+170
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+GBLC
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+greenblotched rockfish
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+54
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+12
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+MSHP
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+plainfin midshipman
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+52
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+9
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+RCK6
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+unsp. rosefish rckfsh
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+44
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+8
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+GSRK
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+greenstriped rockfish
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+43
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+2
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+SQR1
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+nom. squarespot
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+43
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+7
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+BSRK
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+blue shark
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+41
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+35
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+STLH
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+steelhead
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+40
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+9
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+YTNA
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+yellowfin tuna
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+37
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+174
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+STNA
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+skipjack tuna
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+32
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+75
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+RCK2
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+unsp. bolina rckfsh
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+31
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+12
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+USRM
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+unsp. ocean shrimp
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+29
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+4.5
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+ETNA
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+bigeye tuna
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+27
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+1094
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+OBAS
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+other bass
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+25
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+6
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+NUSR
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+nor. unsp. near-shore rockfish
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+21
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+7
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+CSKT
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+california skate
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+19
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+52
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+WSTG
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+white sturgeon
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+19
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+30
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+USHR
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+unsp. near-shore rockfish
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+16
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+5
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+FNTS
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+fantail sole
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+14
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+7
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+RCK7
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+unsp. gopher rckfsh
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+14
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+13
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+EULC
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+eulachon
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+13
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+1
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+MXRF
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+mexican rockfish
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+13
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+3
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+HNYC
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+honeycomb rockfish
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+12
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+1
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+QFSH
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+queenfish
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+12
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+42.5
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+GSTG
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+green sturgeon
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+11
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+38
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+PSRK
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+pelagic thresher shark
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+11
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+68.5
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+RCK5
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+unsp. small reds rckfsh
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+11
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+10
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+UCLM
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+unsp. clam
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+10
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+12
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+PRRK
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+pinkrose rockfish
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+9
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+7
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+RCKG
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+rock greenling
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+9
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+2
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+UDNR
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+unsp. deep near-shore rf
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+9
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+41
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+CMSL
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+california mussel
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+6
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+22.5
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+USMN
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+unsp. salmon
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+5
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+11
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+LDAB
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+longfin sanddab
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+4
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+1.5
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+PNKR
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+pink rockfish
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+4
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+8.5
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+SLNS
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+slender sole
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+4
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+6.5
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+SSDB
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+speckled sanddab
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+4
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+90
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+STRK
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+stripetail rockfish
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+4
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+4.5
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+UTNA
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+unsp. tuna
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+4
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+703
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+KFSH
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+giant kelpfish
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+3
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+50
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+PROW
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+prowfish
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+3
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+9
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+TCOD
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+pacific tomcod
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+3
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+17
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+BRNZ
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+bronzespotted rockfish
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+2
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+21
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+CLCO
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+calico rockfish
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+2
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+1
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+CMEL
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+chameleon rockfish
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+2
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+202
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+CEEL
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+spotted cusk-eel
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+1
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+2151
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+CHLB
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+california halibut
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+1
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+12
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+LCLM
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+native littleneck
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+1
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+23
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+OCRK
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+other croaker
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+1
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+35
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+ORCK
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+other rockfish
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+1
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+14
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+RCK1
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+bocaccio+chilipepper rckfsh
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+1
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+60
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+RCK8
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+canary+vermilion rckfsh
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+1
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+3
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+RZCL
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+rosy razor clam
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+1
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+6
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+SCLM
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+soft-shelled clam
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+1
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+115
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+UHLB
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+unsp. halibut
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+1
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+64
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+USTR
+\end{minipage} & \begin{minipage}[t]{0.36\columnwidth}\raggedright
+unsp. oyster
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+1
+\end{minipage} & \begin{minipage}[t]{0.23\columnwidth}\raggedright
+1
+\end{minipage}
+\\\addlinespace
+\bottomrule
+\end{longtable}
+
+\subsection{Sensitivity of classifying
+year}\label{sensitivity-of-classifying-year}
+
+To check whether our metier designations were sensitive to the year used
+to train the k-nearest-neighbors classifier we trained the knn
+classifier on years before (2010) and after (2012) ITQ implementation.
+To check agreement between partition results, we used the adjusted Rand
+index (ARI) (Rand 1971). The Rand index measures the accuracy of the
+partitions, and weights equally false positives and false negatives. The
+Rand index is calculated as
+
+\[ RI = \frac{a + b}{a + b + c + d} \]
+
+where $a + b$ can be considered as the number of agreements between the
+two partititions, and $c + d$ as the number of disagreements between the
+partitions. The Rand index can take a value between 0 and 1, with a Rand
+index = 1 indicating the partitions are identical. The Rand index does
+not take into account the possibility that agreements happen between the
+two partitions due to chance (i.e.~the expected $RI$ of a randomly
+partitioned dataset is not 0), and as the number of clusters increases
+$RI$ approaches 1. The adjusted Rand index (ARI) has been proposed to
+address these limitations (Hubert and Arabie 1985) and is calculated as
+
+\[ \text{ARI} = \frac{ {n \choose 2}(a + d) - [(a+b)(a+c) + (c+d)(b+d)]  }{ {n\choose 2}^2 - [(a+b)(a+c) + (c+d)(b+d)]}.\]
+
+I calculated the adjusted Rand Index ($ARI$) using the \texttt{R}
+library \texttt{e1071}, function \texttt{classAgreement()} for each gear
+group and each year that wasn't trained (2009, 2011, 2013). Results are
+as follows. Agreement between training sets are high, with only the gear
+group NET in 2013 with a value $< 0.9$.\footnote{Should I also show the
+  results of 2010 trained 2010 and 2012 trained 2012 to each other? Is
+  that circular?}\footnote{Haven't yet found any reference to what an
+  acceptably high value of the $ARI$ is.}
+
+\begin{longtable}[c]{@{}llll@{}}
+\toprule\addlinespace
+\begin{minipage}[b]{0.12\columnwidth}\raggedright
+~
+\end{minipage} & \begin{minipage}[b]{0.09\columnwidth}\raggedright
+2009
+\end{minipage} & \begin{minipage}[b]{0.09\columnwidth}\raggedright
+2011
+\end{minipage} & \begin{minipage}[b]{0.09\columnwidth}\raggedright
+2013
+\end{minipage}
+\\\addlinespace
+\midrule\endhead
+\begin{minipage}[t]{0.12\columnwidth}\raggedright
+\textbf{TLS}
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\raggedright
+0.9968
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\raggedright
+0.9901
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\raggedright
+0.9846
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.12\columnwidth}\raggedright
+\textbf{TWS}
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\raggedright
+0.9813
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\raggedright
+0.9839
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\raggedright
+0.9157
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.12\columnwidth}\raggedright
+\textbf{TWL}
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\raggedright
+0.9562
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\raggedright
+0.9405
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\raggedright
+0.9701
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.12\columnwidth}\raggedright
+\textbf{POT}
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\raggedright
+0.9958
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\raggedright
+0.997
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\raggedright
+0.9979
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.12\columnwidth}\raggedright
+\textbf{NET}
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\raggedright
+0.9584
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\raggedright
+0.9456
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\raggedright
+0.8662
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.12\columnwidth}\raggedright
+\textbf{HKL}
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\raggedright
+0.4914
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\raggedright
+0.4425
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\raggedright
+0.3986
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.12\columnwidth}\raggedright
+\textbf{MSC}
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\raggedright
+0.9956
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\raggedright
+0.9934
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\raggedright
+0.9984
+\end{minipage}
+\\\addlinespace
+\bottomrule
+\end{longtable}
+
+\subsection{Metier results}\label{metier-results}
+
+\begin{longtable}[c]{@{}lrrcccccc@{}}
+\toprule\addlinespace
+\begin{minipage}[b]{0.06\columnwidth}\raggedright
+Metier
+\end{minipage} & \begin{minipage}[b]{0.20\columnwidth}\raggedleft
+Major Species
+\end{minipage} & \begin{minipage}[b]{0.20\columnwidth}\raggedleft
+Major gear types
+\end{minipage} & \begin{minipage}[b]{0.03\columnwidth}\centering
+CA
+\end{minipage} & \begin{minipage}[b]{0.03\columnwidth}\centering
+OR
+\end{minipage} & \begin{minipage}[b]{0.03\columnwidth}\centering
+WA
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering
+trips
+\end{minipage} & \begin{minipage}[b]{0.10\columnwidth}\centering
+multispecies
+\end{minipage} & \begin{minipage}[b]{0.06\columnwidth}\centering
+vessels
+\end{minipage}
+\\\addlinespace
+\midrule\endhead
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+POT\_1
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+dungeness crab
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+crab pot
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+51
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+21
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+29
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+108828
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+1360
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+MSC\_1
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+red sea urchin
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+diving gr
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+77
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+23
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+58747
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+206
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TLS\_1
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+chinook salmon
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+troll
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+53
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+22
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+25
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+40907
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+1395
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+POT\_2
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+california spiny lobster
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+c\&l pot
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+28177
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+246
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_1
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+sablefish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+longline
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+62
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+17
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+21
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+27742
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+780
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+NET\_1
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+market squid
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+seine
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+20574
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+151
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_2
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+black rockfish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+oth hk\&ln
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+70
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+25
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+5
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+17371
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+292
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TLS\_2
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+albacore
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+troll
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+43
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+25
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+31
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+13187
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+1406
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+POT\_3
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+rock crab
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+c\&l pot
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+97
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+3
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+12994
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+229
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_3
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+brown rockfish, gopher rockfish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com)
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+91
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+9
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+10022
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+yes
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+193
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+NET\_2
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pacific sardine
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+seine
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+76
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+12
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+12
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+9842
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+208
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWL\_1
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+dover sole
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+rlr-trawl
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+58
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+19
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+23
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+9324
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+180
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_4
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+calif halibut
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com)
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+97
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+3
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+6880
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+345
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWS\_1
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pacific pink shrimp
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+dbl-shrimp
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+43
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+36
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+21
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+6236
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+136
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+POT\_5
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+spotted prawn
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+prwn trap
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+83
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+17
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+5787
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+67
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+POT\_4
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+sablefish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+fish pot
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+62
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+22
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+16
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+5658
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+319
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+POT\_6
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+unsp. hagfish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+fish pot
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+53
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+17
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+31
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+5576
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+152
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+NET\_3
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+calif halibut
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+gill net
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+5242
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+60
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_5
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+lingcod
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+oth hk\&ln, pole(com)
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+65
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+24
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+12
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+5143
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+506
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWL\_2
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+calif halibut
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+gftrawl\textless{}8
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+73
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+12
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+15
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+4845
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+67
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+MSC\_2
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+unsp. sea cucumbers
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+diving gr
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+95
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+5
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+4404
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+90
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_6
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+black-and-yellow rockfish, cabezon, grass rockfish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com), vrtcl hkl
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+76
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+24
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+4376
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+yes
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+186
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWL\_3
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pacific whiting
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+mid-trawl
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+62
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+23
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+15
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+4159
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+70
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+NET\_4
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+white seabass
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+gill net
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+3770
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+58
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+MSC\_3
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+ghost shrimp
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+oth-known
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+33
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+67
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+3393
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+50
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_7
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+white seabass
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com)
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+93
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+7
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+2768
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+237
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+MSC\_4
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+razor clam
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+oth-known
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+57
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+43
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+2378
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+41
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWS\_2
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+ridgeback prawn
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+sgl-shrimp
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+81
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+6
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+12
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+2292
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+26
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWL\_5
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+unsp. sea cucumbers
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+gfsh-trawl
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+2122
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+49
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWL\_4
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+unsp. bait shrimp
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+beam trawl
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+71
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+29
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+1984
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+11
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+MSC\_5
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+basket cockle
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+oth-known
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+82
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+18
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+1886
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+68
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+NET\_5
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+swordfish, common thresher shark
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+drf gl net
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+88
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+12
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+1800
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+yes
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+108
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_8
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+vermillion rockfish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com)
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+79
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+18
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+3
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+1345
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+207
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWS\_3
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+calif halibut, hornyhead turbot
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+sgl-shrimp
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+91
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+9
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+1311
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+yes
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+38
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+NET\_7
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+chub mackerel
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+dip net
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+93
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+7
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+1282
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+61
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+POT\_8
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+other shrimp
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+prwn trap
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+64
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+27
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+9
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+1209
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+40
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+NET\_8
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+northern anchovy
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+seine
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+82
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+6
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+12
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+1188
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+52
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+NET\_6
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+unsp. shad
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+dip net
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+1127
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+7
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_9
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+california scorpionfish, unsp. sanddabs
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+longline, pole(com)
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+95
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+5
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+1112
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+yes
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+83
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+POT\_13
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+cabezon, gopher rockfish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+fish pot
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+71
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+18
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+11
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+978
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+yes
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+88
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+MSC\_7
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+dungeness crab
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+oth-known
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+25
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+75
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+892
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+60
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWL\_8
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+chinook salmon
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+mid-trawl
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+17
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+50
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+33
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+858
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+41
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+MSC\_6
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+unsp. bait shrimp
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+oth-known
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+50
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+50
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+778
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+7
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+POT\_10
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+california sheephead
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+fish pot
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+731
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+43
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWL\_7
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+yellowtail rockfish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+mid-trawl
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+33
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+25
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+42
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+712
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+71
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_10
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+albacore
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com)
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+88
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+3
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+9
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+667
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+244
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWL\_6
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+spiny dogfish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+mid-trawl
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+56
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+33
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+11
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+599
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+49
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+MSC\_12
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+gaper clam
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+oth-known
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+555
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+10
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+MSC\_8
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+swordfish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+oth-known
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+471
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+22
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+POT\_7
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+rock crab
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+c\&l pot
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+89
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+11
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+464
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+68
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+MSC\_9
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+unsp. mollusks
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+diving gr
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+463
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+8
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_11
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+california sheephead
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com)
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+94
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+6
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+411
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+47
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+POT\_9
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+other crab
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+c\&l pot
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+89
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+11
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+399
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+86
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+MSC\_10
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+other sea urchins
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+diving gr
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+92
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+8
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+327
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+45
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWS\_4
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+unsp. sea cucumbers
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+sgl-shrimp
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+326
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+22
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_23
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+chinook salmon, lingcod
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com)
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+89
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+11
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+288
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+yes
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+118
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+NET\_10
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+chinook salmon, sockeye salmon
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+gill net
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+43
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+57
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+268
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+yes
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+38
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+POT\_11
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+other mollusks
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+c\&l pot
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+243
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+68
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+NET\_11
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pacific barracuda
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+drf gl net
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+221
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+19
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TLS\_4
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+calif halibut
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com), btm-troll, troll
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+92
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+8
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+219
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+60
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_13
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+unsp. smelt
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com)
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+219
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+28
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+POT\_14
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+unsp. octopus
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+diving gr, c\&l pot, crab pot
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+72
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+28
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+183
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+80
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_14
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+surfperch spp.
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com)
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+183
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+21
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+NET\_12
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+other crab
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+gill net
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+171
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+18
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TLS\_23
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+chinook salmon
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com)
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+92
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+8
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+159
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+78
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_12
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+common thresher shark
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com)
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+159
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+43
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWL\_11
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+lingcod
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+sel ff twl
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+14
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+43
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+43
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+158
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+34
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_15
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+yellowtail
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com)
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+156
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+45
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TLS\_5
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+albacore
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+other nets, troll
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+92
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+8
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+153
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+50
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWL\_15
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+other crab
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+gfsh-trawl
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+149
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+13
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWL\_16
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pacific halibut
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+mid-trawl
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+60
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+40
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+127
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+36
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+MSC\_13
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+blue mud shrimp
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+oth-known
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+112
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+11
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+MSC\_14
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+other mollusks
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+diving gr
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+86
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+14
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+105
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+26
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_16
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+unsp. shelf rockfish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com)
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+98
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+7
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+NET\_17
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pacific bonito
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+seine
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+81
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+21
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_20
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+unsp. reds rckfsh
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com)
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+81
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+19
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWS\_6
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+unsp. flatfish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+sgl-shrimp
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+77
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+6
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+NET\_16
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+rock crab
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+gill net
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+71
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+13
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_18
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+swordfish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+longline
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+64
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+21
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWL\_12
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+canary rockfish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+mid-trawl
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+60
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+40
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+59
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+29
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_17
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pacific barracuda
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com)
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+58
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+34
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWL\_14
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+nor. unsp. shelf rockfish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+mid-trawl
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+50
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+50
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+58
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+11
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+POT\_12
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+spotted prawn
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+c\&l pot
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+88
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+12
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+54
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+10
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWS\_9
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+rock crab
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+sgl-shrimp
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+50
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+9
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TLS\_3
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+albacore
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+troll
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+50
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+11
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+39
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+49
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+37
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+MSC\_11
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+unsp. sea cucumbers
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+diving gr
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+49
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+10
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWL\_9
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+nor. unsp. slope rockfish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+mid-trawl
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+75
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+25
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+48
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+32
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+NET\_13
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+giant sea bass
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+gill net
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+48
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+21
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TLS\_7
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+sablefish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+troll
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+67
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+4
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+29
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+47
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+40
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+NET\_9
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pacific sardine, white seabass
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+gill net, seine, c\&l pot
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+46
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+yes
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+23
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWL\_13
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pop
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+rlr-trawl
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+50
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+50
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+45
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+21
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+NET\_14
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+other shark
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+gill net
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+41
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+11
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_22
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+leopard shark
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com)
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+41
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+21
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+MSC\_16
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+california sheephead
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+diving gr
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+37
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+7
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_19
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+shortfin mako shark
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com)
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+36
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+22
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+NET\_15
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+soupfin shark
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+gill net
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+34
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+8
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_21
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+unsp. squid
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com)
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+70
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+30
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+32
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+13
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+POT\_16
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+rock crab
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+gill net, c\&l pot
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+32
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+6
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWS\_7
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+other skates
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+sgl-shrimp
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+28
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+9
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+MSC\_15
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+black-and-yellow rockfish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+diving gr
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+26
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+10
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+MSC\_19
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+calif halibut, unsp. flatfish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+diving gr
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+23
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+yes
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+12
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+NET\_18
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+unsp. smelt
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+seine
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+23
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+7
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWS\_8
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+other shrimp
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+sgl-shrimp
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+22
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+3
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TLS\_8
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+albacore
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+other nets, btm-troll, troll
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+80
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+20
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+17
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+11
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWL\_10
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+petrale sole, sand sole
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+sel ff twl, gftrawl\textless{}8
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+75
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+25
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+14
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+yes
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+9
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TLS\_10
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+albacore
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+longline, pole(com), troll
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+78
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+22
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+13
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+12
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWS\_5
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+unsp. skate
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+sgl-shrimp
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+80
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+20
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+12
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+7
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+MSC\_18
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+shortfin mako shark
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com), oth-known, drf gl net
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+11
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+6
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_24
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+unsp. octopus
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+longline, oth hk\&ln, pole(com)
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+50
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+50
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+10
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+8
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+MSC\_17
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+misc. fish, swordfish, unsp. sea cucumbers
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+diving gr, oth-known, drf gl net
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+10
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+yes
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+5
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TLS\_6
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+nor. unsp. shelf rockfish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com), c\&l pot, troll
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+33
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+33
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+33
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+4
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+4
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+HKL\_25
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pacific angel shark
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com)
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+4
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+3
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TLS\_9
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+yellowtail
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+troll
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+3
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+3
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+POT\_15
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+spotted prawn
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com), fish pot, prwn trap
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+3
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+3
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+POT\_19
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+spotted prawn
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com), prwn trap
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+3
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+2
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWS\_10
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+white seabass
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+sgl-shrimp
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+3
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+2
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWS\_11
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+vermillion rockfish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+sgl-shrimp
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+3
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+2
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+POT\_24
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+blackgill rockfish, california spiny lobster
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com), vrtcl hkl, c\&l pot, fish pot
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+2
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+yes
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+2
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+NET\_25
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pacific angel shark
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com), gill net
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+1
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+1
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+POT\_17
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+california sheephead
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com), fish pot
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+1
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+1
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+POT\_18
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+rock crab
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+dip net, c\&l pot
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+1
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+1
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+POT\_23
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+dungeness crab
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pole(com), c\&l pot
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+1
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+1
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TLS\_13
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+grass rockfish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+c\&l pot, troll
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+1
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+1
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TLS\_19
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+chinook salmon
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+unkn-gear, troll
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+1
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+1
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWL\_19
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+unsp. flatfish
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+diving gr, gftrawl\textless{}8
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+1
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+1
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWS\_12
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+ridgeback prawn
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+gill net
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+1
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+1
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.06\columnwidth}\raggedright
+TWS\_13
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+pacific pink shrimp
+\end{minipage} & \begin{minipage}[t]{0.20\columnwidth}\raggedleft
+crab pot, shmp-trawl
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+NA
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering
+100
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+1
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+no
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering
+1
+\end{minipage}
+\\\addlinespace
+\bottomrule
+\end{longtable}
+
+\subsection{Participation networks}\label{participation-networks}
+
+Using these metiers I can build participation networks, where metiers
+(nodes) are connected by edges with a weight proportional to the number
+of vessels that participate in both fisheries within the given time
+window. This provides a useful visualization of the connectivity of
+these fisheries. The node size is proportional to the number of vessels
+which landed a trip in that metier. The colors are the ``community'' of
+which each metier is a part. Communities are defined again using
+\emph{infoMap} as implemented in the \texttt{igraph()} package in
+\texttt{R}. I interpret these to be clusters of fisheries that are
+frequently participated in tandem.
+
+\includegraphics{ms_files/figure-latex/unnamed-chunk-9-1.pdf}
+
+Across years these networks are too interconnected to be usefully
+visualized, breaking them apart by port provides a much better
+understanding (but see Appendix for coast-wide versions). Here I show
+catches for 2009 across the top ten ports by number of vessels which
+landed trips (unique vessel IDs). Visual inspection shows that
+\texttt{POT\_12} (dungeness crab) and \texttt{TLS\_22} (Albacore troll)
+look highly connected and central to many of these networks.
+
+\includegraphics{ms_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+Here the distribution of degrees is shown, ordered from highest to
+lowest median degree and colored by the number of ports where the metier
+is found (blue is high i.e all 10, red is low -- only 1)
+
+\texttt{{[}also the idea that some of these metiers could be structured not only by states, but by ports. Certainly the species sampling for rockfish show port/time of year structure. And haven't looked these through time, really{]}}
+
+\texttt{{[}Also should think about the ratio of trips to vessels. If each vessel does it once (at the extreme) it's unlikely that it's a fishery, so much as a particular assemblage that's hit randomly{]}}
+
+\subsection{Participation networks across
+years}\label{participation-networks-across-years}
+
+\includegraphics{ms_files/figure-latex/unnamed-chunk-11-1.pdf}
+
+\subsection{Linear versus quadratic}\label{linear-versus-quadratic}
+
+Kasperski and Holland (2013) suggest a quadratic relationship between
+revenue variability and diversity. Using $AIC$ as a model selection
+tool, I find that the quadratic model improves the fit.
+
+\begin{longtable}[c]{@{}ccccc@{}}
+\toprule\addlinespace
+\begin{minipage}[b]{0.12\columnwidth}\centering
+model
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering
+k
+\end{minipage} & \begin{minipage}[b]{0.16\columnwidth}\centering
+Likelihood
+\end{minipage} & \begin{minipage}[b]{0.10\columnwidth}\centering
+AIC
+\end{minipage} & \begin{minipage}[b]{0.10\columnwidth}\centering
+delta
+\end{minipage}
+\\\addlinespace
+\midrule\endhead
+\begin{minipage}[t]{0.12\columnwidth}\centering
+linear
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+3
+\end{minipage} & \begin{minipage}[t]{0.16\columnwidth}\centering
+-907.35
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+1820.71
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+-15.32
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.12\columnwidth}\centering
+quadratic
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+4
+\end{minipage} & \begin{minipage}[t]{0.16\columnwidth}\centering
+-898.69
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+1805.39
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+0
+\end{minipage}
+\\\addlinespace
+\bottomrule
+\addlinespace
+\caption{Simpsons diversity}
+\end{longtable}
+
+\includegraphics{ms_files/figure-latex/unnamed-chunk-13-1.pdf}
+
+\subsection{Alternative diversity measure: Shannon Weaver
+index}\label{alternative-diversity-measure-shannon-weaver-index}
+
+The Shannon-Weaver index is defined as
+
+\[SW = -\sum^k_{i=1}p_i\ln p_i\]
+
+for $k$ fisheries, and $p_i$ is the proportion of total gross revenue
+from fishery $i$. As diversity increases, $SW$ increases from 0.
+
+\includegraphics{ms_files/figure-latex/unnamed-chunk-14-1.pdf}
+
+\begin{longtable}[c]{@{}ccccc@{}}
+\toprule\addlinespace
+\begin{minipage}[b]{0.12\columnwidth}\centering
+model
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering
+k
+\end{minipage} & \begin{minipage}[b]{0.16\columnwidth}\centering
+Likelihood
+\end{minipage} & \begin{minipage}[b]{0.10\columnwidth}\centering
+AIC
+\end{minipage} & \begin{minipage}[b]{0.10\columnwidth}\centering
+delta
+\end{minipage}
+\\\addlinespace
+\midrule\endhead
+\begin{minipage}[t]{0.12\columnwidth}\centering
+linear
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+3
+\end{minipage} & \begin{minipage}[t]{0.16\columnwidth}\centering
+-904.11
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+1814.23
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+-3.93
+\end{minipage}
+\\\addlinespace
+\begin{minipage}[t]{0.12\columnwidth}\centering
+quadratic
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering
+4
+\end{minipage} & \begin{minipage}[t]{0.16\columnwidth}\centering
+-901.15
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+1810.3
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering
+0
+\end{minipage}
+\\\addlinespace
+\bottomrule
+\addlinespace
+\caption{Shannon-Weaver diversity}
+\end{longtable}
+
+\section*{References}\label{references}
+\addcontentsline{toc}{section}{References}
+
+Deporte, Nicolas, Clara Ulrich, St{é}phanie Mah{é}vas, S{é}bastien
+Deman{è}che, and Francois Bastardie. 2012. ``Regional Métier Definition:
+a Comparative Investigation of Statistical Methods Using a Workflow
+Applied to International Otter Trawl Fisheries in the North Sea.''
+\emph{ICES Journal of Marine Science: Journal Du Conseil}. Oxford
+University Press, fsr197.
+
+Fletcher, WJ, J Chesson, KJ Sainsbury, TJ Hundloe, and M Fisher. 2005.
+``A Flexible and Practical Framework for Reporting on Ecologically
+Sustainable Development for Wild Capture Fisheries.'' \emph{Fisheries
+Research} 71 (2). Elsevier: 175--83.
+
+Hubert, Lawrence, and Phipps Arabie. 1985. ``Comparing Partitions.''
+\emph{Journal of Classification} 2 (1). Springer: 193--218.
+
+Kasperski, Stephen, and Daniel S Holland. 2013. ``Income Diversification
+and Risk for Fishermen.'' \emph{Proceedings of the National Academy of
+Sciences} 110 (6). National Acad Sciences: 2076--81.
+
+Lucey, Sean M, and Michael J Fogarty. 2013. ``Operational Fisheries in
+New England: Linking Current Fishing Patterns to Proposed Ecological
+Production Units.'' \emph{Fisheries Research} 141. Elsevier: 3--12.
+
+Rand, William M. 1971. ``Objective Criteria for the Evaluation of
+Clustering Methods.'' \emph{Journal of the American Statistical
+Association} 66 (336). Taylor \& Francis Group: 846--50.
+
+Rosvall, Martin, and Carl T Bergstrom. 2008. ``Maps of Random Walks on
+Complex Networks Reveal Community Structure.'' \emph{Proceedings of the
+National Academy of Sciences} 105 (4). National Acad Sciences: 1118--23.
+
+Rosvall, Martin, Daniel Axelsson, and Carl T Bergstrom. 2009. ``The Map
+Equation.'' \emph{The European Physical Journal-Special Topics} 178 (1).
+Springer: 13--23.
+
+Sethi, Suresh Andrew, Matthew Reimer, and Gunnar Knapp. 2014. ``Alaskan
+Fishing Community Revenues and the Stabilizing Role of Fishing
+Portfolios.'' \emph{Marine Policy} 48. Elsevier: 134--41.
+
+\end{document}

@@ -1,0 +1,154 @@
+Observer Data
+========================================================
+
+```{r}
+#setwd("/Volumes/Obs")
+data <- read.csv("Samhouri_OBFTfinal_Allfisheries_ProcessedwFunction_2009-2012_110613.csv")
+set.seed(1)
+```
+
+Each line is a haul, so multiple hauls can make up a single trip. 
+
+Guide to column names
+
+IDs
++ `TRIPID`: Internal unique trip identifier (unique for trips within the observer database)
++ `PROGRAM_ID`: Internal Observer Program identifier (numeric). Multiple trips fall into these categories
+
+Spatial organization
++ `SET_FISHING_AREA`: IFQ area in which the haul was set (4 of them)
++ `UP_FISHING_AREA`: IFQ area in which haul was pulled up (4 of them)
+
+Species organization
++ `IFQ_GROUPING`
+
+Haul information
++ `AVG_SOAK_TIME`
+
+Column names I'm not sure of include (with the definition given in master table)
+
++ `EFP`: "Haul identified as fished under an Exempted Fishing Permit"
+  + What does an "exempted fishing permit" mean?
++ `IFQ_SPECIES_NAME`: see an `IFQ_SPECIES_GROUP_NAME` definition in the master list, and we have `IFQ_SPECIES_NAME`. 
++ `EXP_SP_CT`: Expansion-Species count (number of individuals) based on gear type and disposition
+  + What is "Expansion-Species"?
++ `EXP_SP_WT`: Expansion- Species weight based on gear type and disposition
+  + What is "Expansion-Species"?
+
+
+```{r networkCaptains}
+# Make table: captain name and number of vessels with which associated
+  require(plyr)
+  captains <- ddply(data, c("SKIPPER_NAME"),function(data) length(unique(data$VESSEL)))
+# some captains have been on up to 8 boats. 
+  hist(captains$V1,col="dodgerblue")
+# let's make a network!
+# (will come back to this)
+```
+## Catch Profiles
+Next would like to look at average composition of catch by vessel (and then do by captain) and see if those cluster. There's a few different species definitions to use (target, species name, complex). 
+
+### Multidimensional Scaling
+Following this guide [here](http://www.r-bloggers.com/7-functions-to-do-metric-multidimensional-scaling-in-r/)
+
+First question is, does it look like any of there's any clustering in catch composition? Or does it look like fish are indepenently distributed across all vessel's catch? To look for clustering, use multidimensional scaling (MDS). This lets me visualize the similarities or differences in among pairs of objects as distances between points in low-dimensional space. 
+
+The general approach of MDS is calculating a (dis)similarity matrix among pairs of objects (i.e. observations, individuals, samples, etc) and then apply one of the several MDS "models" to obtain low-dimensional representation. The MDS model to be applied depends on the type of data and, consequently, the type of (dis)similarity measurement one uses. 
+
+Depending on the chosen measurement and the obtained (dis)similarity matrix, MDS can be divided into metric and nonmetric approaches. If the analyzed matrix is based on a metric distance we talk about metric MDS, otherwise we talk about nonmetric MDS. 
+
+Metric multidimensional scaling, also known as Principal Coordinate Analysis, or Classical Scaling transforms a distance matrix into a set of coordinates such that the Euclidean distances derived from these coordinates approximate as well as possible the original distances (do not confuse Principal Coordinate Analysis with Principal Component Analysis). In other words, the advantage of working with metric MDS, is that the relationships among objects can, in most cases, be fully represented in an Euclidean space.
+
+But because I am looking at differences in proportion of fish caught, this is nonmetric MDS. 
+
+Following toy example on clustering flavor profiles found [here](http://blog.revolutionanalytics.com/2013/12/k-means-clustering-86-single-malt-scotch-whiskies.html)
+
+
+```{r settingDataUp}
+# Need to make table that has average catch profile by vessel. Will calculate proportion of catch each species makes up on each haul
+
+  avgCatch <- ddply(data, c("VESSEL","SPECIES_SUB_CATEGORY_NAME","YEAR"), function(df) mean(df$CATCH_WEIGHT),.progress="text")
+  
+# remove lines which V1 ==0
+  avgCatch <- avgCatch[-which(is.na(avgCatch$V1)),]
+  names(avgCatch)[4] = "averageCatch"
+
+# remove blank species sub category
+  avgCatch <- avgCatch[-which(avgCatch$SPECIES_SUB_CATEGORY_NAME==""),]
+
+  tabCatch <- dcast(avgCatch, VESSEL + YEAR ~ SPECIES_SUB_CATEGORY_NAME)
+  tabCatch[is.na(tabCatch)] = 0
+
+# Vessel catch per year (are there boats that don't really catch anything?)
+  catchTots <- rowSums(tabCatch[3:ncol(tabCatch)])
+  hist(catchTots,col="green",breaks=50000)
+  
+# what proportion of observed vessels catch nothing?
+  length(which(catchTots==0))/length(catchTots)
+
+# remove these vessels 
+  #realTab <- tabCatch[-which(catchTots==0),]
+
+# any fish which no one ever catches?
+  species <- as.data.frame(colSums(tabCatch[3:ncol(tabCatch)]))
+  colnames(species) <- c("Caught")
+  barplot(species$Caught, names.arg=rownames(species))
+
+# remove columns for species which are not caught (also why do they show up?)
+  #realTab <- realTab[ , -which(names(realTab) %in% rownames(species)[which(species$Caught==0)])]
+```
+
+Now that I have the data can do the clusters
+
+K-means clustering assigns each observation membership to one of k clusters in such a way that minimizes the distance between each observation and it's cluster's mean. K-means clustering requires us to specify the number of clusters. Below, we iterate through `kmeans()` with clusters argument varying from `1` to `maxCluster` and plot the within groups sum of squares for each iteration.
+
+```{r cluster}
+# rescaled for comparability using scale() 
+  catches <- cbind(tabCatch[,1:2],scale(tabCatch[3:ncol(tabCatch)]))
+
+ssPlot <- function(data, maxCluster = 10) {
+    # Initialize within sum of squares
+    SSw <- (nrow(data) - 1) * sum(apply(data, 2, var))
+    #SSw <- vector(SSw)
+    for (i in 2:maxCluster) {
+        SSw[i] <- sum(kmeans(data, centers = i)$withinss)
+    }
+    # find maximum marginal return
+    maxClust <- which(diff(SSw)==max(diff(SSw)))
+    plot(1:maxCluster, SSw, type = "o", pch = 19, cex = 0.5, xlab = "Number of Clusters", ylab = "Within groups sum of squares")
+    points(maxClust,SSw[maxClust],col="red",cex = 1.5, pch=12)
+}
+ssPlot(catches[,3:ncol(catches)], 12) # only run on catch data, not vessel/year
+```
+The number of clusters at which the marginal return of adding one more cluster is less than was the marginal return for adding the clusters prior to that varies. I've gotten it to be 78 and 244. I'm going with the 78 clusters for now. 
+
+```{r}
+fit <- kmeans(catches[,3:ncol(catches)], 4)  # 50 cluster solution, arbitrary at moment, doesn't seeem to be an obvious amount of clusters that optimizes. More than this and get clusters consisting of only one vessel
+
+# append cluster assignment
+  catches_K <- data.frame(catches, fit$cluster)
+  catches_K$fit.cluster <- as.factor(catches_K$fit.cluster)
+
+# Cluster centers can inform on how catch profiles differ between clusters.
+  fit$centers
+
+# identify the most representative vessel/year combination based by finding the observation closest to the center based on all species abundances
+
+# extract just species variables & cluster
+  catches_r <- catches_K[3:ncol(catches_K)]
+
+candidates <- by(catches_r[-377], catches_r[377], function(data) {
+    # we apply this function to observations for each level of fit.cluster
+    dists <- sapply(data, function(x) (x - mean(x))^2)
+    # for each variable, calc each observation's deviation from average of the
+    # variable across observations
+    dists <- rowSums(dists)
+    # for each observation, sum the deviations across variables
+    rownames(data)[dists == min(dists)]
+    # obtain the row number of the smallest sum
+})
+
+candidates <- as.numeric(unlist(candidates))
+
+catches_r[candidates,1:3 ]
+```

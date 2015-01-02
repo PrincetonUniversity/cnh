@@ -1,0 +1,351 @@
+---
+title: "Generate Catch Profiles"
+author: "Emma Fuller"
+date: "May 17, 2014"
+output: html_document
+---
+
+## Cleaning fish ticket data
+First step is filtering fish ticket data to fisheries of interest
+
+```{r,echo=FALSE,warning=FALSE}
+require(data.table)
+require(cluster)
+require(reshape2)
+require(ggthemes)
+spid <- read.csv("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-28/new_plan/input_data/spid.csv",as.is=TRUE)
+to_remove <- read.csv("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-28/new_plan/input_data/remove_spid.csv",as.is=TRUE)
+cmplx <- read.csv("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-28/new_plan/input_data/cmplx.csv",as.is=TRUE)
+mgmt_grp <- read.csv("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-28/new_plan/input_data/mgmt_grp.csv",as.is=TRUE)
+```
+
+The first step is to filter the fish ticket data to remove unspecified species, and fisheries we're not interested in looking at. These are any unspecified species and shellfish. These are filtered by finding 
+
++ all species that have a `mgmt_grp` listing of `SHLL`
++ any species in the following complexes
+
+```{r, echo=FALSE}
+cmplx
+```
+
++ any species that has an "unspecified" or "other" label in their species name. There are `r nrow(to_remove)` different species codes removed, see `remove_spid.csv` for the complete list. But a random 20 different examples are
+
+```{r, echo=FALSE}
+sample(to_remove$common_name,20)
+```
+
+Filtering of trips happens in two steps. The first is to remove any trips in which these species make up the majority of catch. The second removes catch information for remaining trips.^[This is important, because the majority of trips could catch cockles, but have a bit of petrale (obviously unrealistic), which is a species of interest. But if most of the catch was the removed species, the remaining catch info of the trip may be misleading. Thus all catch data for the entire trip is removed. After all trips with majority of species removed, then any remaining catch data for that species is removed, so that the clusters are not using it to define species clusters.] 
+
+After the data are filtered for species of interest, I remove species that occur in fewer than a total of 300 trips. This is because clustering algorithms will often make these their own clusters because they are so different than the rest of the data. To remove these trips I follow the same protocol as filtering for species of interest. First removing all trips in which these species are the majority of catch, and then removing any catch info from remaining trips. 
+
+To get this run `FTL_cp.R` in `2014-04-28/`
+
+```{r,echo=FALSE}
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-05-17/input_data/prop_tripTable_2014-05-17.Rdata")
+```
+
+## PCA
+The next step is to run a PCA to reduce the dimensionality. Currently there are `r ncol(prop_tripTable[[1]])-1` different species to cluster over. If some of these co-vary would like to condense that. 
+
+```{r,echo=FALSE}
+pca_prop <- prop_tripTable[[1]][,!"tripID", with=FALSE]
+pca_out_prop <- prcomp(pca_prop, scale=TRUE)
+npc <- length(which(summary(pca_out_prop)[[6]][3,]<= .81))
+plot(pca_out_prop,npc=ncol(pca_prop),col="grey",bor="white",main="PCA of proportion FTL")
+abline(v=npc,lwd=5,col="indianred")
+text(x=23, y=2.25,"retains >80%\n variation")
+
+dat_prop <- pca_out_prop$x[,1:npc]
+```
+
+I can retain `r npc` principal components for clustering over.
+
+## Clustering
+I use this PCA data to cluster over. I first randomize the row order to prevent any bias from the order of the fish tickets, and then use CLARA because this is a big dataset (`r nrow(dat_prop)` trips).
+
+```{r, echo=FALSE, message=FALSE}
+file.load <- "/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-05-17/clust_prop.Rdata"
+if(file.exists(file.load)){load(file.load)}else{
+  max.clusts = 40
+  samples = 100
+  sampsize = 1000
+
+# randomize rows to prevent any bias from order of fish tickets
+  data_prop <- dat_prop[sample(nrow(dat_prop)),]
+  clust.dat.prop <- vector("list",length = max.clusts) 
+
+  set.seed(2)
+  for(i in 1:max.clusts){
+    clust.dat.prop[[i]] <- clara(dat_prop, i, stand=TRUE, samples = samples, sampsize=sampsize, keep.data = FALSE, pamLike=TRUE, rngR = TRUE)
+    print(i)
+    }
+
+  objectives <- vector(length = max.clusts)
+  for (i in 1:max.clusts) { objectives[i] <- clust.dat.prop[[i]]$objective }
+
+  asw <- vector(length = max.clusts)
+  for (i in 2:max.clusts) { asw[i] <- clust.dat.prop[[i]]$silinfo$avg.width  }
+
+  max_asw <- max(asw)
+  nodes <- which(asw==max(asw))
+  
+  # save relevant data
+  clust_prop <- list(data_transform="prop",cluster_sol = nodes, objectives = objectives, asw = asw, clustering = clust.dat.prop[[nodes]]$clustering, sampsize=sampsize, samples=samples, npc=npc)
+  
+  save(clust_prop, file="/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-05-17/clust_prop.Rdata")
+}
+par(mfrow=c(1,2))
+plot(clust_prop$objectives, type="o",pch=19, cex=0.35,bty="n", main="Objective function")
+plot(clust_prop$asw, type="o", pch=19, cex=0.35, bty="n", main="Silhouette Width")
+```
+
+
+
+The maximum average silhouette width is `r max(clust_prop$asw)`, and is found at the `r clust_prop$cluster_sol` node solution. Examining catch composition for these clusters I find that 
+
+```{r, echo=FALSE, warning=FALSE,eval=TRUE,fig.width=3,fig.height=10,eval=FALSE}
+cp <- prop_tripTable[[1]]
+cp <- cp[,"cp" := clust_prop$clustering]
+
+# what are the mean catches of each species, in order of abundance?
+melt_cp <- melt(cp[,!"cp",with=FALSE])
+setkey(melt_cp, "tripID")
+melt_cp_1 <- melt(cp[,c("tripID", "cp"), with=FALSE])
+setnames(melt_cp_1,names(melt_cp_1),c("tripID","clustID","cluster"))
+melt_cp_1 <- melt_cp_1[,!"clustID",with=FALSE]
+setkey(melt_cp_1, "tripID")
+melt_cp <- melt_cp[melt_cp_1]
+
+  # median abundance by species
+    median_abund <- melt_cp[,as.double(median(value)),by="variable,cluster"]
+    sd_abund <-     melt_cp[,sd(value),by="variable,cluster"]
+    setnames(sd_abund,"V1","sd")
+    median_abund <- median_abund[,"sd":= sd_abund[,"sd",with=FALSE]]
+
+    ranked_abund <- ddply(median_abund, .(cluster), transform, rank = rank(-V1, ties.method = "first"))
+    top10_med <- subset(ranked_abund, rank < 11)
+    colnames(top10_med)[c(3,5)] <- c("median","rank_median")
+
+# match species ID with complex and mgmt_grp
+
+# subset SPID
+spid_10 <- spid[which(spid$SPID %in% unique(top10_med$variable)),c(2,3,4,5,6)]
+
+top10_med <- merge(top10_med,spid_10,by.x="variable",by.y="SPID")
+
+# replace NA with "OTHER"
+top10_med$complex[is.na(top10_med$complex)] <- "OTHER"
+
+    # now remove any top 10 that are =0, only there to fill out 10 slots
+    top10_med <- subset(top10_med, median>0)
+
+cp1_6 <- subset(top10_med, cluster %in% 1:6)
+
+
+#spid
+
+ggplot(top10_med, aes(x=factor(variable), y=median)) + geom_bar(stat="identity",aes(fill=factor(variable))) + facet_wrap(~cluster,scale="free_x",ncol=6) + theme_tufte() + theme(axis.text.x = element_text(angle=45, vjust=1, family="sans")) +  geom_errorbar(aes(ymin=median-sd, ymax=median+sd), colour="black", width=.1) + theme(text = element_text(family="sans")) + scale_fill_discrete(name="Species\ncomplex", guide=guide_legend(ncol=2)) + xlab("species") + ylab("median lbs caught per trip")
+
+ggplot(cp1_6, aes(x=factor(variable), y=median)) + 
+  geom_bar(stat="identity",aes(fill=factor(variable))) + 
+  facet_wrap(~cluster,scale="free_x",ncol=2) + 
+  theme_tufte() + theme(axis.text.x = element_text(angle=45, vjust=1, family="sans")) +  
+  geom_errorbar(aes(ymin=median-sd, ymax=median+sd), colour="black", width=.1) + 
+  theme(text = element_text(family="sans")) + 
+  scale_fill_discrete(name="Species\ncomplex", guide=guide_legend(ncol=1)) + 
+  xlab("species") + ylab("median lbs caught per trip")
+
+
+
+# mgmt_group
+ggplot(top10_med, aes(x=factor(variable), y=median)) + geom_bar(stat="identity",aes(fill=factor(mgmt_grp))) + facet_wrap(~cluster,scale="free_x",ncol=6) + theme_tufte() + theme(axis.text.x = element_text(angle=45, vjust=1, family="sans")) +  geom_errorbar(aes(ymin=median-sd, ymax=median+sd), colour="black", width=.1) + theme(text = element_text(family="sans")) + scale_fill_discrete(name="Species\ncomplex") + xlab("species") + ylab("median lbs caught per trip") + scale_fill_brewer(palette="Dark2")
+
+# now by complex
+ggplot(top10_med, aes(x=factor(variable), y=median)) + geom_bar(stat="identity",aes(fill=factor(complex))) + facet_wrap(~cluster,scale="free_x",ncol=6) + theme_tufte() + theme(axis.text.x = element_text(angle=45, vjust=1, family="sans")) +  geom_errorbar(aes(ymin=median-sd, ymax=median+sd), colour="black", width=.1) + theme(text = element_text(family="sans")) + scale_fill_discrete(name="Species\ncomplex") + xlab("species") + ylab("median lbs caught per trip") + scale_fill_brewer(palette="Dark2")
+```
+
+
+Also look at these trips over time
+
+```{r}
+# make table of trips and cluster
+catch_date <- prop_tripTable[[2]]
+catch_date <- catch_date[!duplicated(catch_date$tripID),]
+catch_date <- merge(catch_date, cp[,c("tripID","cp"),with=FALSE], by="tripID")
+
+# dammit, still need the day/month
+
+dating <- ddply(catch_date, .(tripID),summarize, date=strsplit(catch_date$tripID,"_")[[1]][1])
+
+dating = rep(0,nrow(catch_date))
+for(i in 1:nrow(catch_date)){
+  dating[i] <- strsplit(catch_date$tripID[i],"_")[[1]][1]
+}
+
+catch_date$date <- dating
+catch_date$char <- as.character(catch_date$date)
+by_day <- table(catch_date$cp, catch_date$char)
+
+paint <- colorRampPalette(brewer.pal(8,"Dark2"))(nrow(by_day))
+
+date <- strptime(colnames(by_day),format="%Y-%m-%d")
+plot(date,by_day[1,],type="h",bty="n",col=paint[1],ylab="number of trips",lwd=2,ylim=c(0,300))
+for(i in 2:nrow(by_day)){
+  lines(date,by_day[i,],type="h",bty="n",col=paint[i],ylab="number of trips")
+}
+legend("topleft",legend=1:35,fill=paint,border=paint,bty="n",ncol=7)
+
+# looks good, but would like to graph by management_grp
+# first need to give each cluster a management group
+# doing it by hand because it's late
+
+mgmt_key <- data.frame(cp = 1:35, mgmt_grp = c("CRAB","SRMP","GRND","GRND","GRND","GRND","GRND","GRND","GRND","GRND","SAMN","GRND","GRND","GRND","HMSP","GRND","GRND","GRND","SRMP","GRND","OTHR","GRND","GRND","SAMN","HAL_SM","GRND","GRND","GRND","HAL_SB","GRND","GRND","OTHR","SAMN","OTHR","OTHR"))
+
+catch_mgmt <- merge(catch_date, mgmt_key, by="cp")
+day_mgmt <- table(catch_mgmt$mgmt_grp, catch_mgmt$char)
+
+paint <- colorRampPalette(brewer.pal(8,"Accent"))(nrow(day_mgmt))
+
+par(bg="white")
+
+plot(date, day_mgmt[1,],type="h",col=paint[1],bty="n",ylab="number of trips",ylim=c(0,250),lwd=2,col.axis="black",col.lab="black",col.main="black")
+for(i in 2:nrow(day_mgmt)){
+  lines(date, day_mgmt[i,],type="h",col=paint[i],lwd=2)
+}
+
+legend("topleft",legend=rownames(day_mgmt),fill=paint,border=paint,ncol=3,text.col="black",bty="n")
+
+```
+
+```{r}
+# just want to look at groundfish cps
+
+gf <- subset(catch_mgmt,mgmt_grp=="GRND" )
+day_gf <- table(gf$cp, gf$char)
+
+date_gf <- strptime(colnames(day_gf),format="%Y-%m-%d")
+
+paint <- colorRampPalette(brewer.pal(8,"Accent"))(nrow(day_gf))
+i=1
+plot(date_gf,day_gf[i,],type='h',col=paint[i],bty="n",ylab="number of trips",xlab="date",lwd=3,ylim=c(0,45))
+for(i in 2:nrow(day_gf)){
+  lines(date_gf,day_gf[i,],type='h',col=paint[i],lwd=3)
+}
+
+legend("topright",legend=rownames(day_gf),fill=paint,border=paint,bty="n",ncol=5)
+
+# a couple of things to notice
+# the number of trips declined each year
+year_num <- ddply(gf,.(year),summarize,number=length(unique(tripID)))
+barplot(year_num$number,names.arg = year_num$year,bor=FALSE,ylab="number of gf trips")
+
+# also some cps have tons of trips others don't. what's the distribution?
+cp_num <- rowSums(day_gf)
+barplot(sort(cp_num,decreasing=TRUE),bor=FALSE,xlab="Catch Profile",ylab="Number of trips 2009-2013")
+
+# arbitrarily saying there's 4 classes, 3; 6,23,5; 22,7,8,20; rest which are these?
+paint <- colorRampPalette(brewer.pal(8,"Spectral"))(4)
+colrep <- c(paint[1],rep(paint[2],3),rep(paint[3],4),rep(paint[4],14))
+
+barplot(sort(cp_num,decreasing=TRUE),bor=FALSE,xlab="Catch Profile",ylab="Number of trips 2009-2013",col=colrep)
+
+
+
+# 3 first
+cp3 <- subset(top10_med,cluster==3)
+barplot(cp3$median, names.arg = cp3$variable,bor=FALSE,main="catch profile 3",col=paint[1],ylab="median catch lbs")
+
+# 6,23,5
+cp6235 <- subset(top10_med,cluster %in% c(6,23,5))
+par(mfrow=c(1,3))
+for(i in c(6,23,5)){  
+  barplot(cp6235$median[which(cp6235$cluster==i)], names.arg = cp6235$variable[which(cp6235$cluster==i)],bor=FALSE,main=paste("catch profile",i,sep=" "),col=paint[2],ylab="median catch lbs",ylim=c(0,1),las=2)
+}
+
+# 22,7,8,20
+cp227820 <- subset(top10_med,cluster %in% c(22,7,8,20))
+par(mfrow=c(2,2))
+for(i in c(22,7,8,20)){  
+  barplot(cp227820$median[which(cp227820$cluster==i)], names.arg = cp227820$variable[which(cp227820$cluster==i)],bor=FALSE,main=paste("catch profile",i,sep=" "),col=paint[3],ylab="median catch lbs",ylim=c(0,1),las=2)
+}
+
+
+# rest
+# 4,9,10,12,13,14,16,17,18,26,27,28,30,31
+cprest <- subset(top10_med,cluster %in% c(4,9,10,12,13,14,16,17,18,26,27,28,30,31))
+par(mfrow=c(3,5))
+for(i in c(4,9,10,12,13,14,16,17,18,26,27,28,30,31)){  
+  barplot(cprest$median[which(cprest$cluster==i)], names.arg = cprest$variable[which(cprest$cluster==i)],bor=FALSE,main=paste("catch profile",i,sep=" "),col=paint[4],ylab="median catch lbs",ylim=c(0,1),las=2)
+}
+```
+
+
+```{r}
+# make cluster network
+
+# for each pair of profile numbers
+  # how many vessels have at least one trip in both profiles?
+
+# subset vessels by profile pairs, then take length
+
+# matrix
+
+
+network <- matrix(nrow=nodes,ncol=nodes)
+for(i in 1:length(unique(catch_date$cp))){
+  # for catch profile i
+    set1 <- unique(catch_date$veid[catch_date$cp==i])
+    # where are the unique vessel ids
+  for(j in 1:length(unique(catch_date$cp))){
+    # for catch profile j
+    set2 <- unique(catch_date$veid[catch_date$cp==j])
+    # what are the unique vessel ids
+    network[i,j] = length(Reduce(intersect, list(set1, set2)))
+    # element is the number of vessel IDs in common
+    #print(j)
+  }
+  print(i)
+}
+sizes <- diag(network)
+diag(network) <- rep(0,35)
+ g <- graph.adjacency(network, weighted=TRUE, mode="undirected")
+# plot(g, vertex.size = log(diag(network)), layout=layout.fruchterman.reingold, width=g)
+
+paint <- colorRampPalette(brewer.pal(8,"Accent"))(8)
+
+
+
+qgraph(network, vsize=log(sizes), layout="spring", posCol="black", curveAll = FALSE, esize=30,colFactor=.25,bg="white",color=paint[mgmt_key$mgmt_grp],borders=FALSE)
+
+legend("topleft",legend=unique(mgmt_key$mgmt_grp),fill=unique(paint[mgmt_key$mgmt_grp]),bty="n",bor=FALSE,ncol=4)
+
+
+# would also like to do species complex
+
+mgmt_key$cmplx <- c("CRAB","SRMP","ROND","FLAT","ROCK_ROND","ROCK","FLAT","FLAT","FLAT_ROCK_ROND","ROCK_ROND","SAMN","MGRN","ROND","ROCK_ROND","TUNA","ROCK_ROND","ROCK","ROCK","SRMP","ROND","WETF","ROCK_ROND","ROND","SAMN","SAMN","FLAT_ROND","FLAT","FLAT","HAL","ROCK","ROCK_ROND","WETF","SAMN","WETF","WETF")
+
+paint <- colorRampPalette(brewer.pal(8,"Spectral"))(length(unique(mgmt_key$cmplx)))
+
+
+
+qgraph(network, vsize=log(sizes), layout="spring", posCol="black", curveAll = FALSE, esize=30,colFactor=.25,bg="white",color=paint[factor(mgmt_key$cmplx)],borders=FALSE)
+
+legend("bottom",legend=unique(mgmt_key$cmplx),fill=unique(paint[factor(mgmt_key$cmplx)]),bty="n",bor=FALSE,ncol=5)
+```
+
+  # mean abundance
+    mean_abund <- melt_cp[,mean(value),by="variable,cluster"]
+    ranked_abund <- ddply(mean_abund, .(cluster), transform, rank = rank(-V1, ties.method = "first"))
+    top10_mean <- subset(ranked_abund, rank < 11)
+    colnames(top10_mean)[c(3,4)] <- c("mean","rank_mean")
+
+  # now remove any top 10 that are =0, only there to fill out 10 slots
+    #top10_mean <- subset(top10_mean, V1>0)
+
+ggplot(top10_mean, aes(x=factor(variable), y=mean)) + geom_bar(stat="identity",aes(fill=factor(variable))) + facet_wrap(~cluster,scale="free_x",ncol=3)
+
+# looking at it together
+top10_all <- merge(top10_med, select(top10_mean,variable,mean,rank_mean,cluster),by=c("variable","cluster"),all.x=TRUE,all.y=TRUE) 
+```
+
+

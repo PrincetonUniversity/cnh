@@ -1,0 +1,104 @@
+---
+title: "Title Here"
+author: "Emma Fuller"
+date: "June 25, 2014"
+output: 
+  html_document:
+    theme: default
+    highlight: default
+---
+
+```{r,echo=FALSE,message=FALSE}
+library("knitcitations")
+```
+
+## Introduction
+
++ VMS as unprecentented way to look at movement sharing, copying with predators. Just as you wouldn’t want to pool data between wolves and seals, you wouldn’t want to pool different fisheries.
++ So the question is: how do different vessels fall out.
++ There’s been a big change in management, anecdotal evidence that this provides fishermen ability to diversity. We can test this if we know which vessels participate in the ITQs.
++ It's also interesting to know whether some fisheries are more "risky" than others. 
+
+## Methods
+
++ Need a way to seperate fisheries from one another 
++ Need a way to determine diversity and change therein. Also by fishery, because need to show that diversity changed only in fisheries affected by ITQs
++ Need a way to measure "riskiness" of catch
+
+### Data
+I use fish ticket data between 2009-2013 from Oregon and Washington.^[change to include CA when have data] 
+
+### Seperating fisheries from one another
+
+The first step is seperating fisheries by fisheries group. For each trip  landed in Oregon and Washington I use NMFS management categories^[see appendix for species lists] to determine the proportion of total catch per trip allocated to each management category. 
+
+```{r,echo=FALSE}
+# convert fish tickets to proportion of catch for each management category, perform PCA, retain number of principal components that make up > 80% variance, perform cluster analysis
+
+  file <- "/Volumes/NOAA_Data/CNH/Analysis/Metiers/data/datSetup_datProp.Rdata"
+  source_file <- "/Volumes/NOAA_Data/CNH/Analysis/Metiers/bin/mgmt_grps.R"
+  if(file.exists(file)) load(file) else source(source_file)
+
+# also load tickets, etc. to have 
+  load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/data/propTable_tickets.Rdata")
+```
+
+To reduce dimensionality, I perform a PCA on the 8 management categories and retain the `r ncol(dat_prop)` principal components out of the original 8 to retain at least 80% of the variance. With the dataset reduced in dimensionality, I then use `clara()` in `R` to search for clusters of similar trips that would constitute a fishery. `clara()` is a version of a k-mediods clustering algorithm designed to handle large datasets. Instead of selecting mediods and clustering the entire dataset, it takes sub-samples so that time and storage requirements become linear with the number of datapoints, rather than quadratic, see Chapter 3 in `r citet("10.1002/9780470316801")` for more details.  
+
+```{r,echo=FALSE}
+file <- "/Volumes/NOAA_Data/CNH/Analysis/Metiers/data/cluster_sol_objectives_asw.Rdata"
+source_file <- "/Volumes/NOAA_Data/CNH/Analysis/Metiers/bin/cluster.R"
+if(file.exists(file)) load(file) else source(source_file)
+```
+
+There is no unique solution in a clustering, as it's an exploratory analysis. Instead I run through the possibility of 1-12 clusters, i.e. fisheries, present. A common way to choose a clustering solution is by minimizing the objective function (i.e. the average distance between members of the same cluster) and maximizing the average silhouette width (maximizing the degree to which clusters are well defined and seperate from one another). With these tradeoffs in mind, I choose 8 clusters as the best solution.  
+
+```{r,echo=FALSE,fig.align='center'}
+par(mfrow=c(1,2))
+plot(objectives, type="o",pch=19, cex=1,lwd=2, bty="n", ylab="Objective function",col="tomato1", xlab="Number of clusters")
+points(8,objectives[8],lwd=4, col="tomato4", cex=1.5)
+plot(asw, type="o", pch=19, cex=1, lwd=2, bty="n", ylab="Average silhouette Width",col="turquoise", xlab="Number of clusters")
+points(8,asw[8],lwd=4,col="turquoise4",cex=1.5)
+```
+
+Each of these clusters' mediods is composed of trips targeting a single management group. 
+
+```{r, echo=FALSE,fig.align='center',message=FALSE, fig.width=10}
+source("/Volumes/NOAA_Data/CNH/Analysis/Metiers/bin/plot_clusters.R")
+plot_clusters(cluster_sol, prop_table)
+```
+
+These clusters are in accordance with the way the west coast fisheries are managed. Some of these management groups are largely single species (cluster 2, 3, 5), while others are decidely multispecies (cluster 4). Thus to examine whether substructure of these fisheries exists, the clustering process is repeated on trips participating solely in these fisheries. 
+
+#### Groundfish fishery - Cluster 4
+The groundfish fishery on the US West coast is comprised of over [**blank**] federally managed species and harvested by both fixed and mobile gear, with their own selectivity. Thus, in the absence of any other structure in this fishery, we expect to see different species composition in the catch profile for trips landed with fixed versus mobile gear. Additionally, informal discussions with Oregon fishermen suggest additional struture, as many skippers have their own strategies for where, when and what to catch. 
+
+In order to cluster on species, I need to account for multispecies market categories
+## Results
+
++ Figure showing different fisheries and clustering of vessels with same strategy at coastwise and state levels
++ Figure showing clustering and social networks before and after catch shares. 
++ Figure showing distribution of "risky" catches after catch shares. Before and after catch shares using only observer data?
+
+## Discussion
+
+## Notes
+
++ Look through Phil Levin, Michael Fogarty, Steve Murkawski, Mary Ruckelshaus papers for frame I'm interested, and background. 
+
+## Appendix
+
+Management Category | Species included
+------------------- | ----------------
+Coastal Pelagic     | chub mackerel, jack mackerel, market squid, northern anchovy, pacific bonito, pacific herring, pacific sardine, round herring, unsp. mackerel
+Crab                | blue king, crab bairdi, tanner crab, dungeness crab, golden king crab, opilio tanner crab, rock crab, red king crab, scarlet king crab,
+Groundfish          | alaska skate, atka mackerel, alaska plaice, aurora rockfish, arrowtooth flounder, bank rockfish, bocaccio, blackgill rockfish, black rockfish, blue rockfish, bigmouth sole, bronzespotted rockfish, brown rockfish, big skate, butter sole, blackspotted rockfish, black-and-yellow rockfish, cabezon, china rockfish,  calico rockfish, chilipepper, chameleon rockfish, canary rockfish, copper rockfish, capelin, california skate, curlfin sole,cowcod rockfish, darkblotched rockfish, dover sole,  deepsea sole, spiny dogfish, diamond turbot, dusky rockfish, dwarf-red rockfish, english sole, flag rockfish, fantail sole, freckled rockfish, flathead sole, greenblotched rockfish, gopher rockfish, grass rockfish, pacific grenadier, greenspotted rockfish, greenstriped rockfish, greenland turbot, halfbanded rockfish, harlequin rockfish, honeycomb rockfish, thornyhead turbot, kelp greenling, kelp rockfish, kamchatka flounder, lingcod, longfin sanddab, longnose skate, longspine thornyhead, leopard shark, mexican rockfish,  olive rockfish, pacific cod, pacific sanddab, pacific flatnose, pygmy rockfish, walleye pollock, pink rockfish, pacific ocean perch, pinkrose rockfish, petrale sole, puget sound rockfish, pacific whiting, quillback rockfish, spotted ratfish, redbanded rockfish, redstripe rockfish, rex sole, rougheye rockfish, rosy rockfish, rock sole, rosethorn rockfish, sablefish, shortbelly rockfish, california scorpionfish, speckled sanddab, starry flounder, sharpchin rockfish, silvergrey rockfish, slender sole, splitnose rockfish, speckled rockfish, squarespot rockfish, shortraker rockfish, speckled sanddab, sand sole, shortspine thornyhead, soupfin shark, stripetail rockfish, starry rockfish, spotted turbot, stripetail rockfish, swordspine rockfish, tiger rockfish, treefish, vermillion rockfish, widow rockfish, yelloweye rockfish, yellowmouth rockfish, yellowfin sole, yellowtail rockfish
+Highly Migratory | albacore, blue shark, bluefin tuna, dorado/dolphinfish, bigeye tuna, thresher shark, shortfin, mako shark, striped marlin,  shortbill spearfish, skipjack tuna, swordfish, yellowfin tuna
+Salmon | chinook salmon, chum salmon, coho salmon, pink salmon, sockeye salmon, steelhead
+Shellfish | black abalone, butter clam, blue or bay mussel, basket cockle, california mussel, eastern oyster, european oyster, green abalone, gaper clam, geoduck, horse clams, california jackknife clam, kumamoto oyster, native littleneck olympia oyster, mud clams, manila clam, pink abalone, pismo clam, purple clam, pacific oyster, northern quahog clam, red abalone, razor clam, rosy razor clam, varnish clam, white abalone,  washington clam
+Shrimp | golden prawn, ghost shrimp, blue mud shrimp, pacific pink shrimp, ridgeback prawn, grass shrimp, spotted prawn, ocean shrimp
+Other | aleutian skate, pacific angel shark, black hagfish, brown irish lord, black eelpout, black skate, bullet mackerel, blue marlin, buffalo sculpin, black skipjack, bat ray, spotted cusk-eel, california halibut, california slickhead, brown cat shark, pacific barracuda, all echinoderms, eulachon, giant sea bass, giant grenadier, giant squid, green sturgeon, giant kelpfish, california spiny lobster, louvar monkeyface prickleback, mola/ocean sunfish, plainfin midshipman, unsp. octopus, ocean whitefish, pacific butterfish, pacific hagfish, pacific halibut, pacific pomfret, prowfish, queenfish, rock greenling, red irish lord, red sea urchin, sailfish, pacific saury, california sheephead, skilfish, sandpaper skate, surfperch,sharpnose sculpin, starry skate,pacific tomcod, jellyfish, sea cucumbers, white seabass, white croaker, wolf eel, wahoo, white sturgeon, yellowtail
+
+```{r,echo=FALSE,message=FALSE}
+#write.bibtex(file="references.bib")
+```

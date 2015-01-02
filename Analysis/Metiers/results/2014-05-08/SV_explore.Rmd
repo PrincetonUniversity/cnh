@@ -1,0 +1,47 @@
+---
+title: "State Vessel Dataset Exploratin"
+author: "Emma Fuller"
+date: "May 8, 2014"
+output: html_document
+---
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+sv <- read.csv("/Volumes/NOAA_Data/CNH/Data/Catch/sv_2009-2013_2014-03-21.csv",as.is=TRUE)
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-05-06/log_tripTable_2014-05-06.Rdata")
+effort_data <- log_tripTable[[2]]
+require(plyr)
+require(dplyr)
+```
+
+The state vessel registration has an entry for each vessel for each year, i.e.
+```{r,echo=FALSE}
+subset(sv,NAME=="SEAGULL",select=c("YEAR","AGID","IDTYPE","SVID","NAME","LEN","HP"))
+```
+
+So using this data, I could link the state vessel information to trips that fell in each year. Before doing that I should check to make sure there's not a ton of vessels who change their horsepower and vessel length. 
+
+```{r,echo=FALSE}
+colnames(sv) <- tolower(colnames(sv))
+dlen <- ddply(sv, .(svid), summarize, sd_len = sd(len))
+```
+
+About `r round(length(which(dlen$sd_len>0))/nrow(dlen),2)*100`% of the vessels have lengths that are changing. And there are a few `NA`s for length but they all seem to be skiffs. So it's unlikely that it will overlap with the vessels I'm interested in. 
+
+```{r, echo=FALSE}
+miss_len<-sv[which(is.na(sv$len)),c("svid","name","len","year")]
+miss_len <- miss_len[order(miss_len$svid),]
+miss_len <- miss_len[-which(duplicated(miss_len[,1])),]
+(miss_len)
+```
+
+But it looks like for many boats, it's NA for just one year
+
+Because relatively few vessels have a changing length, will just add a dummy variable for vessels that need to have a merge by year
+
+```{r}
+sv_len <- select(sv, year, svid, len)
+year_veid <- select(effort_data, veid, year)
+year_veid <- year_veid[-which(duplicated(year_veid)),]
+merge_veid <- merge(year_veid,sv_len, by.x=c("veid","year"), by.y=c("svid","year"),)
+```
+

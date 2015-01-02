@@ -1,0 +1,148 @@
+---
+title: "Metiers"
+author: "emma"
+date: "August 26, 2014"
+output: pdf_document
+bibliography: references.bib
+---
+
+Management can have indirect effects ecologically (think of many examples of single species management having unintended consequences for non-target species), but also socially. Changes in management, markets, politics, ecology can shift people into and out of different fisheries. This is particularly important to understand if people are likely to shift out of well monitored fisheries into ones with less management (thinking from ITQ groundfish into tuna, or something). Understanding the social structure of harvesting community important for predicting changes. And important for management to be prepared (know where to look). 
+
+## Motivation
+
++ Get to know my data: who's on the west coast, and what/how/when are they fishing?
++ Understanding fishing diversity can help management
++ Understanding fishing diversity can help us understand how fishermen respond to variability of catch (risk)
++ Examining how diversity changes before and after management changes can help us understand how management influences fishing choices. 
++ Fisheries management (and natural resources more generally) have evolved from single speices to multispecies to ecosystem approaches. Understanding how species population dynamics are affected by other species are important. But a similar approach needs to consider the diversity of users in a single marine system. Fishing mortality was first conceptualized as aggregate effort, not even resolved to the number of vessels. Changed to fleets, and per-vessel measures. But fishing vessels are still conceptualized as a single user, a tuna fishermen has no intrinsic relationship to a crabber. But often it's the same fishermen.. 
+
+## Research questions
+
++ What is the connectivity of the vessels on west coast (how diverse are the fisheries in which people participate?)
++ Has ITQs increased diversity for ITQ participants? What are the effects for others not in the ITQ program?
++ Are some fisheries more variable than others? Do fishermen exhibit portfolio effects in terms of which fisheries they participate within?
++ How are fisheries connected via fishers? How could disturbances  travel across fisheries? (Will disturbances travel across fisheries?)
+
+## Methods
+
+### Data
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(dplyr)
+library(reshape2)
+```
+
+Catch data was compiled from PacFin for all commercial trips landed on the US Westcoast between 2009-2013. Fish ticket data was sorted into gear-specific groups using the PacFin gear codes `grid`. 
+
+```{r generateTripTable, echo=FALSE, warning=FALSE, message=FALSE}
+
+trip_table_dir <- "/Users/efuller/1/CNH/Analysis/Metiers/writing/DATA/01_trip_tables"
+
+generateTripTable <- function(){
+  ftl_sub <- select(ftl, ftid, spid, landed_wt)
+  ftl_sub <- melt(ftl_sub, id=c("ftid","spid"))
+  
+  gear_split <- split(ftl_sub, ftl$grid) # list, each entry is a dataframe for trips with this gear. 
+  
+  # for each entry of list, make data table where rows are trip, and columns are species
+    # save a vector of names to assign these trip tables to
+    trip_names <- paste(names(gear_split), "_trip",sep="")
+  
+  for(i in 1:length(trip_names)){
+    trip_table <- dcast(gear_split[[i]], ftid ~ spid, sum)
+    write.csv(trip_table, paste(trip_table_dir,"/",trip_names[i],".csv",sep=""), row.names=F)
+    }
+  } # function to generate trip tables if needed. 
+
+if(length(dir(trip_table_dir))!=36){
+  ftl <- read.csv("/Users/efuller/1/CNH/Data/Catch/FTL_2009-2013_w-o-c_samhouri.csv", stringsAsFactors = F)
+  generateTripTable()
+}else{
+  filenames <- list.files(trip_table_dir, full.names=TRUE)  
+  all_trips <- lapply(filenames,function(i){
+  read.csv(i, header=TRUE, stringsAsFactors=F)
+})
+}
+```
+
+### Association coefficients
+
+In order to examine relationships among trips (Q analysis), I need to choose an association coefficient. Because I'm dealing with species counts over large environmental gradients, I want one that is assymetric (when two catches have the same two species it tells me more than if two catches with both are missing the same species, double zero problem). There is no single way to define association coefficients, and there's a large list of them in the ecological literature [@legendre2012numerical]. Here I choose the Hellinger transformation and chord transformation [@legendre2012numerical]. 
+
+@legendre2001ecologically recommend transforming the community composition data followed by calculating Euclidean distances among sites. These two steps produce the distance function corresponding to the name of the transformation. Data transformed in this way can be used directly as input into linear methods of anlaysis that carry out computations in Euclidean space, such as K-means partitioning, PCA and RDA. The effect of these transformation is to remove the differences in total abundance from the data, keeping the variations in relative species composition among sites. The chord and Hellinger transformations are closely related: chord-transformed abundance data are equal to squared abundance data that are then Hellinger-transformed. In the Hellinger transformation, the relative abundances are square-rooted, which reduces more strongly the highest abundance values. 
+
+```{r}
+library(vegan)
+source("/Users/efuller/1/CNH/Analysis/Metiers/writing/CODE/coldiss.R")
+
+gear_names <- gsub("_trip.csv","",list.files(trip_table_dir))
+
+hellinger_transformed_trips <- vector('list',length=length(all_trips))
+  names(hellinger_transformed_trips) <- gear_names
+chord_transformed_trips <- vector('list',length=length(all_trips))
+  names(chord_transformed_trips) <- gear_names
+
+for(i in 1:length(all_trips)){
+  cat("processing gear number ",i,": ",gear_names[i],"\n")
+  hellinger_transformed_trips[[i]] <- dist(decostand(all_trips[[i]][,2:ncol(all_trips[[i]])], "hellinger"))
+  chord_transformed_trips[[i]] <- dist(decostand(all_trips[[i]][,2:ncol(all_trips[[i]])], "normalize"))
+  cat("transformations finished, ")
+  # plot dissimilarity matrices
+  png(file=paste("/Users/efuller/1/CNH/Analysis/Metiers/writing/FIGURES/dissimilarity_mats/",gear_names[i],"_hellinger_mat.png",sep=""),height = 480, width = 960)
+    coldiss(hellinger_transformed_trips[[i]], nc = 16, diag=T)
+  dev.off()
+  cat("hellinger matrix plotted, ")
+  png(file=paste("/Users/efuller/1/CNH/Analysis/Metiers/writing/FIGURES/dissimilarity_mats/",gear_names[i],"_chord_mat.png",sep=""),height = 480, width = 960)
+    coldiss(chord_transformed_trips[[i]], nc = 16, diag=T)
+  dev.off()
+  cat("chord matrix plotted\n")
+} 
+  save(hellinger_transformed_trips, 
+       file="/Users/efuller/1/CNH/Analysis/Metiers/writing/DATA/02_transformed_trip_tables/hellinger_transformed_trips.Rdata")
+  save(chord_transformed_trips, 
+       file="/Users/efuller/1/CNH/Analysis/Metiers/writing/DATA/02_transformed_trip_tables/chord_transformed_trips.Rdata")
+```
+
+
+### Clustering methods
+
+The three most frequently mentioned approaches are hierarchical clustering, k-means/mediod clustering, and DBSCAN.
+
++ I think hierarchical clustering can take any distrance metric, but k-means/mediods require euclidean distance. 
++ DBSCAN and hierarchical clusters do not need the number of clusters to be specified ahead of time, kmeans does. 
++ Kmeans works for "well-shaped" clusters, DBSCAN can deal with different shaped clusters
++ Idea with DBSCAN is that if p is density connected to q, p and q belong in the same cluster. If a point is not density connected to any other points, it's an outlier/noise. 
++ DBSCAN is not suitable for high dimension data, as dimensionality increases, so does the relative distance between objects making it more difficult to perform density analysis [@andreopoulos2009roadmap]. 
++ The more dimensions over which I cluster, the harder it is to use distance based methods [@steinbach2004challenges]. Recommends to plot pairwise distances between all sets of data. Having just done this for `BTR` (bottom trollers) chord and hellinger transformations, you definitely see two modes. But for BMT (beam trawls), you don't see two at all. This might make it easier to look at what I'd expect from a dataset that has clusters and one that doesn't. 
++ This curse of high dimensionality [@steinbach2004challenges] might be a good argument for using Principal Components Analysis to reduce. Although grid-based clustering is also offered as a good technique to combat high dimensionality. Need to read more about that though.  
+## Appendix
+
+Gear types used to split fish ticket data. 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+library(pander)
+gear_desc <- read.csv("/Users/efuller/1/CNH/Analysis/Metiers/data/gear_codes2.csv",header=F, stringsAsFactors=F)
+colnames(gear_desc) <- c("type", "grid","grgroup","short_name","description")
+gear_desc$short_name <- tolower(gear_desc$short_name)
+gear_desc$description <- tolower(gear_desc$description)
+gear_desc$grgroup <- NULL
+gear_desc$type <- NULL
+gear_desc$short_name <- NULL
+pander(gear_desc)
+```
+
+### Details on association coefficient
+The chord distance ($D_3$) and the Hellinger distance ($D_{17}$) are metric distances and well adapted to species abundance data [@legendre2012numerical]. In the following $p$ is the total number of descriptors (species counts), ${\bf x}_n$ is the vector of species counts at site $n$ . The chord distance
+
+
+$$D_3({\bf x}_1 {\bf x}_2) = \sqrt{2 \left[1 - \frac{\sum^p_{j=1}y_{1j}y_{2j}}{\sqrt{\sum^p_{j=1}y_{1j}^2\sum^p_{j=1}y_{2j}^2}}\right]},$$
+
+has a maximum when the species found at two sites are completely different. In that case the normalized site vectors are 90° from each other on the circumference of a 90° sector of a circle (when there are only two species)‚ or on the surface of a segment of a hyperspace (for $p$ species), and the distance between the two sites is $\sqrt{2}$. 
+
+The Hellinger distance is
+
+$$D_{17}({\bf x}_1 {\bf x}_2) = \sqrt{ \sum^p_{j=1} \left[\sqrt{\frac{y_{1j}}{y_{1+}}} - \sqrt{\frac{y_{2j}}{y_{2+}}} \right]^2}.$$
+
+This is also an assymetrical distance (insensitive to double-zeros), and its upper limit is $\sqrt{2}$. The Hellinger distance is actually the chord distance $D_3$ computed on a square-root-transformed frequencies (e.g. species abundances). It's highly recommended for clustering or ordination of species abundance data (Prentice, 1980, Rao 1995). 
+
+
+## References

@@ -1,0 +1,99 @@
+---
+title: "Troubleshooting classifying year"
+author: "Emma Fuller"
+date: "November 6, 2014"
+output: pdf_document
+---
+
+To define metiers I choose a year in which to cluster trips to construct the different metiers. Then I use k-nearest-neighbors to assign each trip from all the other years to those existing metier categories. This means I have to choose a year on which to define metiers. It's possible that the choice of the base year will affect results: that the trips in that year are not representative of the other years in the dataset. This may be true especially if a large management change has occurred that might affect the composition of catch. ITQs were implemented in 2011, in the middle of our data. To test whether I would get different metiers depending on whether I used data from pre- or post-ITQs as a base year, I tried both (2010 and 2012) and calculated the adjusted rand index ($ARI$). The $ARI$ measures how similar classifying results are, by tabulating the number of observations which fall together in the same category across different classifying runs with an $ARI=0$ meaning there is no overlap and an $ARI=1$ as identical classification. For my first analyses, the $ARI$ for all gears/years was $> 0.9$. However...
+
+In the process of revising the metier analysis I made an adjustment to the way that I categorize species. Trips are technically first measured by _market category_, rather than by species. When a ticket is filled out for a load of arrowtooth, often there's a smattering of other species mixed in. Port biologists will do sample and build species proportions that are typically in the "nominal arrowtooth" loads. Thus when you look at the fish tickets, you see "$X$ lbs of nominal dover sole" rather than just "dover sole". For most commercially important species the identification and sorting is well done at the nominal level, since there's money at stake. However for rockfish it's hard to get to species, especially because many species look so alike. Thus they often are labeled as some flavor of "north/south shelf unspecified rockfish", for example. Each state also has it's own protocols for which trips get sampled at port, how these are constructed, and when they're reported to PacFin. 
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE, eval=FALSE}
+# check that nominal and actual don't show up for same species in same catch
+tickets<- readRDS("code/3_analyzeMetiers/tickets.RDS")
+# look for nominal dover
+inds <- which(tickets$spid=="DVR1")
+tickets[which(tickets$trip_id==tickets$trip_id[inds[10]]),]
+
+library(plyr)
+noms <- ddply(tickets, .(trip_id, modified), summarize, num_ids = length(unique(spid)) )
+noms <- noms[order(noms$trip_id),]
+which(noms$num_ids>1)
+
+# no vessels that have both nominal and species in catch. 
+```
+
+The outcome of all this is that often "nominal dover sole" and "dover sole" will be reported for the same vessels in different trips. These different market categories have different species ids, so the clustering algorithm recognizes them as distinct species. Previous rounds of the clustering preserved these differences. But in the last round I condensed nominal and species market categories (if such a species category existed -- i.e. the "north shelf unspecified rockfish" market category remained unchanged). 
+
+This changed the classifying year results. Specifically when I test to see whether the year I use to define the classifying years (2010 or 2012) results in substatially different metier definitions and classifications, I find that it does. The $ARI$ for the $HKL$ gear group has dropped from $>0.9$ to around $0.5$.
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,echo=FALSE,results='asis'}
+library(pander)
+ARI <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/writing/code/3_analyzeMetiers/adjustRandIndex.RDS")
+pander(ARI)
+```
+
+Examining the classifications I find it's due to only a handful of groups. For example, looking at the differences between how trips from 2009 were classified, I find that it's primarily just due to two metiers: `HKL_1_10` and `HKL_1_12`. I take a subset of the cross-tabulated classification results to highlight these two metiers below.
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,results='asis'}
+library(e1071)
+agreement <- function (gear, year) {
+  df10 <- readRDS(paste0("/Users/efuller/1/CNH/Analysis/Metiers/writing/code/2_defineMetiers/classify_trips/predicted_metiers/2010/2010p",gear, year,".RDS"))
+  df12 <- readRDS(paste0("/Users/efuller/1/CNH/Analysis/Metiers/writing/code/2_defineMetiers/classify_trips/predicted_metiers/2012/2012p",gear, year,".RDS"))
+  
+  df10$predicted_metier <- paste0(df10$predicted_metier,"_10")
+  df12$predicted_metier <- paste0(df12$predicted_metier,"_12")
+  
+  predicted_df <- merge(df10, df12, by = "trip_id")
+  table(predicted_df$predicted_metier.x, predicted_df$predicted_metier.y)
+}
+HKL2009 <- agreement("HKL",2009)
+
+HKL2009_sub <- HKL2009[,-which(HKL2009[1,]<10)]
+HKL2009_sub <- HKL2009_sub[-which(HKL2009[,1]<10),]
+pander(HKL2009_sub)
+```
+
+Each element is the number of trips that were classified in that combination of metiers. The columns are metiers defined from 2012, the rows are from 2010. The problem shown here is that `HKL_1_10` puts together two metiers from 2012: `HKL_2_12` and `HKL_5_12`. While `HKL_1_12` puts together 3 big metiers in 2010: `HKL_2_10`, `HKL_3_10`, and `HKL_5_10`. If I remove those two categories, I recover an extremely high $ARI$.
+
+```{r}
+classAgreement(agreement("HKL",2009))$crand
+classAgreement(agreement("HKL",2009)[,-1][-1,])$crand
+```
+
+To test whether this was because of the change of species ids, I re-ran the code for these gear types in 2009 with the original species ids (which preserve nominal distinctions). `Currently here: waiting for things to run`
+
+```{r, echo=FALSE, eval=FALSE}
+args[1] <- "HKL"
+args[2] <- 2009
+library(permute); library(reshape2)
+library(plyr); library(vegan); library(igraph); library(dplyr)
+source("code/2_defineMetiers/define_metiers/helper_funs.R")
+
+ftl <- readRDS("code/1_cleaningData/filtered_ftl.RDS")
+just_gear <- select(ftl, ftid, grid)
+just_gear <- unique(just_gear)
+gear_types <- table(just_gear$ftid, just_gear$grid)
+total_gear <- rowSums(gear_types)
+extra_gear_trips <- names(total_gear)[which(total_gear > 1)]
+
+ftl_trips <- subset(ftl, !(ftid %in% extra_gear_trips))
+
+metier_trips <- find_metiers(tickets = ftl_trips, year = args[2], gear_group = args[1], message = "YES")
+
+write.csv(metier_trips, file = paste0("../results/2014-11-06/", args[1], as.numeric(args[2],".csv"))
+```
+
+
+## Adjusted Rand Index details
+The Rand Index is defined as 
+
+$$ RI = \frac{a + b}{a + b + c + d} $$
+
+where $a + b$ can be considered as the number of agreements between the two partititions, and $c + d$ as the number of disagreements between the partitions. The Rand index can take a value between 0 and 1, with a Rand index = 1 indicating the partitions are identical. The Rand index does not take into account the possibility that agreements happen between the two partitions due to chance (i.e. the expected $RI$ of a randomly partitioned dataset is not 0), and as the number of clusters increases $RI$ approaches 1. The adjusted Rand index (ARI) has been proposed to address these limitations [@hubert1985comparing] and is calculated as 
+
+$$ \text{ARI} = \frac{ {n \choose 2}(a + d) - [(a+b)(a+c) + (c+d)(b+d)]  }{ {n\choose 2}^2 - [(a+b)(a+c) + (c+d)(b+d)]}.$$
+
+I calculated the adjusted Rand Index ($ARI$) using the `R` library `e1071`, function `classAgreement()` for each gear group and each year that wasn't trained (2009, 2011, 2013). Results are as follows. Agreement between training sets are high, with only the gear group NET in 2013 with a value $< 0.9$.[^3][^4]
+

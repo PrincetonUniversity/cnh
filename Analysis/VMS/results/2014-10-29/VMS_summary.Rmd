@@ -1,0 +1,40 @@
+---
+title: "Our data, what can we do with it?"
+author: "Emma Fuller"
+date: "November 17, 2014"
+output: beamer_presentation
+---
+
+# Our data
+
+VMS has 
+
++ approximately 22 million data points
++ 2009-2013
++ covers the US westcoast EEZ
++ $> 1000$ vessels
+
+Catch data has
+
++ approximately 500,000 trips
++ $>5000$ vessels
++ All commerical catch recorded between 2009-2013
+
+# What's so great about it?
+
++ We can see vessels at the same time
++ Which means we can look at where/when fishermen fish in response to ecological, management, market _and_ social factors
+
+# So what are we doing with it?
+
++ Can we infer pink shrimp social networks from VMS data? [social factors] 
+    + Emma, Emily, James, Jameal
++ Is fish diversity and abundance predicted by fishing activity? [ecological factors]
+    + Jen, Emma, James
++ Do fishermen track fine-scale oceanographic features [ecological factors]
+    + James, Emma
++ Is fishing behavior affected by novel markets [economic factors]
+    + Dan, Emma
+    
+# K, so how?
+

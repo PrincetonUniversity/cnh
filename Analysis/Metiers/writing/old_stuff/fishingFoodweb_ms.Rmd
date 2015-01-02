@@ -1,0 +1,25 @@
+---
+title: "Fishing food webs"
+author: "Emma Fuller"
+date: "October 19, 2014"
+output: pdf_document
+bibliography: refs.bib
+---
+
+**Broadly:** We need to understand feedbacks between humans and ecosystems [@milner2012interactions] and develop more quantitative measures of management impact and success [@mace2014whose].
+
+**Specifically:** Ongoing discussion in fisheries whether management is making fishermen more specialized and how that affects human wellbeing [@kasperski2013income; @sethi2014alaskan]. 
+
+Related to continued debate of diversity and stability in foodwebs. Theoretical work has suggested that adaptive switching in consumers allows diverse foodwebs to be stable [@kondoh2003foraging].
+
+And placing entry-exit decisions in a foodweb context let's me look at system-level impacts of individual switching behavior. 
+
+Using five years of catch data from US Westcoast commercial fisheries I build a foodweb that includes commercial fishermen and examine it's stability in a randomly fluctuating environment. 
+
+Fishermen "species" are defined as fisheries, here determined by a metier-like analysis.
+
+The probability of a 
+
+
+
+# References

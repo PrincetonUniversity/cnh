@@ -1,0 +1,295 @@
+---
+title: "CP_log"
+author: "Emma Fuller"
+date: "April 25, 2014"
+output: html_document
+---
+
+# Catch profile clustering for results of PCA on `log_tripTable.Rdata`
+```{r packages, cache=TRUE,echo=FALSE, message=FALSE}
+require(cluster)
+require(data.table)
+require(reshape2)
+require(plyr)
+require(ggplot2)
+require(scales)
+```
+
+My goal is to take the outputs from the PCA analysis done on the corrected `log_tripTable.Rdata` to see if I can reduce the dimensionality and cluster into characteristic catch profiles. 
+
+```{r load_data, cache=TRUE}
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-24/pca_out_loglb.Rdata")
+```
+
+## Clustering
+
+```{r, cache=TRUE,echo=FALSE, message=FALSE}
+dat <- pca_out_loglb$x[,1:30]
+max.clusts <- 60
+clust.dat <- vector("list",length = max.clusts)
+
+set.seed(2)
+for(i in 1:max.clusts){
+  clust.dat[[i]] <- clara(dat, i, stand=TRUE, samples = 30, sampsize=max.clusts+1, keep.data = FALSE, pamLike=TRUE, rngR = TRUE)
+  }
+
+objectives <- vector(length = max.clusts)
+for (i in 1:max.clusts) { objectives[i] <- clust.dat[[i]]$objective }
+
+asw <- vector(length = max.clusts)
+for (i in 2:max.clusts) { asw[i] <- clust.dat[[i]]$silinfo$avg.width  }
+
+par(mfrow=c(1,2))
+plot(objectives, type="o",pch=19, cex=0.35,bty="n", main="Objective function")
+plot(asw, type="o", pch=19, cex=0.35, bty="n", main="Silhouette Width")
+```
+
+This makes it look like 2 clusters is ideal, which seems like too few. I'm imagining that there should be somewhere in the neighborhood of 5, representing pacific whiting, dungeness crab, pink shrimp, groundfish, bivalves, and the pelagics. I should start with seeing what these two well seperated clusters represent. 
+
+```{r, cache=TRUE, echo=FALSE,message=FALSE,warning=FALSE}
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-24/lb_tripTable.Rdata")
+cp2 <- lb_tripTable
+cp2 <- cp2[,cp2 := clust.dat[[2]]$clustering]
+
+# what are the mean catches of each species, in order of abundance?
+melt_cp2 <- melt(cp2[,!"cp2",with=FALSE])
+setkey(melt_cp2, "tripID")
+melt_cp2_1 <- melt(cp2[,c("tripID", "cp2"), with=FALSE])
+setnames(melt_cp2_1,names(melt_cp2_1),c("tripID","clustID","cluster2"))
+melt_cp2_1 <- melt_cp2_1[,!"clustID",with=FALSE]
+setkey(melt_cp2_1, "tripID")
+melt_cp2 <- melt_cp2[melt_cp2_1]
+mean_abund <- melt_cp2[,mean(value),by="variable,cluster2"]
+
+# break into two clusters
+cp2_1 <- subset(mean_abund, cluster2==1)
+ranked_cp2_1 <- cp2_1[order(-rank(V1))]
+par(mfrow=c(1,2))
+barplot(ranked_cp2_1$V1[1],las=2, names.arg=ranked_cp2_1[,variable][1],col="slategrey",bor="slategrey")
+barplot(ranked_cp2_1$V1[2:10],las=2, names.arg=ranked_cp2_1[,variable][2:10],col="slategrey",bor="slategrey",main="Cluster 1")
+
+cp2_2 <- subset(mean_abund, cluster2==2)
+ranked_cp2_2 <- cp2_2[order(-rank(V1))]
+par(mfrow=c(1,2))
+barplot(ranked_cp2_2$V1[1],las=2, names.arg=ranked_cp2_2[,variable][1],col="slategrey",bor="slategrey")
+barplot(ranked_cp2_2$V1[2:10],las=2, names.arg=ranked_cp2_2[,variable][2:10],col="slategrey",bor="slategrey",main="Cluster 2")
+```
+
+Definitely doesn't look good, dungeness crab is split between the two. The second peak for the silhouette width is somewhere between 10 and 20 clusters, finding the maximum average silhoutte width there returns a cluster solution of `r which(asw==max(asw[10:20]))`.
+
+```{r, cache=TRUE,echo=FALSE,fig.width=10,warning=FALSE, fig.height=8}
+cp16 <- lb_tripTable
+cp16 <- cp16[,cp16 := clust.dat[[16]]$clustering]
+
+# what are the mean catches of each species, in order of abundance?
+melt_cp16 <- melt(cp16[,!"cp16",with=FALSE])
+setkey(melt_cp16, "tripID")
+melt_cp16_1 <- melt(cp16[,c("tripID", "cp16"), with=FALSE])
+setnames(melt_cp16_1,names(melt_cp16_1),c("tripID","clustID","cluster16"))
+melt_cp16_1 <- melt_cp16_1[,!"clustID",with=FALSE]
+setkey(melt_cp16_1, "tripID")
+melt_cp16 <- melt_cp16[melt_cp16_1]
+mean_abund <- melt_cp16[,mean(value),by="variable,cluster16"]
+
+ranked_abund <- ddply(mean_abund, .(cluster16), transform, rank = rank(-V1, ties.method = "first"))
+top10 <- subset(ranked_abund, rank < 11)
+
+top10 <- subset(top10,V1>0)
+
+ggplot(top10, aes(x=variable,y=V1)) + geom_bar(stat="identity")+ facet_wrap(~cluster16, scales="free") + theme(axis.text.x=element_text(angle=-90))
+```
+
+Let's look at 14 to see how that differs. 
+
+```{r, cache=TRUE,echo=FALSE,fig.width=10,warning=FALSE, fig.height=8}
+cp14 <- lb_tripTable
+cp14 <- cp14[,cp14 := clust.dat[[14]]$clustering]
+
+# what are the mean catches of each species, in order of abundance?
+melt_cp14 <- melt(cp14[,!"cp14",with=FALSE])
+setkey(melt_cp14, "tripID")
+melt_cp14_1 <- melt(cp14[,c("tripID", "cp14"), with=FALSE])
+setnames(melt_cp14_1,names(melt_cp14_1),c("tripID","clustID","cluster16"))
+melt_cp14_1 <- melt_cp14_1[,!"clustID",with=FALSE]
+setkey(melt_cp14_1, "tripID")
+melt_cp14 <- melt_cp14[melt_cp14_1]
+mean_abund <- melt_cp14[,mean(value),by="variable,cluster16"]
+
+ranked_abund <- ddply(mean_abund, .(cluster16), transform, rank = rank(-V1, ties.method = "first"))
+top10 <- subset(ranked_abund, rank < 11)
+
+ggplot(top10, aes(x=variable,y=V1)) + geom_bar(stat="identity")+ facet_wrap(~cluster16, scales="free") + theme(axis.text.x=element_text(angle=-90))
+```
+Clusters 1-5 remain unchanged, cluster 6 (dominated by dover sole) from `cp16` disappears in `cp14` and is possilby replaced by cluster 16 in `cp14`, which is now dover sole and petrale. Cluster 7 and 8 look like they switch places: in `cp16` cluster 7 looks like it becomes cluster 8 in `cp14` (dominated by baitshrimp), and cluster 8 in `cp16` (dominated by chinook) goes to cluster 7 in `cp14` The pink shrimp cluster
+
+To see how we change from 12-15 clusters let's look at that
+```{r,cache=TRUE, echo=FALSE,fig.width=10, fig.height=10,message=FALSE}
+# making a network
+clust.list <- clust.dat[c(11:16)]
+
+  # clust_list is the list generated by the for-loop running through all clustering solutions
+  # tripTable is the table with rows as trips, columns as species, can be log, price, lb, etc. 
+  nodes <- length(clust.list)
+  transitions <- nodes-1 # number of transitions to compute
+  trips <- nrow(log_tripTable)
+  clust_ts <- matrix(nrow=trips,ncol=nodes) # time series of cluster sols.
+
+# filling timeseries
+  for(i in 1:nodes){
+    clust_ts[,i] <- clust.list[[i]]$clustering
+  }
+plot(seq(11,16),clust_ts[1,],type='l',ylim=c(0,length(unique(clust_ts[,nodes]))+1),cex=0.001, col=rgb(0,0,0,.01),xlim=c(10,17),xlab="cluster solution",ylab="node")
+for(r in 11:16){
+  abline(v=r,lwd=8,col=alpha("indianred",0.35))
+  }
+for(r in 1:16){
+  abline(h=r,lwd=8,col=alpha("indianred",0.35))
+}
+  for(l in 2:nrow(clust_ts)){
+    lines(seq(11,16),jitter(clust_ts[l,],.5),col=rgb(0,0,0,0.01),cex=0.001)
+  }
+```
+
+Still messing around with how to look at how the clustering solutions change over time. See `.Rmd` file for code details.
+
+```{r, eval=FALSE,echo=FALSE}
+# making a network
+clust.list <- bar
+
+cluster_network <- function(clust.list,tripTable){
+  # clust_list is the list generated by the for-loop running through all clustering solutions
+  # tripTable is the table with rows as trips, columns as species, can be log, price, lb, etc. 
+  nodes <- length(clust.list)
+  transitions <- nodes-1 # number of transitions to compute
+  trips <- nrow(log_tripTable)
+  clust_ts <- matrix(nrow=trips,ncol=nodes) # time series of cluster sols.
+
+# filling timeseries
+  for(i in 1:nodes){
+    clust_ts[,i] <- clust.list[[i]]$clustering
+    print(i)
+  }
+
+  # transition matrix
+    connections.mat <- matrix(0,nrow=nodes,ncol=nodes) 
+    connections <- vector(mode="list",length=transitions)
+    for(i in 1:length(connections)){
+      connections[[i]] <- connections.mat
+    }
+
+  for(j in 1:transitions){ # go through each cluster transition
+    for(k in 1:trips){ # go through each trip
+      # if trip == 1: world[k,j]==1
+      if(world[k,j]==1){
+      # if 1 -> 1
+        if(world[k, (j+1)]==1){connections[[j]][1,1]=connections[[j]][1,1] + 1}
+        # if 1 -> 2
+        else if(world[k, (j+1)]==2){connections[[j]][1,2]=connections[[j]][1,2] + 1}
+        # if 1 -> 3
+       else if(world[k, (j+1)]==3){connections[[j]][1,3]=connections[[j]][1,3] + 1}
+       # if 1 -> 4
+       else if(world[k, (j+1)]==4){connections[[j]][1,4]=connections[[j]][1,4] + 1}
+     } else if(world[k,j]==2){
+       # if 2 -> 1
+       if(world[k, (j+1)]==1){connections[[j]][2,1]=connections[[j]][2,1] + 1}
+        # if 2 -> 2
+        else if(world[k, (j+1)]==2){connections[[j]][2,2]=connections[[j]][2,2] + 1}
+        # if 2 -> 3
+       else if(world[k, (j+1)]==3){connections[[j]][2,3]=connections[[j]][2,3] + 1}
+       # if 2 -> 4
+       else if(world[k, (j+1)]==4){connections[[j]][2,4]=connections[[j]][2,4] + 1}
+     } else if(world[k,j]==3){
+       # if 3 -> 1
+       if(world[k, (j+1)]==1){connections[[j]][3,1]=connections[[j]][3,1] + 1}
+        # if 3 -> 2
+        else if(world[k, (j+1)]==2){connections[[j]][3,2]=connections[[j]][3,2] + 1}
+        # if 3 -> 3
+       else if(world[k, (j+1)]==3){connections[[j]][3,3]=connections[[j]][3,3] + 1}
+       # if 3 -> 4
+       else if(world[k, (j+1)]==4){connections[[j]][3,4]=connections[[j]][3,4] + 1
+     }}else if(world[k,j]==4){
+       # if 3 -> 1
+       if(world[k, (j+1)]==1){connections[[j]][4,1]=connections[[j]][4,1] + 1}
+        # if 3 -> 2
+        else if(world[k, (j+1)]==2){connections[[j]][4,2]=connections[[j]][4,2] + 1}
+        # if 3 -> 3
+       else if(world[k, (j+1)]==3){connections[[j]][4,3]=connections[[j]][4,3] + 1}
+       # if 4 -> 4
+       else if(world[k, (j+1)]==4){connections[[j]][4,4]=connections[[j]][4,4] + 1}
+     }
+     
+  }}
+
+node_size <- matrix(0,ncol=ncol(world),nrow=ncol(world))
+for(i in 1:ncol(world)){
+  node_size[1,i] <- length(which(world[,i]==1))
+  node_size[2,i] <- length(which(world[,i]==2))
+  node_size[3,i] <- length(which(world[,i]==3))
+  node_size[4,i] <- length(which(world[,i]==4))
+}
+
+# t = 1 -> 2
+  # node 1
+    lines(c(1,2),c(1,1),lwd=log(connections[[1]][1,1]))
+    lines(c(1,2),c(1,2),lwd=log(connections[[1]][1,2]))
+
+# t = 2 -> 3
+  # node 1
+    lines(c(2,3),c(1,1),lwd=log(connections[[2]][1,1]))
+    lines(c(2,3),c(1,2),lwd=log(connections[[2]][1,2]))
+    lines(c(2,3),c(1,3),lwd=ifelse(connections[[2]][1,3]==0,0,log(connections[[2]][1,3])))
+  # node 2
+    lines(c(2,3),c(2,1),lwd=ifelse(connections[[2]][2,1]==0,0,log(connections[[2]][2,1])))
+    lines(c(2,3),c(2,2),lwd=ifelse(connections[[2]][2,2]==0,0,log(connections[[2]][2,2])))
+    lines(c(2,3),c(2,3),lwd=ifelse(connections[[2]][2,3]==0,0,log(connections[[2]][2,3])))
+# t = 3 -> 4
+  # node 1
+    lines(c(3,4),c(1,1),lwd=log(connections[[3]][1,1]))
+    lines(c(3,4),c(1,2),lwd=log(connections[[3]][1,2]))
+    lines(c(3,4),c(1,3),lwd=log(connections[[3]][1,3]))
+    lines(c(3,4),c(1,4),lwd=ifelse(connections[[3]][1,4]==0,0,log(connections[[3]][1,4])))
+  # node 2
+    lines(c(3,4),c(2,1),lwd=log(connections[[3]][2,1]))
+    lines(c(3,4),c(2,2),lwd=ifelse(connections[[3]][2,2]==0,0,log(connections[[3]][2,2])))
+    lines(c(3,4),c(2,3),lwd=ifelse(connections[[3]][2,3]==0,0,log(connections[[3]][2,3])))
+    lines(c(3,4),c(2,4),lwd=ifelse(connections[[3]][2,4]==0,0,log(connections[[3]][2,4])))
+  # node 3
+    lines(c(3,4),c(3,1),lwd=ifelse(connections[[3]][3,1]==0,0,log(connections[[3]][3,1])))
+    lines(c(3,4),c(3,2),lwd=ifelse(connections[[3]][3,2]==0,0,log(connections[[3]][3,2])))
+    lines(c(3,4),c(3,3),lwd=ifelse(connections[[3]][3,3]==0,0,log(connections[[3]][3,3])))
+    lines(c(3,4),c(3,4),lwd=ifelse(connections[[3]][3,4]==0,0,log(connections[[3]][3,4])))
+
+lines(c(3,4),c(1,1),lwd=log(connections[[3]][1,1]))
+
+
+lines(c(2,3),c(1,2),lwd=log(connections[[2]][1,2]))
+lines(c(2,3),c(2,3),lwd=log(connections[[2]][2,3]))
+
+lines(c(3,4),c(1,4),lwd=ifelse(connections[[3]][1,4]==0,0,log(connections[[3]][1,4])))
+lines(c(3,4),c(1,3),lwd=ifelse(connections[[3]][]))
+}
+
+1_clust <- function()
+  
+# new idea
+  plot(seq(1,nodes),clust_ts[1,],type='l',ylim=c(0,31),cex=0.001, col=rgb(0,0,0,.01),xlim=c(0,30))
+  for(l in 2:nrow(world)){
+    lines(seq(1,nodes),jitter(clust_ts[l,],.5),col=rgb(0,0,0,0.01),cex=0.001)
+  }
+
+points(seq(1,4),rep(1,4),xlim=c(0,5),ylim=c(0,5),cex=log(node_size[1,])/5,pch=19)
+points(seq(2,4),rep(2,3), cex=log(node_size[2,2:4])/5,pch=19)
+points(seq(3,4),rep(3,2), cex=log(node_size[3,3:4])/5,pch=19)
+points(4,4,cex=log(node_size[4,4])/5,pch=19)
+
+#or this
+foo <- clust_ts[1:500,1:30]
+trans <- vector("list",30)
+
+for(n in 1:29){
+  trans[[n]] <- table(from=head(foo[,n],-1),to=tail(foo[,(n+1)],-1))
+}
+
+# generate plot --> consider plotting markov processes, closest to what I want. 
+```
+

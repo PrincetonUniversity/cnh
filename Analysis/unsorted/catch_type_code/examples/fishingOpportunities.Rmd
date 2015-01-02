@@ -1,0 +1,76 @@
+# the problem of fishing spots - how to define them?
+Using approach from @Branchetal2005. From @Branchetal2005: 
+
+> We define fishing opportunities to be small areas over which the skipper of a vessel frequently trawls, i.e., groups of trawls that are consistently placed over the same geographic area. These trawls should have a tight cluster of start positions and a tight cluster of end positions. Trawls that are in opposite directions can still belong to the same fishing opportunity if they cover the same ground (i.e., the start and end positions are switched). However, trawls starting in the same position, but conducted in opposite directions, would belong to different fishing opportunities. Some fishing opportunities could therefore be long and thin (for long trawls), and others could be small and round (e.g., short trawls or “circular” trawls that involve a midway 180° turn)....fishing opportunities are similar to what might be called fishing grounds. However, we con-sider fishing grounds to be larger regions that are fished by many vessels, whereas fishing opportunities represent vessel-specific methods of catching fish within these fishing grounds. Thus, for each fishing opportunity, a skipper will have previous knowledge gained through fishing (or from other skippers) about likely catch rates, species mix, optimal fishing months, appropriate gear, and the probable costs of fishing.... . In this paper, we therefore define fishing opportunities to be vessel specific so that they can be related directly to fishermen behavior...We consider it likely that some fishing opportunities will be frequented by multiple vessels.
+
+Have implmeented @Branchetal2005's method here on one trawling vessel from California (south of 40 degrees lat). This is because the re-orientation needs to be either N-S or E-W, and it's assumed that most trawls happen N-S along the California shelf (it's long and narrow). 
+
+I chose the vessel that had the most observed trips (that was a trawler and was south of 40 degrees) so I would have plenty of data to work with. Unfortunately this vessel ended up mostly fishing outside of San Francisco Bay, and so being largely E-W. Thus I'm not confident about these clusters and need to develop some way to test the main way the trawls are oriented in order to flexibly transform them. 
+
+This is an example of the output of the fishing opportunity analysis, and should be used with the convex polygon estimation from the `adehabitatHR` package so I can create polygons of fishing spots. 
+
+```{r, echo=FALSE,message=FALSE,fig.width=20,fig.height=15}
+
+
+# data please
+  rm(list=ls())
+	data <- read.csv("~/Documents/Projects/Harvesting_Strategies/EmpiricalAnalysis/NOAA/Data_Analysis/Obs/Data/WCGOPobs/Samhouri_OBFTfinal_Allfisheries_ProcessedwFunction_2009-2012_110613.csv")
+
+# let's look at one vessel, but how often to vessels each show up in this dataset?
+	require(plyr)
+	d1 <- ddply(data, .(VESSEL,YEAR), summarize, freq=length(unique(TRIPID)))
+	#which(d1$freq==max(d1$freq))	# Looks like Pacific Future is a good bet, but actually turns out that it's a Washington boat. Let's look for a vessel that fishes along the California coast (therefore has mostly N-S direction of trawling). Let's say, south of 40 degrees Lat. 
+	
+	subd1 <- subset(data, SET_LAT < 40 & data$GEAR==1)
+	d1 <- ddply(subd1, .(VESSEL,YEAR), summarize, freq=length(unique(TRIPID)))
+	#which(d1$freq==max(d1$freq))	# Anna Marie!
+
+	myvars <- c("SET_LAT","SET_LONG", "UP_LAT","UP_LONG")
+	v1 <- subset(data, VESSEL=="Anna Marie", select = myvars)
+
+# let's use Branch et al. 2005 to do the clustering method
+	
+# function to adjust longs
+	adjLong <- function(long) {
+ 	adjlong <- long * cos((long/360)*2*pi)
+ 	return(adjlong)
+	}
+
+	v1$adjSET_LONG <-adjLong(v1$SET_LONG)
+	v1$adjUP_LONG <- adjLong(v1$UP_LONG)
+	
+	v1$cSetLat <- v1$SET_LAT
+	v1$cSetLong <- v1$adjSET_LONG
+	v1$cUpLat <- v1$UP_LAT
+	v1$cUpLong <- v1$adjUP_LONG
+
+	i <- which(v1$SET_LAT > v1$UP_LAT)
+
+	v1$reorient <- rep(0, nrow(v1))
+	v1$reorient[i] <- 1
+	v1$cSetLat[i] <- v1$UP_LAT[i]
+	v1$cUpLat[i] <- v1$SET_LAT[i]
+	v1$cSetLong[i] <- v1$adjUP_LONG[i]
+	v1$cUpLong[i] <- v1$adjSET_LONG[i]
+
+	X <- v1[c("cSetLat", "cSetLong","cUpLat", "cUpLong")]
+	#subX <- X[1:1000,]
+	subX <- X
+	distance <- dist(X, method="euclidean")
+	cluster.tree <- hclust(distance,method="average")
+	Y <- cutree(cluster.tree, h = 0.15)
+
+	v1$cluster = Y
+
+  val <- .5
+  buffer = c(-1 * val, val)
+  require(RColorBrewer)
+  colorz <- colorRampPalette(brewer.pal(8,"Dark2"))(length(unique(Y)))
+  plot(v1$SET_LONG, v1$SET_LAT, col=colorz[v1$cluster],pch=19,cex=0.25,xlim=range(v1$SET_LONG)+buffer, ylim=range(v1$SET_LAT)+buffer,xlab="Longitude",ylab="Latitude",bty="n")
+  points(v1$UP_LONG, v1$UP_LAT, col=colorz[v1$cluster],pch=19,cex=0.25)
+  segments(v1$SET_LONG,v1$SET_LAT, v1$UP_LONG, v1$UP_LAT, col = colorz[v1$cluster])
+  
+  require(maps)
+  require(mapdata)
+  map("worldHires","USA", col="gray", fill=TRUE, add=TRUE, border=FALSE)
+```

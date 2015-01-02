@@ -1,0 +1,214 @@
+---
+title: "Mean-Variance plots"
+author: "Emma Fuller"
+date: "June 4, 2014"
+output:
+  html_document:
+    fig_height: 7
+    fig_width: 11
+---
+
+```{r global_options, include=FALSE}
+require(knitr)
+opts_chunk$set(cache=TRUE, echo=FALSE, warning=FALSE, message=FALSE)
+```
+# Portfolio Plots
+Idea is to look to see how expected returns and variance (risk) relate in fisheries. Should look at this plot (variance on x, mean on y) by year, colored by metiers. Should also look by fishermen, to see if they're compensating in their composition of fisheries throughout the year
+
+```{r all_vessel_analysis}
+setwd("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-06-04/")
+require(plyr)
+require(ggplot2)
+require(dplyr)
+require(ggthemes)
+
+# first step is to look at mean and variance of tonnage and price per vessel per year. And possibly coefficient of variation
+
+FTL <- read.csv("../../../../Data/Catch/FTL_2009-2013_2014-03-21.csv",stringsAsFactors=FALSE)
+
+# go by veid, find mean and variance by year
+  # set up year
+  FTL$year <- format(as.Date(FTL$TDATE, format="%d-%b-%y"), "%Y")
+
+# standard error (removing NAs)
+se <- function(x) sqrt(var(x,na.rm=TRUE)/length(na.omit(x)))
+co.var <- function(x) ( 100*sd(x,na.rm=T)/mean(x,na.rm=T) )
+
+# lbs
+tonnage <- ddply(FTL, .(VEID, year), summarize, mean = mean(LANDED_WT, na.rm=T), sd = sd(LANDED_WT), se = se(LANDED_WT), covar = co.var(LANDED_WT))
+
+# price
+FTL$rev <- FTL$LANDED_WT*FTL$PPP
+dollars <- ddply(FTL, .(VEID, year), summarize, mean = mean(rev, na.rm=T), sd = sd(rev), se = se(rev), covar = co.var(rev))
+```
+
+Plot lbs and revenues for each vessel each year. 
+
+```{r all_cps}
+ggplot(tonnage, aes(y=mean,x=sd)) + geom_point(alpha=0.15) + facet_grid(~year) + labs(title="lbs sd") +theme_light()
+ggplot(tonnage, aes(y=mean,x=se)) + geom_point(alpha=0.15) + facet_grid(~year) + labs(title="lbs se") + theme_light()
+ggplot(tonnage, aes(y=mean,x=covar)) + geom_point(alpha=0.15) + facet_grid(~year)+ labs(title="lbs covar") + theme_light()
+
+ggplot(tonnage, aes(y=mean,x=sd)) + geom_point(alpha=0.15) + facet_grid(~year) + scale_x_log10() + scale_y_log10() + labs(title="lbs log-log sd") + theme_light()
+ggplot(tonnage, aes(y=mean,x=se)) + geom_point(alpha=0.15) + facet_grid(~year)+ scale_x_log10() + scale_y_log10() + labs(title="lbs log-log se") + theme_light()
+ggplot(tonnage, aes(y=mean,x=covar)) + geom_point(alpha=0.15) + facet_grid(~year)+ scale_x_log10() + scale_y_log10()+ labs(title="lbs log-log co.var") + theme_light()
+
+ggplot(dollars, aes(y=mean,x=sd)) + geom_point(alpha=0.15) + facet_grid(~year) + labs(title="revenue sd") +theme_light()
+ggplot(dollars, aes(y=mean,x=se)) + geom_point(alpha=0.15) + facet_grid(~year) + labs(title="revenue se") + theme_light()
+ggplot(dollars, aes(y=mean,x=covar)) + geom_point(alpha=0.15) + facet_grid(~year) + labs(title="revenue co.var") + theme_light()
+
+ggplot(dollars, aes(y=mean,x=sd)) + geom_point(alpha=0.15) + facet_grid(~year) + scale_x_log10() + scale_y_log10() + labs(title="log-log revenue sd") + theme_light()
+ggplot(dollars, aes(y=mean,x=se)) + geom_point(alpha=0.15) + facet_grid(~year)+ scale_x_log10() + scale_y_log10() + labs(title="log-log revenue se") + theme_light()
+ggplot(dollars, aes(y=mean,x=covar)) + geom_point(alpha=0.15) + facet_grid(~year)+ scale_x_log10() + scale_y_log10() + labs(title="log-log revenue co.var") + theme_light()
+```
+
+Many vessels had only one trip a year, hence many vessel/year were dropped. Hence the error messages.
+
+Now trying to do it by metier. Because my metiers are not quite finished, I'm only going to look at catch profiles that had a lot of trips in them, because I'm more confident that those actually reflect real distinctions in the data
+
+```{r cp_analysis}
+# need to load in vessel ID and catch profile data.frame to merge with FTL data to get tonnage and revenue of landed tickets. 
+
+# load catch profiles 
+load("../2014-05-17/input_data/prop_tripTable_2014-05-17.Rdata")
+load("../2014-05-17/clust_prop.Rdata")
+
+tripTable <- prop_tripTable[[2]]
+unique_table <- tripTable[!duplicated(tripTable$tripID),]
+unique_table$cp <- clust_prop$clustering
+
+# replicate trip_ID in FTL data
+FTL$tripID <- paste(as.Date(FTL$TDATE,format="%d-%b-%y"),FTL$VEID,sep="_")
+to_merge <- select(FTL, tripID,LANDED_WT,PPP)
+to_merge$rev <- to_merge$LANDED_WT*to_merge$PPP
+
+# need to combine to get total per trip, still have seperate rows for each entry
+sum_merge <- ddply(to_merge, .(tripID),summarize, tonnage = sum(LANDED_WT), dollars = sum(rev))
+
+trips_cp <- merge(unique_table, sum_merge, by="tripID")
+
+dollars_cp <- ddply(trips_cp, .(veid, year, cp), summarize, mean = mean(dollars, na.rm=T), sd = sd(dollars), se = se(dollars), covar = co.var(dollars))
+
+# breaking out to only most common cps
+hist(unique_table$cp,col="grey",bor="darkgrey",freq=F,ylim=c(0,.3))
+lines(density(unique_table$cp),col="indianred",lwd=5)
+hist(unique_table$cp,col="grey",bor="darkgrey",freq=T)
+
+num_cp <- table(unique_table$cp, unique_table$year)
+barplot(sort(rowSums(num_cp),decreasing=T),bor=FALSE)
+barplot(sort(log(rowSums(num_cp)),decreasing=T),bor=FALSE)
+# will try catch profiles that show up at least 10 times. 
+
+# the first five are crab, salmon, albacore, sablefish, and pink shrimp. Then ghost shrimp shows up, so i'm reluctant to use that. Then a rockfish category, then whiting, then more rockfish, then sardines, then more rockfish, then more salmon, then groundfish, ... I guess I'll go until the number of trips drops below 1000. 
+
+cp_use <- num_cp[which(rowSums(num_cp)>1700),]
+cp_use <- cp_use[-c(11,12,2),]
+
+main_cp <- subset(dollars_cp,cp %in% rownames(cp_use))
+```
+
+```{r by_cp_plots_all}
+ggplot(dollars_cp, aes(x=covar, y = mean)) + geom_point(alpha=0.15,aes(color=factor(cp))) + facet_grid(year~cp) + theme_light()
+ggplot(dollars_cp, aes(x=sd, y = mean)) + geom_point(alpha=0.15,aes(color=factor(cp))) + facet_grid(year~cp) + theme_light()
+ggplot(dollars_cp, aes(x=se, y=mean)) + geom_point(aes(alpha=0.15,color=factor(cp))) + facet_grid(year~cp) + theme_light()
+```
+
+Need to take out outlier catch profiles. First figure out which ones those are. 
+
+```{r cp_some_dollars}
+# log-log se
+ggplot(main_cp, aes(x = se, y = mean, color=factor(cp))) + labs(title="log-log dollars se") +
+  geom_point(alpha=0.5) + facet_grid(year ~ cp) + 
+  scale_y_log10() + scale_x_log10() + 
+  scale_colour_discrete(name = "Catch Profile",
+                        labels=c("Crab","Sablefish","Rockfish",
+                                 "Rockfish","Salmon","Albacore",
+                                 "Pink Shrimp","Rockfish","Whiting")) + theme_light()
+# log-log covar
+ggplot(main_cp, aes(x = covar, y = mean, color=factor(cp))) + 
+  geom_point(alpha=0.5) + facet_grid(year~cp) +
+  scale_y_log10() + scale_x_log10() + 
+  labs(title="log-log dollars covar") +   
+  scale_colour_discrete(name = "Catch Profile",
+                        labels=c("Crab","Sablefish","Rockfish",
+                                 "Rockfish","Salmon","Albacore",
+                                 "Pink Shrimp","Rockfish","Whiting")) + theme_light()
+# log-log sd
+ggplot(main_cp, aes(x = sd, y = mean, color=factor(cp))) + 
+  geom_point(alpha=0.5) + facet_grid(year~cp) + 
+  labs(title="log-log dollars sd") + 
+  scale_y_log10() + scale_x_log10() +
+  scale_colour_discrete(name = "Catch Profile",
+                        labels=c("Crab","Sablefish","Rockfish",
+                                 "Rockfish","Salmon","Albacore",
+                                 "Pink Shrimp","Rockfish","Whiting")) + theme_light()
+
+# se dollars
+ggplot(main_cp, aes(x = se, y = mean, color=factor(cp))) + labs(title="dollars se") +
+  geom_point(alpha=0.5) + facet_grid(year ~ cp) + 
+  scale_colour_discrete(name = "Catch Profile",
+                        labels=c("Crab","Sablefish","Rockfish",
+                                 "Rockfish","Salmon","Albacore",
+                                 "Pink Shrimp","Rockfish","Whiting")) + theme_light()
+# covar dollars
+ggplot(main_cp, aes(x = covar, y = mean, color=factor(cp))) + 
+  geom_point(alpha=0.5) + facet_grid(year~cp) +
+  labs(title="dollars covar") +   
+  scale_colour_discrete(name = "Catch Profile",
+                        labels=c("Crab","Sablefish","Rockfish",
+                                 "Rockfish","Salmon","Albacore",
+                                 "Pink Shrimp","Rockfish","Whiting")) + theme_light()
+# sd dollars
+ggplot(main_cp, aes(x = sd, y = mean, color=factor(cp))) + 
+  geom_point(alpha=0.5) + facet_grid(year~cp) + 
+  labs(title="dollars sd") + 
+  scale_colour_discrete(name = "Catch Profile",
+                        labels=c("Crab","Sablefish","Rockfish",
+                                 "Rockfish","Salmon","Albacore",
+                                 "Pink Shrimp","Rockfish","Whiting")) +theme_light()
+```
+
+Now do the same with tonnage
+```{r cp_some_lbs}
+tonnage_cp <- ddply(trips_cp, .(veid, year, cp), summarize, mean = mean(tonnage), sd = sd(tonnage), se = se(dollars), covar = co.var(dollars),length=length(tonnage))
+
+ggplot(tonnage_cp, aes(x=covar, y = mean)) + geom_point(aes(color=factor(cp))) + facet_grid(year~cp) + labs(title="lbs covar")
+
+# take out outliers
+main_ton_cp <- subset(tonnage_cp,cp %in% rownames(cp_use))
+
+# log-log lbs se
+ggplot(main_ton_cp, aes(x = se, y = mean, color=factor(cp))) + labs(title="log-log lbs - SE") + 
+  geom_point(alpha=0.5) + 
+  facet_grid(year ~ cp) + 
+  scale_y_log10() + 
+  scale_x_log10() + 
+  scale_colour_discrete(name = "Catch Profile",
+                        labels=c("Crab","Sablefish","Rockfish",
+                                 "Rockfish","Salmon","Albacore","Pink Shrimp",
+                                 "Rockfish","Whiting")) + theme_light()
+
+# log-log lbs covar
+ggplot(main_cp, aes(x = covar, y = mean, color=factor(cp))) + geom_point(alpha=0.5) + labs(title="log-log lbs covar") +   scale_y_log10() + 
+  scale_x_log10() + facet_grid(year ~ cp)  + scale_colour_discrete(name = "Catch Profile",
+                        labels=c("Crab","Sablefish","Rockfish",
+                                 "Rockfish","Salmon","Albacore","Pink Shrimp",
+                                 "Rockfish","Whiting")) +theme_light()
+# lbs sd
+ggplot(main_cp, aes(x = sd, y = mean, color=factor(cp))) + geom_point(alpha=0.5) + labs(title="lbs sd") +   facet_grid(year ~ cp)  + scale_colour_discrete(name = "Catch Profile",
+                        labels=c("Crab","Sablefish","Rockfish",
+                                 "Rockfish","Salmon","Albacore","Pink Shrimp",
+                                 "Rockfish","Whiting")) +theme_light()
+
+# lbs covar
+ggplot(main_cp, aes(x = covar, y = mean, color=factor(cp))) + geom_point(alpha=0.5) + labs(title="lbs covar") + facet_grid(year ~ cp)  + scale_colour_discrete(name = "Catch Profile",
+                        labels=c("Crab","Sablefish","Rockfish",
+                                 "Rockfish","Salmon","Albacore","Pink Shrimp",
+                                 "Rockfish","Whiting")) + theme_light()
+# lbs sd
+ggplot(main_cp, aes(x = sd, y = mean, color=factor(cp))) + geom_point(alpha=0.5) + labs(title="lbs sd") + facet_grid(year ~ cp)  + scale_colour_discrete(name = "Catch Profile",
+                        labels=c("Crab","Sablefish","Rockfish",
+                                 "Rockfish","Salmon","Albacore","Pink Shrimp",
+                                 "Rockfish","Whiting")) + theme_light()
+
+```

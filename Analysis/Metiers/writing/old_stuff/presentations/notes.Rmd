@@ -1,0 +1,96 @@
+---
+title: "Metier outline"
+author: "emma"
+date: "September 10, 2014"
+output: html_document
+bibliography: refs.bib
+---
+
+## Introduction 
+
+Fisheries are interdisciplinary
+
+> Fisheries science is not a displine in itself, but rather the application of most of the basic sciences to the marine milieu and living resources in the seas. - @allen1986dynamics
+
+Fisheries management only studies the fish, despite a fishery being defined as a set of fish and people who harvest them
+
+> The philosophy underlying the use of the logistic model [in fisheries management] is one in which the whole behavior of the fishermen is subsumed and reduced to an "applied fishing mortality." - @allen1986dynamics
+
+What is the definition of a fishery?
+
+Fisheries managment must consider more than a single species and harvester 
+
+> [Haddock] is a hunted species, while code and polluck are often taken when it is difficult to obtain haddock, as by-catches or when inventories of these species fall to low levels. This is one reason why the understanding and control of a fishery cannot be based on single species equations or single spatial zones. Fishermen switch in and out of fisheries depending on the abundances available in others. - @allen1986dynamics
+
+We are slowly adopting a multi-species, ecosystem approach to management. But this single-species multi-species dichotomy exists for resource users too. 
+
++ First thought of fishing pressure as disembodied "applied fishing mortality"
++ Then thought of a "fleet" but didn't specify if increases/decreases in fishing pressure were due to more boats or the same boats fishing more
++ Then thought of catch on an individual level (CPUE)
++ And do consider that fishermen will enter/exit fisheries due to relative profitability of other fisheries. But don't manage these human-linked systems. (that I'm aware of!)
+
+
+Human linkages are important, particularly because ecologists aren't quick to realize that while crab and tuna are essentially unrelated ecologically, the same people are fishing both of them. Thus a change in one fishery might affect another ecologically unrelated fishery. 
+
+Here I proposed a new way of defining fisheries and mapping their connectivity. And I consider whether there is evidence of management changes disproportionately affecting fisheries that are well connected with the target fishery
+
+(alternate motivation: I wanted to compare fisheries to one antoher, didn't have a good way of defining them.)
+
+## Methods
+
+The steps are 
+
+1. Define fisheries, categorize trips into different fisheries
+  - species assemblages = similar species
+  - same gear types = unique combinations of gear and species assemblages
+2. Examine connectivity of fisheries: how many vessels participate in more than one fishery
+  -  use shiny to make network, flip from year to year. [See here](http://trestletechnology.net:3838/grn/)
+3. Focus on ITQ vessels (which fisheries do they fall in)
+  - look at before and after. Are their networks the same?
+  - possible metrics
+    - shortest path?
+    - centrality
+    - natural groups/communities: graph partitioning
+
+
+The word "fishery" commonly used. Some definitions
+
++ " A fishery is an entity engaged in raising or harvesting fish which is determined by some authority to be a fishery [wikipedia]"
+  - it's a fishery if we say it's a fishery
++ FAO defines it as "people involved, species or type of fish, area of water or seabed, method of fishing, class of boats, purpose of the activities or a combination of foregoing features"
+  - It's hierarchical, and the word "fishery" does not, itself, connote what scale you're defining the system at. 
++ A more general one is a group of fish and fishers in a region, the latter fishing for similar species with similar gear types
+  - This is the definition I'm working with. 
+  
+This gives me two clearly defined targets to shoot for. First species assemblages
+
+Used topic models: Latent Dirchiliet Allocation (LDA)
+
+## Results
+
+Species assemblages found
+
++ LDAvis output
+
+Number of fisheries found
+
++ Unique combinations of observed gear/species assemblages found
+
+Distribution of trips over time
+
++ time seires of number of trips per week by trip across all 5 years
+
+Connectivity by year
+
++ network with dual participation
+
+Zoom into ITQ affected vessels
+
++ Networks before 2011 and after 2011
+
+## Discussion
+
+Is there a real difference between networks?
+
++ Probably need suggetions for how to characterize netwroks
++ Also different connectivity definitions. 

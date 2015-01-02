@@ -1,0 +1,644 @@
+---
+title: "What the heck is going on with the duplicates?"
+author: "Emma Fuller"
+date: "November 11, 2014"
+output: beamer_presentation
+---
+
+# Characterizing all duplicates
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message = FALSE)
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,results='hide'}
+library(data.table);library(ggplot2)
+if(!file.exists("dat/dupTimes.Rdata")){
+load("../3_VMSdf.Rdata")
+
+VMSdf[,"dups":=duplicated(VMSdf,by=c("Ship_Number","Date_Time")),with=FALSE] 
+dupTimes <- VMSdf[,sum(dups),by=Ship_Number]
+setnames(dupTimes,"V1","num_dups")
+save(dupTimes,file="dat/dupTimes.Rdata")
+rm(VMSdf)
+}else{
+  load("dat/dupTimes.Rdata")
+}
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height=5}
+hist(subset(dupTimes, num_dups>0)[,num_dups],freq=F,col="grey",bor="slategray",breaks=100,ylim=c(0,0.02),main="frequency of duplicated points",xlab="number of times duplicated")
+lines(density(subset(dupTimes, num_dups>0)[,num_dups]),col="indianred",lwd=2)
+```
+
+`r round(nrow(dupTimes[num_dups>0])/nrow(dupTimes),2)*100`% of vessels have at least one duplicate, the median is `r subset(dupTimes, num_dups>0)[,median(num_dups)]` (if you had $>0$ duplicated points), and the maximum is `r dupTimes[,max(num_dups)]` duplicated points (for a single vessel!). Start off by looking at vessel with most duplicates
+
+# Maximally duplicated vessel
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE,fig.height=6}
+# find max
+#dupTimes[dupTimes[,which.max(num_dups)]]
+# max vessel only has 3027 duplicate points now.
+#----
+# look at max vessel
+#----
+
+load("/Users/efuller/1/CNH/Analysis/VMS/writing/code/2_coastline.Rdata")
+# make WC a dataframe for ggplot2
+WC.points <- fortify(WC,region="id")
+
+if(!file.exists("dat/maxdups.Rdata")){
+  load("../3_VMSdf.Rdata")
+  maxdups <- subset(VMSdf,Ship_Number=="X00426")
+  rm(VMSdf)
+  save(maxdups,file="dat/maxdups.Rdata")
+}else{
+  load("dat/maxdups.Rdata")
+}
+
+ggplot(maxdups, aes(x=Longitude, y=Latitude, colour=factor(dups))) + 
+  geom_point(size=1) + theme_minimal() + coord_equal() + 
+  geom_polygon(data = WC.points, aes(x=long, y=lat, group=group), 
+               colour="grey10", fill="grey10") +
+  coord_map( xlim=range(maxdups[,range(Longitude)])+c(-1.5,2.5), 
+             ylim = range(maxdups[,range(Latitude)]))
+```
+
+No obvious pattern of duplicates, points seem along trajectories. 
+
+Looking at those points more closely to see if I can find a pattern. Will look at a subset of this vessel's trips which have duplicates.
+
+# Maximally duplicated vessel - first set
+```{r setup,echo=FALSE,warning=FALSE,message=FALSE,results='hide'}
+# look at a subset of trips. Find when the first duplicates are and look at a few of those trips
+# make column that puts TRUE for all duplicated points
+maxdups[,"alldups" := duplicated(maxdups, by = "Date_Time") | duplicated(maxdups,by = "Date_Time", fromLast=TRUE), with=FALSE]
+
+# head(which(maxdups[,alldups]==TRUE),20)
+
+# define function for plotting
+buf = .1
+plot_dups <- function(df=newdf, buffer=buf){
+  ggplot(df, aes(x=Longitude,y=Latitude, color=factor(alldups))) + 
+    geom_polygon(data = WC.points, aes(x=long, y=lat, group=group), 
+                 colour="grey10", fill="grey10") + 
+    geom_point(shape=3,size=5) + theme_minimal() + coord_equal() +
+    coord_map( xlim=range(df[,range(Longitude)])+c(-1*buffer,buffer), 
+               ylim = range(df[,range(Latitude)])+c(-1*buffer,buffer))
+}
+#display variables
+vars = c("Longitude","Latitude","Date_Time","Avg_Speed","Avg_Direction")
+
+library(pander)
+```
+
+The first duplicated set of points is at port.
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ind <- 6660:6665
+plot_dups(df=maxdups[ind])
+```
+
+# Maximally duplicated vessel - first set
+```{r,echo=FALSE}
+panderOptions("table.split.table",Inf)
+emphasize.strong.rows(which(subset(maxdups[ind])[,alldups]==TRUE, arr.ind=TRUE))
+pander(subset(maxdups[ind], select=vars))
+```
+
+# Maximally duplicated vessel - second set
+The second one is at port
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ind <- 7062:7067
+plot_dups(df=maxdups[ind])
+```
+
+# Maximally duplicated vessel - second set
+```{r,echo=FALSE}
+panderOptions("table.split.table",Inf)
+emphasize.strong.rows(which(subset(maxdups[ind])[,alldups]==TRUE, arr.ind=TRUE))
+pander(subset(maxdups[ind], select=vars))
+```
+
+# Maximally duplicated vessel - third set
+The third one is also onland
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+ind <- 12673:12676
+plot_dups(df=maxdups[ind])
+```
+
+# Maximally duplicated vessel - third set
+
+```{r,echo=FALSE}
+panderOptions("table.split.table",Inf)
+emphasize.strong.rows(which(subset(maxdups[ind])[,alldups]==TRUE, arr.ind=TRUE))
+pander(subset(maxdups[ind], select=vars))
+```
+
+# Maximally duplicated vessel - at sea
+So let's find the  duplicates that are not onland, for example
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+pander(head(subset(maxdups,alldups==TRUE & 
+                     onland==FALSE,select=vars),5))
+```
+
+# Maximally duplicated vessel - first at sea set
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ind <- 12715:12718
+plot_dups(df=maxdups[ind],buffer = .5)
+```
+
+# Maximally duplicated vessel - first at sea set
+```{r,echo=FALSE}
+panderOptions("table.split.table",Inf)
+emphasize.strong.rows(which(subset(maxdups[ind])[,alldups]==TRUE, arr.ind=TRUE))
+pander(subset(maxdups[ind], select=vars))
+```
+
+These are essentially on top of each other. The only difference is that the average speed and average direction are 0 for the first duplicate. 
+
+# Maximally duplicated vessel - second at sea set
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ind <- 12719:12723
+plot_dups(df=maxdups[ind],buffer = .5)
+```
+
+# Maximally duplicated vessel - second at sea set
+```{r,echo=FALSE}
+panderOptions("table.split.table",Inf)
+emphasize.strong.rows(which(subset(maxdups[ind])[,alldups]==TRUE, arr.ind=TRUE))
+pander(subset(maxdups[ind], select=vars))
+```
+
+Same thing. 
+
+# Maximally duplicated vessel - third at sea set
+Look at the next at sea one
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ind <- 12730:12733
+plot_dups(df=maxdups[ind],buffer = .5)
+```
+
+# Maximally duplicated vessel - third at sea set
+```{r,echo=FALSE}
+panderOptions("table.split.table",Inf)
+emphasize.strong.rows(which(subset(maxdups[ind])[,alldups]==TRUE, arr.ind=TRUE))
+pander(subset(maxdups[ind], select=vars))
+```
+
+# Maximally duplicated vessel - fourth at sea set
+and next one same thing. 
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ind <- 12855:12859
+plot_dups(df=maxdups[ind],buffer = .5)
+```
+
+# Maximally duplicated vessel - fourth at sea set
+
+```{r,echo=FALSE}
+panderOptions("table.split.table",Inf)
+emphasize.strong.rows(which(subset(maxdups[ind])[,alldups]==TRUE, arr.ind=TRUE))
+pander(subset(maxdups[ind], select=vars))
+```
+
+# Another vessel
+```{r load_v2,echo=FALSE,warning=FALSE,message=FALSE,results='hide'}
+dupTimes <- dupTimes[order(dupTimes$num_dups, decreasing=T),]
+head(dupTimes)
+
+if(!file.exists("dat/v2.Rdata")){
+  load("../3_VMSdf.Rdata")
+  v2 <- subset(VMSdf, Ship_Number==dupTimes[2,Ship_Number])
+  v2[,"alldups" := duplicated(v2, by = "Date_Time") | duplicated(v2,by = "Date_Time", fromLast=TRUE), with=FALSE]
+
+  save(v2,file="dat/v2.Rdata")
+  rm(VMSdf)
+}else(load("dat/v2.Rdata"))
+```
+This vessel has the second most duplicated points
+```{r plot_v2, echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(v2, aes(x=Longitude, y=Latitude, colour=factor(alldups))) + 
+  geom_point(size=1) + theme_minimal() + coord_equal() + 
+  geom_polygon(data = WC.points, aes(x=long, y=lat, group=group), 
+               colour="grey10", fill="grey10") +
+  coord_map( xlim=range(maxdups[,range(Longitude)])+c(-1.5,2.5), 
+             ylim = range(maxdups[,range(Latitude)]))
+```
+
+# Second vessel - first set
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ind <- 6735:6738
+plot_dups(df=v2[ind],buffer = .5)
+```
+
+# Second vessel - first set
+```{r,echo=FALSE}
+panderOptions("table.split.table",Inf)
+emphasize.strong.rows(which(subset(v2[ind])[,alldups]==TRUE, arr.ind=TRUE))
+pander(subset(v2[ind], select=vars))
+```
+
+erg. now the first one seems to be the weird one. previous ones it was the second. and in this case it seems like the zero is the weird one. but here it'd make more sense for 0 to be the true
+
+# Second vessel - second set
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ind <- 6750:6753
+plot_dups(df=v2[ind],buffer = .5)
+```
+
+# Second vessel - second set
+```{r,echo=FALSE}
+panderOptions("table.split.table",Inf)
+emphasize.strong.rows(which(subset(v2[ind])[,alldups]==TRUE, arr.ind=TRUE))
+pander(subset(v2[ind], select=vars))
+```
+
+also this one has the weird 180 thing
+
+# Second vessel - third set
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ind <- 6755:6760
+plot_dups(df=v2[ind],buffer = .5)
+```
+
+# Second vessel - third set
+```{r,echo=FALSE}
+panderOptions("table.split.table",Inf)
+emphasize.strong.rows(which(subset(v2[ind])[,alldups]==TRUE, arr.ind=TRUE))
+pander(subset(v2[ind], select=vars))
+```
+
+yep, same pattern
+
+# Second vessel - fourth set
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ind <- 6892:6895
+plot_dups(df=v2[ind],buffer = .5)
+```
+
+# Second vessel - fourth set
+```{r,echo=FALSE}
+panderOptions("table.split.table",Inf)
+emphasize.strong.rows(which(subset(v2[ind])[,alldups]==TRUE, arr.ind=TRUE))
+pander(subset(v2[ind], select=vars))
+```
+
+And now we're back to the 0 points being the weird ones. 
+
+# Second vessel - fifth set
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ind <- 6908:6913
+plot_dups(df=v2[ind],buffer = .5)
+```
+
+# Second vessel - fifth set
+```{r,echo=FALSE}
+panderOptions("table.split.table",Inf)
+emphasize.strong.rows(which(subset(v2[ind])[,alldups]==TRUE, arr.ind=TRUE))
+pander(subset(v2[ind], select=vars))
+```
+
+Again with the double zero weird ones
+
+# Let's review, what have we learned?
+
+Seems like one thing I could do is to search for duplicates in which one entry has non-zero entries for both average speed and direction and the other has zero. Then remove the zero ones. As this seems to be a constant pattern.
+
+but I guess more broadly I'm interested in what the differences are between these duplicates. And so far all of these duplicates have the same lat/lon positions, but the instanteneous speed and direction are what's differing. 
+
+So want to see the differences between average speed, direction, lat/lon for all duplicated time points.
+
+# Looking at what's the same and what's different among duplicate points
+```{r setup_dups,warning=FALSE,message=FALSE,echo=FALSE,results='hide'}
+if(!file.exists("dat/duplicates.Rdata")){
+  load("../3_VMSdf.Rdata")
+  # subset to duplicate instances
+  duplicates <- subset(VMSdf,alldups==TRUE)
+  save(duplicates,file="dat/duplicates.Rdata")
+  rm(VMSdf)
+}else{
+  load("dat/duplicates.Rdata")
+}
+
+library(dplyr) # might be more efficient to do it this way
+dup_ves <- group_by(duplicates, Ship_Number, Date_Time)
+diff_ves <- summarise(dup_ves, dlat = mean(diff(Longitude)), dlon = mean(diff(Latitude)), 
+                      dspeed = mean(diff(Avg_Speed)), 
+                      ddirection = mean(diff(Avg_Direction)))
+```
+
+Look at the frequency of occurance for each combination of non-zero entries
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height=5}
+# look at frequency of occurance for each combination of non-zero entries
+dif_df =   data.frame(dlat = diff_ves$dlat!=0, dlon = diff_ves$dlon!=0, dspeed = diff_ves$dspeed!=0, ddirection = diff_ves$ddirection!=0)
+
+barplot(table(rowSums(dif_df)),bor=F,col="grey10",xlab="number of fields that are different in a duplicated record",ylab="freq of occurance")
+```
+
+Most have two that are different, then just have one. Much smaller number have 3 that are different, and even fewer have all 4. 
+
+# Looking at duplicate entries which have only one field different
+```{r, fig.height=5}
+just_one <- dif_df[which(rowSums(dif_df)==1),]
+
+barplot(colSums(just_one),bor=FALSE, col="grey10",ylab="freq of occurance")
+```
+
+It appears to be mostly direction
+
+# Of those that have differences in direction, what are the values?
+Just looking at those that have one difference, and it's direction, subset those
+want to look at vessels directional values when are duplicated versus when they're not.
+
+Are big values (like 180/270) indictive of duplicates?
+
+```{r,fig.height=4}
+# directional differences distances
+direction_diff <- subset(diff_ves, ddirection !=0 & dspeed==0 & dlon==0 & dlat==0)
+raw_diffs <- subset(duplicates, Ship_Number %in% unique(direction_diff$Ship_Number))
+
+# non-directional differences distances
+good_direction <- subset(diff_ves, ddirection==0)
+good_diffs <- subset(duplicates, Ship_Number %in% unique(good_direction$Ship_Number))
+
+hist(raw_diffs$Avg_Direction, col="tomato",main="",xlab="Avg_Direction",bor="indianred")
+hist(good_diffs$Avg_Direction,add=T,col="wheat",bor="goldenrod")
+legend("topright",fill=c("tomato","wheat"),bty='n', legend=c("with directional differences","without directional differences"),title="duplicates...",bor=c("indianred","goldenrod"))
+```
+
+Nope.
+
+# Of those that have two different fields, which are those? 3?
+```{r,fig.height=3}
+just_two <- dif_df[which(rowSums(dif_df)==2),]
+
+barplot(colSums(just_two),bor=F,col="grey10") 
+```
+
+Direction and speed, what I guessed.
+
+```{r,fig.height=3}
+just_three <- dif_df[which(rowSums(dif_df)==3),]
+
+barplot(colSums(just_three),bor=F,col='grey10')
+```
+
+Some combinations of all three.
+
+# Reflections
+One shortcut would be to take out any duplicate that has 0 for both `Avg_Speed` and `Avg_ Direction`. When on the water, I bet I'd be correct. And if it's the wrong one at port, it doesn't matter because I'm not going to be using the at_port vessels anyway.
+
+And I wonder how many of them it would remove...
+
+```{r,echo=TRUE}
+nrow(subset(duplicates, 
+            Avg_Speed==0 & Avg_Direction==0))/
+            nrow(duplicates)
+```
+
+That knocks out about 40% of all duplicated points, which maybe means about 80% of the duplicates would disappear. A lot. Should know what the other ones are though.
+
+# Examples of double-zeros
+```{r}
+#diff_ves[254,]
+if(!file.exists("dat/dawn.Rdata")){
+  load("../3_VMSdf.Rdata")
+  dawn <- subset(VMSdf, Ship_Number=="X00222")
+  save(dawn,file="dat/dawn.Rdata")
+}else{
+  load("dat/dawn.Rdata")
+  }
+#which(dawn$Date_Time=="2011-06-04 20:08")
+plot_dups(dawn[2225:2239],buffer=.5)
+```
+
+Three different duplicates. All have a double zero partner
+
+# Double zero partners
+```{r results='asis'}
+panderOptions("table.split.table",Inf)
+emphasize.strong.rows(which(subset(dawn[2229:2235])[,alldups]==TRUE, arr.ind=TRUE))
+pander(subset(dawn[2229:2235], select=vars))
+```
+
+# And also
+This is an excellent time series. In my original counting these duplicates would show up as the `Avg_Speed` being the field that differs between duplicates. But all of these disappear if I pull the double-zero duplicated partner. 
+
+I'll pull the double zero vessels, and redo the exploration: how many duplicates am I left with? What fields are different? 
+
+# Looking at speed ones
+After removing the double zero duplicates I'm left with about 40% of the original duplicated points. 
+```{r,eval=FALSE}
+if(!file.exists("dat/dz_removed.Rdata")){
+  load("../3_VMSdf.Rdata")
+  dz_removed <- VMSdf[-which(VMSdf$alldups==TRUE & VMSdf$Avg_Speed==0 & VMSdf$Avg_Direction==0)]
+  dz_removed[,"dz_dups":=duplicated(dz_removed, by=c("Ship_Number","Date_Time")) | duplicated(dz_removed, by = c("Ship_Number","Date_Time"), fromLast = TRUE),with=FALSE]
+  rm(VMSdf)
+  save(dz_removed, file="dat/dz_removed.Rdata")
+}else{
+  load("dat/dz_removed.Rdata")
+}
+```
+
+```{r,echo=TRUE,eval=FALSE}
+nrow(subset(dz_removed,dz_dups==TRUE))/
+  nrow(subset(dz_removed,alldups==TRUE))
+```
+
+(Trust me on this, data is too big to load into the presentation.)
+
+
+# Which fields differ?
+```{r,fig.height=3}
+if(!file.exists("dat/dz_dups.Rdata")){
+  load("dat/dz_removed.Rdata")
+  dz_dups <- subset(dz_removed, dz_dups==TRUE)
+  save(dz_dups, file="dat/dz_dups.Rdata")
+}else{
+  load("dat/dz_dups.Rdata")
+}
+
+dup_ves <- group_by(dz_dups, Ship_Number, Date_Time)
+dz_ves <- summarise(dup_ves, dlat = mean(diff(Longitude)), dlon = mean(diff(Latitude)), 
+                      dspeed = mean(diff(Avg_Speed)), 
+                      ddirection = mean(diff(Avg_Direction)))
+
+dif_df = data.frame(dlat = dz_ves$dlat!=0, dlon = dz_ves$dlon!=0, dspeed = dz_ves$dspeed!=0, ddirection = dz_ves$ddirection!=0)
+
+just_one <- dif_df[which(rowSums(dif_df)==1),]
+barplot(colSums(just_one),bor=F, main="One field differs",col="grey10")
+```
+
+Still direction by a long shot
+
+```{r,fig.height=3}
+par(mfrow=c(1,2))
+just_two <- dif_df[which(rowSums(dif_df)==2),]
+barplot(colSums(just_two),bor=F, col="grey10", main = "Two fields differ")
+
+just_three <- dif_df[which(rowSums(dif_df)==3),]
+barplot(colSums(just_three),bor=F,col="grey10",main="Three fields differ")
+```
+
+Still speed and direction when more than one field differs though. 
+
+# Overall
+Still two fields differing that dominates. 
+
+```{r, fig.height=6}
+barplot(table(rowSums(dif_df)),bor=F,col="grey10",main="number of fields differing between duplicate points")
+```
+
+Next is to look at vessels that have differences between speeds and directions
+
+# Look at number of duplicates by vessel, start with the vessel with the most duplicates overall
+```{r}
+barplot(sort(table(dz_ves$Ship_Number),decreasing=TRUE),bor=F,las=2,cex.names=.1,col="grey10",ylab="Number of duplicate records")
+```
+
+# First example
+```{r}
+# vessel name
+if(!file.exists("dat/v1.Rdata")){
+  load("dat/dz_removed.Rdata")
+  name <- names(sort(table(dz_ves$Ship_Number),decreasing=T)[1])
+  v1 <- subset(dz_removed, Ship_Number==name)
+  save(v1, file="dat/v1.Rdata")
+  rm(dz_removed)
+}else{
+  load("dat/v1.Rdata")
+}
+
+ggplot(v1, aes(x=Longitude, y=Latitude, colour=factor(dz_dups))) + 
+  geom_point(size=2,alpha=.5) + theme_minimal() + coord_equal() + 
+  geom_polygon(data = WC.points, aes(x=long, y=lat, group=group), 
+               colour="grey10", fill="grey10") +
+  coord_map( xlim=range(v1[,range(Longitude)])+c(-1.5,2.5), 
+             ylim = range(v1[,range(Latitude)]))
+```
+
+Appears that most of the duplicates are in one place.
+
+# First example
+
+```{r}
+par(mfrow=c(2,1), mai=c(1.1,.5,0,0))
+hist(subset(v1, dz_dups==TRUE)$Longitude,breaks=100,bor="grey10",main="",xlab="Longitude",col="grey10")
+hist(subset(v1, dz_dups==TRUE & onland==FALSE)$Longitude,breaks=80,bor="steelblue",main="",xlab="Longitude",col="steelblue",add=T)
+legend("topleft",bor=c("grey10","steelblue"),fill=c("grey10","steelblue"),legend=c("all duplicates","only those off land"),bty="n")
+hist(subset(v1, dz_dups==TRUE)$Latitude,breaks=100,bor="grey10",col="grey10",main="",xlab="Latitude")
+hist(subset(v1, dz_dups==TRUE & onland==FALSE)$Latitude,breaks=100,bor="steelblue",col="steelblue",main="",xlab="Latitude",add=T)
+```
+
+Although there are duplicates scattered throughout. 
+
+# Focus on that one spot
+```{r}
+one_spot <- subset(v1, Longitude < -124.35 & Longitude > -124.5 & Latitude > 43.35 & Latitude < 43.5)
+
+ggplot(one_spot, aes(x=Longitude, y=Latitude, colour=factor(dz_dups))) + 
+  geom_point(size=4, alpha=.5) + theme_minimal() + coord_equal() + 
+  geom_polygon(data = WC.points, aes(x=long, y=lat, group=group), 
+               colour="grey10", fill="grey10") +
+  coord_map( xlim=range(one_spot[,range(Longitude)]) + c(-.05,.05), 
+             ylim = range(one_spot[,range(Latitude)]))
+```
+
+# The first recorded duplicate at that spot
+```{r,fig.height=4}
+#head(which(one_spot$dz_dups==TRUE))
+with(one_spot[155:167],plot(Longitude, Latitude, asp=1,type="b",col=dz_dups+1,pch=19))
+plot(WC,add=T,col="grey10")
+```
+
+Which to me makes it look like both of the points there look weird. What's the inferred speed for those segments?
+
+```{r}
+foo <- as.matrix(subset(one_spot[155:167],select=c("Longitude","Latitude")))
+path <- vector()
+for(i in 1:(nrow(foo)-1)){
+  path[i] <- spDistsN1(t(as.matrix(foo[i+1,])),foo[i,],longlat = TRUE)
+}
+
+times <- as.POSIXct(one_spot$Date_Time[155:167],format="%Y-%m-%d %H:%M",tz="US/Pacific")
+
+# speeds therefore distance/time
+pander(round(path/as.numeric(abs(diff(times)/3600)),2))
+```
+These are in km/hr, none look off. So no basis to reject things. 
+
+# First example
+Also occurs to me that there could be rounding to the nearest minute going on. Which means that any points seperated by 1 minute are effectively duplicates also.. And probably with this point, means it should be removed as well. 
+
+(Unrelatedly, this guy is fishing in the middle of the night.)
+
+# First example
+```{r}
+ind <- 155:161
+vars = c("Longitude", "Latitude", "Date_Time","Avg_Speed","Avg_Direction")
+panderOptions("table.split.table",Inf)
+emphasize.strong.rows(which(subset(one_spot[ind])[,dz_dups]==TRUE, arr.ind=TRUE))
+pander(subset(one_spot[ind], select=vars))
+```
+
+# Look for rounding erros and double zeros
+Need to find records with `Avg_Speed=0` and `Avg_Direction=0` and see how frequently they are exactly one minute after another entry. 
+
+But this takes forever (see `.Rmd` version of this presentation for code chunk).
+
+In conclusion.. at this point I will drop all duplicate records. All of them. Both point. Full stop. I'm following up with OLE to hopefully find a better way to resolve these. 
+
+```{r,eval=FALSE}
+dz_ind <- which(dz_removed$Avg_Speed==0 & dz_removed$Avg_Direction==0)
+# way to long, let's only look at not on land points
+length(dz_ind)/nrow(dz_removed)
+
+dz_ind <- which(dz_removed$Avg_Speed==0 & dz_removed$Avg_Direction==0 & dz_removed$onland==FALSE)
+length(dz_ind)/nrow(dz_removed)
+# almost a quarter of all points have this signature. Fantastic. A bet a bunch of these are still in port, just on the water. But still.
+
+# for each vessel see if any entries are double zero, if yes, then check the difference in time just before and after point. 
+
+ships <- unique(dz_removed$Ship_Number)
+list_times <- list()
+# first one takes a long time, all are an hour apart. 
+for(i in 4:length(ships)){
+  if(any(dz_removed$Ship_Number == ships[i] & 
+           dz_removed$Avg_Direction==0 & 
+           dz_removed$Avg_Speed==0 & 
+           dz_removed$onland==FALSE)){
+    
+    cat("starting vessel ",i," out of ",length(ships),"\n")
+    
+    ves <- subset(dz_removed, Ship_Number==ships[i])
+    ves$Date_Time <- as.POSIXct(ves$Date_Time, format = "%Y-%m-%d %H:%M", tz = "US/Pacific")
+    zero_points <- which(ves$Ship_Number == ships[i] & 
+                           ves$Avg_Direction==0 & 
+                           ves$Avg_Speed==0 & 
+                           ves$onland==FALSE)
+    
+    before_after <- data.frame(before=NA, after=NA)
+    for(j in 1:length(zero_points)){
+        
+        bef<- abs(as.numeric(difftime(ves[(zero_points[j]-1)]$Date_Time,ves[zero_points[j]]$Date_Time)))
+      
+        af <- abs(as.numeric(difftime(ves[(zero_points[j]+1)]$Date_Time,ves[zero_points[j]]$Date_Time)))
+
+        before_after[j,1] <- ifelse(length(bef)==0,NA,bef)
+        before_after[j,2] <- ifelse(length(af)==0,NA,af)
+      }
+    before_after <- subset(before_after, before==1/60 | after ==1/60)
+    list_times[[i]] <- ifelse(nrow(before_after)==0, NA, before_after)
+    names(list_times[[i]]) <- ships[i]
+
+  }
+}
+
+# this takes forever.
+```
+

@@ -1,0 +1,115 @@
+Metier_efforts
+========================================================
+author: Emma
+date: 2014-04-19
+
+```{r setup, include=FALSE}
+opts_chunk$set(cache=TRUE)
+```
+
+Goal
+========================================================
+left:60%
+```{r, echo=FALSE,message=FALSE}
+require(ca)
+require(cluster)
+require(ggplot2)
+require(plotrix)
+setwd("/Volumes/NOAA_Data/CNH/")
+
+# load data
+load("Analysis/Metiers/results/2014-03-22/ftl_clust29.Rdata")
+```
+MCA on entire logbook contents, CLARA on entire dataset
+
+relevant effort variables to cluster from fish ticket dataset
+
++ `month`
++ `grid` (finer than `grgroup`)
++ `catch profile`
+
+***
+might be useful: unsure what `pargrp` is, from [PacFin](http://pacfin.psmfc.org/pacfin_pub/table_cols.php)
+> Participation group; see par-group in table cl.]; vesseltype [Vessel type (see vid-type in table cl)])
+
+GRID: Issue of unspecified gears
+========================================================
+left:75%
+
++ `OTH` = other known gear
++ `OHL` = other hook and line gear
++ `ONT` = other net gear
++ `OPT` = other pot gear
++ `USP` = unknown or unspecified
++ `ODG` = other dredge gear
+
+See [here](http://pacfin.psmfc.org/pacfin_pub/data_rpts_pub/code_lists/gr_tree.txt) for reference
+***
+>Clear that I can remove `USP`, but what about others? 
+
+Distribution of gear types
+========================================================
+```{r, echo=FALSE,fig.width=25,fig.height=10}
+#ggplot(ftl_clust,aes(x=grid)) + geom_bar()
+tab_grid <- table(ftl_clust$grid)
+ordered_grid <- names(tab_grid)
+colors = rep("grey",length(ordered_grid))
+colors[which(tab_grid>20000)] <- "dodgerblue"
+colors[grep("^O",ordered_grid)] <- "indian red"
+par(mar=c(3,3,1,0))
+barplot(table(ftl_clust$grid),col=colors,bor=FALSE)
+legend("topleft",legend=c("major contributor", "other-type trips"),fill=c("dodgerblue","indianred"),bty="n",cex=3,bor=FALSE)
+```
+Mostly made up of `CPT` (crab pots), `LGL` (long line/set line), `MDT` (midwater trawls), `RLT` (roller trawls), `TRL` (trolls). 
+
+But `OHL` (other hook and line) and `OTL` (other known gear) are quite substantial 
+
+Can I tell what OTH and OHL are?
+========================================================
+What is `OHL` catching? 
+
+[subset to species present on trips > 100x]
+
+```{r,echo=FALSE,fig.width=25,fig.height=12}
+OHL = subset(ftl_clust,grid=="OHL")
+par(mar=c(3,3,2,0))
+barplot(table(OHL$spid)[which(table(OHL$spid)>100)],col="grey",bor="darkgrey")
+```
+Mostly rockfish (some lingcod)
+
+How about OTH?
+========================================================
+[subset to species present on trips > 100x]
+
+```{r,echo=FALSE,fig.width=25,fig.height=12}
+OTH = subset(ftl_clust,grid=="OTH")
+par(mar=c(3,3,2,0))
+barplot(table(OTH$spid)[which(table(OTH$spid)>100)],col="grey",bor="darkgrey")
+```
+
+Mostly claims, cockles, lots of razor clams, and some red sea urchins. Will remove for subsequent analysis 
+
+Subset data for MCA
+========================================================
+```{r}
+unspecifed <- c("OTH","OHL","ONT","OPT","USP","ODG")
+mca.data <- subset(ftl_clust, !(grid %in% unspecifed), select=c("month","grid","catch_profile")) 
+```
+
+Run MCA
+========================================================
+```{r,fig.align='center',fig.width=20,fig.height=10}
+mca.analysis <- mjca(mca.data)
+plot(mca.analysis,cex=2)
+```
+
+========================================================
+According to Jonas, should scale `values3` to 100% and take only the components that make up 80% of the variance. Not sure where the component-scaled type data exist in the `mca.analysis` object. Also I don't have that many column variables now (only 3), so am just going to go for the clustering.
+
+```{r}
+summary(mca.analysis)$scree
+```
+
+CLARA on data
+========================================================
+clust.ef <- 

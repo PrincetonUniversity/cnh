@@ -1,0 +1,46 @@
+```{r echo=FALSE,message=FALSE}
+require(knitcitations)
+
+```
+
+HMMs
+========================================================
+I'm pretty sure some variant of a hidden-Markov model is appropriate for my data, so the questions are 
+
+1. How do they work?
+2. Which variant to use?
+3. What package/library to use in which language (R, Matlab, Python)?
+
+## How do they work 
+
+### Markov processes
+See [here](http://statisticalrecipes.blogspot.com/search/label/Markov%20chains) and [here](http://stats.stackexchange.com/questions/165/how-would-you-explain-markov-chain-monte-carlo-mcmc-to-a-layperson) for a good introduction to a Markov process, and [here](http://statisticalrecipes.blogspot.com/search/label/Markov%20chains#uds-search-results) for a discussion of stationary distributions. Although I still don't understand the math for calculating the stationary distribution. And finally an example using the `RHmm` package [here](https://gist.github.com/keithshep/438217).
+
+
+### Notes on `r citet(c(Rabiner = "10.1109/5.18626"))`
+
++ Processes generate signals, signal model translate back from the signal to the process. 
++ There are two types of signal models: deterministic and stochastic. An HMM is an example of a stochastic signal model
+
+#### Discrete Markov Processes
+Reviews the theory of discrete Markov chains and shows how the concept of hidden states, where the observation is a probabilistic function of the state, can be used. Illustrates with two examples (coin-tossing and ball-in-urns system).
+
+
+#### Three fundamental probelms of HMMs
+1. Finding the probability of the observed sequence of events given a particular HMM model: this is used if you have many possible Hmms that could apply. By finding the the model that is most likely to generate the observed sequence of events, you determine the best model to use. This is accomplished using a forward-backward algorithm. 
+2. Determination of the best sequence of model states: Given that you've chosen an Hmm to use, then the question is to figure out what state each observation belongs to. One approach is to figure out which state an observation is mostly likely to be in individaully for each observaiton. But this could lead to a transition between states that is not possible. You could try to maximize the expected number of correct pairs or triplets of states, but the most widely used criterion is based on dynamic programming methods and is the Viterbi algorithm. 
+3. Fitting model parameters: there is no known way to analytically solve for the model that maximizes the probability of the observation sequence. Instead, parameters are chosen during a finite training run and find the local maximum using an interative procedure like the Baum-Welch method or gradient techniques. 
+
+#### Examples of HMMs
+Discuss the various types but also the model features such as the form of the observation density function, the state duration density, and the optimization criterion for chooosing optimal HMM parameter values. 
+
+#### Issues in implementing HMMs 
+Includes topics of scaling, initial parameter estimates, model size, model form, missing data, and multiple observation sequences. 
+
+## Questions for application to VMS data
+How are the observation symbol probability distributions defined (ranges of turning angles, speeds, etc. that correspond to a particular state)?
+How much training data is used? Is it possible to use Hmms on boats without observer data? What would you say about their true state?
+
+Should an observation sequence be 5 years long? Or just the duration of the trip at sea? 
+
+How to tell if I should use different models at different times? Spring v. Summer? Targeting one species versus another?

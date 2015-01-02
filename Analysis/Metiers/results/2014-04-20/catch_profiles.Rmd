@@ -1,0 +1,278 @@
+---
+title: "Catch Profiles"
+author: "Emma Fuller"
+date: "April 22, 2014"
+output: html_document
+---
+
+```{r,echo=FALSE,message=FALSE}
+require(cluster)
+require(ggplot2)
+require(dplyr)
+require(reshape2)
+require(plyr)
+require(scales)
+require(data.table)
+require(RColorBrewer)
+```
+
+## Setup data to do PCA/clustering on
+Load data
+
+```{r}
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-20/price_tripTable.Rdata")
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-20/lb_tripTable.Rdata")
+#load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-20/FTL_ref.Rdata")
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-20/proportion_tripTable.Rdata")
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-20/log_tripTable.Rdata")
+# if doesn't exist, run bottom of formatFTL.R
+```
+
+## Distribution in 3 different measurements, with some log versions
+Boxplot by biomass (lb), log(lb), or profit ($)
+
+```{r}
+foo <- melt(lb_tripTable, id.vars="tripID")
+bar <- subset(foo, value > 0)
+boxplot(value ~ variable, data=bar, bty="n", main="lbs", las=2)
+
+boxplot(log(value) ~ variable, data=bar, bty="n", main="log(lbs)", las=2)
+
+foo <- melt(price_tripTable, id.vars="tripID")
+bar <- subset(foo, value > 0)
+boxplot(value ~ variable, data=bar, bty="n", main="profit ($)", las=2)
+
+boxplot(log(value) ~ variable, data=bar, bty = "n", main = "log(profit) ($)", las=2)
+
+foo <- melt(proportion_tripTable, id.vars="tripID")
+bar <- subset(foo, value > 0)
+boxplot(value ~ variable, data=bar, main="proportion", main="proportion of trip catch", las=2)
+```
+
+## PCA on 3 different measurements, plus some log variations
+### Lbs
+First on just straight lb measurement
+
+```{r}
+pca_lb <- lb_tripTable[,!"tripID", with=FALSE]
+pca_out_lb <- prcomp(pca_lb, scale=TRUE)
+summary(pca_out_lb)
+```
+
+Requires 44 PCs to keep > 80% of the variance. 
+
+```{r}
+par(mfrow=c(1,2))
+plot(pca_out_lb,npc=65)
+biplot(pca_out_lb)
+```
+
+Possible that the huge variance in the lbs per species means that much of the variance affecting things? 
+
+### log(lbs)
+Next try with `log(lb)`
+
+```{r}
+pca_loglb <- log_tripTable[,!"tripID", with=FALSE]
+pca_out_loglb <- prcomp(pca_loglb, scale=TRUE)
+summary(pca_out_loglb)
+```
+
+Requires 32 PCs to keep > 80% of the variance. 
+
+```{r}
+par(mfrow=c(1,2))
+plot(pca_out_loglb, npc=65)
+biplot(pca_out_loglb)
+```
+
+### Price data
+Next trying with price data
+
+```{r}
+pca_price <- price_tripTable[,!"tripID", with=FALSE]
+pca_out_price <- prcomp(pca_price, scale=TRUE)
+summary(pca_out_price)
+```
+
+Requires 41 PCs to keep > 80% of the variance. 
+
+```{r}
+par(mfrow=c(1,2))
+plot(pca_out_price, npc=65)
+biplot(pca_out_price)
+```
+
+### log(price)
+Next trying with log price data
+
+```{r}
+pca_logprice <- pca_price + 0.1
+pca_logprice <- log(pca_logprice)
+pca_out_logprice <- prcomp(pca_logprice, scale=TRUE)
+summary(pca_out_logprice)
+```
+
+Requires 31 PCs to keep > 80% of the variance. 
+
+```{r}
+par(mfrow=c(1,2))
+plot(pca_out_logprice, npc=65)
+#biplot(pca_out_logprice)
+
+```
+
+### proportion
+Next trying with proportion of catch
+
+```{r}
+pca_proportion <- proportion_tripTable[,!"tripID",with=FALSE]
+pca_out_proportion <- prcomp(pca_proportion, scale=TRUE)
+summary(pca_out_proportion)
+```
+
+Requires 45 PCs to keep > 80% of the variance. 
+
+```{r}
+par(mfrow=c(1,2))
+plot(pca_out_proportion, npc=65)
+biplot(pca_out_proportion)
+```
+
+## Clustering
+
+### Catch profiles
+Going with the `loglb` pca outputs, just arbitrarily. In future, in `clara()` call, should be `pamlike=TRUE` and `rngR=TRUE`. And `set.seed()` should be used to make results reproducible. 
+
+```{r}
+pca.scores<- pca_out_loglb$x[,1:32]
+
+max.clusters = 150
+clusts.dat_log <- vector("list", max.clusters) 
+
+set.seed(47)
+for(i in 1:max.clusters){
+  clusts.dat_log[[i]] <- clara(pca.scores, i, metric = "euclidean", stand = TRUE, samples = 20, sampsize = max.clusters+1, keep.data = FALSE, medoids.x = FALSE)
+  print(i)
+}
+
+# Objective function and ASW
+objectives <- vector(length = max.clusters)
+for (i in 1:max.clusters) { objectives[i] <- clusts.dat_log[[i]]$objective }
+
+asw <- vector(length = max.clusters)
+for (i in 2:max.clusters) { asw[i] <- clusts.dat_log[[i]]$silinfo$avg.width  }
+
+pdf(file="/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-20/sil_widths.pdf")
+for(i in 2:max.clusters){
+  barplot(clusts.dat_log[[i]]$silinfo$clus.avg.widths, main=paste(i, "clusters",sep=" "),ylim=c(0,1))
+  abline(h=clusts.dat_log[[i]]$silinfo$avg.width,lwd=2,col="indianred")
+  # add the number of points in each cluster to the top of the bar
+  text(paste("n = ",VARIABLE_HERE, sep=""))
+}
+dev.off()
+
+
+
+plot(objectives,type='o',pch=19)
+plot(asw, type='o', pch=19)
+```
+
+Can see from silhouette widths that as we go up in number of clusters, get lots of single-point clusters (from the 0 values for silhoutte width). 30 clusters is the maximum average silhoutte width, but if you compare it with clusters that are just a bit before, there are fewer big negative values for points. 
+
+```{r,echo=FALSE}
+sil_34 <- as.data.frame(clusts.dat_log[[34]]$silinfo$widths)
+sil_30 <- as.data.frame(clusts.dat_log[[30]]$silinfo$widths)
+sil_39 <- as.data.frame(clusts.dat_log[[39]]$silinfo$widths)
+sil_46 <- as.data.frame(clusts.dat_log[[46]]$silinfo$widths)
+together <- list(sil_27, sil_30, sil_39, sil_46)
+par(mfrow=c(1,4))
+numclust <- c(34, 30, 39, 46)
+for(i in 1:4){
+  
+cols <- colorRampPalette(brewer.pal(12,"Paired"))(numclust[i])
+barplot(together[[i]]$sil_width, col=cols[together[[i]]$cluster], main=paste(numclust[i]," clusters",sep=""),bor=cols[together[[i]]$cluster], ylim=c(-1,1))
+}
+par(mfrow=c(1,1))
+plot(asw[1:104],type="l",bty="n")
+points(numclust, asw[numclust],pch=19)
+```
+
+From this it looks like 30, 39 and 46 clusters are tough to tell apart on the average silhoutte width plot, and when looking at individual silhoutte plots, 46 really does seem the best (fewest negative points, most well defined clusters). This definitely needs more work. But for now I'll stick with it. [NOTE: this all may change when I re-run the clustering with the appropriate options passed -- `rgnR=TRUE` and `pamlike=TRUE`]
+
+
+#### rough draft, ignore
+So would like to get a feel for how these clusters change. And which logbook events are in each cluster. So for each cluster, would like to make a column labeling which cluster they're in. Then make a network with the number of times each logbook event is in the same cluster as another as the width of the connection. [NOTE: the below is impossible tod o for my full dataset. Instead look in to 'taxonometric clustering' and see Kauffman book, might be the network plot I'm looking for.]
+
+```{r,echo=FALSE}
+# for each element in the list clusts.dat_log
+  # take $clustering and cbind it to clusts.dat_log
+
+foo <- log_tripTable
+clust.net <- as.data.frame(matrix(ncol=max.clusters,nrow=nrow(log_tripTable)))
+c.name <- rep("clust",max.clusters)
+n.name <- seq(1,80)
+names(clust.net) <- paste(c.name,n.name,sep="")
+
+for(j in 1:length(clusts.dat_log)){
+  clust.net[,j] <- clusts.dat_log[[j]]$clustering
+  print(j)
+}
+
+## then to create an association network, count number of times trip is labeled in same cluster as another trip so go through each column, take each pair of trips and count number of times they co-occur. 
+
+# need two matrices, one keeps track of the association network, the other keeps track of whether or not this node has already been evaluated. Once a connection is established, don't need to look the other way. Since it is not directed. If there's a connection from LE 1 to LE 5, to LE 4, to LE 3, then all these nodes are connected also to each other. 
+
+# this is still way too big. Takes a long time to even pre-allocate the association network in R. 
+
+#----- rough draft of attempt to do this. Abandoned at the moment
+
+eval.clust <- vector(length=nrow(clust.net))
+associate.clust <- matrix(0,ncol=nrow(clust.net), nrow=nrow(clust.net))
+i=2
+for(i in 1:ncol(clust.net)){ # clusters
+  for(j in 1:nrow(clust.net)){ # LEs
+    grouped <- which(clust.net[,i] %in% clust.net[j,i])
+    associate.clust[grouped, grouped] <- associate.clust[grouped,grouped] + 1
+  }
+  
+  
+}
+
+```
+
+### Metiers
+The more interesting part is not how to choose exactly the right clusters, but doing the full metier analysis. Next step is to do the gear and month and cluster again with that, along with cluster profile
+
+```{r}
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-20/FTL_ref.Rdata")
+clust_merge <- data.table(tripID=log_tripTable[,tripID], cluster=clusts.dat_log[[46]]$clustering)
+setkey(clust_merge, tripID)
+setkey(FTL.ref, tripID)
+clust46 <- FTL.ref[clust_merge]
+# change the grid to a number
+clust46[,new_grid] <- as.numeric(as.factor(clust46[,grid]))
+
+# metier analysis on gear (grid), month, and catch profile
+max.clusters = 100
+metier_clusts.dat <- vector("list", max.clusters) 
+set.seed(47)
+for(i in 1:max.clusters){
+  metier_clusts.dat[[i]] <- clara(clust46[,!c("tripID","veid"),with=FALSE], i, metric = "euclidean", stand = TRUE, samples = 20, sampsize = max.clusters+1, keep.data = FALSE, medoids.x = FALSE, rngR = TRUE, pamLike=TRUE)
+  print(i)
+}
+```
+
+Then look at what defines each metier. Questions to answer are
+
+1. What proportion of each gear type exists in each metier (stacked barchart)
+2. What proportion of catch profiles exists in each metier (stacked barcharts)
+  + What species represent those catch profiles?
+3. What proportion of each month exists in each metier (stacked barcharts)
+
+Then, how do vessels fall out. 
+
+1. Are any vessels defined by solely 1 metier? (Number of vessels associated with only 1 metier)
+2. Are any vessels associated with 2 metiers... (how many total metiers, this will be the tough spot)
+
+For vessels identified with one metier, which one is it?

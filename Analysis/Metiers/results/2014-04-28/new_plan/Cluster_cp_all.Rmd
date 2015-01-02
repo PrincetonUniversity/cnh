@@ -1,0 +1,397 @@
+---
+title: "Cluster_cp"
+author: "Emma Fuller"
+date: "April 29, 2014"
+output: html_document
+---
+
+# Catch Profiles - all data
+
+```{r load_data_packages, echo=FALSE,message=FALSE}
+
+require(cluster)
+require(plyr)
+require(ggplot2)
+require(data.table)
+require(reshape2)
+require(dplyr)
+require(RColorBrewer)
+
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-28/new_plan/input_data/lb_tripTable_2014-05-01.Rdata")
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-28/new_plan/input_data/prop_tripTable_2014-05-01.Rdata")
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-28/new_plan/input_data/price_tripTable_2014-05-01.Rdata")
+
+# set code parameters
+max.clusts <- 30
+samples = 100
+sampsize = 1000
+```
+
+## PCA and Clustering log(lbs)
+```{r loading,echo=FALSE}
+# if data already exists, load that
+file_load <- "/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-28/new_plan/output_data/clust_log.Rdata"
+if(file.exists(file_load)){
+  load(file_load)
+} else{
+
+# PCA
+pca_loglb <- log_tripTable[[1]][,!"tripID", with=FALSE]
+pca_out_loglb <- prcomp(pca_loglb, scale=TRUE)
+npc <- length(which(summary(pca_out_loglb)[[6]][3,]<= .81))
+
+dat_log <- pca_out_loglb$x[,1:npc]
+  # randomize rows to prevent any bias from order of fish tickets
+  data_log <- dat_log[sample(nrow(dat_log)),]
+clust.dat.log <- vector("list",length = max.clusts)
+
+# Clustering
+set.seed(2)
+for(i in 1:max.clusts){
+  clust.dat.log[[i]] <- clara(dat_log, i, stand=TRUE, samples = samples, sampsize=sampsize, keep.data = FALSE, pamLike=TRUE, rngR = TRUE)
+  print(i)
+  }
+
+objectives <- vector(length = max.clusts)
+for (i in 1:max.clusts) { objectives[i] <- clust.dat.log[[i]]$objective }
+
+asw <- vector(length = max.clusts)
+for (i in 2:max.clusts) { asw[i] <- clust.dat.log[[i]]$silinfo$avg.width  }
+max_asw <- max(asw)
+nodes <- which(asw==max(asw))
+
+# save relevant data
+clust_log <- list(data_transform="log",cluster_sol = nodes, objectives = objectives, asw = asw, clustering = clust.dat.log[[nodes]]$clustering, sampsize=sampsize, samples=samples, npc=npc)
+
+save(clust_log, file="/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-28/new_plan/output_data/clust_log.Rdata")
+}
+
+par(mfrow=c(1,2))
+plot(clust_log$objectives, type="o",pch=19, cex=0.35,bty="n", main="Objective function")
+plot(clust_log$asw, type="o", pch=19, cex=0.35, bty="n", main="Silhouette Width")
+```
+
+I retain `r clust_log$npc` principal components for clustering (which preserves > 80% of the cumulative variance). The maximum average silhouette width is `r max(clust_log$asw)`, and is found at the `r clust_log$cluster_sol` node solution. Examining catch composition for these two clusters I find that 
+
+```{r plotting, cache=FALSE, echo=FALSE, warning=FALSE,fig.width=9, fig.height=13}
+cp2 <- lb_tripTable[[1]]
+cp2 <- cp2[,cp2 := clust_log$clustering]
+
+# what are the mean catches of each species, in order of abundance?
+melt_cp2 <- melt(cp2[,!"cp2",with=FALSE])
+setkey(melt_cp2, "tripID")
+melt_cp2_1 <- melt(cp2[,c("tripID", "cp2"), with=FALSE])
+setnames(melt_cp2_1,names(melt_cp2_1),c("tripID","clustID","cluster2"))
+melt_cp2_1 <- melt_cp2_1[,!"clustID",with=FALSE]
+setkey(melt_cp2_1, "tripID")
+melt_cp2 <- melt_cp2[melt_cp2_1]
+
+  # median abundance by species
+    median_abund <- melt_cp2[,as.double(median(value)),by="variable,cluster2"]
+    sd_abund <- melt_cp2[,sd(value),by="variable,cluster2"]
+    setnames(sd_abund,"V1","sd")
+    median_abund <- median_abund[,"sd":= sd_abund[,"sd",with=FALSE]]
+
+    ranked_abund <- ddply(median_abund, .(cluster2), transform, rank = rank(-V1, ties.method = "first"))
+    top10 <- subset(ranked_abund, rank < 11)
+
+    # now remove any top 10 that are =0, only there to fill out 10 slots
+    top10 <- subset(top10, V1>0)
+
+paint <- colorRampPalette(brewer.pal(8,"Dark2"))(length(unique(top10$variable)))
+species.num <- as.numeric(as.factor(top10$variable))
+ggplot(top10, aes(x=factor(variable), y=V1)) + 
+  geom_bar(stat="identity",aes(fill=factor(variable))) + 
+  facet_wrap(~cluster2,scale="free",ncol=3) + 
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, vjust=1)) 
+  # mean abundance
+    mean_abund <- melt_cp2[,mean(value),by="variable,cluster2"]
+    ranked_abund <- ddply(mean_abund, .(cluster2), transform, rank = rank(-V1, ties.method = "first"))
+    top10 <- subset(ranked_abund, rank < 11)
+
+  # now remove any top 10 that are =0, only there to fill out 10 slots
+    top10 <- subset(top10, V1>0)
+ggplot(top10, aes(x=factor(variable), y=V1)) + 
+  geom_bar(stat="identity",aes(fill=factor(variable))) + 
+  facet_wrap(~cluster2,scale="free",ncol=3) + 
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, vjust=1))
+```
+
+## PCA and Clustering lbs
+```{r, echo=FALSE,results='hide',eval=TRUE}
+
+file_load <- "/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-28/new_plan/output_data/clust_lbs.Rdata"
+if(file.exists(file_load)){
+  load(file_load)
+} else{
+
+# PCA
+pca_lb <- lb_tripTable[[1]][,!"tripID", with=FALSE]
+pca_out_lb <- prcomp(pca_lb, scale=TRUE)
+npc <- length(which(summary(pca_out_lb)[[6]][3,]<= .81))
+
+dat_lb <- pca_out_lb$x[,1:npc]
+  # randomize rows to prevent any bias from order of fish tickets
+  data_lb <- dat_lb[sample(nrow(dat_lb)),]
+clust.dat.lb <- vector("list",length = max.clusts)
+
+set.seed(2)
+for(i in 1:max.clusts){
+  clust.dat.lb[[i]] <- clara(dat_lb, i, stand=TRUE, samples = samples, sampsize=sampsize, keep.data = FALSE, pamLike=TRUE, rngR = TRUE)
+  print(i)
+  }
+
+objectives <- vector(length = max.clusts)
+for (i in 1:max.clusts) { objectives[i] <- clust.dat.lb[[i]]$objective }
+
+asw <- vector(length = max.clusts)
+for (i in 2:max.clusts) { asw[i] <- clust.dat.lb[[i]]$silinfo$avg.width  }
+
+max_asw <- max(asw)
+nodes <- which(asw==max(asw))
+
+# save relevant data
+clust_lbs <- list(data_transform="lbs",cluster_sol = nodes, objectives = objectives, asw = asw, clustering = clust.dat.lb[[nodes]]$clustering, sampsize=sampsize, samples=samples,npc=npc)
+
+save(clust_lbs, file="/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-28/new_plan/output_data/clust_lbs.Rdata")
+    }
+    
+par(mfrow=c(1,2))
+plot(clust_lbs$objectives, type="o",pch=19, cex=0.35,bty="n", main="Objective function")
+plot(clust_lbs$asw, type="o", pch=19, cex=0.35, bty="n", main="Silhouette Width")
+
+```
+
+I retain `r clust_lbs$npc` principal components for clustering (which preserves > 80% of the cumulative variance). The maximum average silhouette width is `r max(clust_lbs$asw)`, and is found at the `r clust_lbs$cluster_sol` node solution. Examining catch composition for these clusters I find that 
+
+```{r, echo=FALSE, warning=FALSE,eval=FALSE}
+cp <- lb_tripTable[[1]]
+cp <- cp[,"cp" := clust_lbs$clustering]
+
+# what are the mean catches of each species, in order of abundance?
+  melt_cp <- melt(cp[,!"cp",with=FALSE])
+  setkey(melt_cp, "tripID")
+  melt_cp_1 <- melt(cp[,c("tripID", "cp"), with=FALSE])
+  setnames(melt_cp_1,names(melt_cp_1),c("tripID","clustID","cluster"))
+  melt_cp_1 <- melt_cp_1[,!"clustID",with=FALSE]
+  setkey(melt_cp_1, "tripID")
+  melt_cp <- melt_cp[melt_cp_1]
+
+  # median abundance by species
+    median_abund <- melt_cp[,as.double(median(value)),by="variable,cluster"]
+    sd_abund <-     melt_cp[,sd(value),by="variable,cluster"]
+    setnames(sd_abund,"V1","sd")
+    median_abund <- median_abund[,"sd":= sd_abund[,"sd",with=FALSE]]
+
+    ranked_abund <- ddply(median_abund, .(cluster), transform, rank = rank(-V1, ties.method = "first"))
+    top10_med <- subset(ranked_abund, rank < 11)
+    colnames(top10_med)[c(3,5)] <- c("median","rank_median")
+
+    # now remove any top 10 that are =0, only there to fill out 10 slots
+    #top10_med <- subset(top10_med, V1>0)
+
+  # mean abundance
+    mean_abund <- melt_cp[,mean(value),by="variable,cluster"]
+    ranked_abund <- ddply(mean_abund, .(cluster), transform, rank = rank(-V1, ties.method = "first"))
+    top10_mean <- subset(ranked_abund, rank < 11)
+    colnames(top10_mean)[c(3,4)] <- c("mean","rank_mean")
+
+  # now remove any top 10 that are =0, only there to fill out 10 slots
+    #top10_mean <- subset(top10_mean, V1>0)
+
+par(mfrow=c(1,2))
+barplot(top10_med$median, col=top10_med$cluster,names.arg =top10_med$variable, las=2,main="median abundance")
+barplot(top10_mean$mean, col=top10_mean$cluster,names.arg =top10_mean$variable, las=2, main="mean abundance")
+
+# looking at it together
+  top10_all <- merge(top10_med, select(top10_mean,variable,mean,rank_mean,cluster),by=c("variable","cluster"),all.x=TRUE,all.y=TRUE) 
+
+```
+
+Looking at median catch, there's many fewer species that zero medians, but non-zero means. This just means that the mean catches are extremely skewed, and that there are very few of them. This result is slightly better than the log(lb) run becaues it reduces that peak at clusters=2, but the 6 cluster solution doesn't immediately look right. Trying with price data
+
+## PCA and Clustering price
+```{r price_cluster, echo=FALSE,results='hide',eval=TRUE}
+
+file_load <- "/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-28/new_plan/output_data/clust_price.Rdata"
+if(file.exists(file_load)){
+  load(file_load)
+} else{
+
+# PCA
+pca_price <- price_tripTable[[1]][,!"tripID", with=FALSE]
+pca_out_price <- prcomp(pca_price, scale=TRUE)
+npc <- length(which(summary(pca_out_price)[[6]][3,]<= .81))
+
+dat_price <- pca_out_price$x[,1:npc]
+  # randomize rows to prevent any bias from order of fish tickets
+  data_price <- dat_price[sample(nrow(dat_price)),]
+clust.dat.price <- vector("list",length = max.clusts)
+# Clustering
+set.seed(2)
+for(i in 1:max.clusts){
+  clust.dat.price[[i]] <- clara(dat_price, i, stand=TRUE, samples = samples, sampsize=sampsize, keep.data = FALSE, pamLike=TRUE, rngR = TRUE)
+  print(i)
+  }
+
+objectives <- vector(length = max.clusts)
+for (i in 1:max.clusts) { objectives[i] <- clust.dat.price[[i]]$objective }
+
+asw <- vector(length = max.clusts)
+for (i in 2:max.clusts) { asw[i] <- clust.dat.price[[i]]$silinfo$avg.width  }
+
+max_asw <- max(asw)
+nodes <- which(asw==max(asw))
+
+# save relevant data
+clust_price <- list(data_transform="price",cluster_sol = nodes, objectives = objectives, asw = asw, clustering = clust.dat.price[[nodes]]$clustering, sampsize=sampsize, samples=samples)
+
+save(clust_price, file="/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-28/new_plan/output_data/clust_price.Rdata")
+}
+
+par(mfrow=c(1,2))
+
+plot(clust_price$objectives, type="o",pch=19, cex=0.35,bty="n", main="Objective function")
+plot(clust_price$asw, type="o", pch=19, cex=0.35, bty="n", main="Silhouette Width")
+
+```
+
+I retain `r clust_price$npc` principal components for clustering (which preserves > 80% of the cumulative variance). The maximum average silhouette width is `r max(clust_price$asw)`, and is found at the `r clust_price$cluster_sol` node solution. Examining catch composition for these clusters I find that 
+
+```{r price_plot, cache=FALSE, echo=FALSE, warning=FALSE,eval=FALSE}
+cp <- price_tripTable[[1]]
+cp <- cp[,"cp" := clust_price$clustering]
+
+# what are the mean catches of each species, in order of abundance?
+melt_cp <- melt(cp[,!"cp",with=FALSE])
+setkey(melt_cp, "tripID")
+melt_cp_1 <- melt(cp[,c("tripID", "cp"), with=FALSE])
+setnames(melt_cp_1,names(melt_cp_1),c("tripID","clustID","cluster"))
+melt_cp_1 <- melt_cp_1[,!"clustID",with=FALSE]
+setkey(melt_cp_1, "tripID")
+melt_cp <- melt_cp[melt_cp_1]
+
+  # median abundance by species
+    median_abund <- melt_cp[,as.double(median(value)),by="variable,cluster"]
+    sd_abund <-     melt_cp[,sd(value),by="variable,cluster"]
+    setnames(sd_abund,"V1","sd")
+    median_abund <- median_abund[,"sd":= sd_abund[,"sd",with=FALSE]]
+
+    ranked_abund <- ddply(median_abund, .(cluster), transform, rank = rank(-V1, ties.method = "first"))
+    top10_med <- subset(ranked_abund, rank < 11)
+    colnames(top10_med)[c(3,5)] <- c("median","rank_median")
+
+    # now remove any top 10 that are =0, only there to fill out 10 slots
+    #top10_med <- subset(top10_med, V1>0)
+
+par(mfrow=c(1,2))
+
+barplot(top10_med$median, col=top10_med$cluster,names.arg =top10_med$variable, las=2,main="median abundance")
+
+  # mean abundance
+    mean_abund <- melt_cp[,mean(value),by="variable,cluster"]
+    ranked_abund <- ddply(mean_abund, .(cluster), transform, rank = rank(-V1, ties.method = "first"))
+    top10_mean <- subset(ranked_abund, rank < 11)
+    colnames(top10_mean)[c(3,4)] <- c("mean","rank_mean")
+
+  # now remove any top 10 that are =0, only there to fill out 10 slots
+    #top10_mean <- subset(top10_mean, V1>0)
+
+barplot(top10_mean$mean, col=top10_mean$cluster,names.arg =top10_mean$variable, las=2, main="mean abundance")
+
+# looking at it together
+top10_all <- merge(top10_med, select(top10_mean,variable,mean,rank_mean,cluster),by=c("variable","cluster"),all.x=TRUE,all.y=TRUE) 
+
+```
+
+Looking at median prices, we're back to two species and mud shrimp are consistently bringing in dollars.  This again just means that the mean catches are extremely skewed, and that there are very few of them. This result is just like the results for log(lbs). 
+
+## PCA and Clustering proportion
+
+```{r cluster_prop, echo=FALSE,results='hide',eval=TRUE}
+file_load <- "/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-28/new_plan/output_data/clust_prop.Rdata"
+if(file.exists(file_load)){
+  load(file_load)
+} else{
+pca_prop <- prop_tripTable[[1]][,!"tripID", with=FALSE]
+pca_out_prop <- prcomp(pca_prop, scale=TRUE)
+npc <- length(which(summary(pca_out_prop)[[6]][3,]<= .81))
+
+dat_prop <- pca_out_prop$x[,1:npc]
+  # randomize rows to prevent any bias from order of fish tickets
+  data_prop <- dat_prop[sample(nrow(dat_prop)),]
+clust.dat.prop <- vector("list",length = max.clusts)
+
+set.seed(2)
+for(i in 1:max.clusts){
+  clust.dat.prop[[i]] <- clara(dat_prop, i, stand=TRUE, samples = samples, sampsize=sampsize, keep.data = FALSE, pamLike=TRUE, rngR = TRUE)
+  print(i)
+  }
+
+objectives <- vector(length = max.clusts)
+for (i in 1:max.clusts) { objectives[i] <- clust.dat.prop[[i]]$objective }
+
+asw <- vector(length = max.clusts)
+for (i in 2:max.clusts) { asw[i] <- clust.dat.prop[[i]]$silinfo$avg.width  }
+
+max_asw <- max(asw)
+nodes <- which(asw==max(asw))
+
+# save relevant data
+clust_prop <- list(data_transform="prop",cluster_sol = nodes, objectives = objectives, asw = asw, clustering = clust.dat.prop[[nodes]]$clustering, sampsize=sampsize, samples=samples)
+
+save(clust_prop, file="/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-28/new_plan/output_data/clust_prop.Rdata")
+
+}
+
+par(mfrow=c(1,2))
+plot(clust_prop$objectives, type="o",pch=19, cex=0.35,bty="n", main="Objective function")
+plot(clust_prop$asw, type="o", pch=19, cex=0.35, bty="n", main="Silhouette Width")
+```
+
+I retain `r clust_prop$npc` principal components for clustering (which preserves > 80% of the cumulative variance). The maximum average silhouette width is `r max(clust_prop$asw)`, and is found at the `r clust_prop$cluster_sol` node solution. Examining catch composition for these clusters I find that 
+
+```{r, echo=FALSE, warning=FALSE,eval=TRUE,fig.width=3,fig.height=10}
+cp <- prop_tripTable[[1]]
+cp <- cp[,"cp" := clust_prop$clustering]
+
+# what are the mean catches of each species, in order of abundance?
+melt_cp <- melt(cp[,!"cp",with=FALSE])
+setkey(melt_cp, "tripID")
+melt_cp_1 <- melt(cp[,c("tripID", "cp"), with=FALSE])
+setnames(melt_cp_1,names(melt_cp_1),c("tripID","clustID","cluster"))
+melt_cp_1 <- melt_cp_1[,!"clustID",with=FALSE]
+setkey(melt_cp_1, "tripID")
+melt_cp <- melt_cp[melt_cp_1]
+
+  # median abundance by species
+    median_abund <- melt_cp[,as.double(median(value)),by="variable,cluster"]
+    sd_abund <-     melt_cp[,sd(value),by="variable,cluster"]
+    setnames(sd_abund,"V1","sd")
+    median_abund <- median_abund[,"sd":= sd_abund[,"sd",with=FALSE]]
+
+    ranked_abund <- ddply(median_abund, .(cluster), transform, rank = rank(-V1, ties.method = "first"))
+    top10_med <- subset(ranked_abund, rank < 11)
+    colnames(top10_med)[c(3,5)] <- c("median","rank_median")
+
+ggplot(top10_med, aes(x=factor(variable), y=median)) + geom_bar(stat="identity",aes(fill=factor(variable))) + facet_wrap(~cluster,scale="free_x",ncol=3)
+
+    # now remove any top 10 that are =0, only there to fill out 10 slots
+    #top10_med <- subset(top10_med, V1>0)
+
+  # mean abundance
+    mean_abund <- melt_cp[,mean(value),by="variable,cluster"]
+    ranked_abund <- ddply(mean_abund, .(cluster), transform, rank = rank(-V1, ties.method = "first"))
+    top10_mean <- subset(ranked_abund, rank < 11)
+    colnames(top10_mean)[c(3,4)] <- c("mean","rank_mean")
+
+  # now remove any top 10 that are =0, only there to fill out 10 slots
+    #top10_mean <- subset(top10_mean, V1>0)
+
+ggplot(top10_mean, aes(x=factor(variable), y=mean)) + geom_bar(stat="identity",aes(fill=factor(variable))) + facet_wrap(~cluster,scale="free_x",ncol=3)
+
+# looking at it together
+top10_all <- merge(top10_med, select(top10_mean,variable,mean,rank_mean,cluster),by=c("variable","cluster"),all.x=TRUE,all.y=TRUE) 
+```

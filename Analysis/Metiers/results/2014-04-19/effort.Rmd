@@ -1,0 +1,75 @@
+---
+title: "Metier_efforts"
+author: "Emma Fuller"
+date: "April 19, 2014"
+output:
+  ioslides_presentation:
+    fig_width: 7.5
+    smaller: yes
+    transition: faster
+  beamer_presentation:
+    fonttheme: structuresmallcapsserif
+  revealjs_presentation:
+    theme: sky
+    transition: linear
+---
+##goal: MCA on entire logbook contents, CLARA on entire dataset
+
+```{r, echo=FALSE,message=FALSE}
+require(ca)
+require(cluster)
+require(ggplot2)
+require(plotrix)
+setwd("/Volumes/NOAA_Data/CNH/")
+
+# load data
+load("Analysis/Metiers/results/2014-03-22/ftl_clust29.Rdata")
+```
+
+relevant effort variables to cluster from fish ticket dataset
+
++ `month`
++ `grid` (finer than `grgroup`)
++ `catch profile`
+
+unsure what `pargrp` is, from [PacFin](http://pacfin.psmfc.org/pacfin_pub/table_cols.php)
+> Participation group; see par-group in table cl.]; vesseltype [Vessel type (see vid-type in table cl)])
+
+## Subset data to these variables
+```{r}
+mca.data <- subset(ftl_clust, select=c("month","grid","catch_profile"))
+```
+
+however, issue of unspecified gears:
+
++ `OTH` = other known gear
++ `OHL` = other hook and line gear
++ `ONT` = other net gear
++ `OPT` = other pot gear
++ `USP` = unknown or unspecified
++ `ODG` = other dredge gear
+
+Clear that I can remove `USP`, but what about others? 
+
+## Distribution of gear types
+```{r, echo=FALSE, fig.align='center'}
+ggplot(ftl_clust,aes(x=grid)) + geom_bar()
+```
+Mostly made up of `CPT` (crab pots), `LGL` (long line/set line), `MDT` (midwater trawls), `RLT` (roller trawls)
+
+## Big effect of removals?
+How many trips are in each of these "other" categories?
+
+```{r eval=FALSE}
+OTH = length(which(ftl_clust$grid=="OTH"))
+OHL = length(which(ftl_clust$grid=="OHL"))
+ONT = length(which(ftl_clust$grid=="ONT"))
+OPT = length(which(ftl_clust$grid=="OPT"))
+USP = length(which(ftl_clust$grid=="USP"))
+
+
+  
+mca.analysis <- mjca(mca.data)
+plot(mca.analysis,contrib="absolute",mass=c(TRUE,TRUE))
+```
+

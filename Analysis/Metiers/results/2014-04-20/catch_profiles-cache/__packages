@@ -1,0 +1,9 @@
+base
+cluster
+dplyr
+ggplot2
+knitr
+plyr
+qgraph
+reshape2
+scales

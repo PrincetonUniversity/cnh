@@ -1,0 +1,12 @@
+# adehabitat package analysis of VMS data
+
+```{r loadData, echo=FALSE}
+  VMS <- read.csv("/Users/efuller/Documents/Projects/Harvesting_Strategies/EmpiricalAnalysis/NOAA/Data_Analysis/VMS/Code/processed_data/shrimpVMS.csv")
+
+# take 1 vessel to start
+  Doc_Nums <- unique(VMS$Doc_Number)
+  sub1 <- subset(VMS, Doc_Number == Doc_Nums[1], c("Vessel_Name","Latitude","Longitude","Date_Time"))
+  sub1$Date_Time <- as.POSIXct(sub1$Date_Time, tz = "Pacific")
+  
+  ordSub1 <- sub1[order(sub1$Date_Time),]
+```

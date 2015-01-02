@@ -1,0 +1,96 @@
+---
+title: "2nd week project"
+output: pdf_document
+---
+
+# Parsing behavioar
+The goal is to segment the movement trajectory into "behavioral states"
+
+## Data preparation
+To test this method, will take 5 vessels that have been observed and classified as on of three sectors (pink shrimp, catch shares, and limited entry trawl), and parse the 5 years worth of data into trip segments. Remove any trip segments which leave the EEZ. 
+
+### Loading the data
+First step is to load observer data to take subset of vessels that are most frequently observed (my best guess is that they'll also be active in the VMS dataset).
+
+```{r}
+require(move)
+require(sp)
+require(maptools)
+require(rgeos)
+require(PBSmapping)
+setwd("/Volumes/NOAA_Data/CNH/")
+Obs <- read.csv("Data/Observers/WCGOPobs/Samhouri_OBFTfinal_Allfisheries_ProcessedwFunction_2009-2012_110613.csv")
+```
+
+Subset vessels from these fisheries.
+```{r}
+shrimp <- subset(Obs, sector=="Pink Shrimp")
+LE_trawl <- subset(Obs, sector=="Limited Entry Trawl")
+CS <- subset(Obs, sector=="Catch Shares")
+```
+
+Then take the vessels top 5 vessels that have the most observered trips -- most likely to be active in VMS dataset. 
+```{r}
+shrimp_numtrips <- rev(sort(table(shrimp$CG_NUM)))
+shrimp_top <- names(shrimp_numtrips)[1:5]
+LE_numtrips <- rev(sort(table(LE_trawl$CG_NUM)))
+LE_top <- names(LE_numtrips)[1:5]
+CS_numtrips <- rev(sort(table(CS$CG_NUM)))
+CS_top <- names(CS_numtrips)[1:5]
+
+all_vessels <- c(shrimp_top,LE_top, CS_top)
+```
+
+Then find these vessels in the VMS data, subset only to them.
+```{r}
+VMS <- read.csv("/Volumes/NOAA_Data/CNH/VMS_cleaning/results/2014-03-02/VMS_woDups.csv")
+VMS_limited <- VMS[which(VMS$Doc_Number %in% all_vessels),] 
+# only 12 out of 15
+```
+  
+Order the data by ID, then by date-time, `move` complains if not
+```{r}
+VMS_ordered <- VMS_limited[order(VMS_limited$Doc_Number, VMS_limited$Date_Time),]
+```
+
+Now make VMS data a move object, ready for analysis!
+```{r}
+VMS_move <- move(
+    x = VMS_ordered$Longitude, 
+  	y = VMS_ordered$Latitude, 
+  	time=as.POSIXct(VMS_ordered$Date_Time, "%Y-%m-%d %H:%M",tz="PST"), 
+  	data=VMS_ordered, 
+  	proj=CRS("+proj=longlat"),
+  	sensor="GPS",
+  	animal=VMS_ordered$Doc_Number)
+```
+
+### Filter for trip
+We're interested in analyzing only the movement that is "out on the water", not sitting in port. The first issue is that fishermen take their boats on the road, so we can have GPS points that are moving on land. Thus a speed filter alone won't work. We can get at this by making a shape file of the US and filtering out points that fall within this polygon. However, often fishermen will be in port, which is not on land, but definitely not at sea, i.e. think of the mouth of the Columbia: Astoria vessels have this issue.
+
+In addition would like to buffer the coastline by some small distance that will filter all vessels that are some small margin away from the coastline. This could possibly be done by bathymetry, but here am just doing it by buffering the coastline. 
+
+First download/load the shapefile
+```{r}
+# need a native binary file database downloaded from http://www.soest.hawaii.edu/pwessel/gshhg/
+		xlimits <- range(VMS_move$Longitude) + 360 # function needs to be in 0-360
+		ylimits <- range(VMS_move$Latitude)
+		polys <- importGSHHS("/Volumes/NOAA_Data/CNH/Data/WCspatial/gshhg-bin-2.3.0/gshhs_h.b",
+                         xlim=xlimits,ylim=ylimits, maxLevel=1)
+		new_poly <- PolySet2SpatialPolygons(polys)
+```
+
+Then buffer, plot difference, zoom into the columbia to check out whether we'll filter out points found there.
+
+```{r}
+bpoly <- gBuffer(new_poly, width=0.05)
+par(mfrow=c(1,2))
+plot(new_poly,col=rgb(0.5,0.5,0.5,0.15))
+plot(bpoly,add=T,col=rgb(0.5,0.5,0.5,0.15))
+plot(new_poly,ylim=c(46,46.5))
+plot(bpoly,add=T,col=rgb(0.5,0.5,0.5,0.15))
+```
+
+## Notes:
+
+VMS_

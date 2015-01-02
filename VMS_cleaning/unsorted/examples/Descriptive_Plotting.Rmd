@@ -1,0 +1,30 @@
+# Descriptive Work 
+This is a log of all the thoughts and approaches I've taken to get a feel for the VMS data.
+
+```{r}
+load("VMS.Rda")
+```
+There are `r length(unique(VMS$Ship_Number))` of fishermen in the data set and `r length(unique(VMS$Declarations))` declarations. According to Jameal the declaration codes should be assumed to be 85-90% accurate, telling us which fishery each vessel participates in. However there are cases where fishermen neglect to update their declarations and situations in which a single vessel participates in different fisheries during different parts of the year or in different locations. However it's a good placeholder. 
+
+
+## Vessel Resolution
+Vessels in the Pacific Coast Groundfish Fishery are requried to transmit a position report hourly. Vessels are allowed to enter a reduced reporting mode (every 4 hours), when in port. There are also exceptions to the VMS rule that allow fishers to turn their units off (Out of Area, Hal Out, Emergency, Long Term Departure from the Fishery, Permit Transfer). 
+
+## Coverage
+From the Northwest Fisheries Science Center (NWFSC) website: There are 90 commerically harvested groundfish species. There are two regional fisheries management councils that cover the area for which we have VMS tracks: the [Pacific Fishery Management Council](http://www.pcouncil.org/) which covers California, Oregon, Washignton and Idaho.[^1] The other is the [North Pacific Fishery Management Council](http://alaskafisheries.noaa.gov/npfmc/) which covers Alaska, Washington and Oregon.[^1] [This study](http://www.psmfc.org/efin/docs/fleetreport.pdf) is likely a useful starting point for an overview of the west coast fisheries, however it was done in 2000 and possibly only reports through 1997. 
+
+### Pacific Fishery Management Council (PFMC)
+PFMC has jurisdiction over the EEZ off of Washignton, Oregon and California and manages the fisheries for 119 species including salmon, groundfish, coastal pelagic species (sardines, anchovies, and mackeral), and highly migratory species (tunas, sharks, and swordfish) 
+
+[^1]: [From NMFS](http://www.nmfs.noaa.gov/sfa/reg_svcs/councils.htm)
+
+As of 2005, PFMC approved a plan that would "recommend VMS units for all commercial vessels that take and retain, possess or land Federally-managed groundfish species taken in Federal waters or in state waters prior to transiting Federal waters. Additionall, to enhance the enforcement of clsoed areas for the protection of groundfish essential fish habitat, the preferred alternative requires VMS on all non-groundfish trawl vessesls including those targeting pink shrimp, California halibut, sea cucumber, and ridgeback prawn".[^2] I can't find any more recent information on the VMS program as to whether the recommendations are followed (100% coverage of all groundfish fisheries, non-groundfish trawl vessels).
+
+According to PFMC there are over 90 different species of fish that are covered by the Council's groundfish fishery management plan (FMP). The FMP (as of 2011) requires that 
+    
+    Any vessel registered for use with a limited entry permit that fishes in state or Federal waters seaward of the baseline from which the territorial sea is measured off the States of Washington, Oregon or California (0–200 nm offshore). Any vessel that uses non-groundfish trawl gear to fish in the EEZ. Any vessel that uses open access gear to take and retain, or possess groundfish in the EEZ or land groundfish taken in the EEZ.[^3]
+
+[^2]: [Groundfish Document Library: Vessel Monitoring Systems](http://www.pcouncil.org/groundfish/background/document-library/vessel-monitoring-systems/)
+
+[^3]: [Regulations governing VMS](http://www.gpo.gov/fdsys/pkg/CFR-2009-title50-vol9/pdf/CFR-2009-title50-vol9-part660.pdf) and the [Pacific Coast Groundfish Fishery Management Pla]n(http://www.pcouncil.org/wp-content/uploads/GF_FMP_FINAL_Dec2011.pdf)
+

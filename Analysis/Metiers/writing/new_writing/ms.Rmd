@@ -1,0 +1,39 @@
+---
+title: "Putting people into ecosystem-based management"
+author: "Emma Fuller"
+date: "December 20, 2014"
+output: pdf_document
+bibliography: refs.bib
+---
+
+Data-driven social-ecological modeling: operationalizing fisheries and their connectivity. Ecosystem based management is focused on managing entire systems. Including humans, and how they link fisheries are important for the entire system to be considered. For example, fisheries that are not ecologically linked, may be tightly linked by the people who harvest both. Thus a change in one system may affect the tightly linked ohter fishery, in a way not ecologically predicatable. By defining fisheries operationally and looking at connectivity across fisheries can 
+
++ show connectivity between fisheries
++ calculate new metrics that may correspond to vulnerability/difficult/ease of management
+  + motifs, highly linked fisheries
+  
+[tasks]
+
++ validate that majority species is different than metier
++ look for motifs across ports
+
+
+
+1. Refuge fisheries: fisheries that almost everyone participates in, central importance for port communities, particularly important to manage well, or a way to identify vulnerability of fishing communities to management change. 
+2. Management cascades: before and after ITQs, vessels spend more time groundfishing, ramifications for other vessels which do not participate in groundfish? [check literature to see what people tend to find]
+    - proportion of revenue for groundfish fishermen [defined as fishermen who spend a bunch of time groundfishing -- should look at distribution of vessels which participate in groundfish to see if there's a clear cut between those that dabble...]
+3. (un)stable motifs ala @
+
+# Motivations
+
++ Currently connections between ecosystem services and human well-being are poorly documented [@Tallis:2006fb]
+    + Focus in @Tallis:2006fb is on how to better incorporate feedbacks into models. Mapping connectivity in participation networks allows a data-based way of building in the possible feedbacks that should occur.   
++ Policy has been running ahead of the development of the knowl- edge and scientific tools to support its implementation. As a consequence, the scientists had to “catch up” with the policy, and spent a great deal of effort in developing the tools, which were usually implemented immediately [@Smith:2007is].
+    + Participation networks a useful tool for ecosystem based management?
+    
+    
+> Should look at Katie K. Arkema and Jameal's work also, along with everything open in Sente. 
+> Should review ecological network stuff, including the paper Hein suggested. Can say, mapping a fisheries system like this opens the door for all that work to be applied.
+
+
+# References

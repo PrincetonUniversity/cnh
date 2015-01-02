@@ -1,0 +1,59 @@
+---
+title: "Topic Modeling"
+author: "Emma"
+date: "September 7, 2014"
+output: html_document
+bibliography: refs.bib
+---
+
+Topic models are algorithms developed to discover the main themes that exist in a large and unstructured collection of documents. Topic models are able to orgaize the collection according to the discovered themes [@blei2012probabilistic]. 
+
+1. Each document is assumed to be made up of $1-K$ different topics. 
+2. The only observation we have are the words that are in a document. 
+3. By surveying a body of documents (corpus), we are able to discern meaningful assemblages of words to define topics.
+4. After assigning topics to documents, can examine whether documents are similar to one another, other characteristics of the corpus. 
+
+This builds on the intuition that an article about cats is likely to feature to different words than a document about golf. Additionally, there are many filler words, words that are common to many documents (_a_, _the_, _it_). We don't want to consider those words as ways to define topics. Futher each document can have more than one topic. For example, an ecology paper might contain 50% natural history topic, 30% math and 20% statistics. But all documents share a common set of topics, but exhibit the topics in different proportions. The goal is to automatically detect the topics from a collection of documents. The documents themselves are observed, but the topic structure (the topics, per-document topic distributions, and the per-document-per -word topic assignments) is hidden structure. The central problem is to use the observed documents to infer the hidden topic structure [@blei2012probabilistic]. We are trying to figure out the hidden structure that generated the observed collection. 
+
+This approach can easily be extended to species data, in this case fisheries catch data. If catch (the total amount of species caught during an entire trip, i.e. not haul) is thought of as a _document_, the topics are characteristic assemblages of species. The species themselves become the words. Thus using topic modeling we can examin the total number of topics (_characteristic species assemblages_) which exist in the body of trips, and examine which species make up each topic.[^1]
+
+For trips, assume each trip has a distribution of _fisheries_ (topics). It might be 100% one fisehry or 50% salmon fishery and 50% halibut fishery. I expect most trips to only contain only one fishery, but there may be exceptions. 
+
+[^1]: This addresses one problem previously which was if a vessel comes back after fishing in multiple fisheries. For example, shrimp and crab are extremely selective. Vessels almost never come back with substantial non-crab/shrimp species. Yet if a vessel pulls up a crab pot on their way out for shrimp, it will show up as an anomolous new crab-shrimp fishery. Where really it's a trip that integrates over more than one fishery. So while most trips will only have one topic/species assemblage, this method also provides an inuitive way to deal with trips fishing in more than one fishery. 
+
+## Technical details[^2]
+The simplest topic model is the _Latent Dirichlet allocation_ (LDA), it's a special case of a statistical mixture model. According to [Wikipedia](http://en.wikipedia.org/wiki/Mixture_model), it's "a probablistic model for representing the presence of subpopulations within an overall population, without requiring that an observed data set should identify the sub-population to which an individual belongs" LDA and other topic models are part of a larger field of probabilistic modeling. 
+
+> In generative probabilistic modeling, we treat our data as arising from a generative process that includes hidden variables. This generative process defines a joint probability distribution over both the observed and hidden random variables. We perform data analysis by using that joint distribution to compute the conditional distribution of the hidden variables given the observed variables. This conditional distribution is also called the posterior distribution.
+
+**Review joint distribution, conditional distributions before continuing. Goal is to re-write above in own words.**
+
+
++ Each topic has its own unique probability distribution over entire vocabulary of words. 
++ Random variable $w_i$ is the $i$th word, where $i$
+
+### Dirchlet distributions
+
+```{r}
+require(MCMCpack)
+alpha <- 1
+draws <- 15
+dimen <- 10
+x <- rdirichlet(draws, rep(alpha, dimen))
+plot(x[1,])
+
+dat <- data.frame(item=factor(rep(1:10,15)), 
+                  draw=factor(rep(1:15,each=10)), 
+                  value=as.vector(t(x)))
+
+library(ggplot2)
+ggplot(dat,aes(x=item,y=value,ymin=0,ymax=value)) + 
+               geom_point(colour=I("blue"))       + 
+               geom_linerange(colour=I("blue"))   + 
+               facet_wrap(~draw,ncol=5)           + 
+               scale_y_continuous(lim=c(0,1))
+```
+
+[^2]: Borrowed heavily from @blei2012probabilistic
+
+### Bibliography

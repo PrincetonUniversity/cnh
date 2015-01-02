@@ -1,0 +1,312 @@
+---
+title: "Vessels I know"
+author: "Emma Fuller"
+date: "June 4, 2014"
+output:
+  html_document:
+    fig_height: 7
+    fig_width: 11
+---
+
+```{r global_options, include=FALSE}
+require(knitr)
+opts_chunk$set(cache=TRUE, echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+First step is to find the vessels that are identified as catching shrimp
+
+```{r find_shrimp}
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-05-17/input_data/prop_tripTable_2014-05-17.Rdata")
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-05-17/clust_prop.Rdata")
+
+tripTable <- prop_tripTable[[2]]
+unique_table <- tripTable[!duplicated(tripTable$tripID),]
+unique_table$cp <- clust_prop$clustering
+
+shrimp <- subset(unique_table, cp==19)
+num_trips <- table(shrimp$veid,shrimp$year)
+barplot(sort(rowSums(num_trips)/nrow(shrimp),decreasing=T))
+barplot(sort(rowSums(num_trips),decreasing=T))
+
+# let's look at just those that have had more than 20 trips, see how their per-year breaks down. 
+
+top_shrimp <- num_trips[which(rowSums(num_trips)>20),]
+
+to_check <- rownames(top_shrimp) # these are the vessel IDs to see if they're in the VMS data.
+
+# load VMS data 
+
+VMS <- read.csv("/Volumes/NOAA_Data/CNH/VMS_cleaning/results/2014-03-02/VMS_woDups.csv",stringsAsFactors=FALSE)
+
+shrimpers <- subset(VMS, Doc_Number %in% to_check)
+
+length(unique(shrimpers$Doc_Number)) == length(to_check) # missing a few.
+
+# let's reduce to just those boats that fish out of Newport, Astoria or Coos Bay
+
+places <- c("Astoria","Newport","Coos Bay (Charleston)")
+some_shrimpers <- subset(shrimpers, status %in% places, select=c(Doc_Number,Vessel_Name))
+
+# reduces it a bit more: 
+vids <- data.frame(Name=unique(some_shrimpers$Vessel_Name), ID = unique(some_shrimpers$Doc_Number))
+
+# i now know some of these boats. Especailly the Ms. Law, Zora Belle, Winona J, Cap Elza I think. Let's look at Ms. Law
+
+# make a list of all vessel names
+veIDs <- unique(VMS[,c("Vessel_Name","Doc_Number")])
+
+makeMap <- function(vms, vessel_name,zoom){
+  v <- vms
+  map <- get_map(location = c(min(v$Longitude),min(v$Latitude),max(v$Longitude),max(v$Latitude)), zoom = zoom, maptype = "hybrid")
+  p <- ggmap(map, extent="device")
+  p <- p + labs(title = vessel_name) + geom_point(data=v, aes(x=Longitude, y = Latitude),alpha=0.25,colour="white", size=0.75)
+  print(p)}
+
+find_vid <- function(string){unique(veIDs[grep(string,veIDs$Vessel_Name),])}
+# let's go with number 1
+
+v1 <- subset(shrimpers, Doc_Number==vids$ID[which(vids$Name=="Ms. Law")])
+makeMap(v1, "Ms. Law",7)
+
+# let's look at another known boat, how about the Lady Kaye. Brad Crisp, shrimper
+v2 <- subset(shrimpers, Doc_Number==vids$ID[which(vids$Name=="Lady Kaye")])
+makeMap(v2, "Lady Kaye", 7)   
+
+# together
+ map <- get_map(location = c(min(v2$Longitude),min(v2$Latitude),max(v2$Longitude),max(v2$Latitude)), zoom=7, maptype = "hybrid")
+p <- ggmap(map, extent='device')
+p <- p + labs(title = "Lady Kaye & Ms. Law") + geom_point(data=v2, aes(x=Longitude, y = Latitude),alpha=0.15,colour="red", size=0.65)+ geom_point(data=v1, aes(x=Longitude, y = Latitude),alpha=0.15,colour="yellow", size=0.75)
+print(p)
+
+# how about the winona J
+v3 <- subset(shrimpers, Doc_Number==vids$ID[which(vids$Name=="Winona J")])
+makeMap(v3, "Winona J", 7)   
+
+# this doesn't look like the other two. All I have in my notes is that it's part of a father-son duo. That the Exalibur is the other boat. I wonder if this boat does more groundfish though, from the very different pattern of spatial exploration. 
+
+## zora belle - owner has houses all along the coast, should be more flexible, fish in wider area? big boat. 
+v4 <- subset(shrimpers, Doc_Number==vids$ID[which(vids$Name=="Zora Belle")])
+makeMap(v4, "Zora Belle",7)   
+# whoa, looks way different. Goes way farther off shore. Wonder what he's doing out there. 
+
+# : 1 of 3 boats, 1 shrimp, 1 crab, 1 hake (process at sea)
+v5 <- subset(VMS, Vessel_Name=="Stormie C")
+makeMap(v5, "Stormie C", 6)
+# this looks like something that involves tracing contours. Maybe that's groundfish? Or fixed gear? I remember Bob Eider saying you want to set along a contour.. Wonder what those long shots are?
+
+# single owner-operator, crab, shrimp, maybe hake?
+v6 <- subset(VMS, Vessel_Name=="Jeanette Marrie") # owner operator, brother of skipper of Patty A J. Hate each other. 
+makeMap(v6, "Jeanette Marrie",zoom=6)
+
+# Behmer does open access black cod fixed gear, does well (according to Brad Laird)
+v7 <- subset(VMS, Vessel_Name=="Behmer")
+makeMap(v7,"Behmer",7) # looks quite different than shrimping, and what i perceive to be trawling. 
+
+# Columbian Star out of Astoria, beach dragger
+v8 <- subset(VMS, Vessel_Name=="Columbian Star")
+makeMap(v8,"Columbian Star",8)
+
+# Kara J: salmon, tuna, OA fixed gear, is a highliner according to Brad Laird, skipper is Steve. 
+v9 <- subset(VMS, Vessel_Name=="Kara J")
+makeMap(v9,"Kara J",7) # really missing the long, linear tracks that are probably trawl tracks. 
+
+# does dragging and shrimp
+v10 <- subset(VMS, Vessel_Name=="Amak (213184)") # not sure where error's coming from. can run function line by line and this works. 
+makeMap(v10,"Amak",8) # drags and shrimps, see very restricted movement here. Also goes to Port Orford a bunch. 
+
+# crab, salmon, tuna
+v11 <- subset(VMS, Vessel_Name=="Yaznak")
+makeMap(v11, "Yaznak",7) # my gosh, this guy is everywehre. Does crab, salmon, tuna. Probably close to shore is the crab
+
+v12 <- subset(VMS, Vessel_Name=="Patty A J (Faria)")
+makeMap(v12, "Patty A J",8) # drags and shrimps. looks way different, just in one spot! Also know that is brothers of skipper who runs Jeanette Marie. Apparently hate each other. 
+
+v13 <- subset(VMS, Vessel_Name=="Libra")
+makeMap(v13, "Libra",7) # not sure what this boat does, only that it's out of Coos Bay/Charleston and owner operated. But I'd guess shrimp not having looked at catch records. 
+
+v14 <- subset(VMS, Vessel_Name=="Miss Yvonne")
+makeMap(v14, "Miss Yvonne", 7) # Jeff Boardman, shrimper. an owner operator out of Coos Bay/Charleston. But maybe some tuna/salmon (those way off the coast trips)
+
+v15 <- subset(VMS, Vessel_Name=="Western Seas")
+makeMap(v15, "Western Seas",7) # this boat is owned by Hallmark processing. Does crab in winter, then does quota groundfish rest. Wow looks really like a trawler, really defined spots to hit, and a buffer along the coast (not allowed to drag within some miles, 2? of shoreline). quite different than fuzzy patches of shrimp, teh spiral-y pattern of fixed gear, and the random searching for salmon/tuna. 
+
+v16 <- subset(VMS, Vessel_Name=="Pacific Conquest")
+makeMap(v16, "Pacific Conquest",7) # one of the more broadly fished areas. Ranges from southern oregon to off WA coast. Not sure what they do, would guess groundfish trawling. This is one of Pac Coast's boats
+
+v17 <- subset(VMS, Vessel_Name=="Apache")
+makeMap(v17, "Apache",7) # know that this boat "beach drags", looks extremely near shore. 
+
+v18 <- subset(VMS, Vessel_Name=="Ocean Phoenix")
+makeMap(v18, "Ocean Phoenix",7) # this is a mothership for hake. can't even see where they came into and out of port. 
+
+# Tom "Squeak" Morrison's boat. Does shrimp in summer, drags in the winter. 
+v19 <- subset(VMS, Vessel_Name=="Capt. Ryan")
+makeMap(v19, "Capt. Ryan",7)
+
+# Gary Wintersteen's boat (skippers), does groundfish for Pac Coast. 
+v20 <- subset(VMS, Vessel_Name=="Nicole")
+makeMap(v20, "Nicole", 5)
+
+# Paul Kujala's groundfish boat. 
+v21 <- subset(VMS, Vessel_Name=="Cape Windy")
+makeMap(v21, "Cape Windy", 7)
+
+# Chris Cooper's family boats. One does hake, other does crab and groundfish. Would guess that Perseverance does hake
+v22 <- subset(VMS, Vessel_Name=="Perseverance (536873)")
+makeMap(v22, "Perseverance", 6)
+
+# not sure which of these is more likely to be the boat. Thrane definitely looks more like a hake boat. 
+v23 <- subset(VMS, Vessel_Name=="Predator (Skymate)")
+makeMap(v23, "Predator (Skymate)",7)
+
+v24 <- subset(VMS, Vessel_Name=="Predator (Thrane)")
+makeMap(v24, "Predator (Thrane)",6)
+
+# Bob Eider's boat. Has two, not sure which one this is. One is a trawl outfitted for fixed gear. Other, I think, is smaller fixed gear boat. 
+v25 <- subset(VMS, Vessel_Name=="Timmy Boy")
+makeMap(v25, "Timmy Boy",7)
+
+# does at least shrimp. not sure who owns.  
+v26 <- subset(VMS, Vessel_Name=="Pacific Dove")
+makeMap(v26, "Pacific Dove",7)
+
+# does limited entry, longline for sablefish. Not sure who owns. 
+v27 <- subset(VMS, Vessel_Name=="Two Saints (Skymate)")
+makeMap(v27, "Two Saints", 6)
+
+# longline, shrimp, crab
+v28 <- subset(VMS, Vessel_Name=="Jaka-B")
+makeMap(v28, "Jaka-B",6)
+
+# also owned by Jean Law, same person who owns Ms. Law. 
+v29 <- subset(VMS, Vessel_Name =="Lady Law")
+makeMap(v29, "Lady Law", 7)
+
+# only know that owner does not skipper. But looks like it does shrimp?
+v30 <- subset(VMS, Vessel_Name =="Cap Elza")
+makeMap(v30, "Cap Elza",7)
+
+# don't know what he knows. But know owner operated
+v31 <- subset(VMS, Vessel_Name=="Evolution")
+makeMap(v31, "Evolution",7)
+
+# don't know what he does, but is owner operated. Would guess shrimp. 
+v32 <- subset(VMS, Vessel_Name=="Kylie Lynn")
+makeMap(v32, "Kylie Lynn", 7)
+
+# don't know what he does, but is owner operated, would guess trawling and shrimp. 
+v33 <- subset(VMS, Vessel_Name=="Western Breeze")
+makeMap(v33, "Western Breeze", 7)
+
+# don't know what he does, but is owner operated. would also guess trawling and shrimp
+v34 <- subset(VMS, Vessel_Name=="Corsair")
+makeMap(v34, "Corsair", 7)
+
+# One of Jim Seaver's trawlers. Owns several other ones. Doesn't captain his own boats. Also this is a crazy pattern, which I have not yet seen. Wonder what those straight lines are about. Maybe it's crab?
+v35 <- subset(VMS, Vessel_Name=="Miss Sue")
+makeMap(v35, "Miss Sue",7)
+
+# Owned/skippered by Kurt Cochran, highliner trawler in whiting and AK pollock – multigenerational fishing family (missed him while we were in OR), very innovative and helpful with bycatch reduction research.
+v36 <- subset(VMS, Vessel_Name=="Marathon")
+makeMap(v36, "Marathon", 7)
+
+# John Wagner, shrimper/ITQ
+v37 <- subset(VMS,Vessel_Name=="Pacific")
+makeMap(v37, "Pacific", 7)
+
+# “Poggy”, ITQ, limited entry
+v38 <- subset(VMS, Vessel_Name=="Michele Ann")
+makeMap(v38, "Michele Ann", 6)
+
+# not sure which is the one owned by Mike Schones, ITQ, limited entry. Probably the first. Second has a state license. Which makes me think it's unlikely to be doing ITQ.  
+v39 <- subset(VMS, Vessel_Name=="Alyssa Ann (976374)")
+makeMap(v39, "Alyssa Ann (976374)", 7)
+
+v40 <- subset(VMS, Vessel_Name=="Alyssa Ann (OR408TJ)")
+makeMap(v40, "Alyssa Ann (OR408TJ)", 7)
+
+# David Jinks owns, not sure what he does. Would gues at least some shrimp
+v41 <- subset(VMS, Vessel_Name=="Blue Fox (SkyMate)")
+makeMap(v41, "Blue Fox (SkyMate)",6)
+
+# have "Northern Ram" in our notes as a dragger. Only see Pacific Ram. Does look like a dragger out of newport
+v42 <- subset(VMS, Vessel_Name=="Pacific Ram")
+makeMap(v42, "Pacific Ram", 7)
+
+# have a photo of this boat. Don't know what it does, assume fixed gear
+v43 <- subset(VMS,Vessel_Name=="Blue Finn")
+makeMap(v43, "Blue Finn", 7)
+
+# supposedly out of Morro bay, but don't see evidence of that. Also crazy offshore. Looks like fixed gear. 
+v44 <- subset(VMS, Vessel_Name=="Judy")
+makeMap(v44, "Judy",7)
+
+# have a photo, not sure what it does. Maybe fixed gear?
+v45 <- subset(VMS, Vessel_Name=="Winter Hawk")
+makeMap(v45, "Winter Hawk", 7)
+
+# have a photo. Not sure what it does. Whatever it is, very close to shore. 
+v46 <- subset(VMS, Vessel_Name=="Nel Ron Dic")
+makeMap(v46, "Nel Ron Dic", 9)
+
+# open access black cod, fixed gear, does well (has the infamous NMFS sticker)
+v47 <- subset(VMS, Vessel_Name=="Behmer")
+makeMap(v47, "Behmer", 7)
+
+# delivered shrimp with concrete chunks and destroyed some equipment. Now processor won’t take deliveries. So switched to slime eels, and then politics put him out.
+v48 <- subset(VMS, Vessel_Name=="Lady Helen")
+makeMap(v48, "Lady Helen", 8)
+
+# wow, guy is everywhere. owned by Rex Leach, but he doesn’t skipper – ITQ, shrimp
+v49 <- subset(VMS, Vessel_Name=="Ms. Julie")
+makeMap(v49, "Ms. Julie", 6)
+
+# John Blanchard’s boat, crab, salmon, tuna, etc. Would have guessed maybe some fixed gear. but perhaps not. 
+v50 <- subset(VMS, Vessel_Name=="Bess Chet")
+makeMap(v50, "Bess Chet", 8)
+
+# Paavo Carroll, open access, limited entry
+v51 <- subset(VMS, Vessel_Name=="Titan")
+makeMap(v51, "Titan",7)
+
+# Stan Jones’s boat, crab, tuna, salmon, open access, longline… 
+v52 <- subset(VMS, Vessel_Name=="Agnes C")
+makeMap(v52, "Agnes C", 9)
+
+# what about plotting all the shrimp points I have. Making a density kernel
+
+ks_Newport <- rbind(v1, v2, v31, v32, v28)
+makeMap(ks_Newport,"",7)
+  v <- ks_Newport
+  map <- get_map(location = c(min(v$Longitude),min(v$Latitude),max(v$Longitude),max(v$Latitude)), maptype = "satellite",source="google",zoom=7)
+  p <- ggmap(map, extent="device")
+  p <- p + 
+  #geom_point(data=v, aes(x=Longitude, y = Latitude),alpha=0.25,colour="white", size=0.75) + 
+  stat_density2d(data = v, aes(x=Longitude, y=Latitude, fill = ..level..), geom="polygon") +
+  scale_fill_gradient(low = "yellow", high = "red") + 
+  guides(fill=FALSE)
+  print(p)
+
+ks_CoosBay <- rbind(v48, v10, v14)
+v <- ks_CoosBay
+  map <- get_map(location = c(min(v$Longitude),min(v$Latitude),max(v$Longitude),max(v$Latitude)), maptype = "satellite",source="google",zoom=7)
+  p <- ggmap(map, extent="device")
+  p <- p + 
+  geom_point(data=v, aes(x=Longitude, y = Latitude),alpha=0.25,colour="white", size=0.75) + 
+  stat_density2d(data = v, aes(x=Longitude, y=Latitude, fill = ..level..), geom="polygon") +
+  scale_fill_gradient(low = "yellow", high = "red") + 
+  guides(fill=FALSE)
+  print(p)
+
+ks_CoosBay$home <- rep("Coos Bay",nrow(ks_CoosBay))
+ks_Newport$home <- rep("Newport", nrow(ks_Newport))
+ks_Aberdeen <- v26
+ks_Aberdeen$home <- rep("Aberdeen",nrow(ks_Aberdeen))
+
+ks_both <- rbind(ks_CoosBay,ks_Aberdeen,ks_Newport)
+v <- ks_both
+  map <- get_map(location = c(min(v$Longitude),42,max(v$Longitude),max(v$Latitude)), maptype = "hybrid",source="google",zoom=6)
+  p <- ggmap(map, extent="device")
+  p <- p + geom_point(data=ks_both, aes(x=Longitude,y=Latitude, colour=factor(home)),size=0.5, alpha=0.25) + theme(legend.justification=c(0,0), legend.position=c(0,0), legend.background = element_rect()) + guides(colour = guide_legend(override.aes = list(size=3,alpha=1))) + scale_color_brewer(palette="YlOrRd")
+  print(p)
+``````
