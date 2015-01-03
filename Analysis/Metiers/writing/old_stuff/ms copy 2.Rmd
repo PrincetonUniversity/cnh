@@ -6,7 +6,7 @@ output: pdf_document
 bibliography: refs.bib
 ---
 
-## Introduction
+<!--## Introduction-->
 Currently connections between ecosystem services and human well-being are poorly documented [@Tallis:2006fb]
 
 + Focus in @Tallis:2006fb is on how to better incorporate feedbacks into models. Mapping connectivity in participation networks allows a data-based way of building in the possible feedbacks that should occur.   
@@ -28,7 +28,7 @@ Here we use a metier analysis to define fisheries. We describe how this method i
 # Data and Methods
 
 ## Catch Data
-This work uses fish ticket data from the US Westcoast commercial fisheries from 2009-2013, a total of 455,780 trips and 3,569 vessels. PacFin records species by "market category". For most easily identifiable and highly marketable species this is equivalent to species name. However for a number of rockfish that are difficult to distinguish, their market category is some flavor of "unspecified rockfish". We keep the raw market categories in this analysis with the argument that the resolution of the market and the targeting behavior of fishermen are equivalent. 
+This work uses fish ticket data from the US Westcoast commercial fisheries from 2009-2013, a total of 455,469 trips and 3,569 vessels. PacFin records species by "market category". For most easily identifiable and highly marketable species this is equivalent to species name. However for a number of rockfish that are difficult to distinguish, their market category is some flavor of "unspecified rockfish". We keep the raw market categories in this analysis with the argument that the resolution of the market and the targeting behavior of fishermen are equivalent. 
 
 Catch by species was totaled for each trip. We drop species from consideration that are caught in fewer than 100 trips over 5 years and with a median catch off less than 100 lbs. This drops 121 trips (less than half of one percent of total trips) and 60 market categories (i.e. species). A list of these species, along with median catch and number of trips found in is in the Appendix. We also drop any trips with the `grgroup` of `DRG` (dredge) as there are fewer than 5 trips overall for this gear type and any trips that recorded more than one gear type per trip. 
 
@@ -92,7 +92,7 @@ Additionally we see spatial structure, with many rockfish fisheries restricted t
 map with pie charts? can't do all fisheries, but maybe by whether a rockfish fishery or not?
 ```
 
-**Metiers are better than previous definitions of fisheries.** Previous operational definitions of fisheries are defined by the species responsible for the majority of a trip's catch volume and/or revenue. We find that our clustered results for a fishery are essentially identical ($ARI>0.9$ for either definition of revenue or profit), but instead of close to 400 different possible combinations of gear and species (i.e. fisheries), we reduce down to 98. And spatial and temporal patterns are emergent.
+**Metiers are better than previous definitions of fisheries.** Previous operational definitions of fisheries are defined by the species responsible for the majority of a trip's catch volume and/or revenue. We find that our clustered results for a fishery are essentially identical ($ARI>0.9$ for either definition of revenue or profit), but instead of close to 500 different possible combinations of gear and species (i.e. fisheries), we reduce down to 112. And spatial and temporal patterns are emergent.
 
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE,fig.width=7,fig.height=7}
@@ -110,9 +110,10 @@ tabasco(decostand(percents,"log"), dca,col=c("white",rev(colorRampPalette(brewer
 **With relevant definitions of fisheries in hand, we can visualize the system holistically.**
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE,fig.width=7}
-nets_sp <- readRDS("../code/new_things/nets_sp.RDS")
+web <- readRDS("../code/new_things/web.RDS")
 library(bipartite)
-plotweb(t(nets_sp))
+spid <- read.csv("/Users/efuller/1/CNH/Analysis/Metiers/data/spid.csv",stringsAsFactors=F)
+plotweb(web[,names(sort(colSums(web),decreasing=T)[1:10])],arrow="down",bor.col.low="white",bor.col.interaction = "grey80",labsize=.6,col.low=)
 ```
 
 `#still need participation networks`
