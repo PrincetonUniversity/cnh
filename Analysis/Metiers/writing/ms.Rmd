@@ -4,55 +4,119 @@ author: "Emma Fuller"
 date: "January 3, 2015"
 output:
   pdf_document:
-    keep_tex: yes
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+  word_document: default
 bibliography: refs.bib
 ---
 
 # Introduction
-We perform a metier analysis on the US west coast commercial fisheries. We demonstrate how this analysis improves upon previously used definitions of fisheries in the US, and show the utility of these definitions by building two different types of networks: a typical foodweb, bipartite network between fisheries and species fished; and a social-ecological network in which human linkages across fisheries are included. We then apply network measures to demonstrate how management-revelent social and ecological conclusions can be drawn from this analysis. In particular, we highlight how this approach can be useful to better include humans in ecosystem-based management. 
+Fisheries are central to modeling, managing and understanding marine systems in which fishing vessels operate, yet the definition of a fishery is generally imprecise. Most work on the economic/sociological/anthropological side of fisheries either conceptualizes fisheries in terms of "effort", an abstract, multi-dimensional term [@wilen1979fisherman], or as fishing communities [@jentoft2000the]. There have been increasing calls for conservation and resource management to better include people (i.e. ecosystem services, social ecological systems, co-management)[^12] which require an understanding of how social and ecological systems are linked and interact. Further, the social relationships and context of fishing communities have been suggested as crucial for viable fisheries [@jentoft2000the][^13] and the success of co-management schemes [@wilson2013cost]. Clearly both fishing effort and the communities responsible for this effort are crucial for understanding human impacts' on marine systems and vice versa, but it's not obvious how to draw connections between effort and fishing communities (but see @st2008mapping for work in this direction). This gap is problematic if we are to link these human systems to the ecological webs on which they depend. Fishing fleets (i.e. fisheries) sit between fishing communities and effort and the ecological system, translating human decisions into fishing mortality. Characterizing the dynamics of fishing fleets are thus central to being able to understand the linkages and feedbacks in these social and ecological systems.
 
-# Methods
-We do a metier analysis using infoMap [more detail to come] and examine the resulting fisheries-deliniations.
+![conceptual](conceptual.pdf)
 
-We build a bipartite network using the metiers where the interaction strength between metier and species is the volume of species caught averaged over the 5 year dataset. 
+[^11]: Magnuson Stevens -- need to check. 16 U.S.C. §§ 1801-1884
+[^12]: conservation debate, etc. 
+[^13]: Kevin St. Martin, Bonnie McCay's work, need to revisit. Also NW fisheries social scientists.
 
-We build a social-ecological network by adding a participation network to the bipartite foodweb. The participation network has as its nodes, metiers. The strength of connection between the fisheries is the number of individuals which participated in both fisheries averaged over 5 years. 
+Work studying fleet dynamics (i.e. the dynamics of the human harvesters in a commercial fishery system) commonly consider only one fleet at a time (i.e. location choice models, discarding, compliance)[@vanputten2011theories]. Both fisheries science and marine ecology have moved from single species models to consider multiple species in ecological analyses, and indeed ecosystem-based management (EBM) takes this to the extreme, arguing that the to manage any one species well, the entire system's dynamics must be taken into account. In EBM "the system" is commonly interpreted as the ecological system, with humans participants remaining external forces. However to truly take an EBM approach, all fishing fleets need to be included, just as all species need to be. Thus multi-fleet models are required. 
 
-We first analyze the bipartite network to try to determine the following types of inferences
+Historically little work exists to define fleets concurrently. Analyses that examine multiple fleets have used management expertise to choose either gear/area/fish to define fisheries [@kasperski2013income], or existing management jurisdictions [@sethi2014alaskan] to define fisheries. Recently European Union fishing policies have prompted work in this area [@deporte2012regional]. Instead of fisheries or fleets, these sectors are termed métiers, and defined as a target species assemblage/gear combination. These analyses are characterized by clustering catch data to look for commonality and combine with gear to define sectors. Recent work by @lucey2013operational has applied a similar analyses to US east coast commercial fishing data. 
 
-- vulnerability: highlight which species are more or less vulnerable (i.e. targeted by more than one fishery)
-- generality: highlight which fisheries catch more or less species 
+Here I use a métier-like approach to define commercial fishing fleets on the US west coast. As in a métier analysis, I define fisheries based on the composition of catch and type of gear used. I highlight the benefits of this methodology from previous work, use this definition to map both ecological and social connectivity of these systems, and demonstrate how this could be used to holistically study commercial fisheries systems and thus better incorporate the human actors into EBM schemes. 
 
-And then analyze the social-ecological network and show how many of the same metrics can be applied to an SES network.
+# Data and Methods
 
-- centrality: which fisheries are important for everyone (i.e. refuge fisheries)
+## Catch Data
+This work uses landings (fish ticket) data from the US west coast commercial fisheries from 2009-2013, a total of 455,469 trips and 3,569 vessels. PacFin records species by "market category". For most easily identifiable and highly marketable species this is equivalent to species name. However for a number of rockfish that are difficult to distinguish, their market category is some flavor of "unspecified rockfish". We keep the raw market categories in this analysis with the argument that the resolution of the market and the targeting behavior of fishermen are equivalent. 
+
+Catch by species was totaled for each trip. We drop species from consideration that are caught in fewer than 100 trips over 5 years and with a median catch off less than 100 lbs. This drops 121 trips (less than half of one percent of total trips) and 60 market categories (i.e. species). A list of these species, along with median catch and number of trips found in is in the Appendix. We also drop any trips with the `grgroup` of `DRG` (dredge) as there are fewer than 5 trips overall for this gear type and any trips that recorded more than one gear type per trip. 
+
+## Defining fisheries
+A métier is defined as a gear-species target combination [@deporte2012regional]. We first define species targets and then assign these targets to gear to make the final metier designation. 
+
+To classify target species assemblages we first subset to 2010 trips and search for characteristic catch assemblages. To find these assemblages we split trips by gear type (using PacFin `grgroups` designation). This results in six gear designations: hook and line (HKL), trawl (TWL), troll (TLS), shrimp trawl (TWS), miscellaneous (MSC), and net (NET). We then calcluate a pairwise Hellinger distance for each trip within a gear/year subset.  This metric has the advantage of avoiding the double-zero problem common in species count data [@legendre2012numerical]. The Hellinger ($H$) distance is defined as
+
+$$ H = \sqrt{\sum^p_{j=1}\left[ \sqrt{\frac{y_{1j}}{y_{1+}}} - \sqrt{\frac{y_{2j}}{y_{2+}}}  \right]^2} $$
+
+where $y_{ij}$ is the biomass of species $j$ in trip $i$ and $p$ is the total number of speices. This index ranges between $0$ and $\sqrt{2}$, with $0$ meaning the sites have the same composition and $\sqrt{2}$ meaning they share no species.
+
+We transform the disimilarity index to be a measure of similarity
+
+$$ \text{Similarity}= 1 - H $$
+
+and build an undirected, weighted network in which nodes are trips, and edge widths are the similarity in species composition between trips. With this network we use the _infoMap_ algorithm to find communities (clusters or subgraphs) within the network [@rosvall2008maps; @rosvall2009map].[^3] 
+
+_InfoMap_ is an information theoretic approach which uses the probability flow of a random walker on a network as a proxy for the information flows in a real system. The objective of _infoMap_ is to compress the description of the probability flow, and in doing so partitions the network into modules. _InfoMap_ works by computing the fraction of time a node is visted by a random walker using a deterministically greedy search algorithm. Merges between modules that give the largest decrease in description length are made until further merging leads to increases of description length. Results are refined with a simulated annealing approach, starting at several different temperatures, with the run selected as the one that gives the shortest description of the network. 
+
+We found that other commonly used clustering algorithms (i.e. k-means, clara, hierarchical clustering) did poorly with this data. Many clustering algorithms do best when clusters have low dimensionality, are spherical in n-dimensional space, similarly sized, and/or require the number of clusters decided _a priori_. In this data we have fisheries participation which may vary by an order of magnitude (100s of trips to 100,000s of trips), is extremely high dimension (over 100 species) and we wanted to avoid having to decide subjectively on the number of clusters.
+
+After dropping any subgraphs that have fewer than 5 trips, we use a `knn` classifier to assign all other trips of each gear subset to those possible metiers.[^2] The nearest neighbor to each trip was found using the Hellinger distance (transformed into a similarity) and all analyses were performed using `R` aside from the `infoMap` clustering which was performed using the original `C++` code.[^3]
+
+[^3]: D. Edler and M. Rosvall, The MapEquation software package, available online at http://www.mapequation.org
+
+[^2]: In 2011 ITQs went in to a subset of the fisheries, namely the trawl groundfish fisheries. This change in management may change the assemblage of species caught together. To check for sensitivity based on year chosen as training year, we trained the `knn` classifier on both pre- (2010) and post- (2012) catch share implementation. We found no significant difference in how trips were assigned to metiers. But see the appendix for futher details. 
+
+## Mapping ecological connectivity
+We build a bipartite network using the previously defined metiers. The interaction strength between metier and species is the volume of species caught over the 5 year dataset. All analyses are performed in `R`. 
+
+## Mapping social connectivity
+We build a participation network which has as métiers as nodes. The strength of connection between the fisheries is the number of individuals which participated in both fisheries averaged over 5 years.[^17] All analyses are performed in `R`. The size of nodes are the number of trips landed in the fishery over the given time period. 
+
+[^17]: Actually right now it's not still need to change. It's the bray-curtis derived similarity between the composition of fishing fleets. This is harder to explain, which is why I opted for the number of vessels as an edge width instead. I expect results to qualitatively similar. 
 
 # Results
 ```{r,echo=FALSE,warning=FALSE,message=FALSE}
 tickets <- readRDS("code/3_exploreBuildwebs/tickets.RDS")
 trips <- readRDS("code/3_exploreBuildwebs/trips.RDS")
 library(e1071)
-
 ```
 
-## This analysis improves upon heuristic definitions of fisheries
-Commonly suggested heuristics to define species targeted often center on species that are the majority of a trip's catch either by weight or revenue. We compare our definitions of fisheries and find it reduces the number of fisheries by about 80% (from ~500 to ~100). 
+## Improvements this method offers
+
+### Clustering
+
+Commonly suggested heuristics to define species targeted often center on species that make up the majority of a trip's catch either by weight or revenue. We compare our derived métiers and find our approach reduces the number of fisheries by about 80% (from ~500 to ~100). 
 
 ```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.width=7,fig.height=7}
 library(vegan); library(RColorBrewer)
+par(oma=rep(0,4),mai=rep(0,4))
 # rows are fisheries, columns are by revenue
 percents <- table(trips$metier, trips$m.rev)/rowSums(table(trips$metier,trips$m.rev))
 dca <- decorana(percents)
-colnames(percents) <- tolower(colnames(percents))
-rownames(percents) <- tolower(rownames(percents))
-tabasco(decostand(percents,"log"), dca,col=c("white","white",rev(brewer.pal(9,"Blues"))),cexRow=.15,cexCol=.5, add.expr=list(abline(v=7,col="grey"), text(x = 15, y = 375, "tls_1\nsalmon troll")),xlab="metier-based definition", ylab="revenue-based definition")
+# colnames(percents) <- tolower(colnames(percents))
+# rownames(percents) <- tolower(rownames(percents))
+colnames(percents) <- rep("",ncol(percents))
+rownames(percents) <- rep("",nrow(percents))
+tabasco(decostand(percents,"log"), dca,col=c("white","white",rev(brewer.pal(9,"Blues"))),cexRow=.15,cexCol=.5,xlab="metier-based definition",ylab="revenue-based definition")
 ```
 
-Here I plot a matrix where columns are the metiers, and rows are fisheries defined as major species by revenue. The cell shows the $\log$ number of trips in which that species was the majority catch by revenue.[^1] Darker colors indicate many trips with this species as majority, lighter colors indicate relatively few species as a majority. The metiers are ordered using a detrended correspondance analysis (`decorana` function in the `vegan` package to aid in visualization, `R`). The plot demonstrates the reduction in dimensionality as a number of rare species are grouped into a single fishery. 
+Here I plot a matrix where columns are the metiers, and rows are fisheries defined as major species by revenue. The cell shows the $\log$ number of trips in which that species was the majority catch by revenue.[^1] Darker colors indicate many trips with this species as majority, lighter colors indicate relatively few species as a majority.[^9] The metiers are ordered using a detrended correspondance analysis to aid in visualization (`decorana` function in the `vegan` package, `R`). The plot demonstrates the reduction in dimensionality as a number of rare species are grouped into a single fishery in the clustering process, avoiding the need to make decisions subjectively. 
 
+[^9]: Need a legend, will fix. 
 [^1]: Using the Adjusted Rand Index ($ARI$) I find no difference between classification using volume or revenue ($ARI=$ `r classAgreement(table(trips$m.vol, trips$m.rev))$crand`)
 
-## This analysis allows building of food webs that include humans
+### Emergent temporal and spatial structure
+Métier-like analyes have been performed in the Northeast US, classifying fishing data to define "operational fisheries" of New England [@lucey2013operational]. While promising as a way to classify fisheries for use in ecosystem-based management, these methods introduced spatial and temporal structure prior to defining fisheries. In our analysis such structure emerges from the data, and we are able to recover the commonly recognized major fisheries and their seasonality, along with more spatially and temporally restricted fisheries. These methods have the additional benefit of only requiring the catch composition of trips, making it possible to integrate data from both state and federal management databases regardless of availability of management information. 
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.width=8}
+library(zoo)
+rollmeans <- readRDS("code/3_exploreBuildwebs/rollmeans.RDS")
+plot(rollmeans,screen=c(1,2,3,3,1,1),
+     col=c("steelblue","indianred","purple","dodgerblue","goldenrod","pink"),
+     xlab="",lwd=2,bty="n",ylab="",
+     main="14 day moving average of number of trips")
+```
+Here I plot the 14-day moving average of the number of trips for 6 fisheries (from top to bottom): sablefish longline, dover trawl, pink shrimp trawl, dungness crab pot, chinook salmon troll, albacore troll.[^5] Here we can see the seasonal pattern where groundfish (blue, goldenrod) starts as seasonal in 2009, but seems to even out over time.[^4] Pink shrimp is a summer fishery, as are salmon and albacore troll fisheries (bottom plot). Salmon has gotten more and more popular (in line with accounts of salmon populations going up, more catch allowed). Dungeness crab has a strong peak in winter, steadily declining into the summer. 
+
+Spatial structure can be observed in the Appendix dataframe by the proportion of trips taking place in Washington, Oregon and California. Many fisheries are restricted exclusively to California.[^14] 
+
+[^4]: Due to ITQs? could look for seasonal signature declining over time?
+[^5]: Needs legends, will fix. 
+[^14]: Needs work, not sure best way to demonstrate yet -- place holder
+
+## Mapping ecological connectivity
 Ecosystem based management strives to manage an ecosystem holistically, and include humans in the analysis [@larkin1996concepts; @lucey2013operational]. Here we demonstrate such a foodweb. 
 
 ```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.width=8}
@@ -64,18 +128,150 @@ rownames(web) <- tolower(rownames(web))
 # plotweb(web[,names(sort(colSums(web),decreasing=T)[1:10])],arrow="down",labsize = .5)
 
 # try removing any that have fewer than 100 pounds across all five years
-web[which(web<=100)]=0
-plotweb(web[,names(sort(colSums(web),decreasing=T)[1:10])],arrow="up",labsize = .5)
+web[which(web<=500000)]=0
+plotweb(web[,names(sort(colSums(web),decreasing=T)[1:15])],arrow="up",labsize = .7,text.rot = 90)
 ```
-Here I plot a bipartite network in which upper nodes are metier-defined fisheries and the lower nodes are fish species. The strength of interaction is to the total volume harvested over the 5 year dataset. For visual clarity, this network is retricted to showing the top 10 fisheries by volume and the species harvested. Further the species caught are restricted to those which had at least an average of 20 lbs caught per year. 
+Here I plot a bipartite network in which upper nodes are metier-defined fisheries and the lower nodes are fish species. The strength of interaction is to the total volume harvested over the 5 year dataset. For visual clarity, this network is retricted to showing the top 15 fisheries by volume and the species harvested. Further the species caught are restricted to those which had at least an average of 100,000 lbs caught per year coast-wide. The width of the bars are the relative proportions by volume each fishery contributed to the total fishery-wide catch.[^15] 
 
-Using this network, we can estimate the vulnerability of species by the number of seperate fisheries which exploit them, and the intensity with which they do so. 
+[^15]: Dataset only includes shore-side whiting fishery, hence the lower volume reported here. At sea processors not included. 
+
+We can see the major fisheries represented, from left to right: purse-seining of pelagics (`net_8`, `net_2`, `net_7`) and squid (`net_1`), sablefish fish pots (`pot_4`), sablefish long-line (`hkl_1`), groundfish trawl (`twl_1`), whiting mid-water trawl (`twl_3`), dungenss crab pots (`pot_1`), pink shrimp trawl (`tws_1`), albacore troll (`tls_2`), red urchin diving (`msc_1`), hagfish pots (`pot_6`), and salmon troll (`tls_1`).[^16]
+
+[^16]: `twl_7` is an interesting case, it's a mid-water trawl (see Appendix) that catches primarily rockfish. I think this may be lightning-strike hauls of rockfish by whiting-trawlers. But because volumes are so large, it shows up as it's own fishery.
+
+## Mapping social connectivity
+ Here I show catches across the top ten ports by number of vessels which landed trips (unique vessel IDs -- `drvids`). I subset to metiers which are responsible for a cumulative 95% of all trips landed in the specified port/year subset (if any). The size of the node is proportional to the total number of trips which were landed and the width of the edges is proportional to the number of vessels which landed trips in both métiers.[^17] The colors represent another _infoMap_ clustering to look for groups of métiers more tightly connected to each other than the rest of the network, these are provided for visual clarity. Across years these networks are too interconnected to be usefully visualized, breaking them apart by port provides a much better understanding (but see Appendix for coast-wide versions). 
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(igraph)
+top_ports <- readRDS("code/3_exploreBuildwebs/top_ports.RDS")
+par(mfrow=c(3,4), mai=c(0,0,.1,0))
+titles = c("Newport, OR", "Coos Bay, OR", "Astoria, OR","San Francisco, CA","Fort Bragg, CA", "Westport, WA","Ilwaco, WA","Bodega Bay, CA","Princeton, CA", "Tillamook, OR")
+for(i in 1:length(top_ports)){
+  l <- layout.fruchterman.reingold(top_ports[[i]],niter=500,area=vcount(top_ports[[i]])^2.3,repulserad=vcount(top_ports[[i]])^2.8)
+  
+  plot(top_ports[[i]], axes= F, layout = l, 
+     vertex.size = V(top_ports[[i]])$size, edge.width = E(top_ports[[i]])$weight*30, 
+     vertex.label.family = "sans", vertex.label.cex = 1, 
+     vertex.label.color = "black", vertex.frame.color = NA, 
+     vertex.label.degree=-pi/2, vertex.label.dist=.3, vertex.label=tolower(V(top_ports[[i]])$name))
+  mtext(text = titles[i],side = 3, line = 0, cex =.5)
+}
+```
+
+ 
+# Discussion
+
+## Ecological insights
+Using the full network, we can estimate the vulnerability of species by the number of seperate fisheries which exploit them, and the intensity with which they do so. 
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+# see networklevel() in bipartite for other analyses - specifically generality and vulnerability
+networklevel(web[,names(sort(colSums(web),decreasing=T))], index="vulnerability")
+```
+
+Or restrict to the major fisheries by volume.
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
 # see networklevel() in bipartite for other analyses - specifically generality and vulnerability
 networklevel(web[,names(sort(colSums(web),decreasing=T)[1:10])], index="vulnerability")
 ```
+## Social insights 
+Visual inspection of the port participation networks show that `POT_1` (dungeness crab) appears highly connected and central to many of these networks. 
 
-## Can improve this web by considering human-mediated connectivity between fisheries
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(ggplot2)
+degree <- readRDS("code/3_exploreBuildwebs/degree.RDS")
+coloring <- readRDS("code/3_exploreBuildwebs/coloring.RDS")
+ggplot(degree, aes(y=degree, x = reorder(metier, -degree, fun=median))) + geom_boxplot(fill = coloring$color,colour=coloring$color) +theme_minimal() + xlab("metier") + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 7))
+```
+
+Here the distribution of degrees is shown, ordered from highest to lowest median degree and colored by the number of ports where the metier is found (blue is high i.e all 10, red is low -- only 1).[^6] And indeed, the dungeness crab fishery is the only fishery present in all networks and typically very highly connected. The central position of this fishery could suggest this métier is important for everyone, operating as a sort of "refuge fishery". Based on informal discussions with Oregon commerical fishermen, the dungess crab fishery has been described as both lucrative, and relatively unrestricted in terms of gear or expertise needed for entry (i.e. any size boat can patricipate, gear needed is a crab pot, gear deployment is relatively straightforward as compared to dragging a trawl net, for example, or setting long-lines).
+
+[^6]: Also the idea that some of these metiers could be structured not only by states, but by ports. Certainly the species sampling for rockfish show port/time of year structure. And haven't looked these through time, really]
+And should think about the ratio of trips to vessels. If each vessel does it once (at the extreme) it's unlikely that it's a fishery, so much as a particular assemblage that's hit randomly]
+
+The participation networks also may provide a more nuanced definitions of fisheries communities. The networks are non-random, and vary from port to port. There are sub-graphs present (indicated by the colors), and a similar analyses of clustering on metiers could be performed to find groups of fishermen which participate in similar fisheries. 
+
+## Social-ecological insights
+
+- management ripples: human connections between ecologically unrelated species (i.e. tuna and crab)
+- motif analysis: 
+- including processor to species paths
+
+In general métier-type analyses are an objective way to define fleets, and such analysis is crucial if we hope to rigorously connect social and ecological systems. 
+
+# Appendix
+
+## Filtered species
+To focus on species commonly caught, we remove species that were caught in fewer than 100 trips with a median catch weight of less than 100 lbs. Boxplots showing distribution of catch by species is shown, red boxes are species that were dropped from the analysis.  
+
+```{r 1_cleaningData,echo=FALSE,warning=FALSE,message=FALSE}
+# cleaning data
+  library(ggplot2)
+  melt_ftl <- readRDS("code/1_cleaningData/melt_ftl.RDS")
+  spdf <- readRDS("code/1_cleaningData/spdf.RDS")
+  spdf$spid <- as.character(spdf$spid)
+# find species that have fewer than 100 trips and less than 100lbs median pounds
+  small_spds <- spdf$spid[which(spdf$num_trips < 100 & spdf$median_catch < 100)]
+# plot boxplot, order by median value
+  bymedian <- with(melt_ftl, reorder(modified, -value, median))
+# plot in boxplot, color by those removed
+  paint <- rep("white",length(levels(bymedian)))
+  indx <- which(spdf$spid %in% small_spds)
+  paint[which(levels(bymedian) %in% spdf$spid[indx] )] <- "red"
+
+  ggplot(melt_ftl, aes(x = bymedian, y = log(value))) + geom_boxplot(fill=paint, outlier.size = .75, lwd=.15, fatten = 3) + theme_minimal() +  theme(axis.text.x = element_text(angle=45, vjust=1, size = 2)) +xlab("Species") + ylab("log(lbs)")
+```
+Species excluded are shown below with the number of trips they were found in and their median catch in pounds.
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(pander); library(dplyr)
+little_spdf <- subset(spdf, num_trips < 100, median_catch < 100)
+little_spdf$sd <- NULL
+
+spid <- read.csv("code/1_cleaningData/spid.csv", stringsAsFactors=F)
+
+common_names <- select(spid, SPID, common_name)
+
+little_spdf <- merge(little_spdf, common_names, by.x = "spid", by.y = "SPID", all.x=T, all.y=F)
+little_spdf$common_name <- tolower(little_spdf$common_name)
+little_spdf <- little_spdf[order(little_spdf$num_trips, decreasing =T),]
+little_spdf <- little_spdf[,c("spid", "common_name", "num_trips","median_catch")]
+colnames(little_spdf) <- c("spid", "common name", "number of trips", "median catch (lbs)")
+rownames(little_spdf) <- NULL
+pander(little_spdf, justify = "left", split.table=Inf)
+```
+
+## Metiers
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+library(pander)
+df <- readRDS("code/3_exploreBuildwebs/metier_descrp.RDS")
+colnames(df) <- c("Metier", "Major Species", "Major gear types", "CA", "OR", "WA", "trips", "multispecies","vessels")
+set.alignment(c('left', 'right', 'right', 'center','center', 'center', 'center', 'center','center'))
+pander(df, style = "multiline", split.tables = 300)   
+```
+
+## Participation networks across years
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(igraph); library(scales)
+
+g <- readRDS("code/3_exploreBuildwebs/particp_graph.RDS")
+titles <- c("2009","2010","2011","2012","2013","", "", "All years")
+xranges <- c(rep(c(-1.1, 1.3), 5),"","",c(-1.1,1.3))
+           
+  l <- g[[8]]
+
+par(mai=c(0,0,.25,0), mfrow=c(2,3))
+for(i in c(1:5,8)){
+plot(g[[i]], axes= F, layout = layout.fruchterman.reingold, 
+     vertex.size = V(g[[i]])$size, edge.width = E(g[[i]])$weight*10, 
+     vertex.label.family = "sans", vertex.label.cex = .5, 
+     vertex.label.color = "black", vertex.frame.color = NA, 
+     vertex.label.degree=-pi/2, vertex.label.dist=.3, layout=l, rescale = T,
+     edge.color = "grey")
+mtext(text = titles[i],side = 3, line = 0, cex=.7)
+}
+
+```
 
 # References
