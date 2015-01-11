@@ -203,6 +203,34 @@ with(all_ports, plot(lat, CZ, cex = (landed/100000000)+.05,col="slategrey",lwd=2
 with(all_ports, points(lat, CZ, cex = (landed/100000000)+.05,col=alpha("slategrey",.75),pch=19))
 text(all_ports$lat, all_ports$CZ, all_ports$Name,cex=(all_ports$landed/1000000000)+.5,col="black")
 
+# with a map
+library(maps); library(ggplot2)
+states <- map_data("state")
+states <- subset(states, region %in% c("washington","oregon","california","nevada","idaho"))
+
+ p <- ggplot(all_ports, aes(x=lon, y=lat))  + 
+  theme(panel.background=element_rect(colour="steelblue",fill="steelblue"), 
+        panel.grid.major=element_line(colour="steelblue"), 
+        legend.key=element_rect(fill="white")) + 
+  geom_polygon(data=states,aes(x = long, y = lat, group=group),
+               fill="grey",colour="white") + 
+  coord_map(xlim=range(all_ports$lon,na.rm=T)+c(-.5,.5), 
+            ylim=range(all_ports$lat, na.rm=T)+c(-.5,.5)) + 
+  scale_colour_gradient2(low="#fc8d59",high="#99d594", 
+                         midpoint=6,mid="#ffffbf") +  
+  geom_point(aes(colour=CZ, size = log(landed))) 
+
+p
+
+saveRDS(p, "/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-09/code/3_exploreBuildwebs/p_spatial_map.RDS")
+  
+
+  
+ggplot(all_ports, aes(x=lon, y=lat,color=CZ)) + 
+  geom_point() + theme_minimal() + geom_polygon(data=states,aes(x = long, y = lat, group=group)) 
+
+
+
 # specific port networks
 sb <- define_participationPlot(port="SB")
 morro <- define_participationPlot(port="MRO")

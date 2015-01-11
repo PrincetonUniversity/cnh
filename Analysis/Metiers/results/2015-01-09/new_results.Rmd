@@ -25,6 +25,10 @@ abline(lm(CZ~lat, all_ports),col=alpha("steelblue",.5),lwd=5)
 text(all_ports$lat, all_ports$CZ, all_ports$Name,cex=(all_ports$landed/1000000000)+.5,col="black")
 ```
 
+Alternatively, this can be visualized on a map, see appendix for figure. 
+
+
+
 We see a negative relationship between complexity of participation network and port latitude,[^2] with some exceptions, namely Coos Bay, Newport, Astoria and Westport. Comparing the networks with highest effective connectance (Santa Barbara, Morro Bay) to the high complexity Oregon ports helps provide intuition for the differences between networks. 
 
 [^2]: Light  blue line is a linear regression just for visualize convenience. 
@@ -91,5 +95,15 @@ There are 42 pairs of fisheries which are significantly negatively correlated. T
 
 # How a single important fishery stabilizes/destabilizes these networks
 High centrality of the dungeness crab fishery should influence the stability of these networks. We test this influence empirically and through simulation. Empirically, we plot income variability for all vessels that participate in the dungeness crab fishery, and then replot income variability for the same vessels, excluding trips that correspond to the dungeness crab methier. To simulate effects of losing the dungeness crab fishery, see the attached paper. 
+
+# Appendix
+
+Map of spatial complexity
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE,fig.height=8}
+library(maps);library(mapdata);library(ggplot2); library(mapproj)
+p <- readRDS("code/3_exploreBuildwebs/p_spatial_map.RDS")
+p 
+```
 
 # References
