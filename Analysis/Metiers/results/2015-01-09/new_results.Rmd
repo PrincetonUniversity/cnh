@@ -1,0 +1,95 @@
+---
+title: "New Results"
+author: "Emma Fuller"
+date: "January 9, 2015"
+output: pdf_document
+bibliography: refs.bib
+---
+
+# Spatial variability in the potential resilience of different fishing communities
+Are some ports characterized by fisheries participation networks of higher complexity? Here I define "complexity" as effective connectance[^1]. Effective connectance measures how interconnected a network is, and takes the weighting of those connections into account. Below I subset to include only ports at which at least 3 different vessels land and are able to be matched to a latitudinal point[^5] and plot the effective connectance for all ports on the US west coast against port latitude. The size of each point is proportional to the total volume of catch landed over 5 years. 
+
+[^1]: A connectance metric for weighted networks. As calculated in the `R` package `NetIndices`. Is defined in Ulanowicz & Zorach (2003).
+[^5]: Many ports have an "other ... port" i.e.: "other santa barbara and ventura county ports". Removing these port ids and those with fewer than 3 vessels reduces our total from 88 total port ids to 44 ports plotted. 
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.width=8,fig.cap="size of point is proportional to total landings over 5 years", fig.height=6}
+library(scales)
+all_ports <- readRDS("code/3_exploreBuildwebs/all_ports.RDS")
+# restrict to ports that have at least 3 vessels landing
+sub_ports <- subset(all_ports, N>=3)
+with(sub_ports, plot(lat, CZ, cex = (landed/100000000)+.05,col="slategrey",lwd=2,col.axis="black",col.lab="black",col.sub="black",bty="n",ylab="Effective connectance",xlab="Port latitude"))
+with(all_ports, points(lat, CZ, cex = (landed/100000000)+.05,col=alpha("slategrey",.75),pch=19))
+
+abline(lm(CZ~lat, all_ports),col=alpha("steelblue",.5),lwd=5)
+
+text(all_ports$lat, all_ports$CZ, all_ports$Name,cex=(all_ports$landed/1000000000)+.5,col="black")
+```
+
+We see a negative relationship between complexity of participation network and port latitude,[^2] with some exceptions, namely Coos Bay, Newport, Astoria and Westport. Comparing the networks with highest effective connectance (Santa Barbara, Morro Bay) to the high complexity Oregon ports helps provide intuition for the differences between networks. 
+
+[^2]: Light  blue line is a linear regression just for visualize convenience. 
+
+Below I plot the participation networks from 2009-2013 for Santa Barbara, CA; Morro Bay, CA; , Coos Bay, OR; and Newport, OR. The size of the node ($V_i$) is equal to the number of vessels which participate (i.e. land trips) in that fishery. The width of edges between nodes $V_i$ and $V_j$ ($E_{ij}$) is equal to 
+
+$$E_{ij} = \frac{V_i\cap V_j}{V_i \cup V_j}.$$
+
+Thus edge weights vary between 0 and 1, and are thuse comparable between port networks. It should be noted that this edge width metric will systematically underestimate the connection strength between nodes of vastly different sizes. 
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.width=8}
+library(igraph)
+compare_ports <- readRDS("code/3_exploreBuildwebs/compare_ports.RDS")
+par(mai=c(0,0,.2,0),mfrow=c(3,2))
+for(i in 1:6){
+plot(compare_ports[[i]], main=names(compare_ports)[i], 
+     edge.width = E(compare_ports[[i]])$weight*25, 
+     vertex.frame.color = V(compare_ports[[i]])$color,
+     vertex.label.family = "sans",vertex.label.color="black", 
+     vertex.size = V(compare_ports[[i]])$size/5,vertex.label.cex = .75,
+     layout=layout.fruchterman.reingold)
+}
+```
+
+It looks like the large Oregon ports are characterized by relatively few, but high volume fisheries. While in California there are more diverse ports landing lower volumes. Brookings and Eureka are two relatively simple, but high volume ports which exemplify simpler network structures. 
+
+It should be noted that many of the low values of effective connectance seen in figure one is due to the relatively few vessels which land in those ports. Indeed, over 20 ports only haev one ves
+
+If higher complexity/modularity can be used as a proxy for fishing community resilience, then we have provided a quantitative demonstration of how resilience varies along the west coast. 
+
+# How does fisheries diversification benefit fishermen?
+Studies examining diversity in fisheries participation have demonstrated that by participating in multiple fisheries, vessels are able to reduce the variance in their revenue [@kasperski2013income]. There is concern that changes in fisheries management have limited the flexibility of fishermen to participate in multiple fisheries. To determine if that is true, we first find the correlation in average trip revenue among the major fisheries on the US west coast and then determine to what extent vessels are able to participate in pairs of negatively correlated fisheries. Barriers to participation could be management (i.e. limited entry) but could also be due to insufficient knowledge, gear or processing capacity. 
+
+I first find the major fisheries on the US west coast by filtering for fisheries in which 95% of all trips are landed. Then using those fisheries, test whether the daily average revenue is significantly correlated. These top fisheries and correlation coeffcients are plotted below. Pairs which are not significantly correlated are left blank. 
+
+```{r,echo=FALSE,echo=FALSE,message=FALSE}
+cast_rev.ts <- readRDS("code/3_exploreBuildwebs/cast_rev.ts.RDS")
+library(corrplot)
+  cor.mtest <- function(mat, conf.level = 0.95) {
+    mat <- as.matrix(mat)
+    n <- ncol(mat)
+    p.mat <- lowCI.mat <- uppCI.mat <- matrix(NA, n, n)
+    diag(p.mat) <- 0
+    diag(lowCI.mat) <- diag(uppCI.mat) <- 1
+    for (i in 1:(n - 1)) {
+      for (j in (i + 1):n) {
+        tmp <- cor.test(mat[, i], mat[, j], conf.level = conf.level)
+        p.mat[i, j] <- p.mat[j, i] <- tmp$p.value
+        lowCI.mat[i, j] <- lowCI.mat[j, i] <- tmp$conf.int[1]
+        uppCI.mat[i, j] <- uppCI.mat[j, i] <- tmp$conf.int[2]
+      }
+    }
+    return(list(p.mat, lowCI.mat, uppCI.mat))
+  }
+  res1 <- cor.mtest(cor(cast_rev.ts),.95)
+  corrplot(method="color",cor(cast_rev.ts), p.mat=res1[[1]],sig.level=0.05,insig="blank",order="hclust",col.axis="black",tl.col="slategrey",tl.cex=.5,mar=rep(.25,4),cl.cex=.75,cl.ratio=.15,cl.pos="n")
+```
+
+There are 42 pairs of fisheries which are significantly negatively correlated. To answer the question of whether fishermen commonly participate in both, I calculate
+
++ The proportion of networks in which both fisheries are present
++ Proportion of networks in which both fisheries are present, that are connected
++ Proportion of connections that fall within the 75% of connections (i.e. are strong)
+
+# How a single important fishery stabilizes/destabilizes these networks
+High centrality of the dungeness crab fishery should influence the stability of these networks. We test this influence empirically and through simulation. Empirically, we plot income variability for all vessels that participate in the dungeness crab fishery, and then replot income variability for the same vessels, excluding trips that correspond to the dungeness crab methier. To simulate effects of losing the dungeness crab fishery, see the attached paper. 
+
+# References
