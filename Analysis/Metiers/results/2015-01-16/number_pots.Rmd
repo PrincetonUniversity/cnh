@@ -1,0 +1,75 @@
+---
+title: "How many ports do vessels land at?"
+author: "Emma Fuller"
+date: "January 17, 2015"
+output: html_document
+---
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+tickets <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-09/code/3_exploreBuildwebs/tickets.RDS")
+
+library(reshape2)
+max_port <- function(x,value.metric="revenue"){
+  
+  # function takes vessel ID and returns the port for which maximum revenue/lbs/trips were landed. 
+  # value.metric = "revenue" "lbs" "trips"
+  
+  if(value.metric=="revenue"){
+    melt_rev <- melt(x, id.vars = c("pcid","metier"), measure.vars = "adj_revenue")
+  }else{
+    if(value.metric=="lbs"){
+      melt_rev <- melt(x, id.vars = c("pcid","metier"), measure.vars = "landed_wt")
+  }else{ 
+    if(value.metric=="trips"){
+      melt_rev <- melt(x, id.vars = c("pcid","metier"), measure.vars = "trip_id")
+  }else{
+    warning("value.metric needs to be 'trip', 'revenue', or 'lbs'")
+  }}}
+  
+  if(value.metric=="trips"){
+    cast_rev <- dcast(melt_rev, pcid ~ metier,fun.aggregate = length)
+  }else{
+    cast_rev <- dcast(melt_rev, pcid ~ metier,fun.aggregate = sum)
+  }
+  
+  row.names(cast_rev) <- cast_rev$pcid
+  cast_rev$pcid <- NULL
+  prop_rev <- rowSums(cast_rev)/sum(rowSums(cast_rev))
+  maxes <- prop_rev[which.max(prop_rev)]
+  
+#   return(list(pcid = names(max_port), proportion =  max_port))
+  return(maxes)
+}
+
+describe_portDist <- function(df){
+  colnames(df)[2] <- "CRS"
+  no_maj = length(which(df$CRS<.5))/nrow(df) # % vessels that don't have a majority port
+  
+  single_port = length(which(df$CRS==1))/nrow(df) # % vessels that have single port
+  maj_port = length(which(df$CRS>.5 & df$CRS<1))/nrow(df) # % land more than 50% at one port, but still land at multiple ports
+  return(list(no.majority = no_maj, single.port = single_port, major.port = maj_port))
+}
+```
+
+Turns out that a fair number of vessels that really split among many ports
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+library(plyr)
+prop_rev <- ddply(tickets, .(drvid), max_port)
+lb_prop <- ddply(tickets, .(drvid), max_port, value.metric="lbs")
+trip_prop <- ddply(tickets, .(drvid),max_port, value.metric="trips")
+```
+
+```{r,echo=FALSE,echo=FALSE,message=FALSE}
+barplot(
+  rbind(unlist(describe_portDist(prop_rev))*100, 
+        unlist(describe_portDist(lb_prop))*100,
+        unlist(describe_portDist(trip_prop))*100),
+  beside = TRUE,col=c("lightseagreen","tomato","steelblue"),bor=F,
+  ylab="percentage vessels",legend.text= c("revenue","lbs","trips"),args.legend=list(x="topleft",bty="n",bor=F))
+```
+
++ `no.majority` means that a vessel does not land more than 50% of their trips (measured by revenue, lbs or number of trips) at any single port. 
++ `single.port` means that a vessel lands 100% of their trips (measured by revenue, lbs, or number of trips) at a single port
++ `major.port` means that a vessel lands between 50% and 100% of their trips at a single port. 
+
+**Conclusion**: probably should drop vessels for which don't have at least 50% of trips in a single port, and come back to them later
