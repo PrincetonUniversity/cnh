@@ -73,3 +73,6 @@ barplot(
 + `major.port` means that a vessel lands between 50% and 100% of their trips at a single port. 
 
 **Conclusion**: probably should drop vessels for which don't have at least 50% of trips in a single port, and come back to them later
+
+### Details
+Here I took each vessel and first found the percentage that it landed at each of the ports. Then I recorded the maximum of those percentages. I used that maximum percentage to determine whether it landed only at one port (maximum percentage = 1), had a majority (maximum percentage > .5 < 1) or had no majority (maximum percentage < .5). I did this for revenue, pounds landed and number of trips landed. 

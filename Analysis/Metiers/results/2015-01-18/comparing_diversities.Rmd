@@ -1,0 +1,108 @@
+---
+title: "Comparing measures of diversity"
+author: "Emma Fuller"
+date: "January 18, 2015"
+output: html_document
+---
+
+Previous work has found that revenue diversity is associated with less revenue variability for commercial fishermen on the US west coast. We are interested in what conditions enable or constrain vessels from participating in multiple fisheries. In particular, we are interested in what port-level characteristics are associated with diversity of revenue. We make the assumption that a vessel's diversity is related in some way to the fisheries system in which they participate. To do this, we need to relate a vessel's individual fisheries diversity to a port. 
+
+Here I'm comparing how port-level measures of diversity compare to vessel-level measures. First I need to figure out the right way to calculate port-level diversity. And then I'll compare that to vessel-derived port diversity. 
+
+### Port level diversity
+Port level diversity is calculated by taking all the trips landed at that port, and calculating the Simpsons Diversity Index based on revenue. The first question is whether it matters if I aggregate all trips across 5 years and calculate diversity versus calculating a yearly diversity and averaging across. 
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+# subset by port all trips, calculate by revenue, how diversity of revenues. 
+
+tickets <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-09/code/3_exploreBuildwebs/tickets.RDS")
+
+
+# calculate diversity by port based on metiers landed over 5 years
+#----
+library(reshape2);library(vegan); library(plyr)
+simpson_ports <- function(x){
+  revenues <- ddply(x, .(metier), summarize, rev = sum(adj_revenue))
+  cast_revenues <- as.numeric(t(revenues)[2,])
+  return(diversity(cast_revenues,index = "simpson"))
+}
+
+port_simpsons <- ddply(tickets, .(pcid), simpson_ports)
+#----
+
+# calculate diversity by port based on average diversity over 5 years
+port_yr_simpsons <- ddply(tickets, .(pcid, year), simpson_ports)
+port_mean_simpsons <- ddply(port_yr_simpsons, .(pcid), summarize, mean_simp = mean(V1))
+
+# compare to overall diversity
+merged_port <- merge(port_mean_simpsons, port_simpsons)
+
+with(merged_port, plot(mean_simp, V1,pch=19, col="steelblue",ylab="overall simpsons",xlab="mean simpsons")) 
+```
+
+Here `overall simpsons` is calculating a single diversity measure across all years and `mean simpsons` is calculating a yearly diversity measure and averaging across years. Each point is a port. Taking the average each year will be conservative. This makes sense, as you could participate in fisheries $A$, $B$ in the first year and $C$ and $D$ in the second. In the `mean simpsons` calculation, those would be equivalent, but the `overall simpsons` would be higher. 
+
+**Conclusion**: I'll use `mean simpsons` because it's more conservative. 
+
+### Comparing mean port-level diversity: as derived from aggregate trips or aggregate vessels
+Here I'm calculating and comparing how diversity calculated from an aggregate of vessel measures compares to one which does not consider vessel identity. The vessel level diversity is calculated for each port by finding all vessels which derive at least 50% of their revenue from that port (so vessels can only belong to one port -- unless perfectly split), and taking the average of their mean diversity index. 
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+# find vessels that land majority in a given port, then calculate diversity of each of those vessels for each year, then take average
+
+# should it be by year which vesesls land a majority of their catch per year, or across all 5 years?
+# decided that it should be vessels that, over 5 years, have a majority of their landings at one port. This is because we're interested in what characteristics of the port are related to the diversity of the vessels that land there. And those characteristics won't be calculated per year (and aren't expected to change dramatically year to year). 
+
+# find which port is the maximum at which a vessel lands. record pcid. 
+  max_port <- function(x){
+  # function takes vessel ID and returns the pcid for which maximum revenue were landed. 
+  melt_rev <- melt(x, id.vars = c("pcid","metier"), measure.vars = "adj_revenue")
+  cast_rev <- dcast(melt_rev, pcid ~ metier,fun.aggregate = sum)
+  
+  row.names(cast_rev) <- cast_rev$pcid
+  cast_rev$pcid <- NULL
+  prop_rev <- rowSums(cast_rev)/sum(rowSums(cast_rev))
+  if(any(prop_rev>=.5)==FALSE){ # if no majority, return NA
+    return(NA)
+  }else{
+    maxes <- prop_rev[which.max(prop_rev)]
+  }
+  return(names(maxes))
+}
+  library(plyr); library(reshape2)
+  port_ids <- ddply(tickets, .(drvid), max_port)
+
+# for each port that has a majority, subset those vessels and calculate diversity per year, and take average. 
+yrdf <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-13/yrdf.RDS")
+
+port_vessel_diversity = data.frame(pcid = unique(port_ids[,2]))
+port_vessel_diversity$vessel_simp = NA
+
+for(i in 1:nrow(port_vessel_diversity)){
+  vessels <- port_ids$drvid[which(port_ids[,2]==port_vessel_diversity$pcid[i])]
+  simpsons <- subset(yrdf[[2]], drvid %in% vessels)$mean_simpson
+  port_vessel_diversity$vessel_simp[i] <- mean(simpsons)
+}
+
+# merge that with mean diversity of ports by trips
+merged_ports <- merge(port_vessel_diversity, port_mean_simpsons, by = "pcid", all.x = TRUE, all.y=TRUE)
+with(merged_ports, plot(mean_simp, vessel_simp,pch=19))
+abline(lm(vessel_simp~mean_simp,merged_ports),lwd=5, col="dodgerblue") # is positive
+abline(a=0, b=1,col="lightgrey", lwd=5) 
+legend("topleft",legend=c("one-to-one line", "linear regression"),col=c("lightgrey","dodgerblue"),lwd=5, bty="n")
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+library(pander)
+panderOptions("table.split.table",Inf)
+pander(summary(lm(vessel_simp~mean_simp,merged_ports))) # is significant
+```
+
+There is a postive relationship between port-level diversity and vessel level diversity. 
+
+In general the port-level measure of diversity is higher than the vessel-level. This makes sense, because many specialists landing in different fisheries would increase the port-level diversity but still be low at the vessel level. The few fisheries where the port-level diversity is higher than the vessel-level might be ones that have a lot of mobile vessels landing. It's important to remember that roughly 8% of vessels have no majority port (i.e. spreading fairly evenly across ports). Thus they could be landing in a different set of fisheries than the "locals". 
+
+So these measures might be used to infer different things about the port. The vessel-level measure is the present reality for fishermen, but the port-level is the potential diversity that is possible. 
+
+### Conclusions
+When relating port-level characteristics, what I should use is the vessel level diversity. This is because what I'm interested in is the present amount of diversity, not the potential diversity of the port. But the potential diversity of the port should be considered if I'm going to think about how management might address any low-diversity ports. As in, is there "latent diversity" present? Or do you need to bring new fisheries in?
