@@ -2,7 +2,7 @@
 
 # load data
 #----
-tickets <- readRDS("tickets.RDS") 
+tickets <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-09/code/3_exploreBuildwebs/tickets.RDS") 
 ports <- read.csv("/Users/efuller/1/CNH/Analysis/Metiers/data/wc_fishing_communities.csv",col.names=c("port","lon","lat"))
 pcid <- read.csv("/Users/efuller/1/CNH/Analysis/Metiers/data/pcid.csv")
 #----
@@ -56,7 +56,7 @@ pcid <- read.csv("/Users/efuller/1/CNH/Analysis/Metiers/data/pcid.csv")
 # use google maps API to find lat/lons
   to_find[,c("lon","lat")] <- geocode(to_find$Name)
 # check
-  with(to_find, plot(lon,lat,asp=1))
+  with(to_find, plot(lon,lat,asp=1,col="dodgerblue",lwd=2,cex=.75))
   map('state',add=T)
 # looks good!
 
