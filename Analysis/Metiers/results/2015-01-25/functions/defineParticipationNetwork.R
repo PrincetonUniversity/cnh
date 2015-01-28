@@ -83,11 +83,10 @@ define_participationPlot <- function(year_choose=2009:2013, port=NA, restrict=TR
   V(g)$membership <- im_g$membership
   
   if(graph==TRUE){
-    l <- layout.fruchterman.reingold(g, niter=500, narea=vcount(g)^2.5, 
-                                     repulserad = vcount(g)^5)
+
     
-    plot(g,vertex.size=V(g)$size/10, edge.width=E(g)$weight*100, 
-         vertex.label.family="sans",layout=l,
+    plot(g,vertex.size=V(g)$size/2, edge.width=E(g)$weight*20, 
+         vertex.label.family="sans",layout=layout.spring,
          vertex.frame.color=V(g)$color, vertex.label.color="black")
   }
   return(g)

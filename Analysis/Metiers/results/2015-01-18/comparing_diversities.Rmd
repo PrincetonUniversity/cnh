@@ -7,7 +7,7 @@ output: html_document
 
 Previous work has found that revenue diversity is associated with less revenue variability for commercial fishermen on the US west coast. We are interested in what conditions enable or constrain vessels from participating in multiple fisheries. In particular, we are interested in what port-level characteristics are associated with diversity of revenue. We make the assumption that a vessel's diversity is related in some way to the fisheries system in which they participate. To do this, we need to relate a vessel's individual fisheries diversity to a port. 
 
-Here I'm comparing how port-level measures of diversity compare to vessel-level measures. First I need to figure out the right way to calculate port-level diversity. And then I'll compare that to vessel-derived port diversity. 
+Here I'm comparing how port-level measures of diversity compare to vessel-level measures. First I need to figure out the right way to calculate port-level diversity. And then I'll compare that to vessel-derived port diversity and network-diversity. 
 
 ### Port level diversity
 Port level diversity is calculated by taking all the trips landed at that port, and calculating the Simpsons Diversity Index based on revenue. The first question is whether it matters if I aggregate all trips across 5 years and calculate diversity versus calculating a yearly diversity and averaging across. 
@@ -16,7 +16,6 @@ Port level diversity is calculated by taking all the trips landed at that port, 
 # subset by port all trips, calculate by revenue, how diversity of revenues. 
 
 tickets <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-09/code/3_exploreBuildwebs/tickets.RDS")
-
 
 # calculate diversity by port based on metiers landed over 5 years
 #----
@@ -45,7 +44,7 @@ with(merged_port,text(x = mean_simp, y = V1, tolower(pcid), cex=.75, col="black"
 rm(merged_port, port_simpsons) # remove stuff don't need so i don't mix things up
 ```
 
-Here `overall simpsons` is calculating a single diversity measure across all years and `mean simpsons` is calculating a yearly diversity measure and averaging across years. Each point is a port. Taking the average each year will be conservative. This makes sense, as you could participate in fisheries $A$, $B$ in the first year and $C$ and $D$ in the second. In the `mean simpsons` calculation, those would be equivalent, but the `overall simpsons` would be higher. 
+Here `overall simpsons` is calculating a single diversity measure for a single vessel based on trips across all years and `mean simpsons` is calculating a yearly diversity measure and averaging across years. Each point is a port. Taking the average each year will be conservative. This makes sense, as you could participate in fisheries $A$, $B$ in the first year and $C$ and $D$ in the second. In the `mean simpsons` calculation, those would be equivalent, but the `overall simpsons` would be higher. 
 
 I think that smaller ports are more likely to have a higher overall simpsons than a mean, since a few vessels landing or not can change dramatically the number of fisheries present. 
 
