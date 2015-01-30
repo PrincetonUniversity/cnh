@@ -1,0 +1,124 @@
+---
+title: "Are diversity of processors related to diversity of ports?"
+author: "Emma Fuller"
+date: "January 29, 2015"
+output:
+  html_document:
+    number_sections: no
+    toc: yes
+---
+
+My and Emily's interviews with Oregon and California fishermen suggested that processors influence (and constrain) where, when and for what fishermen fish. I'm interested in knowing whether the number of processors[^1] and the evenness of their revenue are associated with the diversity of fishing ports.[^2] 
+
+[^1]: Here proxied as first reciever codes in PacFin data
+[^2]: Proxied as effective connectance of participation networks
+
+### Background
+Many fishermen told us that the processors would ask for species in particular amounts. Because there were typically few processors (1-2) at a given port, failing to make the requested landing and thus fouling a relationship with one processor made it difficult to impossible to land one's fish at the port at all. There were also more complicated dependencies: vessels are more dependent on processors for high-volume, low-value fisheries, as there are no local markets that can absorb thousands of pounds of fish at a single time. This means that groundfish trawlers are particularly dependent on processors, and this can trickle into more mobile, higher-demand fisheries like crab, salmon or tuna. Many fishermen reported selling their crab to the processors with which they delievered groundfish in order to stay on good terms for the more dependent groundfish trawl fishery. 
+
+Because there were few processors, we heard frequently that fishermen, especially in groundfish trawl, are in constant communication with their processors and are given instructions on which species, how much, and when to land. We also heard that processors present at multiple ports frequently become a channel for regional information in fisheries like shrimp or salmon: relying at what ports vessels are bringing in the best fish. 
+
+Finally, different species require different amounts of processing. Shrimp and groundfish trawl require perhaps the most: shrimp processing is almost entirely mechanized (sort, getting read of the head, etc., icing) and groundfish are filleted. Squid also, require their own processing equipment. If a port's processor does not have the adequate equipment, we heard, those species are not landed at those ports. 
+
+These processor constraints should be less important for large, mobile vessels able to land at multiple ports who participate in exclusively agile, high-value, low-volume fisheries. And indeed, based on our interviews this appeared to be the case with vessels which fished exclusively for crab, salmon, tuna or hook-and-line black cod having less complaints about the processors. 
+
+Because of this degree of control, we hypothesize that frequently the processor is what limits the diversity of fishermen. If a processor doesn't have the right equipment, or doesn't want a particular species, then fishermen can't land it. And if there's only one processor, it becomes more likely that the port's fisheries will be constrained by this. Thus we expect that the diversity of processors and ports should be positively related. 
+
+### Methods
+In order to determine this relationship I explain how I calculate port diversity and processor diversity. 
+
+#### Port Diversity
+I build participation networks for ports that have at least 3 vessels landing each year. For each year I calculate effective connectance and take the average. Participation plots are built where network nodes are fisheries (metiers) and connections are the number of vessels which participate in both fisheries divided by the total number of vessels in both connected fisheries. These participation plots are filtered to include fisheries that are responsible for 95% of the trips. 
+
+I hypothesize that participation networks are a better measure of port diversity than individual vessel diversity averaged by port. This is because individual vessel diversity tends to overestimate at low-diversity ports and under-estimate at high diversity ports. At low diversity ports, often vessels will land at multiple ports thus decoupling their own diversity score with that of any port at which they land. At high diversity ports, while it's rare for vessels to participate in more than 3 or 4 fisheries, there's a much wider combination of fisheries that are found in a single vessel's participation portfolio. Thus beta-diversity between fishermen is higher, even if within year diversity is the same. 
+
+Effective connectance is a weighted degree diversity measure, which takes into account both the number of connections and the evenness across connections. A more evenly connected network is has a higher effective connectance then one that is asymmetrical. 
+
+#### Processor Diversity
+The number of processors is the number of unique `proccessorid` codes at each port. Technically this is actually the number of "first recievers" at a port. First recievers are often, but is not necessarily, a processor. First recievers require a license and certified equipment. In smaller ports, some fishermen are their own first recievers, who then hand their fish off to a processor and/or distributor for further marketing. Thus the `proccesorid` may be inflated.  While the number of first recievers may inflate the number of actual processors, I think this is a defensible choice: when we spoke to fishermen little choice in processors was frequently attributed to the lack of first reciever licenses are a given port. Some of the more novel direct, local marketing fishermen had invested in their own first-reciever license. So I believe it is still a good indicator of the diversity of processing opportunities at a given port. 
+
+The diversity of processors is measured by taking the Simpons Index of revenue by processor. This index incorporates both the number of processors and the evenness with which they make revenue. Thus the most diverse ports are ones that have a large number of processors and even distribution of revenue. This metric has the benefit of distinguishing between a port at which there are a handful of first receivers but only one processor that makes all the money.
+
+### Results
+
+```{r participation_networks, echo=FALSE, warning=FALSE, message=FALSE}
+library(igraph); library(vegan); library(reshape2); library(plyr); library(NetIndices); library(RColorBrewer)
+tickets <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-09/code/3_exploreBuildwebs/tickets.RDS")
+source("/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-29/functions/defineParticipationNetwork.R")
+
+# find number of vessels landed at each port each year
+ves_ports = ddply(tickets, .(pcid, year), summarize, num_ves = length(unique(drvid)))
+
+# find ports that have fewer than 3 vessels in any year
+ports_to_remove = unique(ves_ports$pcid[which(ves_ports$num_ves<3)])
+
+# filter to remove those ports from landings data
+filter_tickets = subset(tickets, !(pcid %in% ports_to_remove))
+
+# check just to see
+#any(filter_tickets$pcid=="CNB") # should be FALSE
+
+# make dataframe to keep effective connectance
+port_data  = data.frame(ports = rep(unique(filter_tickets$pcid),each=5))
+port_data$year = rep(2009:2013, length.out=nrow(port_data))
+port_data$effective_connectance = NA
+
+for(i in 1:nrow(port_data)){
+  # save graph
+  g <- define_participationPlot(year_choose = port_data$year[i], port = port_data$ports[i])
+  if(length(E(g))==0){ # means there's no connections, so by default all weights are zero. 
+    # get.adjacency() throws error because technically there's no weight attributes for unconnected nodes. 
+    # So just return binary adjacency matrix. 
+   port_data$effective_connectance[i] <- EffInd(get.adjacency(g, sparse=FALSE))$CZ
+  }else{
+    port_data$effective_connectance[i] <- EffInd(get.adjacency(g,sparse = FALSE,attr="weight"))$CZ
+  }
+}
+```
+
+```{r processor_diversity, echo=FALSE,warning=FALSE,message=FALSE}
+# for each year, find processor diversity. 
+
+# for each port, find revenue of each processor ID
+  processor_rev_yr <- ddply(filter_tickets, .(pcid, year,processorid), summarize, revenue = sum(adj_revenue * round_wt))
+
+# for each port, each year, calculate simpons diversity. 
+# row should be port, column should be processor. entry should be revenue. 
+  proc_diversity <- function(x){
+  melt_df <- melt(x, id.vars = c("pcid", "processorid"), measure.vars = "revenue")
+  cast_df <- dcast(melt_df, pcid ~ processorid, sum)
+  row.names(cast_df) <- cast_df$pcid
+  cast_df$pcid <- NULL
+  diversity_rev <- diversity(cast_df, index = "simpson")
+  return(diversity_rev)
+}
+
+processor_diversity <- ddply(processor_rev_yr, .(pcid, year), proc_diversity)
+```
+
+```{r merged_diversities, echo=FALSE,warning=FALSE,message=FALSE}
+library(scales)
+yr_div = merge(port_data, processor_diversity, by.x = c("ports","year"),by.y = c("pcid","year"))
+#nrow(yr_div)==nrow(port_data) & nrow(port_data)==nrow(processor_diversity) # should be TRUE
+
+colnames(yr_div)[ncol(yr_div)] = "processor_diversity"
+
+div = ddply(yr_div, .(ports), summarize, mean.effective_connectance=mean(effective_connectance),
+            mean.proc_div = mean(processor_diversity))
+
+rownames(div) <- tolower(div$ports)
+
+with(div, plot(mean.proc_div,mean.effective_connectance, pch=19, col=alpha("slategrey",.5),bty="n"))
+abline(lm(mean.effective_connectance ~ mean.proc_div, div),lwd=3, col="indianred")
+par(mfrow=c(2,2),main=rep(.25,4))
+plot(lm(mean.effective_connectance ~ mean.proc_div, div),pch=19,lwd=3,col=alpha("slategrey",.5))
+
+```
+
+### Discussion
+We find support for our hypothesis: there is a significant positive relationship between the number of processors and the diversity of a port. 
+
+## Next steps
+Figure out a way to evaluate number of limited-entry fisheries by port. Maybe something by species? Some species are fished mostly in open-access (tuna?) others have limited entry (crab? salmon?). Maybe boat size? Bigger boats can fish in more limited entry fisheries? Don't have a good idea. Maybe look at the metiers processors are landing at each port. How many of them are open access? It might be that there's more first recievers when more nearshore because those can go to live markets. Don't have a good way to do this. Maybe by gear? pole fishing is maybe open access? HKL is hard because there's open access for blackcod. Maybe look at the proportion of HKL_1 (long-line black-cod) that has trips coming below the limit. 
+
+Figure out the ecology measure. Distance to deep water (need to think about this cutoff -- what should it be?), rocky habitat (for nearshore -- how to quantify?), maybe something about protected areas in some radius?

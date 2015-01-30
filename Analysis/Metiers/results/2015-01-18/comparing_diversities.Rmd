@@ -122,7 +122,7 @@ When relating port-level characteristics, what I should use is the vessel level 
 Next I construct the participation networks for each port, each year. For each year I calculate the effective connectance, and take average across those yearly effective connectance values. I construct the participation networks with 95, 99 and no restriction on fisheries. 
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
-source("/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-25/functions/defineParticipationNetwork.R")
+source("/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-29/functions/defineParticipationNetwork.R")
 library(igraph); library(reshape2); library(vegan); library(RColorBrewer); library(NetIndices)
 
 particp_nets <- data.frame(pcid = port_vessel_diversity$pcid, year = port_vessel_diversity$year)
@@ -136,8 +136,11 @@ for(i in 1:nrow(particp_nets)){
       port=port_vessel_diversity$pcid[i], 
       year_choose = port_vessel_diversity$year[i], restrict=FALSE)
     if(is.na(g)){next} # if only one vessel, will generate a character warning
-    
-    particp_nets$CZ[i] <- EffInd(get.adjacency(g, sparse=F))$CZ 
+    if(length(E(g))==0){
+      particp_nets$CZ[i] <- EffInd(get.adjacency(g, sparse=F))$CZ 
+    }else{
+      particp_nets$CZ[i] <- EffInd(get.adjacency(g, sparse=F,attr="weight"))$CZ 
+    }
   }
 
 # 95 restricted CZ
@@ -149,8 +152,11 @@ for(i in 1:nrow(particp_nets)){
       port=port_vessel_diversity$pcid[i], 
       year_choose = port_vessel_diversity$year[i], restrict=TRUE, restrict.level = .95)
     if(is.na(g)[1]){next} # if only one vessel, will generate a character warning
-    
-    particp_nets$r95_CZ[i] <- EffInd(get.adjacency(g, sparse=F))$CZ 
+    if(length(E(g))==0){
+      particp_nets$r95_CZ[i] <- EffInd(get.adjacency(g, sparse=F))$CZ 
+    }else{
+      particp_nets$r95_CZ[i] <- EffInd(get.adjacency(g, sparse=F,attr="weight"))$CZ 
+    } 
     }
   }
 
@@ -163,8 +169,11 @@ for(i in 1:nrow(particp_nets)){
       port=port_vessel_diversity$pcid[i], 
       year_choose = port_vessel_diversity$year[i], restrict=TRUE, restrict.level = .99)
     if(is.na(g)[1]){next} # if only one vessel, will generate a character warning
-    
-    particp_nets$r99_CZ[i] <- EffInd(get.adjacency(g, sparse=F))$CZ 
+    if(length(E(g))==0){
+      particp_nets$r99_CZ[i] <- EffInd(get.adjacency(g, sparse=F))$CZ 
+    }else{
+      particp_nets$r99_CZ[i] <- EffInd(get.adjacency(g, sparse=F,attr="weight"))$CZ 
+    }
     }
   }
 
