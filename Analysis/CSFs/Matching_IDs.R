@@ -1,8 +1,6 @@
 # Look to see if vessels present
 
-load("1/CNH/Analysis/VMS/results/2014-10-29/3_VMSdf.Rdata")
-
-
+load("/Users/efuller/1/CNH/Analysis/VMS/results/2014-10-29/3_VMSdf.Rdata")
 
 names = c("the gayle", "westwind","papson","savannah", "tidepoint")
 vessel_ids = c("30341","06202","49477","70772","32965")
@@ -35,7 +33,7 @@ any(VMS_vesselID %in% new_nos)
 any(VMS_number %in% new_nos)
 
 # hm check fish tickets
-tickets <- readRDS("1/CNH/Analysis/Metiers/results/2015-01-09/code/3_exploreBuildwebs/tickets.RDS")
+tickets <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-09/code/3_exploreBuildwebs/tickets.RDS")
 drvids <- unique(tickets$drvid)
 
 any(drvids %in% new_nos)

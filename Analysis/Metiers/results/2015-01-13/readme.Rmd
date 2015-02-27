@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "Metiers"
 author: "Emma Fuller"
 date: "January 13, 2015"
 output: pdf_document
@@ -19,11 +19,28 @@ bibliography: refs.bib
 
 [^1]: General intro: Bashares (bushmeat), Kasperski (ref on farming?), aboriginal societies that are strongly tied to land/sea, obvious. Go to test-beds for strong social-ecological coupling. Even today in contemporary, westernized societies, it's increasingly obvious that strong coupling to ecological systems to social ones. This is a really general problem (groups living in remote places -- without access to markets/industry) and places that are in the most densly populated and moderinized part of the world. Given that there is this coupling, how is this coupling constructed, and if this coupling has implications for poeple, how is it structured and strenghted by ecological and social forces. the question is how do we manage such linked systems to benefit both the ecological and human sub-components. Jared Diamond: you can strike it rich ecologically and escape collapse (Nature paper -- peer reviewed paper to cite). 
 
-# Materials and Methods
-
-We measure mean annual diversity of fisheries participation as the average of the simpson's index calculated from annual revenues. 
 
 # Results
+**[EXAMPLE PLOT: not real data]**
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+dist_depth = seq(.1,5, by = .1)
+diversity = seq(0,4,by=.1)
+diversity = sample(diversity, size=length(dist_depth),replace=TRUE)
+diversity <- sort(diversity, decreasing=F)
+
+par(mfrow=c(1,3))
+ecology_df <- data.frame(dist_depth = dist_depth, diversity = diversity)
+plot(jitter(ecology_df$dist_depth, factor=40), jitter(ecology_df$diversity,factor=20),xlab="distance to 100m depth",ylab="diversity of vessel",bty="n",lwd=3,col="steelblue", main = "Ecology")
+
+plot(jitter(ecology_df$dist_depth, factor=40), jitter(ecology_df$diversity,factor=40),xlab="processor diversity",ylab="diversity of vessel",bty="n",lwd=3,col="indianred", main = "Markets")
+
+
+plot(jitter(ecology_df$dist_depth, factor=40), jitter(ecology_df$diversity,factor=40),xlab="number open-access fisheries",ylab="diversity of vessel",bty="n",lwd=3,col="goldenrod1", main = "Management")
+
+```
+
+### Emma's Notes (ignore)
 We find that the mean annual diversity of fisheries participation is correlated with the average of the effective connectance of the port weighted. 
 
 + each port has own average simpsons versus average diversity for vessel. regression will be through mean/median to test for significance in slope. if i loose 10% of less of vessels, make a plot seperately
@@ -37,6 +54,5 @@ Your diversity is set by where you fish, a way out is by landing at multiple por
 
 + port network, some places are more connected than others. 
 + inter-annual port diversity variation (maybe)
-+ 
 
 # References
