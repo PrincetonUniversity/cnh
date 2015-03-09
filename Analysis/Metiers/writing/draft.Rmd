@@ -1,0 +1,69 @@
+---
+title: "draft"
+author: "Emma Fuller"
+date: "March 5, 2015"
+output: pdf_document
+---
+
+# Question
+
+I seek to describe how individual income variability is related to local ecological, economic and management related characteristics. The goal of this analysis is to discover if market accessibility, habitat availability, and/or access to open-access fisheries is related to income variability. 
+
+# Motivation (conservation)
+
++ Stakeholder wellbeing is an increasingly important measure of conservation success (i.e. ecosystem services, etc.) and is a formal one for US fisheries ("fishing community health")
++ We examine income variability as a measure of human wellbeing. 
++ Natural resource-based livlihoods (fisheries, farming, etc.
+) can experience income variability for any of three reasons: environmental (vagaries of weather, disease, abundance of resource), economic (market access, demand, price), or management (restricted access).
++ Previous work shows that diversity of fisheries participation is negatively related to income variability and suggests that geography and management may play large roles in determining how diverse income is. 
++ We add to this literature by replicating diversity-income variability relationship, unpack the proxy variable of geography and explicitly test to what extent ecology, markets and management can explain this trend in income variability. 
+
+# Methods
+Data manipulations
+
++ Income
+    + Subset to vessels we surmise make full income off of fishing (median income > $10,000)
+    + Calculate income volatility (interannual variation - coefficient of variation; min/mean - measure of extreme risk)
++ Fisheries participation
+    + Determine fishery to which each trip belongs (metiers)
+    + Calculate diversity of fisheries participation (simpson index of revenue)
++ Location
+    + Calculate median latitude of catch
+
+Quantifying relationships
+
++ Plot income variability versus diversity, median latitude; plot diversity versus median latitude
++ Search for clustering in annual fisheries participation,[^4] test whether cluster ID explains income variability (not sure where this fits in, seems important), tests whether the identity of the fisheries/particular combinations are what does it. Rather than general characteristics (i.e. diversity)
+
+[^4]: Expect salmon, crab, tuna is a popular combo, for example.
+
+
+Regroup: do we see diversity and latitude explain (maybe state as a dummy variable) income diversity?
+
+**Question**: feel like I should look to see if geography and cluster ID explain things first. Before moving on.. But should I just calculate all the suggested metrics and do a formal model fitting exercise?
+
+# Indicators
+For each vessel it will be the weighted catch average of ports to which vessels deliver
+ 
+## Ecology predictors 
+ 
++ proportion area of fishable (i.e. non protected) area in $X$ radius of port. (is there a large MPA blocking most near-shore fishermen?)[^1]
++ proportion area of rock in $X$ radius of port (heard that "rocks" were crucial to being able to do near-shore rockfish assemblages)[^2]
++ proportion of rock habitat protected in $X$ radius of port (no good if that habitat is all protected. Alternatively it could be positively associated due to spillover)[^3]
++ proportion of rock habitat unprotected in $X$ radius of port (reciprocal of above)
++ do similar with "hard" habitat? or other types of habitat (mixed, soft)
+
+[^1]: overlay MPA polygons over radius of port, calculate proportion of area fishable
+[^2]: get habitat layers from essential habitat analysis, calculate proportion of area with rock habitat
+[^3]: combine MPA polygons and habitat layers, calculate proportion of areas protected and rocky
+
+
+## Management predictors
+
++ TBD metrics, maybe the proportion of fisheries that are open access
+
+## Market predictors
+
++ distance to major city (how to define -- i.e. Seattle, Portland, SF, LA)
++ number of first recievers (recievers are proxies for processors, more recievers, more options?)
++ evenness of first recievers revenues (one processor effectively dominating?)

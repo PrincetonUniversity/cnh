@@ -23,7 +23,7 @@ missing<-ship_number[which(!(ship_number$Doc_Number %in% landings$drvid)),]
 missing_path = subset(VMSdf, Ship_Number %in% missing$Ship_Number)
 with(missing_path[1:500000,], plot(Longitude, Latitude, type="p",asp=1,cex=.25))
 map('state',add=T)
-# definitely some moveing around. hm, let those goes
+# definitely some moveing around. hm, let those go
 
 # subset to VMS for which I have data
 rm(missing_path)

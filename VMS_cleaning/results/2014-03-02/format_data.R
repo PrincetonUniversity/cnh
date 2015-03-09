@@ -78,7 +78,6 @@ data <- read.csv("VMS_cleaning/data/VMS.txt",header=FALSE,strip.white=TRUE,strin
 
 	VMS <- join(VMS, Declaration_Codes, by = "Declarations")
 
-
 #####################
 # Adding Ports data #
 #####################

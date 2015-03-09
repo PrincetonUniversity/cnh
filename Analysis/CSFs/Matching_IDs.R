@@ -1,4 +1,30 @@
 # Look to see if vessels present
+# load data ----
+# load landing receipts 
+receipts <- read.csv("/Users/efuller/1/CNH/Analysis/CSFs/landing_receipts.csv",stringsAsFactors=FALSE)
+# load tickets
+tickets <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-09/code/3_exploreBuildwebs/tickets.RDS")
+
+# look for matches between tickets and receipts----
+landed <- paste0("C",unique(receipts$Landing.Reciept.ID))
+csf_vessels <- unique(receipts$Vessel.ID)
+any(landed %in% unique(tickets$ftid))
+which(csf_vessels %in% unique(tickets$veid))
+
+length(which(csf_vessels %in% unique(tickets$veid)))
+# 6 vessels out of 22 possible we have
+
+# look at these vessels catch ----
+overlap_vessels <- csf_vessels[which(csf_vessels %in% unique(tickets$veid))]
+overlap_trips <- subset(tickets, veid %in% overlap_vessels)
+
+# just look at csf reciepts for vessels we have both for. 
+r.have <- subset(receipts, Vessel.ID %in% overlap_vessels)
+
+# look for the first receipt in that csf receipts. Did vessel deliever that day?
+overlap_trips$date <- as.POSIXlt(overlap_trips$tdate, format="%d-%b-%y")
+r.have$Date <- as.POSIXlt(r.have$Date, format = "%m/%d/%y")
+subset(overlap_trips, veid == r.have$Vessel.ID[1] & date == r.have$Date[1])
 
 load("/Users/efuller/1/CNH/Analysis/VMS/results/2014-10-29/3_VMSdf.Rdata")
 
