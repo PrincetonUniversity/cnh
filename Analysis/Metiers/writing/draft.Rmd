@@ -23,26 +23,63 @@ Data manipulations
 
 + Income
     + Subset to vessels we surmise make full income off of fishing (median income > $10,000)
-    + Calculate income volatility (interannual variation - coefficient of variation; min/mean - measure of extreme risk)
+    + Calculate income volatility (interannual variation - coefficient of variation; min/mean - measure of extreme risk, **not-done**)
 + Fisheries participation
     + Determine fishery to which each trip belongs (metiers)
     + Calculate diversity of fisheries participation (simpson index of revenue)
+    + Find fishing strategies: cluster based on proportion of annual revenue in each fishery by vessel
 + Location
-    + Calculate median latitude of catch
+    + Calculate median latitude of catch (**not done**)
 
-Quantifying relationships
+# Results
+After clustering fisheries participation (by proportion of revenue from each fishery), I get 29 different "fishing strategies" or typical combinations of fisheries in a year. Each vessel can be a member of a new fishing strategy each year, but about 3/4 of the vessels stay in the same fishing strategy across all five years. 
 
-+ Plot income variability versus diversity, median latitude; plot diversity versus median latitude
-+ Search for clustering in annual fisheries participation,[^4] test whether cluster ID explains income variability (not sure where this fits in, seems important), tests whether the identity of the fisheries/particular combinations are what does it. Rather than general characteristics (i.e. diversity)
+Below I plot the distributions of income variablity (coefficient of variation of annual revenue) by fishing strategy. If a vessel did not participate in the same strategy across all 5 years, they are thrown in the "multi" category.[^6] I also show where the variation in revenue is equivalent to the average expected revenue ($cov = 1$). Based on this, it looks like some strategies do better than others. 
 
-[^4]: Expect salmon, crab, tuna is a popular combo, for example.
+[^6]: the reason there are some blank rows are fishing strategies that exist, but no vessel does that one strategy across all five years.  
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.width=9}
+library(pander)
+yrdf <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/writing/code/1_cleaningData/yrdf.RDS")
+
+bymedian <- with(yrdf[[2]], reorder(x=single_cluster, -cv_adj_revenue, median))
+boxplot(cv_adj_revenue~ bymedian, yrdf[[2]], col = 'grey', ylab="coefficient of variation (annual income)", xlab="fishing strategy")
+abline(h=1, lwd=3,lty=2, col="indianred")
+```
+
+Fitting a multiple regression, I find that if I add fishing strategy ID (cluster), that some fishing strategies are associated with a decrease in mean variability, while a few an increase, and many that have no effect at all. I drop the quadratic diversity term in this model, but I find that the main diversity term is negative and still significant. Which means that regardless of what fishing strategy you choose, the more diverse you are, the lower we expect the annual variation.
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+lm_pp <- lm(cv_adj_revenue ~ mean_simpson + single_cluster, data = yrdf[[2]])
+summary(lm_pp)
+```
+
+Interestingly the intercept (I think) is equivalent to category 1, which is the fishing strategy that features more than 90% of your participation in dungeness crab. This has a hugely positive effect (`r round(lm_pp$coefficients[1],3)`), which means that your cv(revenue) goes up by around .6 if you participate in crab, regardless of how diverse you are. 
+
+I also find that this model is a better fit (according to AIC)
+
+```{r,warning=FALSE,message=FALSE}
+lm_reg <- lm(cv_adj_revenue ~ mean_simpson + I(mean_simpson^2), data = yrdf[[2]])
+AIC(lm_reg) - AIC(lm_pp)
+```
+
+And a better fit from the most basic model
+```{r}
+lm_simp <- lm(cv_adj_revenue ~ mean_simpson, data = yrdf[[2]])
+AIC(lm_simp) - AIC(lm_pp)
+```
+
+# Discussion
+This suggests to me that the fisheries in which you participate are important, but that also diversity itself is still helpful. I'm not quite sure how to structure the next step. Some possible questions:
+
++ Why doesn't everyone do the successful fishing strategies? Does management block people from participating in those fishing strategies? Are those fisheries that make up "good" fishing strategies limited entry?
++ Diversity itself is still important, regardless of what fishing strategy you undertake. And because some fisheries are going to have to stay limited entry, knowing whether we could improve diversity of participation by other means[^7] would be vaulable. So what explains diversity?
+
+[^7]: i.e. through restoration of species/habitat or market structure
+
+# Appendix: choosing indicators?
 
 
-Regroup: do we see diversity and latitude explain (maybe state as a dummy variable) income diversity?
-
-**Question**: feel like I should look to see if geography and cluster ID explain things first. Before moving on.. But should I just calculate all the suggested metrics and do a formal model fitting exercise?
-
-# Indicators
 For each vessel it will be the weighted catch average of ports to which vessels deliver
  
 ## Ecology predictors 
