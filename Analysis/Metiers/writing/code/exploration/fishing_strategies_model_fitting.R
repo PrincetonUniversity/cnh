@@ -4,6 +4,9 @@ yrdf <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/writing/code/1_cleaningDa
 lm_reg <- lm(cv_adj_revenue ~ mean_simpson + I(mean_simpson^2), data = yrdf[[2]])
 lm_pp <- lm(cv_adj_revenue ~ mean_simpson + I(mean_simpson^2) + factor(single_cluster), data = yrdf[[2]])
 
+library(mgcv)
+gam_pp <- gam(cv_adj_revenue ~ mean_simpson + single_cluster, data=yrdf[[2]])
+
 AIC(lm_reg)-AIC(lm_pp)
 
 # look at what metiers are in each profile. but really want to know about distribution of revenue across these. below doesn't do that yet. 
