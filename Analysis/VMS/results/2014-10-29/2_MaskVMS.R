@@ -1,8 +1,7 @@
 # Make coastline shapefile to use with VMS data
 library(maptools); library(rgeos); library(raster);library(rgdal)
-#----
 
-# loading the high-resolution coastline takes a long time. avoid if possible
+# loading the high-resolution coastline takes a long time. avoid if possible ----
 if(file.exists("results/2014-10-29/coastline.Rdata")){
   message("nice, nothing to do here")
 }else{
@@ -26,7 +25,7 @@ if(file.exists("results/2014-10-29/coastline.Rdata")){
 	save(WC,file="results/2014-10-29/2_coastline.Rdata") # name is WC
 }
 
-load("results/2014-10-29/2_coastline.Rdata") # is now called WC
+load("/Users/efuller/1/CNH/VMS/results/2014-10-29/2_coastline.Rdata") # is now called WC
 proj4string(WC) <- CRS("+proj=longlat +datum=WGS84")
 # important, CRS("+proj=longlat + dataum=WGS84") is a geographic coordinate system, not a projected one. 
 # see here: http://stackoverflow.com/questions/25411251/buffer-geospatial-points-in-r-with-gbuffer
