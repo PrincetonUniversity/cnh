@@ -9,36 +9,36 @@ tickets <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/writing/code/fisheries
 landings <- unique(tickets[,c("trip_id","drvid","tdate","metier")])
 # change tdate to date format
 
-load("/Users/efuller/1/CNH/Analysis/VMS/results/2014-10-29/3_VMSdf.Rdata")
+VMS <- readRDS("/Users/efuller/1/CNH/VMS_cleaning/src/VMS.RDS")
 
 # checking things ----
-ship_number <- unique(VMSdf[,c("Ship_Number","Doc_Number")])
+ship_number <- unique(VMS[,c("ship.number","doc.num")])
 
 # think it's doc number and drvid that are matching
-length(which(ship_number$Ship_Number %in% landings$drvid))
+length(which(ship_number$ship.number %in% landings$drvid))
 
-length(which(ship_number$Doc_Number %in% landings$drvid))
+length(which(ship_number$doc.num %in% landings$drvid))
 
 # which are the ones not in?
 
-missing<-ship_number[which(!(ship_number$Doc_Number %in% landings$drvid)),]
+missing<-ship_number[which(!(ship_number$doc.num %in% landings$drvid)),]
 
 # where are they?
-missing_path = subset(VMSdf, Ship_Number %in% missing$Ship_Number)
-with(missing_path[1:500000,], plot(Longitude, Latitude, type="p",asp=1,cex=.25))
+missing_path = subset(VMS, doc.num %in% missing$doc.num)
+with(missing_path[1:500000,], plot(longitude, latitude, type="p",asp=1,cex=.25))
 map('state',add=T)
 # definitely some moveing around. hm, let those go
 # (a lot of those vessels, like half, don't have doc numbers)
-length(which(is.na(missing$Doc_Number)))
+length(which(is.na(missing$doc.num)))
 
 # subset to VMS for which I have data
 rm(missing_path)
 
-VMS_land <- subset(VMSdf, Doc_Number %in% unique(landings$drvid))
-# keeps about 90% of datapoints
-nrow(VMS_land)/nrow(VMSdf)
+VMS_land <- subset(VMS, doc.num %in% unique(landings$drvid))
+# keeps about 80% of datapoints
+nrow(VMS_land)/nrow(VMS)
 # clean up
-rm(VMSdf, missing, ship_number,tickets) 
+rm(VMS, missing, ship_number,tickets) 
 
 # settle on data for which I have both landings and VMS ----
 
@@ -46,7 +46,7 @@ rm(VMSdf, missing, ship_number,tickets)
 # that metier. Then work back to the next data. Repeat until no more landings. 
 
 # get all vessels
-  vms_vessels <- unique(VMS_land$Doc_Number)
+  vms_vessels <- unique(VMS_land$doc.num)
 # get all landings
   vms_landings <- subset(landings, drvid %in% vms_vessels)
 # clean up
@@ -60,16 +60,14 @@ i = 315 # is an observed vessel, morning light
 for(i in 1:length(vms_vessels)){
   
   # subset to just one track
-    ves = subset(VMS_land, Doc_Number == vms_vessels[i])
+    ves = subset(VMS_land, doc.num == vms_vessels[i])
   # order by date and time
-    ves <- ves[order(ves$Date_Time),]
+    ves <- ves[order(ves$date.time),]
   
   # find landings
     ves_landings <- subset(vms_landings, drvid == vms_vessels[i])
   
-  # need to adjust landings date and VMS data/time to be in comparable format
-    ves$Date_Time <- as.POSIXct(ves$Date_Time, format = "%Y-%m-%d %H:%M", 
-                                tz = "Etc/GMT-8")
+  # need to adjust landings date to be in comparable format
     ves_landings$tdate <- as.Date(ves_landings$tdate, format = "%d-%b-%y",
                                 tz = "Etc/GMT-8")
   
@@ -99,11 +97,11 @@ for(i in 1:length(vms_vessels)){
     }
     
     # find last VMS point for this day
-    if(as.Date(ves$Date_Time[1], tz = "Etc/GMT-8") > land_date){
+    if(as.Date(ves$date.time[1], tz = "Etc/GMT-8") > land_date){
       next
     }else{
-      at_dock <- tail(which(as.Date(ves$Date_Time, tz = "Etc/GMT-8")<land_date),1)
-      if(at_dock < ves$Date_Time[1])
+      at_dock <- tail(which(as.Date(ves$date.time, tz = "Etc/GMT-8")<land_date),1)
+      if(at_dock < ves$date.time[1])
         ves$trip_id1[1:at_dock] <- trip_id1
       ves$trip_id2[1:at_dock] <- trip_id2
     }
@@ -117,10 +115,14 @@ for(i in 1:length(vms_vessels)){
     ves_complete$metier <- NULL
     
   # get trip_id2 metiers
-      ves_complete<- merge(ves_complete, ves_landings[,c("trip_id","metier")], 
-                           by.x = "trip_id2", by.y = "trip_id")
-      ves_complete$metier2 <- ves_complete$metier
-      ves_complete$metier <- NULL  
+  if(!any(is.na(unique(ves_complete$trip_id2))) & length(unique(ves_complete$trip_id1==1))){
+        ves_complete<- merge(ves_complete, ves_landings[,c("trip_id","metier")], 
+                             by.x = "trip_id2", by.y = "trip_id")
+        ves_complete$metier2 <- ves_complete$metier
+        ves_complete$metier <- NULL 
+      }else{
+        ves_complete$metier2 <- NA
+      } 
   
 vessel_list[[i]] <- ves_complete
 if(i %% 10 == 0){
@@ -128,7 +130,7 @@ if(i %% 10 == 0){
 }
 }
 
-vms_catch <- do.call(rbind, vessel_list[1:43])
+vms_catch <- do.call(rbind, vessel_list[1:6])
 
 # plot by fishery
 paint = colorRampPalette(brewer.pal(8, "Accent"))(length(unique(vms_catch$metier1)))
@@ -137,24 +139,24 @@ paint = colorRampPalette(brewer.pal(8, "Accent"))(length(unique(vms_catch$metier
 with(subset(vms_catch, metier1=="TWL_1"), plot(Longitude,Latitude,asp=1, pch = 3, cex = .5, col = paint[5]))
 
 # salmon
-with(subset(vms_catch, metier1=="TLS_1"), points(Longitude,Latitude,asp=1, pch = 3, cex = .5, col = paint[1]))
+with(subset(vms_catch, metier1=="TLS_1"), plot(longitude,latitude,asp=1, pch = 3, cex = .5, col = paint[1]))
 
 # tuna
-with(subset(vms_catch, metier1=="TLS_2"), points(Longitude,Latitude,asp=1, pch = 3, cex = .5, col = paint[2]))
+with(subset(vms_catch, metier1=="TLS_2"), points(longitude,latitude,asp=1, pch = 3, cex = .5, col = paint[2]))
 
 # sablefish pot
-with(subset(vms_catch, metier1=="POT_4"), points(Longitude,Latitude,asp=1, pch = 3, cex = .5, col = paint[3]))
+with(subset(vms_catch, metier1=="POT_4"), points(longitude,latitude,asp=1, pch = 3, cex = .5, col = paint[3]))
 
 # sablefish longline
-with(subset(vms_catch, metier1=="HKL_1"), points(Longitude,Latitude,asp=1, pch = 3, cex = .5, col = paint[4]))
+with(subset(vms_catch, metier1=="HKL_1"), points(longitude,latitude,asp=1, pch = 3, cex = .5, col = paint[4]))
 
 # crab pot
-with(subset(vms_catch, metier1=="POT_1"), points(Longitude,Latitude,asp=1, pch = 3, cex = .5, col = paint[6]))
+with(subset(vms_catch, metier1=="POT_1"), points(longitude,latitude,asp=1, pch = 3, cex = .5, col = paint[5]))
 
 map('state',add=T, col = "grey40",border="black",fill=TRUE)
 
 # plot it all - colors aren't great. would be nice to color by similar species/types i.e. gear-type?
-plot(vms_catch$Longitude, vms_catch$Latitude, asp = 1, col = paint[as.numeric(as.factor(vms_catch$metier1))], pch = 3, cex = .5)
+plot(vms_catch$longitude, vms_catch$latitude, asp = 1, col = paint[as.numeric(as.factor(vms_catch$metier1))], pch = 3, cex = .5)
 
 map('state',add=T, col = "grey40",border="black",fill=TRUE)
 
@@ -172,3 +174,6 @@ legend("bottomright", col=paint, legend=unique(ves_complete$metier1), pch = 3, l
 
 # vesesl 1  is crazy nearshore and diverse. 
 # Out of SB. mostly C. Halibut and cukes. 
+
+
+

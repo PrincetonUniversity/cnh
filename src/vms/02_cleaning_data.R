@@ -1,26 +1,40 @@
 # taking processed VMS data and sewing together
-library(rgdal)
-library(rgeos)
-library(sp)
-library(maps)
-setwd("/Volumes/storage/processed/")
+location = "local"
 
+if(location == "della"){
+  libz = "/tigress/efuller/R_packages"
+  library(sp, lib.loc = libz)
+  library(rgdal, lib.loc = libz)
+  library(rgeos, lib.loc = libz)
+  library(maps, lib.lo = libz)
+  setwd("/tigress/efuller/process_vms/processed")
+}
+
+if(location == "local"){
+  library(sp)
+  library(rgdal)
+  library(rgeos)
+  library(maps)
+  setwd("/Users/efuller/1/CNH/processedData/spatial/vms/intermediate/01_processed/")
+}
 # aggregate dataframes ----
   processed_vms <- dir()
 
 # make one big dataset
   df <- as.data.frame(do.call(rbind, lapply(processed_vms, "readRDS")))
 # remove duplicates where vessel has same ID and same date/time
-  df <- df[-which(duplicated(df[,c("vessel.name","doc.num","date.time")])),]
+  df <- df[-which(duplicated(df[,c("vessel.name","doc.num","date.time")]) | duplicated(df[,c("vessel.name","doc.num","date.time")], fromLast = TRUE)),]
 # make sure we have complete cases for vessel ID, date-time, lat-lon
   df <- df[complete.cases(
     df[,c("vessel.name","doc.num","longitude","latitude","date.time")]),]
 
 # find onland points ----
   # load coastline polygon
-    load("/Users/efuller/1/CNH/Analysis/VMS/results/2014-10-29/2_coastline.Rdata")
+    load("../2_coastline.Rdata")
     proj4string(WC) <- CRS("+proj=longlat +datum=WGS84")
-  # convert lat/lon into spatial points
+  # convert lat/lon into spatial pointsi
+  # remove points that are smaller than -180
+    df <- df[-which(df$longitude< -180),]
     sp_df <- SpatialPoints(coords = df[,c("longitude","latitude")],
                            proj4string = CRS("+proj=longlat +datum=WGS84"))
   
@@ -33,8 +47,12 @@ setwd("/Volumes/storage/processed/")
   df <- df[order(df$vessel.name, df$date.time),]
 # then split into a list
   vessel_tracks <- split(df, df$vessel.name)
-# and each list remove all onland points except for start and end
-  fish_tracks <- vector("list", length = length(vessel_tracks))
+
+# intermediate: split the VMS tracks by vessel and process one by one
+
+for(k in 1:length(vessel_tracks)){
+   saveRDS(vessel_tracks[[k]], paste0("vessel_track",k,".RDS"))
+}
   
   # helper function
     rm_onland <- function(data){
@@ -56,27 +74,24 @@ setwd("/Volumes/storage/processed/")
       }
     }
 
-  for(i in 1:length(vessel_tracks)){
-    one_ves <- vessel_tracks[[i]]
-    fish_tracks[[i]] <- rm_onland(one_ves)
-  }
-
-# remove all vessels that never leave land 
-  moving_fish <- fish_tracks[-which(summary(fish_tracks)[,1]==1)]
-
-# make a new dataframe 
-  moving_df <- do.call(rbind, moving_fish)
-
-# filter to remove vessels with speeds greater than 25 knots ----
-  moving_df <- moving_df[-which(moving_df$avg.speed>25),]
+vessel_tracks <- dir()[grep("vessel_track",dir())]
 
 # merge with doc.numers ----
-  vessel_codes <- read.csv("/Users/efuller/1/CNH/Data/VMS/West_Coast_Vessels.csv",
+  vessel_codes <- read.csv("../West_Coast_Vessels.csv",
                            header=TRUE,stringsAsFactors=FALSE)
   colnames(vessel_codes) <- c("ship.number","doc.num","alt.vessel.name")
 
-  merged_df <- base::merge(x = moving_df, y = vessel_codes, by="doc.num",
-                     all.x = TRUE, all.y = FALSE)
+for(i in 1:length(vessel_tracks)){
+  # load vms track
+  one_ves <- readRDS(vessel_tracks[i])
+  # remove onland points
+  fish_tracks <- rm_onland(one_ves)
+  if(length(fish_tracks)==1) next
+  # remove any abnormally high speeds
+  fish_tracks <- fish_tracks[-which(fish_tracks$avg.speed>25),]
+  # if there are no off-land points, don't save
+  fish_tracks <- merge(x = fish_tracks, y = vessel_codes, by = "doc.num", all.x = TRUE, all.y = FALSE)
+  # save the processed vms track
+  saveRDS(fish_tracks, paste0("fish_tracks",unique(fish_tracks$doc.num),".RDS"))
+}
 
-# save final dataframe ----
-  saveRDS(merged_df, "/Users/efuller/1/CNH/VMS_cleaning/src/VMS.RDS")
