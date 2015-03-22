@@ -46,7 +46,7 @@ if(location == "local"){
 # arrange by vessel name, and date-time. 
   df <- df[order(df$vessel.name, df$date.time),]
 # then split into a list
-  vessel_tracks <- split(df, df$vessel.name)
+  vessel_tracks <- split(df, df$doc.num)
 
 # intermediate: split the VMS tracks by vessel and process one by one
 

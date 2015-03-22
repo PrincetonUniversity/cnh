@@ -4,41 +4,44 @@
 tickets <- readRDS("/Users/efuller/1/CNH/processedData/catch/tickets_plus.RDS")
 
 landings <- unique(tickets[,c("trip_id","drvid","tdate","metier")])
+landings$tdate <- as.POSIXlt(landings$tdate, format = "%d-%b-%y", tz = "Etc/GMT-8")
 rm(tickets)
+
 # for each vessel track, check if it's in landings data. if not, next
 setwd("/Users/efuller/1/CNH/processedData/spatial/vms/intermediate/02_cleaned/")
 fish_tracks <- dir()
 
-vms_all <- do.call(rbind,lapply(fish_tracks, readRDS))
-
-
-
 # find out if VMS is in landing tickets ----
-for(i in 21:length(fish_tracks)){
+for(i in 1:length(fish_tracks)){
+  
   track <- readRDS(fish_tracks[i])
+  doc.num <- unique(track$doc.num)
+  
+  if(length(doc.num)>1) break # shouldn't be the case. because split on doc.num earlier
   
   # if there's no track 
   # (which happens because didn't properly filter for vessels that never leave 
   # land upstream in 02_cleaning_data.R)
   if(nrow(track)==0) next
   
-  # is this vessel in landings data?
-  # sometimes there are more than one doc.num associated with vms. 
-  # using first one, seems more broadly matching.
-  
-  # there's one vessel that has a blank for a doc.num for awhile but it does match
-  if(unique(track$doc.num)[1]==""){
-    saveRDS(track, paste0("/Users/efuller/1/CNH/processedData/spatial/vms/intermediate/03_matchedMetier/v_",unique(track$doc.num)[2],".RDS"))
-  }else{
-    if(unique(track$doc.num)[1] %in% landings$drvid){ 
-      saveRDS(track, paste0("/Users/efuller/1/CNH/processedData/spatial/vms/intermediate/03_matchedMetier/v_",unique(track$doc.num)[1],".RDS")) 
-    }
+    # if the landing gear is there at all
+    if(doc.num %in% landings$drvid){ 
+      single_landing <- landings[(which(landings$drvid == doc.num)),]
+    
+      # check if there's any overlap between dates of VMS and landings
+      if(any(track$date.time > min(single_landing$tdate) & 
+            track$date.time < max(single_landing$tdate))){
+      
+      saveRDS(track, paste0(
+        "/Users/efuller/1/CNH/processedData/spatial/vms/intermediate/03_matchedMetier/v_",
+        unique(track$doc.num),".RDS")) }
   }
 }
 
 # assign vessels to metiers ----
 # for each vessel in VMS dataset, take last landing, assign all points prior
 # that metier. Then work back to the next data. Repeat until no more landings. 
+
 
 # get all vessels
 setwd("/Users/efuller/1/CNH/processedData/spatial/vms/intermediate/03_matchedMetier/")
