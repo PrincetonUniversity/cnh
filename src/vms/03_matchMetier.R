@@ -42,7 +42,6 @@ for(i in 1:length(fish_tracks)){
 # for each vessel in VMS dataset, take last landing, assign all points prior
 # that metier. Then work back to the next data. Repeat until no more landings. 
 
-
 # get all vessels
 setwd("/Users/efuller/1/CNH/processedData/spatial/vms/intermediate/03_matchedMetier/")
 vms_vessels <- gsub("v_","",dir())
@@ -58,8 +57,8 @@ vessel_list <- vector("list", length = length(vms_vessels))
 
 for(i in 1:length(vms_vessels)){
   
-  # subset to just one track
-  ves = subset(VMS_land, doc.num == vms_vessels[i])
+  # load track
+  ves = readRDS(dir()[grep(vms_vessels[i],dir())])
   # order by date and time
   ves <- ves[order(ves$date.time),]
   
@@ -132,3 +131,14 @@ for(i in 1:length(vms_vessels)){
 }
 
 vms_catch <- do.call(rbind, vessel_list)
+
+saveRDS(vms_catch, "/Users/efuller/1/CNH/processedData/spatial/vms/VMS_catch.RDS")
+
+# some fun, diagnostic plotting ----
+library(scales)
+with(subset(vms_catch, metier1=="TLS_2" & latitude > 20 & latitude < 55), plot(longitude, latitude, asp=1, cex = .15, pch=19, col=alpha("dodgerblue",.25), xlim = c(-155, -100)))
+
+with(subset(vms_catch, metier1=="TWS_1" & latitude > 20 & latitude < 55), points(longitude, latitude, cex = .15, pch = 19, col = alpha("pink", .25)))
+
+with(subset(vms_catch, metier1=="TLS_1" & latitude > 20 & latitude < 55), points(longitude, latitude, cex = .15, pch = 19, col = alpha("orange", .25)))
+
