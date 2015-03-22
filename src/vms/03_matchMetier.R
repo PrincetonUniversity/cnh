@@ -132,7 +132,7 @@ for(i in 1:length(vms_vessels)){
 
 vms_catch <- do.call(rbind, vessel_list)
 
-saveRDS(vms_catch, "/Users/efuller/1/CNH/processedData/spatial/vms/VMS_catch.RDS")
+saveRDS(vms_catch, "/Users/efuller/1/CNH/processedData/spatial/vms/intermediate/04_with_trip/VMS_catch.RDS")
 
 # some fun, diagnostic plotting ----
 library(scales)

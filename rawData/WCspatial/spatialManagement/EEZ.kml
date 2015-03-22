@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document id="eez">
+	<name>West Coast EEZ</name>
+	<open>1</open>
+	<Snippet maxLines="0"></Snippet>
+	<description>Representation of the EEZ boundary of the U.S. West Coast</description>
+	<Style id="LineStyle00">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff00aaff</color>
+			<width>2</width>
+		</LineStyle>
+	</Style>
+	<StyleMap id="LineStyle000">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#LineStyle001</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#LineStyle00</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="LineStyle001">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff00aaff</color>
+			<width>2</width>
+		</LineStyle>
+	</Style>
+	<Style id="LineStyle002">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff942700</color>
+		</LineStyle>
+	</Style>
+	<Folder id="FeatureLayer0">
+		<name>eez</name>
+		<open>1</open>
+		<Snippet maxLines="0"></Snippet>
+		<Placemark>
+			<name>0</name>
+			<Snippet maxLines="0"></Snippet>
+			<styleUrl>#LineStyle000</styleUrl>
+			<MultiGeometry>
+				<LineString>
+					<tessellate>1</tessellate>
+					<coordinates>
+-117.126431,32.531613,0 -117.23115,32.528554,0 -117.264853,32.560159,0 -117.474291,32.600924,0 -117.826263,32.632127,0 -118.611565,31.127481,0 -120.271559,30.833556,0 -121.837965,30.544104,0 -122.0155,30.64423800000001,0 -122.416837,30.943152,0 -122.85752,31.36275,0 -123.392635,31.787187,0 -123.707408,32.122649,0 -123.982835,32.450198,0 -124.16383,32.756603,0 -124.360564,33.207606,0 -124.486473,33.623365,0 -124.634173,33.82821,0 -125.171106,34.305282,0 -125.556703,34.787121,0 -125.800653,35.240315,0 -126.296049,35.626961,0 -126.689888,36.081599,0 -126.973184,36.489347,0 -127.185657,37.008625,0 -127.445345,37.310945,0 -127.618154,37.619568,0 -127.756844,37.864867,0 -127.864013,38.149183,0 -127.945966,38.397666,0 -128.002703,38.472043,0 -128.19813,38.714472,0 -128.456598,39.16741,0 -128.698631,39.802219,0 -128.746586,40.108094,0 -128.790714,40.484601,0 -128.782861,40.791769,0 -128.740282,41.002425,0 -128.670937,41.293102,0 -128.878972,41.677075,0 -129.03027,42.044659,0 -129.137439,42.405441,0 -129.162656,42.619981,0 -129.16537,42.903403,0 -129.155047,43.130452,0 -129.108541,43.40778,0 -129.049969,43.61002,0 -128.932751,43.864691,0 -128.842383,44.240258,0 -128.742088,44.431594,0 -128.774797,44.899824,0 -128.72088,45.185458,0 -128.733978,45.50564700000001,0 -128.847451,45.889969,0 -128.885276,46.166612,0 -129.118527,46.52459999999999,0 -128.633112,46.824006,0 -127.208388,47.61427,0 -126.269079,48.000731,0 -125.865617,48.190769,0 -125.399114,48.329682,0 -125.001957,48.49336100000001,0 -124.831746,48.501741,0 -124.724577,48.49336100000001,0 </coordinates>
+				</LineString>
+			</MultiGeometry>
+		</Placemark>
+	</Folder>
+</Document>
+</kml>
