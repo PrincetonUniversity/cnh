@@ -134,6 +134,28 @@ vms_catch <- do.call(rbind, vessel_list)
 
 saveRDS(vms_catch, "/Users/efuller/1/CNH/processedData/spatial/vms/intermediate/04_with_trip/VMS_catch.RDS")
 
+# final filtering ----
+# remove any points that go outside of the US west coast EEZ plus some buffer
+
+# load US EEZ, make into sp. save
+library(maptools); library(rgeos)
+eez <- getKMLcoordinates("/Users/efuller/1/CNH/rawData/WCspatial/spatialManagement/EEZ.kml")
+eez <- do.call(rbind, eez)
+eez_shape <- SpatialPolygons()
+eez <- eez[,1:2]
+# make last and first the same point
+eez <- rbind(eez, eez[1,])
+eez_shape <- SpatialPolygons(list(Polygons(list(Polygon(eez)), 1)))
+save(eez_shape, file="/Users/efuller/1/CNH/processedData/spatial/eez_shape.Rdata")
+
+# remove trips that have VMS less than longitude -160 or more than -110. Or latitude greater than 55 or less than 20. 
+
+vms_catch <- subset(vms_catch, longitude < -110 & longitude > -160 & latitude > 20 & latitude < 55)
+
+bpoly <- gBuffer(eez_shape, width=10)
+plot(bpoly, col = "grey50", axes = T)
+plot(eez_shape, add = T)
+
 # some fun, diagnostic plotting ----
 library(scales)
 with(subset(vms_catch, metier1=="TLS_2" & latitude > 20 & latitude < 55), plot(longitude, latitude, asp=1, cex = .15, pch=19, col=alpha("dodgerblue",.25), xlim = c(-155, -100)))
