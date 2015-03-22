@@ -163,3 +163,7 @@ saveRDS(vms_catch, "/Users/efuller/1/CNH/processedData/spatial/vms/intermediate/
 # 
 # with(subset(vms_catch, metier1=="TLS_1" & latitude > 20 & latitude < 55), points(longitude, latitude, cex = .15, pch = 19, col = alpha("orange", .25)))
 
+# not that successful as a high-density plotting device. 
+# library(hexbin)
+# bin <- with(vms_catch, hexbin(longitude, latitude, xbins = 1000))
+# plot(bin)
