@@ -1,0 +1,53 @@
+\documentclass[a4paper,10pt]{report}
+\let\oldmarginpar\marginpar
+\renewcommand\marginpar[1]{\-\oldmarginpar[\raggedleft\footnotesize #1]%
+{\raggedright\footnotesize #1}}
+\usepackage{charter}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{array}
+\usepackage[bitstream-charter]{mathdesign}	% using charter font for math
+\usepackage{natbib}
+\usepackage{gensymb}
+\usepackage{epstopdf}
+\usepackage{multirow} %for multi column spanning rows or multi row spanning columns
+ \usepackage{rotating} %for rotating tables
+ \usepackage{subfig} %to have figures within figures
+\usepackage{multicol}
+ \usepackage{ulem} % Allows for underlining without weird formatting glitches. 
+ \usepackage{pifont}% Allows for use of ZipfDingbats font
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor} % Allows colored font
+\usepackage{hyperref} %allows hyperlinks in the document
+\usepackage[linecolor=black,backgroundcolor=white,bordercolor=white,textsize=small]{todonotes}
+\usepackage{wrapfig}
+\usepackage[top=0.5in, bottom=0.75in, outer=1.5in, inner=0.5in, heightrounded, marginparwidth=1in, marginparsep=0.25in]{geometry}
+\usepackage{marginnote}
+\usepackage{hyperref}
+ \begin{document}
+
+\section*{Evaluating measures of hunting effort in a bushmeat system - \cite{Ristetal:2008}}
+Follows hunters from Equatorial Guinea and evaluates whether various measures of effort will provide accurate measures of relative abundance in prey species. Reviews the different existing methods and finds mixed support. Table 6 summarizes the results, but couldn't make too much of them. Possibly useful when I have more specific questions of effort in mind. 
+\subsection*{Notes}
+\begin{itemize}
+\item Looks at the many different ways bushmeat studies quantify hunting intensity, find that often they're measuring effort. Which may or may not be a good proxy for biological impact. 
+\item defines hunting mortality to be the probability of an animal being killed (Bousquet et al. 2001; Rowcliffe et al. 2003), whereas hunting effort is an economic measure of the time or other resources invested by a hunter (Cuthill and Houston, 1997). 
+\item Here the authors review the different effort measures currently used in the bushmeat hunting literature and test the assumptions that economically-based measures of hunting are representative of the true biological impacts using empirical hunting data. 
+\item Hunting effort can be measured in time, an index based on the frequency of encounters with hunter sign, the number of hunters operating in the area, in units of hunting equipment such as the number of nets used, or traps set per unit time. Other measures are spatial, such as the distance of hunting location from human settlement, or nearest point of human access, or the distance traveled by the hunter during the hunt itself. 
+\begin{description}
+\item[Time as a measure of effort:] This metric is most frequently used, and more complex that is acknowledged. Using days as a measure assumes some average daily activity which may or may not be true, and the time spent hunting is actually spent traveling, resting and hunting. Thus if the  proportion of time spent hunting remains constant then this measure may reflect prey mortality. However if it fluctuates the total time will reflect only an economically relevant measure (opportunity cost).  And even while hunting, time should be split between searching for and handling prey. Using Hollings functional responses, argue that at low prey abundances predators spend most of their time searching for prey, while at high abundances they spend most of their time handling. Thus in times or areas of high abundance, more time will be spent hadling, and this implies that hunter effort will be undersampled and effort overestimated thus CPUE will underestimate total abundance. 
+\item[Hunting method:] Handling time can be affected by hunting method used. In trap hunting, you might expect that the time spent handling would be proportional to the catch, since each prey item needs to be removed from the trap and the trap needs to be reset. Gun hunting, however, handling may not be strongly correlated to catch because an encounter with prey can lead to either an unsuccessful pursuit, a successful pursuit of a single prey, or multiple. Also, in traps if the traps become saturated then the probability of an animal being captured is affected by a previously caught animal blocking the trap. This may be the case with some long line fisheries. The probability of mortality for trap-caught species might be better explained by the number of traps set in an area, but if the time taken to check them is correlated with the number of traps, both may be a decent measure. Another problem with traps is their selectivity. If the traps target subsets of the community, it may not be an accurate measure for the entire prey population. 
+\item[Hunter and prey perspectives on catch] Hunters may respond to different measures of catch than that which is biologically meaningful for the prey. Economic incentives determine the effort devoted to hunting, so the hunter decision about levels of effort will be dynamic and based on hunting returns. Further discards and bycatch are not included.
+\end{description}
+\item Followed hunters in Equatorial Guinea. Hunters operate out of a number of hunting camps, which they rotate through when they feel prey in the area has regenerated. 
+\end{itemize}
+
+\subsection*{Sources to follow up on}
+
+
+\bibliographystyle{cbe}
+\bibliography{refs_new}
+
+\end{document}
+

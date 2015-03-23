@@ -1,0 +1,13 @@
+\contentsline {section}{\numberline {1}Introduction}{1}
+\contentsline {section}{\numberline {2}Methods}{2}
+\contentsline {section}{\numberline {3}Results}{2}
+\contentsline {subsection}{\numberline {3.1}How to choose a functional form}{2}
+\contentsline {subsection}{\numberline {3.2}Types of functional responses}{2}
+\contentsline {subsubsection}{\numberline {3.2.1}Capture rate proportional to prey density}{3}
+\contentsline {subsubsection}{\numberline {3.2.2}Predator-dependent response}{3}
+\contentsline {subsubsection}{\numberline {3.2.3}Ratio-dependent form}{3}
+\contentsline {subsection}{\numberline {3.3}Factors influencing construction of a functional response}{3}
+\contentsline {subsubsection}{\numberline {3.3.1}Spatial variation}{3}
+\contentsline {subsubsection}{\numberline {3.3.2}Adaption on Ecological Time Scales}{3}
+\contentsline {subsubsection}{\numberline {3.3.3}Movement rule: Predator movements between prey patches}{4}
+\contentsline {section}{Bibliography}{4}

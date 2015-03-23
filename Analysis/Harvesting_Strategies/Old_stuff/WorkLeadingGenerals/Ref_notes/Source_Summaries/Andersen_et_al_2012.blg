@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99d (TeX Live 2011)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: Andersen_et_al_2012.aux
+The style file: cbe.bst
+Database file #1: refs_new.bib
+Warning--I didn't find a database entry for "PradhanLeung:2004"
+You've used 21 entries,
+            2016 wiz_defined-function locations,
+            645 strings with 8370 characters,
+and the built_in function-call counts, 8808 in all, are:
+= -- 832
+> -- 379
+< -- 14
++ -- 134
+- -- 128
+* -- 849
+:= -- 1507
+add.period$ -- 63
+call.type$ -- 21
+change.case$ -- 169
+chr.to.int$ -- 21
+cite$ -- 21
+duplicate$ -- 305
+empty$ -- 597
+format.name$ -- 165
+if$ -- 1702
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 22
+newline$ -- 108
+num.names$ -- 63
+pop$ -- 124
+preamble$ -- 1
+purify$ -- 169
+quote$ -- 0
+skip$ -- 211
+stack$ -- 0
+substring$ -- 687
+swap$ -- 69
+text.length$ -- 2
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 124
+warning$ -- 0
+while$ -- 62
+width$ -- 0
+write$ -- 258
+(There was 1 warning)

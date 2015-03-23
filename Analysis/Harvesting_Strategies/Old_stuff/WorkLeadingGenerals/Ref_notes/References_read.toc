@@ -1,0 +1,35 @@
+\contentsline {section}{\numberline {1}Questions}{1}{section.1}
+\contentsline {section}{\numberline {2}Literature Review}{2}{section.2}
+\contentsline {subsection}{\numberline {2.1}Harvesting strategies in the fishing literature}{2}{subsection.2.1}
+\contentsline {subsubsection}{\numberline {2.1.1}Quantifying fishing effort: a synthesis of current methods and their applications - \cite {McCluskeyetal:2008}}{2}{subsubsection.2.1.1}
+\contentsline {subsubsection}{\numberline {2.1.2}Fleet dynamics and fishermen behavior: lessons for fisheries managers- \cite {Branchetal:2006}}{2}{subsubsection.2.1.2}
+\contentsline {subsubsection}{\numberline {2.1.3}Effect of habitat patchiness on the catch rates of a Mediterranean coastal bottom long-line fishery \cite {Stobartetal:2012}}{2}{subsubsection.2.1.3}
+\contentsline {subsubsection}{\numberline {2.1.4}Folly and fantasy in the analysis of spatial catch rate data - \cite {Walters:2003}}{2}{subsubsection.2.1.4}
+\contentsline {subsubsection}{\numberline {2.1.5}An investigation of human vs. technology-induced variation in catchability for a selection of European fishing fleets -- \cite {Mahevasetal:2011}}{3}{subsubsection.2.1.5}
+\contentsline {subsubsection}{\numberline {2.1.6}Least squares estimates of the Schaefer production model: some Monte Carlo simulation results - \cite {Uhler:1980}}{3}{subsubsection.2.1.6}
+\contentsline {subsubsection}{\numberline {2.1.7}Fishery management under multiple uncertainty -- \cite {Sethietal:2005}}{3}{subsubsection.2.1.7}
+\contentsline {subsubsection}{\numberline {2.1.8}Fisheries management with stock growth uncertainty and costly capital adjustment -- \cite {Singhetal:2006}}{3}{subsubsection.2.1.8}
+\contentsline {subsubsection}{\numberline {2.1.9}Effects of management tactics on meeting conservation objectives for Western North American groundfish fisheries -- \cite {Melnychuketal:2012}}{3}{subsubsection.2.1.9}
+\contentsline {subsubsection}{\numberline {2.1.10}Characterizing fishing effort and spatial extent of coastal fisheries -- \cite {Stewartetal:2010}}{3}{subsubsection.2.1.10}
+\contentsline {subsubsection}{\numberline {2.1.11}A step towards seascape scale conservation: using vessel monitoring systems (VMS) to map fishing activity --\cite {WittGodley:2007}}{3}{subsubsection.2.1.11}
+\contentsline {subsubsection}{\numberline {2.1.12}Uncertainty, search, and information in fisheries-- \cite {MangelClark:1983}}{3}{subsubsection.2.1.12}
+\contentsline {subsubsection}{\numberline {2.1.13}Aggregation and fishery dynamics: a theoretical of schooling and the purse seine tuna fisheries -- \cite {ClarkMangel:1979}}{4}{subsubsection.2.1.13}
+\contentsline {subsubsection}{\numberline {2.1.14}Fishing for knowledge -- \cite {Wilson:1990}}{4}{subsubsection.2.1.14}
+\contentsline {subsubsection}{\numberline {2.1.15}Can management measures ensure the biological and economical stabilizability of a fishing model?-- \cite {JerryRaissi:2010}}{4}{subsubsection.2.1.15}
+\contentsline {subsubsection}{\numberline {2.1.16}The use of optimal foraging theory in the understanding of fishing strategies: A case from Sepetiba Bay (Rio de Janeiro State, Brazil) -- \cite {Begossi:1992}}{4}{subsubsection.2.1.16}
+\contentsline {subsubsection}{\numberline {2.1.17}The use of optimal foraging theory to assess the fishing strategies of Pacific Island artisanal fishers: A methodological review -- \cite {Aswani:1998}}{4}{subsubsection.2.1.17}
+\contentsline {subsubsection}{\numberline {2.1.18}The lobster fiefs: economic and ecological effects of territoriality in the Maine lobster industry -- \cite {Acheson:1975}}{4}{subsubsection.2.1.18}
+\contentsline {subsubsection}{\numberline {2.1.19}Location choice in New England trawl fisheries: old habits die hard -- \cite {HollandSutinen:2000}}{4}{subsubsection.2.1.19}
+\contentsline {subsubsection}{\numberline {2.1.20}Ludwig's Ratchet and the Collapse of New England Groundfish Stocks -- \cite {HennesseyHealey:2000}}{4}{subsubsection.2.1.20}
+\contentsline {subsubsection}{\numberline {2.1.21}The Social Aspects of Fishing Effort -- \cite {Gezelius:2007}}{4}{subsubsection.2.1.21}
+\contentsline {subsubsection}{\numberline {2.1.22}Fishing in Alaska, and the sharing of information -- \cite {Orth:1987}}{4}{subsubsection.2.1.22}
+\contentsline {subsubsection}{\numberline {2.1.23}Kin-selection, reciprocal altruism, and information sharing among Maine lobstermen -- \cite {Palmer:1991}}{4}{subsubsection.2.1.23}
+\contentsline {subsubsection}{\numberline {2.1.24}Ode to the Sea: The socio-ecological underpinnings of social norms -- \cite {Leibbrandtetal:ND}}{5}{subsubsection.2.1.24}
+\contentsline {subsubsection}{\numberline {2.1.25}Models for fishing and models of success -- \cite {Palsson:1988}}{5}{subsubsection.2.1.25}
+\contentsline {subsubsection}{\numberline {2.1.26}What you know is who you know? Communication patterns among resource users as a prerequisite for co-management-- \cite {CronaBodin:2006}}{5}{subsubsection.2.1.26}
+\contentsline {subsubsection}{\numberline {2.1.27}To dream of fish: the causes of Icelandic skippers' fishing success -- \cite {PalssonDurrenberger:1982}}{5}{subsubsection.2.1.27}
+\contentsline {subsubsection}{\numberline {2.1.28}finding fish: the tactics of Icelandic skippers--\cite {DurrenbergePalsson:nd}}{5}{subsubsection.2.1.28}
+\contentsline {subsection}{\numberline {2.2}Foraging Theory}{5}{subsection.2.2}
+\contentsline {subsubsection}{\numberline {2.2.1}\cite {Charnov:1976}}{5}{subsubsection.2.2.1}
+\contentsline {subsubsection}{\numberline {2.2.2}\cite {MacArthurPianka:1966}}{5}{subsubsection.2.2.2}
+\contentsline {subsubsection}{\numberline {2.2.3}\cite {Gaylordetal:2005}}{5}{subsubsection.2.2.3}

@@ -1,0 +1,56 @@
+\documentclass[a4paper,10pt]{article}
+\let\oldmarginpar\marginpar
+\renewcommand\marginpar[1]{\-\oldmarginpar[\raggedleft\footnotesize #1]%
+{\raggedright\footnotesize #1}}
+\usepackage{charter}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{array}
+\usepackage[bitstream-charter]{mathdesign}	% using charter font for math
+\usepackage{natbib}
+\usepackage{gensymb}
+\usepackage{epstopdf}
+\usepackage{multirow} %for multi column spanning rows or multi row spanning columns
+ \usepackage{rotating} %for rotating tables
+ \usepackage{subfig} %to have figures within figures
+\usepackage{multicol}
+ \usepackage{ulem} % Allows for underlining without weird formatting glitches. 
+ \usepackage{pifont}% Allows for use of ZipfDingbats font
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor} % Allows colored font
+\usepackage{hyperref} %allows hyperlinks in the document
+\usepackage[linecolor=black,backgroundcolor=white,bordercolor=white,textsize=small]{todonotes}
+\usepackage{wrapfig}
+\usepackage[top=0.75in, bottom=0.75in, outer=.75in, inner=0.75in, heightrounded, marginparwidth=1in, marginparsep=0.25in]{geometry}
+\usepackage{marginnote}
+\usepackage{hyperref}
+\usepackage{makeidx}	% package for building and including an index
+\makeindex	% makes the index
+\begin{document}
+{\Huge References Read}
+
+\section*{Fisheries Science papers on fishermen location choice}
+
+\subsection*{A multivariate approach for defining fishing tactic from commercial catch and effort data - \cite{PelletierFerraris:2000}}
+
+Proposed a clustering method to describe fishing tactics (where, when, how, for what fishermen fish). Applied it to a Senegalese artisanal fishery and the Celtic Sea groundfish fishery. A useful way to make sense of how to characterize a fisherman's strategy. This breaks down the fleet into groups that use the same strategies. Interesting to note that it wasn't as good for the industrial case, and that more precise data (like the stuff I'll hopefully have from Half-Moon Bay) is needed. Would probably be a good thing to do for Half-Moon Bay data set to characterize it. See RC\_PelletierFerraris-2000 for more notes. 
+
+\noindent {\bf Key points}
+\begin{enumerate}
+\item Might be useful paper to describe methods for classifying fishing strategy in a mixed fishery. 
+\item Interesting way to characterize different types of boats from same fishery. Look at composition of fleet. 
+\item Doesn't say anything about what these distinctions depend upon. What pushes fishermen to use these strategies. 
+\end{enumerate}
+
+\section*{Economic papers on fishermen location choice}
+
+
+\printindex
+
+\bibliographystyle{cbe}
+\bibliography{unread,read}
+
+
+\end{document}
+

@@ -1,0 +1,56 @@
+This is BibTeX, Version 0.99d (TeX Live 2012)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: Annotated.aux
+The style file: plainnat.bst
+Database file #1: refs.bib
+Name 3 in "Evaluation, Committee on the and Design and States, and Monitoring of Marine Reserves and Protected Areas in the United and Board, Ocean Studies and Council, National Research" has a comma at the end for entry NationalResearchCouncil2001
+while executing---line 1347 of file plainnat.bst
+Warning--empty title in Dawetal2010
+Warning--empty note in Dawetal2010
+Name 3 in "Evaluation, Committee on the and Design and States, and Monitoring of Marine Reserves and Protected Areas in the United and Board, Ocean Studies and Council, National Research" has a comma at the end for entry NationalResearchCouncil2001
+while executing---line 1429 of file plainnat.bst
+Name 3 in "Evaluation, Committee on the and Design and States, and Monitoring of Marine Reserves and Protected Areas in the United and Board, Ocean Studies and Council, National Research" has a comma at the end for entry NationalResearchCouncil2001
+while executing---line 1429 of file plainnat.bst
+Warning--there's a number but no volume in Rijnsdorpetal2001
+You've used 31 entries,
+            2773 wiz_defined-function locations,
+            865 strings with 14467 characters,
+and the built_in function-call counts, 18768 in all, are:
+= -- 1597
+> -- 1491
+< -- 7
++ -- 500
+- -- 468
+* -- 1851
+:= -- 3012
+add.period$ -- 127
+call.type$ -- 31
+change.case$ -- 248
+chr.to.int$ -- 30
+cite$ -- 65
+duplicate$ -- 637
+empty$ -- 1231
+format.name$ -- 507
+if$ -- 3824
+int.to.chr$ -- 2
+int.to.str$ -- 1
+missing$ -- 31
+newline$ -- 197
+num.names$ -- 124
+pop$ -- 408
+preamble$ -- 1
+purify$ -- 218
+quote$ -- 0
+skip$ -- 515
+stack$ -- 0
+substring$ -- 662
+swap$ -- 46
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 336
+warning$ -- 3
+while$ -- 122
+width$ -- 0
+write$ -- 476
+(There were 3 error messages)

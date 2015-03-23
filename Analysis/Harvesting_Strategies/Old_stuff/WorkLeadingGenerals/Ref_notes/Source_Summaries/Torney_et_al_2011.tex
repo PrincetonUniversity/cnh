@@ -1,0 +1,46 @@
+\documentclass[a4paper,10pt]{article}
+\let\oldmarginpar\marginpar
+\renewcommand\marginpar[1]{\-\oldmarginpar[\raggedleft\footnotesize #1]%
+{\raggedright\footnotesize #1}}
+\usepackage{charter}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{array}
+\usepackage[bitstream-charter]{mathdesign}	% using charter font for math
+\usepackage{natbib}
+\usepackage{gensymb}
+\usepackage{epstopdf}
+\usepackage{multirow} %for multi column spanning rows or multi row spanning columns
+ \usepackage{rotating} %for rotating tables
+ \usepackage{subfig} %to have figures within figures
+\usepackage{multicol}
+ \usepackage{ulem} % Allows for underlining without weird formatting glitches. 
+ \usepackage{pifont}% Allows for use of ZipfDingbats font
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor} % Allows colored font
+\usepackage{hyperref} %allows hyperlinks in the document
+\usepackage[linecolor=black,backgroundcolor=white,bordercolor=white,textsize=small]{todonotes}
+\usepackage{wrapfig}
+\usepackage[top=0.5in, bottom=0.75in, outer=1.5in, inner=0.5in, heightrounded, marginparwidth=1in, marginparsep=0.25in]{geometry}
+\usepackage{marginnote}
+\usepackage{hyperref}
+ \begin{document}
+
+\section*{\href{run:Signalling and the evolution of cooperative foragi.pdf alias}{\color{Blue}Signaling and the evolution of cooperative foraging - Torney et al. 2011}}
+
+\subsection*{Set Up}
+Agents are following a resource gradient, can either signal when found resources, or not signal. If an individual finds a resource and is a signaler, they will signal. Individuals within signal radius will move towards signaler unless located at a resource. If an individual is not signaled to and not on a resource, they perform a correlated random walk through the environment. 
+
+\subsection*{General Points}
+\begin{itemize}
+\item Main question is to see if for some regions of parameter space, find that a cooperative signaling strategy is stable. Show this numerically, then reduce the simulation to something analytically tractable and examine possible mechanistic reasons for such a strategy to be maintained.   
+\item Social foraging theory might be useful: refs 12-15
+\end{itemize}
+
+
+\bibliographystyle{cbe}
+\bibliography{refs}
+
+\end{document}
+

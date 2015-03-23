@@ -1,0 +1,2 @@
++ `01_processed/` are `.RDS` files which have have `01_processing_VMS.R` run on them. Each `.RDS` file is equivalent to the raw log file. Has been zipped to save space.
++ `02_cleaned/` have had ’02_cleaning_data.R` run on them. Each `.RDS` file is a vessel’s track. Note, there’s an intermediate set of files (`vessel_tracks*.RDS`) that are not here. They’re generated because it’s too memory intensive to load the entire dataset into `R` at once. But are intermediate.

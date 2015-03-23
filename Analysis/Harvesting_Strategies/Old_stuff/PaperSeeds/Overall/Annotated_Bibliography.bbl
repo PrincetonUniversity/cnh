@@ -1,0 +1,17 @@
+\begin{thebibliography}{1}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[van Putten et~al.(2011)van Putten, Kulmala, Th\'{e}baud, Dowling,
+  Hamon, Hutton, and Pascoe]{vanPuttenetal2011}
+Ingrid~E. van Putten, Soile Kulmala, Olivier Th\'{e}baud, Natalie Dowling,
+  Katell~G. Hamon, Trevor Hutton, and Sean Pascoe.
+\newblock Theories and behavioural drivers underlying fleet dynamics models.
+\newblock \emph{Fish and Fisheries}, 13\penalty0 (2):\penalty0 216--235, 6
+  2011.
+\newblock \doi{10.1111/j.1467-2979.2011.00430.x}.
+
+\end{thebibliography}

@@ -1,0 +1,54 @@
+\documentclass[a4paper,10pt]{article}
+\let\oldmarginpar\marginpar
+\renewcommand\marginpar[1]{\-\oldmarginpar[\raggedleft\footnotesize #1]%
+{\raggedright\footnotesize #1}}
+\usepackage{charter}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{array}
+\usepackage{natbib}
+\usepackage{gensymb}
+\usepackage{epstopdf}
+\usepackage{multirow} %for multi column spanning rows or multi row spanning columns
+ \usepackage{rotating} %for rotating tables
+ \usepackage{subfig} %to have figures within figures
+\usepackage{multicol}
+ \usepackage{ulem} % Allows for underlining without weird formatting glitches. 
+ \usepackage{pifont}% Allows for use of ZipfDingbats font
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor} % Allows colored font
+\usepackage{hyperref} %allows hyperlinks in the document
+\usepackage[linecolor=black,backgroundcolor=white,bordercolor=white,textsize=small]{todonotes}
+\usepackage{wrapfig}
+\usepackage[top=0.5in, bottom=0.75in, outer=1.5in, inner=0.5in, heightrounded, marginparwidth=1in, marginparsep=0.25in]{geometry}
+\usepackage{marginnote}
+\usepackage[bitstream-charter]{mathdesign}	% using charter font for math
+\usepackage{hyperref}
+ \begin{document}
+
+\section*{ \href{run:Adaptive harvesting in a multiple-species coral-re.pdf alias}{\color{Blue}Kramer 2008}:}
+\subsection*{General points}
+\begin{enumerate}
+\item Refs on other studies looking at management implications using adaptive models of human behavior: Jager et al. 2000, Anderies 2000, Sethi \& Somanathan 1996. 
+\item Makes an argument for using resilience as the system characteristic rather than optimization. In a complex system it's not always clear what to optimize. But it seems like in my ideas you could try maximizing different system attributes that are typically of concern to managers and stakeholders (i.e. max/min profit, variance in profit, fluctuations of fish stock, etc.). 
+\end{enumerate}
+
+\subsection*{Model details}
+Corel and algae compete according to a modified lotka-volterra equation. Algae are 
+\[ \frac{dA}{dt} = r_AA_t\left(\frac{K_A - A_t - a_{AC}C_t}{K_A}\right) - a_{AH}H_tA_t\]
+where $A_t$ is the proportion of algal cover at time $t$, $r_A$ is the intrinsic growth rate of algae, $K_A$ is the carrying capacity of algae in percent of algae cover, $a_{AC}$ is the competition coefficient of coral on algae, $C_t$ is the proportion of coral cover, $H_t$ is the herbivore density in kilograms per square kilometer, and $a_{AH}$ is the interaction term between herbivores and algae. 
+
+The coral growth equation is 
+\[\frac{dC}{dt} = r_CC_t\left(\frac{K_C-C_t-a_{CA}\left(\frac{A_t^{Slope}}{A_t^{Slope}+HA^{Slope}}\right)}{K_C}\right)\]
+
+$r_C$ is the growth rate of coral, $K_C$ is the carrying capacity of coral as the proportion of sea floor coverage, and $a_{CA}$ is the competition coefficient of algae on coral. The last term of the numerator is a Hill function. The shape of this function is controlled by two parameters. $Slope$ is the steepness of the cure at the inflection point, a measure of the effect on corals as the community structure of algae shifts. $HA$ is the half saturation constant (the amount of algal cover at which coral cover is 50\% of its carrying capacity)
+
+
+\subsection*{Current status}
+Have read a little into the materials and skimmed the conclusion. Should read the entire paper, and think about what's good, bad about the paper. What's different about what I want to ask, and what could be done better. 
+\bibliographystyle{cbe}
+\bibliography{refs}
+
+\end{document}
+

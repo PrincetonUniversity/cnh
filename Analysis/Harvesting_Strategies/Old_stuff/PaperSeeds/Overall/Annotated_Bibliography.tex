@@ -1,0 +1,125 @@
+\documentclass[]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \usepackage{fontspec}
+  \ifxetex
+    \usepackage{xltxtra,xunicode}
+  \fi
+  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+  \newcommand{\euro}{€}
+\fi
+% use microtype if available
+\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
+\usepackage{natbib}
+\bibliographystyle{plainnat}
+\ifxetex
+  \usepackage[setpagesize=false, % page size defined by xetex
+              unicode=false, % unicode breaks when used with xetex
+              xetex]{hyperref}
+\else
+  \usepackage[unicode=true]{hyperref}
+\fi
+\hypersetup{breaklinks=true,
+            bookmarks=true,
+            pdfauthor={},
+            pdftitle={},
+            colorlinks=true,
+            urlcolor=blue,
+            linkcolor=magenta,
+            pdfborder={0 0 0}}
+\urlstyle{same}  % don't use monospace font for urls
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\setcounter{secnumdepth}{0}
+
+\author{}
+\date{}
+
+\begin{document}
+
+\section{Annotated Bibliography}
+
+\subsection{MPAs}
+
+What is most current about MPAs?
+
+\subsubsection{Do MPAs work?}
+
+Are they context dependent in any way (depends on the species targeted,
+type of habitat (coral reef or temperate), what the goals are)? How is
+`success' measured? Is there differences in success rate between MPAs
+that focus on conservation goals versus fishery goals? What are the
+common goals? How do people choose where MPAs go? How to fishermen
+respond to MPAs being set up and how are they included in the planning
+process? Ideal to know if fishing outside the reserve is taken into
+account.
+
+\paragraph{References}
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  \href{http://marineprotectedareas.noaa.gov/pdf/helpful-resources/do_no_take_reserves_benefit_adjacent_fisheries.pdf}{NOAA
+  fact sheet about MPAs}: Has a bit about when MPAs will be beneficial
+  for fishermen. References about movement, looks like recruitment is
+  all that's considered. Citations inside.
+\item
+  Hilborn (when will reserves be useful?)
+\item
+  Gaines
+\item
+  Botsford
+\item
+  Wilen
+\item
+  Baskett
+\item
+  Halpern (empirical synthesis)
+\end{itemize}
+
+\subsubsection{Spatial predator-prey work: theoretical}
+
+How is space predicted to control stability of predator-prey models?
+What are the conditions for stability or instability in spatial-predator
+prey models. And how is that different from what's expected if there's
+no spatial structure? Are their connections between predictions for
+stability in theoretical models and fishermen scenarios?
+
+\paragraph{References}
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  Encyclopedia of Ecology?
+\item
+  Kareiva/Tilman work?
+\end{itemize}
+
+\subsubsection{How do fishermen distribute their effort in space}
+
+Do fishermen array themselves non-randomly in space. Are there general
+reviews of how fishermen array themselves in space or just case studies?
+Are there generalities to be pulled out?
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  Rum models
+\item
+  {[}Theories and behavioral drivers underlying fleet dynamics
+  models{]}(sente:/Emma's+reading/vanPuttenetal:2011): Generalities for
+  spatial distribution of effort \citet{vanPuttenetal2011}.
+\end{itemize}
+
+\bibliography{refs}
+
+\end{document}

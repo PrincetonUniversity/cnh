@@ -1,0 +1,250 @@
+\documentclass[a4paper,10pt]{report}
+\let\oldmarginpar\marginpar
+\renewcommand\marginpar[1]{\-\oldmarginpar[\raggedleft\footnotesize #1]%
+{\raggedright\footnotesize #1}}
+\usepackage{charter}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{array}
+\usepackage[bitstream-charter]{mathdesign}	% using charter font for math
+\usepackage{natbib}
+\usepackage{gensymb}
+\usepackage{epstopdf}
+\usepackage{multirow} %for multi column spanning rows or multi row spanning columns
+ \usepackage{rotating} %for rotating tables
+ \usepackage{subfig} %to have figures within figures
+\usepackage{multicol}
+ \usepackage{ulem} % Allows for underlining without weird formatting glitches. 
+ \usepackage{pifont}% Allows for use of ZipfDingbats font
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor} % Allows colored font
+\usepackage{hyperref} %allows hyperlinks in the document
+\usepackage[linecolor=black,backgroundcolor=white,bordercolor=white,textsize=small]{todonotes}
+\usepackage{wrapfig}
+\usepackage[top=0.5in, bottom=0.75in, outer=1.5in, inner=0.5in, heightrounded, marginparwidth=1in, marginparsep=0.25in]{geometry}
+\usepackage{marginnote}
+\usepackage{hyperref}
+\usepackage{makeidx}	% package for building and including an index
+\makeindex	% makes the index
+ \begin{document}
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Context}
+Why is the need so pressing or important?
+
+%%%%%%%%%%%%%%%%%%%%%%
+\section{Ecosystem Services}
+\begin{description}
+\item[\cite{Bennettetal:2003}] Makes argument for ecologist getting involved in global scenario building.  \marginnote{\footnotesize I'm not sure that ecosystem services are the right angle. But seem relevant. And interesting to me for how you link ecosystem function (and specifically species interactions) to economic/social measures of wellbeing} \href{run:/Source_Summaries/Bennett_et_al_2003.tex}{\color{cyan}See paper summary here}. Generally don't think it will be useful because it's not very detailed. May provide more examples of social-ecological cascades. 
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Need}
+Why something needed to done at all
+\section{Linking social and ecological communities}
+{\bf Prompt:} \marginnote{\footnotesize This isn't really what this section currently is. It's more like: here's what the suggested solution is. }
+Increasingly there are calls for quantitatively linking both ecological and economic processes to make explicit the connections and feedbacks between human and non-human communities
+\subsection{Calls for linking ecological and social sciences}
+\marginnote{\footnotesize This needs to detail the different conservation and policy problems that exist, and how understanding human drivers are key. It then sets the stage for fisheries as a subset of these problems}
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Examples of linking social and ecological sciences}
+\subsubsection{Empirical}
+\begin{description}
+\item[\cite{Levietal:2012}] Look at how letting more salmon upstream will benefit bears. Directly compares economic loss to Sockeye fisheries in Bristol Bay and BC to how it would improve population status of grizzlies. Fin win-win scenarios in coastal stocks, where reducing yearly catch (and increasing escapement) results in higher densities of bears and increased profit because of higher yields in low productivity years. However find a tradeoff in interior stocks within the Fraser River where biomass of salmon is low. Increasing salmon allocations to ecosystems would benefit threatened bear populations at the cost of reduced long-term yields. This approach allows direct comparisons between costs and benefits in economic and ecological terms, which facilitates management decisions. 
+
+Might be valuable for how conservation policies need to take into account the social drivers of hunting in order to make successful management change. 
+\item[\cite{Coadetal:2013}] Look at 10 years of data on  bushmeat hunting in Gabon and how it relates to socioeconomic status. Found that the total offtake remained constant, but that the number of hunters declined, distance of traps away from the village increased, and several large-bodied species became locally extinct. Points out that studying wildlife declines only focuses on the ecological effects, but not the drivers of, wildlife hunting. But successful conservation interventions will ultimately depend on a refined understanding of the drivers of, and the context in which, overhunting occurs and cites Caughley \& Gunn 1996. Which is a book, I think and that is highly reviewed on Amazon. Should get it, I think.  Another example of tropical bushmeat hunting. 
+\end{description}
+
+\subsubsection{Theoretical}
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+\section{Fisheries systems as models}
+{\bf Prompt:} Fishermen (and their direct harvest of fish) provide an ideal model system to examine whether consideration of human harvesting behavior can improve management policy. 
+
+%%%%%%%%%%%%%%%%%%%
+\subsection{Issues in Fisheries}
+{\bf Prompt:} What are the main issues marine fisheries are dealing with? What's the latest status on the problems and solutions that have been tried out. Idea is to show context of problems in which people are calling for more human behavior work. 
+\subsubsection{Current state}
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Proposed management needs/solutions}
+{\bf Prompt:} These are papers that either diagnose what the problems are with fisheries (often from a multidisciplinary perspective) and/or how to fix those problems. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{How to fix the problems with fisheries? Often from a high-level}
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Fisheries are good model systems: calls for human behavior}
+Increasingly there are calls to include human behavior explicitly in fisheries management.
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Examples of fisheries as social-ecological systems generally}
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Anthropological approaches}
+
+\subsubsection{Conservation related}
+
+
+\subsubsection{Theoretical}
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Examples of papers considering harvesting behavior explicitly}
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{The Issue of Effort}
+Not sure if, or how, this fits. Studying how effort changes seems central to understanding how fishermen behavior affects fish. And so a review of its study is likely in order. Focus is what we know, and what are the remaining questions? Also a possible question: is it known when to expect hyperstabilty or hyperdepletion, beyond general statistical analyses? Determining CPUE from optimal harvesting strategies in different systems may provide predictions on whether hip
+
+%%%%%%%%%%%%%%%%%%%%%%
+\section{Ecological approaches}
+Fisheries systems can be thought of a predator-prey systems, where yearly fishing limits are set based on abundance in present year (or time step). This ends up making the fishery system a density-dependent predator-prey system. And while this management approach of fisheries has received extensive research, the connections to predator-prey research are not appreciated. Specifically fisheries take a mean field approach: there are many interacting fish and fishing vessels in complex and stochastic ways, however the models assume these interactions average out in a single effect. In other words, there is an assumption that fishermen encounter fish in proportion to their average abundance across space. 
+
+\subsection*{\cite{Fryxelletal:2007}}\index{discipline: group foraging}
+\begin{itemize}
+\item Mass-action, and its attendant assumption of a particular functional response, is violated by social groups of predators and/or prey
+\item Introduce new functional response that accounts for grouping and apply it to the Serengeti ecosystem, examining how the stability of the system varies as either predators or prey or both group. 
+\item Considering lions, all prey are gregarious, and so have a nonlinear relationship between prey-group density (groups km$^{-2}$) and population density. Group formation reduces food intake rates below the levels expected under random mixing. 
+\item Parameterize the interactions between lions and wildebeest and find that grouping stabilizes interactions between lions and wildebeest. 
+\item These results suggest that social groups rather than individuals are the basic building blocks around which predator-prey interactions should be modeled and that group formation may provide the underlying stability of many ecosystems. 
+\item Developed 4 functional responses:
+\begin{enumerate}
+\item Null response: assume that lions forage solitarily and prey are randomly distributed
+\[\Psi(N)=\frac{aN}{1+a(h_1+h_2)N}\]
+where $a$ is the area of effective search per unit time, $h_1$ is the expected time to attack and subdue each prey item, $h_2$ is the expected time to consume and digest each prey, $N$ is prey density per km$^2$, and $\Psi(N)$ is prey intake per predator per day. 
+\item Grouped lion functional response: which changes the handling time of prey 
+\[\Psi(N,G) = \frac{aN}{G+a(Gh_1+h_2)N}\]
+where $G$ is the predator group size. 
+\item Grouped prey functional response: The encounter rate changes so that this functional response is a modified type II functional response (same as eq. 1) 
+\[\Psi(N)=\frac{acN^b}{1+a(h_1+h_2)cN^b}\]
+where the modified encounter rate is $acN^b$, $c=e^{\text{intercept}}$ and $b$ is the slope of the linear regression of $\ln(\text{prey group density})$ versus $\ln(\text{prey density, }N)$. 
+\item Functional response assuming both lions and prey are grouped: equations 2 and 3 are combined
+\[\Psi(N,G) = \frac{acN^b}{G+a(Gh_1+h_2)cN^b}\]
+\end{enumerate}
+\item find that if you parameterize a set of ODEs describing lions and wildebeest, using the null functional response (individual prey and predators), the system is unstable. However adding predator or prey sociality makes the system stable, and when both predators and prey are social, then the system is most stable of all. 
+\begin{itemize}
+\item[*] \textit{Not sure, does this just reduce the dominant eigenvalue towards stability? Or does it actually switch from positive to negative?}
+\end{itemize}
+\item Explanation for herd sociality effect is that herd formation reduces search efficiency by predators by creating `holes' across the landscape that would otherwise be occupied by asocial prey. For predators, group foraging is hypothesized to reduce search efficiency because of overlaps in perceptual ranges. 
+\begin{itemize}
+\item[*]\textit{Interesting, perceptual ranges may not affect fishermen who cooperate with one another. Maximize their ability to search, think this is what Mangel does in his work}
+\end{itemize}
+\item \textit{Also don't specify whether the sociality of animals is due to an innate tendency to cluster, or that they all are attracted to the same areas. I don't think this matters, because only considering what the end result (clustering) does to predator-prey interactions. But it might affect the relationship between individual and group density: if all at same attractor, then it would be maybe more nonlinear?}
+\item Acknowledge that cooperation of predators may compensate, at least a little bit, for the reduced attack rates (i.e. are more successful given an attack?). However, for lions at least, the available evidence does not demonstrate such an effect. Instead suggest that lions derive benefits from sociality in terms of female protection against infanticidal males and territorial battles. 
+\begin{itemize}
+\item[*]\textit{``Most lions refrain from contributing to group hunts except when pursuing a Cape buffalo,'' but this would meant that lions are not hunting in groups..?}
+\item[*]\textit{Does a functional response distinguish between attack and successful capture?}
+\end{itemize}
+\item Looking at time series of wildebeest and lions over time, do not find evidence that lions control wildebeest abundance, but instead that wildebeest are food limited. This is in agreement with the fact that group formation reduces the prey attack rate (top-down effects) dramatically.
+\item The methods were as follows:
+\begin{itemize}
+\item Derive 4 functional forms showing a range of sociality in predators and prey. These were variants of the type II functional response, ``that is most commonly applied in predator-prey models.''
+\item Parameterize these functional responses by finding:
+\begin{itemize}
+\item The amount of meat consumed by each lion (the amount of fish given per boat)
+\item the time expenditure per hunt (how long searching before finding a school)
+\item the number of hunts required for each kill (success rate for fishermen)
+\item the time expenditure per kill (how long it takes to net and pull in fish?)
+\item the time expenditure for the consumption of prey (how long it takes to haul and process fish on board before moving again?)
+\item the effective search radius for hunting lions (obvious for fishermen -- fish finder?)
+\item the digestive pause in lions
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Task}
+What I did to address the need
+\section{Methods}
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Fisheries systems in social-ecological framework: conceptual terminology}
+\begin{description}
+\item[\cite{@Schluteretal:2013}] Describes the SES framework
+\item[\cite{@McGinnisOstrom:2013}] Another paper describing the SES framework. Not sure how they differ.
+\item[\cite{@Cox:2013}] A case study of application of the SES framework. Might be best to start with this one, see how applying the framework clarifies the questions and results, if at all. 
+\item[\cite{Ostrom:2010}] Overview paper (possibly her Nobel acceptance speech?) and useful as a broad overview of SES. 
+\item[\cite{Ostrom:2009}] Science paper on the framework of SES. Another broad overview. 
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Bioeconomic models}
+\begin{description}
+\item[\cite{ConradSmith:2012}] Review and history of bioeconomic modeling in fisheries, probably really useful for putting work in context. 
+\item[\cite{Hilborn:2012}] Review and history of quantitative fisheries modeling. Useful for getting history of the field and past developments. 
+\item[\cite{Pesendorfer:2006}] Review of economic theory relating to behavior. Would be good to have background of the ways in which behavioral economics thinks and quantifies choices. 
+\item[\cite{Fudenberg:2006}] Review of economic theory relating to behavior. Would be good to have background of the ways in which behavioral economics thinks and quantifies choices. 
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Foraging Theory}
+\begin{description}
+\item[\cite{Levietal:2011}] Description of how hunters can be expected to make decisions about what species to target depending on how long a season is. And suggests that using longitudinal records of the composition and proportion of prey times (the prey profile) to assess levels of wildlife depletion may not give accurate results. Another example of tropical bushmeat case-study. Seem to be common. 
+
+Make the point that many diet-choice models are not spatial, so can't be applied to situations were local depletion is important. This is also probably an important point for my stuff as well. Management implications are likely to change when there's a spatial dimension to harvest, and local depletion is important. Also overlooking space is probably a poor assumption because humans pay significant costs for movement (cost of gas, time). But that's not based on anything but my own intuition. 
+
+Long paper, but details how you'd apply a foraging theory approach to humans. Likely much more useful as thinking about methods to answer specific questions. But looks like it does not consider social interactions (where more than one hunter, how strategy should change). But does detail backward and forward simulation, I think. Actually is just unclear (unmentioned?) whether this is assuming a single forager, or a population of foragers. 
+
+\item[\cite{SatterthwaiteMangel:2012}] Develop ABMs for the state-dependent behavior of central-place foragers over the course of a breeding season and show how this approach provides a framework for prediction of trip lengths, foraging location, food delivery, and reproductive success using kittiwakes, murres, and fur seals as examples. Then develop a game-theoretic model at the colony level for predicting the distribution of multiple individuals across space in the face of potential interference or facilitation using kittiwakes as an example. Individual foraging success thus calculated can be scaled up to demographically relevant parameters such as survival and reproduction and can help predict impacts of environmental change on top predators. 
+
+Likely useful for descriptions of state-dependent modeling and game theory models of foraging. Instead of scaling up foraging success for human populations, more interesting to use it to reflect into demographically relevant harvesting parameters for ecological models of marine ecosystems. Not sure if possible, but this paper would be a good place to start both for ideas and methodology. 
+
+Useful bit in the introduction (highlighted in Sente) on the pros and cons of a variety of different models used to predict how environmental changes will affect predators. These include
+\begin{enumerate}
+\item  bioenergetic models that explore the predicted physiological impacts of a change in consumption proportional to the expected change in fish stocks (but this approach may leave out important consequences of behavior and adaptive adjustments on the part of foragers - citations therein)
+\item a retrospective approach examining statistical relationships between predator success and forage fish abundance, which may do a better job of describing a relationship that includes the consequences of adaptive behavior because the measured responses will reflect behavioral adjustments made by predators. But, while it is possible to project them into the future, statistical models may not be trustworthy beyond the range of inputs. 
+\end{enumerate}
+\cite{SatterthwaiteMangel:2012} mention that a likely mechanisms by which environmental change may affect top predators is via changes in their prey base (see references therein, again highlighted in Sente). Changes in abundance of prey have effects, but so too do changing spatial and potential spatial mismatch (what's this?) may have important effects as well, especially for central place foragers. Central place foragers are constrained by their need to make frequent return trips to their colonies to feed their offspring an thus are limited in their ability to track shifting prey. Potential responses include diet shifts and changes in trip direction, duration and distance. 
+
+The preceding bit could easily be translated to focus on human, shore-based harvesters. These boats often don't have huge holds, require trips back to shore-based processors. Thus the following framework is likely very useful for thinking about fishermen as well. And particularly useful for considering which type of fishermen are most fruitful to think about when considering foraging behavior (i.e. huge factory trawlers are likely not so affected by changes in spatial distributions because the costs they pay for movement are quite low). \marginnote{\footnotesize This might be a useful thing for my proposal!!}{\bf Thus how much it costs to move could be an axis on which to look at fishermen by. }
+
+Also small bit about what good theoretical models should do: a theoretical model need not reproduce very empirical observation, in fact a model complex enough to do so is likely also complex enough to defy analysis and add little to our understanding. Rather, the most useful models are those that can match broad-scale patterns identified as important by empiricists, and correctly predict at least the direction of responses to specific environmental changes. References to original work in the paper. 
+
+May also have good references for classical approDevelops Lotka-Volterra type models and examines how variations in stock translate into catch.
+Also simulates a multispecies, multifleet spatial model calibrated to the Nova Scotian groundfish fisheries and presents the 'stochasts' and 'cartesian' fishermen.
+Little unclear if this has data, likely to be useful thoughs to diet choice, especially referencing some recent reviews. Definitely goes over state-dependent models. Also uses rate of energy return as metric for fitness and uses it to find the ESS foraging strategy. Very useful. 
+
+Also their colony-level model is likely super useful. Consider that facilitation or interference competition occurs through increased or decreased encounter rates rather than changes in handling time. For example, visual cuing could improve encounter rate if you see a bunch of people fishing in a spot, or may reduce encounter rates if the area is depleted due to too many fishermen at the same spot. 
+
+Also another plug for mechanistic understanding: mechanistic models are the only option for moving beyond simply extrapolating observed correlations beyond the observed historical range of conditions. 
+
+This paper might also be useful for the patch model, as it discusses how individuals decide when to move between patches (I think). 
+\item[\cite{Wiedenmannetal:2011}] Another state-dependent foraging model. Might help to clarify methods?  \href{run:/Source_Summaries/Wiedenmann_etal_2011.tex}{\color{cyan}See paper summary here}
+\item[\cite{MangelPlant:1985}] Long paper about how fishermen might be expected to gather information and make decisions about spatial allocation of effort. \href{run:/Source_Summaries/MangelPlant_1985.tex}{\color{cyan}See paper summary here}
+\item[\cite{Torneyetal:2011}] Big Colin's paper looking at under what conditions you should signal about a resource. \href{run:/Source_Summaries/Torney_et_al_2011.tex}{\color{cyan}See paper summary here}
+
+\item[\cite{GiraldeauCaraco:2000}] Social Foraging theory book. Will probably be a useful reference. \href{run:/Source_Summaries/Social_Foraging_Theory.tex}{\color{cyan}See paper summary here}
+\item[\cite{ClarkMangel:1984}] Classic foraging work, possibly brought on by their work on fishermen? Important to know. 
+\end{description}
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Models}
+\subsubsection{Patch Model}
+\begin{description}
+\item[\cite{Abramsetal:2012}] The patch model that I want to alter as an experiment
+\item[\cite{Abramsetal:2011}] Has predator switching functions in appendix. 
+\item[\cite{Ives:1992}] Has the original local information predator switching function. 
+\item[\cite{DreyfusLeon:1999}] An ABM with two distinct decision making properties. The first is to decide whether to stay at the present patch and the other is how to search the patch for prey. Compare with empirical data (I think) and find some similarities. Particularly useful because I'm thinking about these two decisions in the simple patch model. 
+\end{description}
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{VMS and ABMS}
+\begin{description}
+\item[\cite{JanssenOstrom:2006}] Summarizes approaches to social sciences, and how ABMs are useful. But leaves the question of how to test the validity of an ABM unanswered. 
+\end{description}
+
+\bibliographystyle{cbe}
+\bibliography{refs}
+
+\end{document}
+

@@ -1,0 +1,77 @@
+\documentclass[a4paper,10pt]{article}
+\let\oldmarginpar\marginpar
+\renewcommand\marginpar[1]{\-\oldmarginpar[\raggedleft\footnotesize #1]%
+{\raggedright\footnotesize #1}}
+\usepackage{charter}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{array}
+\usepackage{natbib}
+\usepackage{gensymb}
+\usepackage{epstopdf}
+\usepackage{multirow} %for multi column spanning rows or multi row spanning columns
+ \usepackage{rotating} %for rotating tables
+ \usepackage{subfig} %to have figures within figures
+\usepackage{multicol}
+ \usepackage{ulem} % Allows for underlining without weird formatting glitches. 
+ \usepackage{pifont}% Allows for use of ZipfDingbats font
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor} % Allows colored font
+\usepackage{hyperref} %allows hyperlinks in the document
+\usepackage[linecolor=black,backgroundcolor=white,bordercolor=white,textsize=small]{todonotes}
+\usepackage{wrapfig}
+\usepackage[top=0.5in, bottom=0.75in, outer=1.5in, inner=0.5in, heightrounded, marginparwidth=1in, marginparsep=0.25in]{geometry}
+\usepackage{marginnote}
+\usepackage[bitstream-charter]{mathdesign}	% using charter font for math
+\usepackage{hyperref}
+ \begin{document}
+
+\section*{\href{run:Integrating indigenous livelihood and lifestyle ob.pdf alias}{\color{Blue}Plag\'anyi et al. 2013}:}
+
+\subsection*{General points}
+Argues that most fisheries science focuses on large scale commercial enterprises, and so bio-economic models do a good job capturing the economic tradeoffs but a poor job when applied to small scale, artisnal fisheries in which economic tradeoffs are balanced against social ones. In this paper the authors develop a framework to bring together quantitative bio-economic models and more qualitative social-anlayses. 
+
+Using as a case study the Torres Strait tropical rock lobster fishery; it's the region's economically most important fishery, includes multiple types of stakeholders, and social objectives are stated explicitly as part of a treaty between Australia and Papua New Guinea. On the Australian side, the stock is harvested by both indigenous Islanders, for whom it has cultural significance, and commercial fishers, most of whom are non-Islanders. Within the Islander fleet there's heterogeneity, a small number of fishers operating on a purely commercial basis but taking a high proportion of the catch, and a large number operating for subsistence or traditional reasons and taking a small proportion of the catch, and a balance taken by a group operating on essentially an income-supplementing basis. 
+
+ \marginnote{\footnotesize Don't know what these external drivers might be.. Or what the metrics that the `outcomes' are classified by}
+
+The fishery is presently shifting from input-controls (gear, effort, and entry restrictions) to output controls (total catch allowance). The study looks first at what happens as management shifts from input to output restricted and then second at the outcomes of different quota management systems and allocation options and whether these outcomes are sensitive to external drivers.
+
+\begin{description}
+\item[Framework:] Used a management strategy evaluation (MSE) framework: simulated testing of the implications for both the resource and stakeholders, of the alternative combinations of monitoring data, analytical procedures, and decision rules. They expand MSE to include social tradeoffs, along with the traditional economic and biological ones. 
+
+Figure in paper is helpful, and it includes a ``spatial operating model'' which is a simulation model that uses surveys, catch/effort data (VMS, catch logs??), and life history data. And looks like it outputs social indicators like equity, ``consistent with custom'' (whatever that means, and whether there are new entrants. Also has biological indicators: stock status, localized depletion, risk to resource, and economic: profit by sub sector, employment, value added. These seem very useful in thinking about how to evaluate output for my own work. 
+
+Also figure out how to estimate which vessels might exit the fishery with lower quota levels and estimate the flow-on effects by including aspects of the supply chain which allows calculation of value-added. 
+
+\marginnote{\footnotesize Olympic-type system:  when a total quota is set at the beginning of the season for  a given sector, and the season is open for the sector until it's been caught.} 
+
+Focused on evaluating tradeoffs when an ITQ program, a community-based system or an Olympic-type competitive system for the whole sector, or part of the sector was put into place. Also looked at hybrid versions of these management types (when one sector has an Olympic-type system, and another sector has ITQs). 
+
+\item[Social Analyses:] Found that in the Islander community, the value of the fishery was depended on principles of equity, community coherence, resemblance to sea country and Island custom. The right of everyone to enter the fishery commercially, recreationally, or for cultural reasons was perceived to be best achieved by a competitive quota system. Community quotas were perceived to confer positive sociopolitical outcomes, but those preferences are correlated to coherent island communities and strong community leadership. 
+
+ \marginnote{\footnotesize Who is paying this economic cost? is it just because more goes to subsistence? who cares that we're reducing profits if people are making their own decisions?}
+
+A key social objective is increasing Islander participation and ownership of the fishery. Increasing Islander ownership reduces the overall profits by 35\% irrespective of management type, a large economic cost. But total employment increases, which is another social objective. 
+
+
+\item[Bio-economic models:]
+\end{description}
+
+\noindent Find that there are significant tradeoffs between social and economic benefits, and ignoring communal-values means that  natural resource management ignores many benefits that communities value highly. And argue that this type of framework needs to be more broadly incorporated into natural resource management. 
+\subsection*{Other notes}
+\begin{itemize}
+\item Might have good refs on how one values social values rather than just economic.
+\item Good paper for motivations about why more complete values of human values are important in natural resource management. 
+\item Have a hard time figuring out what the questions are in this type of paper. Looks like they're evaluating how management measures up to different types of goals (economic, social, biological), but don't list them out anywhere. 
+\end{itemize}
+
+\subsection*{Current Status}
+Should look in the SI Methods, and in the refs cited there. This seems like a potential model of what I want to do. But nice, because it's looking at participation within each sector, rather than spatial allocation of effort. So similar, but not the same as what I want to do. 
+
+\bibliographystyle{cbe}
+\bibliography{refs}
+
+\end{document}
+

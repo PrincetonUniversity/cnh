@@ -1,0 +1,64 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{charter}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{array}
+\usepackage[bitstream-charter]{mathdesign}	% using charter font for math
+\usepackage{natbib}
+\usepackage{gensymb}
+\usepackage{epstopdf}
+ \usepackage{subfig} %to have figures within figures
+\usepackage{multicol}
+ \usepackage{ulem} % Allows for underlining without weird formatting glitches. 
+ \usepackage{pifont}% Allows for use of ZipfDingbats font
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor} % Allows colored font
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{wrapfig}
+\usepackage[top=0.5in, bottom=0.75in, outer=1.75in, inner=0.25in, heightrounded, marginparwidth=1.55in, marginparsep=0.15in]{geometry}
+\definecolor{sol_blue}{RGB}{38,139,210}
+\definecolor{sol_orange}{RGB}{203,75,22}
+\definecolor{sol_red}{RGB}{220,50,47}
+\definecolor{sol_base2}{RGB}{238,232,213}
+\definecolor{sol_base1}{RGB}{147,161,161}
+\definecolor{sol_green}{RGB}{133,153,0}
+\definecolor{sol_cyan}{RGB}{42,161,152}
+\definecolor{sol_violet}{RGB}{108,113,196}
+\definecolor{sol_magenta}{RGB}{211,54,130}
+\definecolor{sol_yellow}{RGB}{181,137,0}
+\usepackage[colorlinks=true,urlcolor=sol_blue,citecolor=black,filecolor=sol_orange]{hyperref}
+\newcommand*{\fnref}[1]{\textsuperscript{\ref{#1}}}
+
+ \begin{document}
+\begin{center}
+{\Large Regulatory Mechanisms and Information Processing in Uncertain Fisheries}
+
+\cite{@MangelPlant:1985}
+\end{center}
+
+%\listoftodos
+
+\section*{Important Points}
+\begin{enumerate}
+\item Most fisheries are characterized by high levels of uncertainty in stock size an location of fish in a particular year. These uncertainties, coupled with environmental fluctuations, lead to catch rates for individual fishermen that are highly erratic (pg. 390). \todo[size=\small, color=sol_orange,linecolor=sol_orange, bordercolor=sol_orange]{\color{White}Should look at the fisheries that there will be data for, and quantify exactly how much variation are we talking? Does it vary significantly between fisheries from the data?} Although management may aid in reducing uncertainty through surveys, satellite projections, and weather forecasting, a major reduction in uncertainty comes from the fishermen themselves. In particular, the process of fishing produces information about the location, size and quality of the stock, as well as producing fish.
+\item Mangel and Clark (1983) \todo[size=\small, color=sol_blue,linecolor=sol_blue,bordercolor=sol_blue]{\color{white}Nice summary of Mangel \& Clark 1983} modeled uncertainty in fisheries by considering the search component of the fishing operation to be the most important stochastic consideration. This choice rests on a number of factors. First, the individual fisherman can do little about the uncertainties in weather or stock size and quality, whereas he or she can accomplish much in the way of locating fish. Second, in most cases, the fisherman is still fundamentally a hunter (e.g. tuna vessels may spend up to 80\% of their time at sea looking for tuna). Mangel and Clark used decisions analysis to determine the optimal allocation of fishing effort over time and space, assuming that the individual fishermen were profit maximizers and that the fishery was an open access one. 
+\item Here the authors study the question of uncertainty and fishermen's behavior in a fishery with catch quotas for individual fishermen. There are many reasons for studying the seasonal quota and its effect on the fishery. First, in a deterministic setting, the seasonal quota can promote optimal utilization of the resource (Clark, 1980), so that as a regulation tool quotas appear to be useful. Second, there is empirical evidence \todo[size=\small, color=sol_red,linecolor=sol_red,bordercolor=sol_red]{\color{white}Should look up these references}(Swierzbinski et al. 1981; McKay, 1980) that fishermen may set quotes for themselves. In some cases (Swierzbinksi et al. 1981) the quota is apparently a seasonal income target level. The informational problems associated with seasonal quota ares similar to the ones studied by Mangel and Clark (1983). Fishing stops, in this case, either when the quota is reached or the season ends. 
+\item There are also periodic (e.g., weekly) quotas. In some fisheries (McKay 1980) the quota is the result of cooperative of fishermen trying to ensure equitable weekly compensations. Quotas may also be set by processors (Fletcher 1982), who limit the amount of fish they will buy from an individual fisherman. 
+\item There is an interesting analytical duality between profit maximization and quota regulation. In the profit maximization ($PM$) case, the seasonal return ($R_{PM}$) to the fishermen takes the form 
+\[R_{PM} = p\tilde{B} - C(T)\]
+where $\tilde{B}$ is the uncertain biomass of the harvest, $p$ is the price per unit biomass, and $C(T)$ is the cost of operating for a season of length $T$.\todo[size=\small,color=sol_orange,linecolor=sol_orange,bordercolor=sol_orange]{\color{white}Can you predictably know the total cost of operating for a season? I imagine maybe you have fixed costs in terms of crew wages, and maybe then a set budget for how much gas you can spend. And whatever you get in that time, you get. Hence the uncertain harvest.} In the case of quotas, the return takes the form
+\[R_Q = pB_Q - C(\tilde{T}_Q)\]
+Here $B_Q$ its he biomass of the quota and $\tilde{T}_Q$ is the uncertain time to achieve the quota. For profit maximization, the uncertainty is the revenue term and the cost, since the operating time is  a control variable chosen by the fishermen, but with quotas, uncertainty mainly effects the cost term (if the quota is reached. 
+\item Here they consider the case where a fisherman makes repeated trips of a fixed duration, say one week, to one of two fishing grounds. Our analysis is primarily concerned with determining the effects of an imposed weekly quota on the information used by the fishermen to decide which ground to visit. \todo[size=\small,color=sol_blue,linecolor=sol_blue,bordercolor=sol_blue]{\color{white} Summary of this paper's aims}
+\end{enumerate}
+
+\section*{Refs that look interesting referenced herein}
+\begin{enumerate}
+\item
+\end{enumerate}
+
+
+\bibliographystyle{cbe}
+\bibliography{REF}
+\end{document}

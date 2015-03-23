@@ -1,0 +1,134 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{charter}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{array}
+\usepackage[bitstream-charter]{mathdesign}	% using charter font for math
+\usepackage{natbib}
+\usepackage{gensymb}
+\usepackage{epstopdf}
+ \usepackage{subfig} %to have figures within figures
+\usepackage{multicol}
+ \usepackage{ulem} % Allows for underlining without weird formatting glitches. 
+ \usepackage{pifont}% Allows for use of ZipfDingbats font
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor} % Allows colored font
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{wrapfig}
+\usepackage[top=0.65in, bottom=0.75in, outer=1.75in, inner=0.25in, heightrounded, marginparwidth=1.55in, marginparsep=0.15in]{geometry}
+\definecolor{sol_blue}{RGB}{38,139,210}
+\definecolor{sol_orange}{RGB}{203,75,22}
+\definecolor{sol_red}{RGB}{220,50,47}
+\definecolor{sol_base2}{RGB}{238,232,213}
+\definecolor{sol_base1}{RGB}{147,161,161}
+\definecolor{sol_green}{RGB}{133,153,0}
+\definecolor{sol_cyan}{RGB}{42,161,152}
+\definecolor{sol_violet}{RGB}{108,113,196}
+\definecolor{sol_magenta}{RGB}{211,54,130}
+\definecolor{sol_yellow}{RGB}{181,137,0}
+\usepackage[colorlinks=true,urlcolor=sol_blue,citecolor=black,filecolor=sol_orange]{hyperref}
+\newcommand*{\fnref}[1]{\textsuperscript{\ref{#1}}}
+%\pagestyle{myheadings}
+%\markright{\footnotesize\bf\hfill {\color{sol_red}Refs to look up; }{\color{sol_orange} Questions; }{\color{sol_yellow}Assumptions I need to check; }{\color{sol_green}Reflections; }{\color{sol_blue} Summaries; }{\color{sol_violet}Random}\hfill}
+
+ \begin{document}
+\begin{center}
+\newsavebox{\redsquare}
+\savebox{\redsquare}{\textcolor{sol_red}{\rule{1in}{1in}}}
+
+
+\newsavebox{\orangesquare}
+\savebox{\orangesquare}{\textcolor{sol_orange}{\rule{1in}{1in}}}
+
+\newsavebox{\yellowsquare}
+\savebox{\yellowsquare}{\textcolor{sol_yellow}{\rule{1in}{1in}}}
+
+\newsavebox{\greensquare}
+\savebox{\greensquare}{\textcolor{sol_green}{\rule{1in}{1in}}}
+
+\newsavebox{\bluesquare}
+\savebox{\bluesquare}{\textcolor{sol_blue}{\rule{1in}{1in}}}
+
+\newsavebox{\purplesquare}
+\savebox{\purplesquare}{\textcolor{sol_violet}{\rule{1in}{1in}}}
+
+\newsavebox{\magentasquare}
+\savebox{\magentasquare}{\textcolor{sol_magenta}{\rule{1in}{1in}}}
+
+\newsavebox{\cyansquare}
+\savebox{\cyansquare}{\textcolor{sol_cyan}{\rule{1in}{1in}}}
+
+
+%\todo[size=\small, color=white,bordercolor=white,linecolor=white]{\footnotesize \scalebox{0.1}{\rotatebox{0}{\usebox{\redsquare}}} Refs to look up; \scalebox{0.1}{\rotatebox{0}{\usebox{\orangesquare}}} Questions; \scalebox{0.1}{\rotatebox{0}{\usebox{\yellowsquare}}} Assumptions I need to check; \scalebox{0.1}{\rotatebox{0}{\usebox{\greensquare}}} Reflections; \scalebox{0.1}{\rotatebox{0}{\usebox{\bluesquare}}} Summaries; \scalebox{0.1}\rotatebox{0}{\usebox{\purplesquare}} Random}
+
+
+{\Large Social Foraging Theory}
+
+\cite{@GiraldeauCaraco:2000}
+\end{center}
+
+%\listoftodos
+
+\section*{Important Points}
+\subsection*{Chapter 1: Social Foraging Thoery}
+\begin{enumerate}
+\item Because the efficiency of a particular behavioral strategy depends on the frequencies of strategies among an individual's competitors, I use social foraging theory.  Considering fishermen behavior in light of social foraging theory still concern the adaptive significance of individual behavior, but the models rely on game-theoretical equilibria and the concept of evolutionarily stable strategies (ESS) (Maynard Smith 1982; Parker 1984a; Hines 1987) (pg. 7).
+\item A strategic model for social foraging usually takes the form of a game, where each competitor pursues its own objective (e.g., increasing its consumption of discovered food). The game's solution predicts how the different players' often conflicting, but sometimes coincident, objectives can be resolved (pg. 10). 
+\item Definitions of altruism: 
+\begin{description}
+\item[Mutualism:] If effects on both self and relatives are positive
+\item[Kin-directed altruism:] If the effect on self is negative but the effect on relatives is positive (and of greater absolute value). 
+\item[Selfish:] Effect on self is positive and the effect on relatives non-positive (and, if negative, of lesser absolute value).
+\end{description}
+Mutualism and kin-directed altruism are examples of unconditional cooperation. The decision-maker's action promotes the trait without it being conditioned on either an immediate or delayed response-in-kind by those other individuals (pg. 10). 
+
+Conditional cooperation is what takes place in the iterated Prisoner's Dilemma game, where cooperation arises conditionally on simultaneous (conditional mutualism) or delayed (reciprocal altruism) reciprocation of behavior (pg. 12). 
+\item Most of the models take the form of a symmetric game. Symmetry implies competitive equivalence of the players, so that each has the same payoff (or penalty) function. Symmetry means that an individual's payoff or penalty is specified completely by the combination of interacting strategies, without reference to any other phenotypic attribute of this individual (pg. 11). 
+\item Some of the models in this book consider only a single round of play. But certain models' payoffs or penalties may conform to a Prisoner's Dilemma (e.g. Axelrod \& Hamilton 1981; Nowak \& Sigmunds 1992; Mowbray 1997; Mishimura \& Stephens); when this occurs the authors consider the consequences of probabilistically repeated play (pg. 11). 
+\item As pointed out by Mesterton-Gibbons \& Dugatkin (1997), the distinction between single and repeated interaction of the same individuals, and between behaviors associated with single versus repeated play, should depend on a logical temporal scaling. Most of the models define the duration of a round of play as a foraging period $\tau$ time units long (see Newman \& Caraco 1989). At the end of the foraging period, each player acquires some benefit or pays some cost, and then a anew round of play may commence. So the temporal scaling of play mimics physiological and environmental constraints on the timing of foraging. Assuming repeated play of the same individuals help focus attention on the fundamental significance of population spatial structure for the economics of individual interactions (Houston 1993; Ferriere \& Michod 1996; Caraco et al. 1997; Levin et al. 1997) (pg. 11). \todo[size=\small, color=sol_yellow,linecolor=sol_yellow,bordercolor=sol_yellow]{\color{white}Need to make sure assumptions on fishery match these.} 
+\item In the applications of game theory considered in this book, a strategy is a rule for using feasible actions; see discussion in Vincent and Grantham (1981) or Weissing (1996). In general, an individual's strategy may assign a positive probability to two (or more) different actions and may be conditioned on environmental variables (e.g. food density) and/or the behavior of another player (pg. 11). 
+\item The authors describe a Nash equilibrium stable if unilateral deviation reduces that individual's payoff. They may describe a Nash equilibrium as neutrally stable if unilateral deviation has no effect on the individual's payoff (pg. 12). 
+\item While a Nash solution requires that an individual's unilateral deviation in strategy cannot be rewarded, a Pareto optimal solution allows that an individual might deviate and so increase its payoff, but only by reducing at least one other player's payoff (e.g. vincent and Grantham 1981). So Pareto optimal solutions to a game assume that players mutually coordinate their strategies to advance each individual's payoff; hence Pareto optimality helps us identify consequences (but not always ecological causes) of mutual cooperation (pg. 12). 
+\item Problems in social foraging require detailed assumptions about the process of searching for food. At least some group members must attempt to find food, but certain individuals may try to avoid the cost of searching (Barnard and Sibly 1981) (pg. 15). 
+\item The probability density of the time taken to locate a patch of a particular resource can depend both on the number of individuals searching for that resource and the way their efficiencies interact (Ekman \& Rosander 1987; Caraco et al. 1995) (pg. 15).
+\item Most models of foraging processes, social or not, either neglect of deemphasize the often inherently random nature of food discovery. In contrast, the authors treat searching for (or capturing) food as stochastic, hypothesizing that the economics of social foraging commonly depends on the dynamics of food discovery (pg. 15). 
+\item Social foragers can be categorized as one of three types according to its food-searching behavior (following Vickery et al. 1991): producers, scroungers, and opportunists. Producers search their environment for food clumps (or divisible prey). When a producer discovers food, it can prevent other producers from usurping any of the resource but may elect to let them feed. Scroungers do not search for food directly. Intead, the attend o other foragers' clump discoveries and aggressively or stealth fully sequester some for at each clump found either by a producer or an opportunist. Opportunists both search for food directly and attempt to obtain food at clumps located by producers and other opportunists. An opportunist  then simultaneously searches both as a producer and scrounger but may be less efficient than either more specialized forager (Vickery et al. 1991). The same categories can be applied to an individuals that switch among strategies (pg. 16). 
+\begin{description}
+\item[Producer versus Producer:] Suppose two foragers forage in close proximity. When one finds  a clump it might choose to share the food with the other producer, perhaps giving a ``food-call'' to attract the other forager (chapter 3). Food-sharing might arise as a consequence of kinship (McNamara et al. 1994; Emlen 1995), conditional cooperation (Caraco and Brown 1986; Mesterton-Gibbons 1991), ..., or a mutualism (Stephens et al. 1995). More generally, consider a gropu of ($G-1$) producers that share food mutualistically. Their choice of admitting or repelling another producer presents the problem of equilibrium group size under a group-controlled entry rule (chapter 4, Giraldeau and Caraco 1993; Higashi and Yamamura 1993) (pg. 16). \todo[size=\small, color=sol_green,linecolor=sol_green,bordercolor=sol_green]{\color{white}This equilibrium group size might be the model to predict the optimal size for a fisheries cooperative.}
+\item[Producer versus Scrounger:] Social foraging theory includes the producer-scrounger interaction (part 2; Barnard and SIbly 1981; Giraldeau et al. 1990). In a large enough group, a rare scrounger can have an economic advantage over producers since the scrounger feeds at each clump found. However, scroungers require at least some producers to feed. Hence we may anticipate an equilibrium mix of producers and scroungers (Vickery et al. 1991) unless the ``cost of scrounging'' is large enough o eliminate the latter (Caraco and Giraldeau 1991) (pg. 16). \todo[size=\small, color=sol_green, linecolor=sol_green,bordercolor=sol_green]{\color{white}This reminds me of defector/cooperator dynamics from Tavoni et al.}
+\item[Producer versus Opportunist:] For simplicity, suppose a group of two contains one producer and one opportunist (chapter 2). Both foragers search for food, but only the opportunist feeds at each clump discovered. Greater dominance status of the opportunist might produce this situation; the same result might arise when the producer finds resources much faster than does the opportunist. Symmetric competition will not likely maintain this interaction (Pulliam and Caraco 1984). 
+\item[Scrounger versus Opportunist:] Only the opportunists discover food, and all group members feed at each clump. Each individual should achieve a greater foraging rate art he frequency of opportunists in the group increases. But the scrounger-opportunist group can persist due to knowledge limitation (chapter 10, Giraldeau et al. 1994b). That is, when some group members have acquired a skill need to make a certain resource available, other foragers may have few opportunities to learn that skill (and become a producer). In this case, social foraging constrains the group members' collective capacity to increase their economic efficiency. 
+\item[Opportunist versus Opportunist:] Now each forager searches for food, and each acquires some food at every clump discovered. Groups of opportunists are sometimes termed and ``information-sharing system'' (chapter 6; Clark and Mangel 1984; but see Vickery et al. 1991).\todo[size=\small,color=sol_green,linecolor=sol_green,bordercolor=sol_green]{\color{White}This is probably what fishermen are.} The problem of comparing solitary versus social foraging is often framed as interaction of opportunists; tow foragers, dividing each clump found, may survive better than each of two solitaries. Similarly, more sophisticated questions about equilibrium group size under a free-entry rule (Clark and Mangel 1986; Giraldeau and Caraco 1993; Higashi and Yamamura 1993) can be viewed as an interaction among opportunists (chapter 4) (pg. 17). 
+\end{description}
+\item Social foraging stresses the importance of the mutual dependence of individuals' payoffs and penalties. Economic interdependence may occur during the search for food, during the division of food following its discovery, or both. These interdependencies define social foraging and set it apart from conventional foraging theory (pg. 18). 
+\item Another important them is the authors view of foraging as a stochastic rather than deterministic process. Stochastic models take into account effects that reward variance exerts on a forager's survival, and more realistically depicts the inherent uncertainty of foraging processes. Survival probabilities and risk sensitivity are important themes in this book. \todo[size=\small, color=sol_green, linecolor=sol_green,bordercolor=sol_green]{\color{White}This is exciting, because these sound like very important emphases for fishermen!!}
+\end{enumerate}
+
+\subsection*{Chapter 2: Two-Person Games: Competitive Solutions}
+\subsubsection*{Main points}
+
+\subsubsection*{Points especially useful to fisherman} 
+\subsubsection*{Quotables}
+\begin{enumerate}
+\item Difference between aggregation and dispersion economies: dispersion economies (chapter 5) assume that any increase in group size decreases each member's fitness, so maximal benefits are obtained when individuals are dispersed and solitary. Aggregation economies, on the other hand, emphasize how group membership can increase the quantity or quality of resources available to the individual (e.g., Clark and Mangel 1986).\todo[size=\small, color=sol_green, linecolor=sol_green,bordercolor=sol_green]{\color{White}This again seems likely for fishermen. But perhaps only up to a point, should dig up the paper James was telling me about where complete information sharing -- largest group size -- decreased the amount of fish one could harvest because everyone was showing up in the same place} In aggregation economies, a reasonable proxy for survival or fecundity must increase, at least initially, with foraging group size (pg. 35).
+\item Even if individual's food-discovery rate is independent of group size, if the food clumps are discovered as random and independent events, the variance of the time spent searching for each individual's required amount of food declines with group size (Caraco 1981; Pulliam and Millikan 1982; Clark and Mangel 1984; Ranta et al. 1993; Ruxton et al. 1995). \todo[size=\small,color=sol_orange,linecolor=sol_orange,bordercolor=sol_orange
+]{\color{White}But does this require that the group continues searching so that every last individual gets its required food? Or do individuals stop searching once they're full?}This variance reduction (or the reduction in the individual's food-consumption variance when foraging time is fixed) can increase a forager's survival probability when group members expect enough food to satisfy physiological requirements (Clark and Mangel 1986; Caraco 1987; Ekman and Rosander 1987; Mangel 1990). So even foraging time that is not improved by additional group members can easily imply an aggregation economy. 
+\item Applications of the information center hypothesis usually classify foragers as succeeding or failing. But in certain cases, individuals acquire more detailed information about food quality and abundance by observing other foragers (e.g. Greene 1987; Templeton and Giraldeau 1995a,b, 1996). Contemporary fishermen often choose to share information on the location of resources; see models developed in Mangel and Clark (1983) or Mangel and Plant (1985). \todo[size=\small, color=sol_red,linecolor=sol_red,bordercolor=sol_red]{\color{white}Need to check out these sources immediately} In general, pooling information will allow group members to learn locations of available food faster than a solitary is able to. 
+\end{enumerate}
+
+
+\section*{Refs that look interesting referenced herein}
+\begin{enumerate}
+\item Definition and summary of ESS: Hines 1987, {\bf Maynard Smith 1982}
+\item Definition of uninformed play: each player chooses an action once per play of the game without knowledge of (or communication concerning) the action the other player is about to take: {\bf Bram \& Mattli 1993, Maynard Smith and Parker 1976, Pulliam and Caraco 1984, Noe 1990}. 
+\todo[size=\small, color=sol_yellow, linecolor=sol_yellow, bordercolor=sol_yellow]{\color{white}This may be important to think about. Not sure if fishermen will always meet criteria of uninformed play}
+\item An advantage to cooperation between nonrelatives requires that mutual cooperators acquire a greater payoff than individuals lacking such cooperation (Axelrod \& Hamilton 1981; Pulliam et al. 1982; Caraco and Brown 1986; Yamamura and Tsuji 1987; Mesterton-Gibbons 1991; Mowbray 1997; Mishimura and Stephens 1997) (pg. 13). 
+\item Comprehensive treatments of aggregation economies: Pulliam and Caraco 1984, Barnard and Thompson 1985. 
+\item Groups ordinarily discover food clumps faster than a solitary can (e.g. Krebs et al. 1972, Pitcher et al. 1982, Bergelson et al. 1986; Caraco et al. 1989). But an individuals expected food intake in a patchy environment need not always increase with group size (e.g. Hake and Ekman 1988). 
+\end{enumerate}
+
+
+\bibliographystyle{cbe}
+\bibliography{REF}
+\end{document}

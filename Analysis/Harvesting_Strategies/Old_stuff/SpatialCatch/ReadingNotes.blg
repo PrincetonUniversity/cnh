@@ -1,0 +1,46 @@
+This is BibTeX, Version 0.99d (TeX Live 2012)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: ReadingNotes.aux
+The style file: cbe.bst
+Database file #1: adaptiveharvesting.bib
+You've used 3 entries,
+            2016 wiz_defined-function locations,
+            506 strings with 4432 characters,
+and the built_in function-call counts, 1374 in all, are:
+= -- 125
+> -- 74
+< -- 1
++ -- 26
+- -- 26
+* -- 138
+:= -- 243
+add.period$ -- 9
+call.type$ -- 3
+change.case$ -- 28
+chr.to.int$ -- 3
+cite$ -- 3
+duplicate$ -- 42
+empty$ -- 84
+format.name$ -- 31
+if$ -- 258
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 3
+newline$ -- 18
+num.names$ -- 9
+pop$ -- 21
+preamble$ -- 1
+purify$ -- 28
+quote$ -- 0
+skip$ -- 29
+stack$ -- 0
+substring$ -- 96
+swap$ -- 9
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 18
+warning$ -- 0
+while$ -- 9
+width$ -- 0
+write$ -- 38
