@@ -1,6 +1,15 @@
-# Conceptual notes
+ # Conceptual notes
 
 ## Why do a metier analysis?
+
+# Motivation (conservation)
+
++ Stakeholder wellbeing is an increasingly important measure of conservation success (i.e. ecosystem services, etc.) and is a formal one for US fisheries ("fishing community health")
++ We examine income variability as a measure of human wellbeing.
++ Natural resource-based livlihoods (fisheries, farming, etc.
+) can experience income variability for any of three reasons: environmental (vagaries of weather, disease, abundance of resource), economic (market access, demand, price), or management (restricted access).
++ Previous work shows that diversity of fisheries participation is negatively related to income variability and suggests that geography and management may play large roles in determining how diverse income is.
++ We add to this literature by replicating diversity-income variability relationship, unpack the proxy variable of geography and explicitly test to what extent ecology, markets and management can explain this trend in income variability. 
 
 + more ecologically based approach for multispecies fisheries (why?)
     + multispecies fisheries comprise multiple trophic levels and competition. It's hard to regulate on a species-by-species basis when the fishing gear is unselective
@@ -37,11 +46,12 @@ Fishing diversity is a general characteristic of a vessel, but it may be possibl
 
 
 
-Previous work has identified that diversification across fisheries is an indicator of how much financial risk to which a vessel is exposed. The more diversified a vessel is, the lower income variability they have, on average. Why? Work in Alaska has suggested that local geography might be a contributing factor (Sethi et al. 2014?) or limited entry management (Kasperski & Holland 2013), but to my knowledge no work has empirically examined what predicts a vessel’s diversification across fisheries. 
+Previous work has identified that diversification across fisheries is an indicator of how much financial risk to which a vessel is exposed. The more diversified a vessel is, the lower income variability they have, on average. Why? Work in Alaska has suggested that local geography might be a contributing factor (Sethi et al. 2014?) or limited entry management (Kasperski & Holland 2013), but to my knowledge no work has empirically examined what predicts a vessel’s diversification across fisheries.
 
-Fisheries diversity could be a product of a number of social and/or ecological drivers. Limited entry management is plausible, but so are ecological drivers (are species abundant enough to be fished?, habitat availability - distance to rockfish habitat or deep water) and/or economic constraints (market availability - is there a place to sell the fish?, and capital - can you afford to buy the additional gear?).
+Fisheries diversity could be a product of a number of social and/or ecological drivers. Limited entry management is plausible, but so are ecological drivers (are species abundant enough to be fished?, habitat availability - distance to rockfish habitat or deep water) and/or economic constraints (market availability - is there a place to sell the fish?), and capital (can you afford to buy the additional gear?).
 
-An important detail is that diversity is important if we assume the fisheries yields are highly variable and asynchronous. The variability and asynchrony is often due to the ecology of the species (i.e. tuna and whiting don't show up on the US west coast really until the summer). Or the variability can be management (changing catch limits year to year, salmon?). Regardless, there may be species with low-variability life-histories and management. Targeting these species may negate the need for diversification, and allow vessels to specialize.  Thus before we devote attention to how to predict diversification, we seek to understand whether diversification's effect on income volatility depends on in which fisheries a vessel participates.
+An important detail is that diversity is important if we assume the fisheries yields are highly variable and asynchronous. The variability and asynchrony is often due to the ecology of the species (i.e. tuna and whiting don't show up on the US west coast really until the summer). Or the variability can be management (changing catch limits year to year, salmon?). Regardless, there may be species with low-variability life-histories and management. Targeting these species may negate the need for diversification, and allow vessels to specialize. Thus before we devote attention to how to predict diversification, we seek to understand whether diversification's effect on income volatility depends on the fisheries in which a vessel participates.
+
 
 
 [test whether interactions between strategies and diversity]
@@ -50,6 +60,6 @@ An important detail is that diversity is important if we assume the fisheries yi
 
 A
 
-To determine whether the identify of fisheries changes the effect of diversity, we categorize each vessels participation based on a multi-step classification process. First we categorize each trip landed into a particular fishery. And then look for characteristic combinations of fisheries participation in a year. 
+To determine whether the identify of fisheries changes the effect of diversity, we categorize each vessels participation based on a multi-step classification process. First we categorize each trip landed into a particular fishery. And then look for characteristic combinations of fisheries participation in a year.
 
 + why don't we just do this based on the total amount of target species? Do I need to compare outcomes to when I just do it the Dan Holland way? Does our way keep together important ecological structure? i.e. rockfish? Sablefish might be a good argument. Sablefish is caught either with trawl or fixed gear. ..but strategy would remain the same.. We see other fisheries right? Hagfish? sea cucumbers? Spiny lobsters and rock crab? Benefit of letting the data do the talking.
