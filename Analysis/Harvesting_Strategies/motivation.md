@@ -8,6 +8,10 @@ Introduction - what am I working with?
 + So here I'm thinking that the system constraints broadly shape foraging strategy.
 + But there doesn't exist a broad conceptual framework for predicting under what system conditions we should get what type of foraging strategy.
 
+Motivations
+
++ Fisheries science: harvesting models commonly assume that harvesting behavior is fixed according to management rules and does not respond to changes in fish abundance and distribution.
+
 Definitions - but what is a foraging strategy?
 
 + I don't know.
@@ -19,10 +23,18 @@ Definitions - but what is a foraging strategy?
 
 Existing modeling framework for foraging strategies
 
++ Optimal foraging theory
+    + Assumption that consumers will forage in such a way as to maximize energy intake per unit time (Krivan 2010).
+    + Work began with MacArthur and Pianka (1966) which considered how individuals should forage in a heterogeneous environment.
+        + assumptions
+        + questions it answers
+        + limitations
+    + Charnov (1976) extended this to diet choice adn first proposed the Marginal Value Theorum
 + producer scroungers (only tells you for social or not, assumes a single patch and random distribution)
 + patch choice (single forager, no social information, small patches)
 + diet choice (single forager, no patches, random encounter with food items)
 + group size (can incorporate patches but only tells you when you should share food, not about particular patch foraging choices)
+    +  
 + How to weave together?
 
 Possibilities
