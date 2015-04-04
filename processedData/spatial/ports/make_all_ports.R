@@ -134,7 +134,7 @@ all_ports$min.city <- NA
 
 library(sp)
 for(j in 1:nrow(all_ports)){
-  if(is.na(all_ports$lon)) next # some don't have lat/lon because are "other" ports
+  if(is.na(all_ports$lon[j])) next # some don't have lat/lon because are "other" ports
   # find city with minimum distance
   city_id <- which.min(spDistsN1(as.matrix(big_cities[,c("lon","lat")]), 
                                  pt = as.matrix(all_ports[,c("lon","lat")][j,]), 
@@ -147,6 +147,9 @@ for(j in 1:nrow(all_ports)){
                                                   pt = as.matrix(all_ports[,c("lon","lat")][j,]), 
                                                   longlat = TRUE))
 }
+
+# remove the 'city' from the names
+  all_ports$min.city <- gsub(pattern = " city","", all_ports$min.city)
 
 # write to csv ----
 write.csv(all_ports, "/Users/efuller/1/CNH/processedData/spatial/ports/all_ports.csv", row.names=FALSE)
