@@ -26,16 +26,16 @@ annualRev <- function(data){
     crab_vessels <- unique(subset(data, metier %in% fishery)$drvid)
     crab_inclusive <- subset(data, drvid %in% crab_vessels)
     
-    # get mean latitude - find latitude for each port. 
-    pcid <- read.csv("/Users/efuller/1/CNH/Analysis/Metiers/writing/code/data/pcid.csv", stringsAsFactors = F)
-    pcid <- subset(pcid, Pcid %in% unique(data$pcid))
-    # painful, doing it for now
+    # remove any duplicates - not sure why they are here to begin with. 
+    crab_inclusive <- crab_inclusive[-which(duplicated(crab_inclusive)),]
     
-    pcid$latitude <- c(39.224893,37.751957, 48.500226, 38.911100, 46.184623,35.175198, 38.313621,43.119615,37.859178, 48.689689,48.990874,37.902163,39.441044,42.050410, 45.884918, 43.349049, 41.749900,36.947737, 33.454366,44.810097, 40.805712, 47.998856,40.726245, 43.987470, 48.538127,42.405515,46.900394,46.012960, 34.141570, 48.369945,47.902987, 33.706400,46.299853,36.618916,36.806517,35.366324,48.370974, 44.625197, 45.701929,45.404521, 33.605090, 37.831454, 34.354413,NA,36.778984,33.178001,46.247297,41.834321,40.933045,33.646691, 47.063427,39.314516, 47.854287,42.739815,32.684806,37.597894,35.223022, 38.087555,NA,NA,34.147309,48.123373,45.206981,37.466655,37.923771,38.095665,34.387405,32.670935,47.601886, 48.073745,37.748742,47.216280, 37.856995,44.910513,33.701236,47.281443,45.485446,38.177928,48.112239,33.712004,41.054473,34.248640,43.666526,46.539371,44.422257,33.714138,46.888297)
-    crab_inclusive <- merge(crab_inclusive, pcid, by.x="pcid",by.y="Pcid", all.x=TRUE)
-    # get yearly adj_revenue
+    # get mean latitude - find latitude and mean number of processors for each port 
+    all_ports <- read.csv("/Users/efuller/1/CNH/processedData/spatial/ports/all_ports.csv", 
+                          stringsAsFactors=FALSE)
+    crab_inclusive <- merge(crab_inclusive, all_ports, by.x="pcid",by.y="Pcid", all.x=TRUE, all.y = FALSE)
+    # get yearly adj_revenue for diversity
     yr_mets <- ddply(crab_inclusive, .(drvid, year, metier), summarize, 
-                     adj_revenue = sum(adj_revenue),latitude = mean(latitude), cluster = unique(cluster))
+                     adj_revenue = sum(adj_revenue))
     # transform into long-format, calculate simpsons diversity per vessel per year
     
     diversity_year <- ddply(yr_mets, .(drvid, year), c(simp_diversity, shannon_diversity))
@@ -44,9 +44,18 @@ annualRev <- function(data){
     # seperate vessels that only do crab, versus those that do other things. 
     num_fish <- ddply(crab_inclusive, .(drvid,year), summarize, 
                       num_fisheries = length(unique(metier)), 
-                      adj_revenue = sum(adj_revenue),
-                      latitude = mean(latitude),
-                      cluster = unique(cluster))
+                      lbs = sum(round_wt),
+                      latitude = median(lat),
+                      # latitude of landings weighted by yearly revenue
+                      weighted_lat = weighted.mean(lat, adj_revenue),
+                      # is yearly, so just moves it cluster to yearly resolution
+                      cluster = unique(cluster),
+                      num_states = length(unique(state)), 
+                      single_state = ifelse(num_states == 1, unique(state), "multi"),
+                      num_ports  = length(unique(pcid)), 
+                      name_single_port = ifelse(num_ports==1, unique(pcid), "multi"),
+                      w.num_procs = weighted.mean(num_procs, adj_revenue),
+                      adj_revenue = sum(adj_revenue))
     
     num_fish <- merge(num_fish, diversity_year, by=c("drvid","year"))
     
@@ -58,8 +67,11 @@ annualRev <- function(data){
                       mean_adj_revenue = mean(adj_revenue),
                       mean_simpson = mean(simpsons),
                       mean_shannon = mean(shannons),
-                      mean_latitude = mean(latitude),
-                      single_cluster = ifelse(length(unique(cluster))==1, unique(cluster),"multi"))
+                      med_latitude = median(latitude),
+                      mean_weight_lat = weighted.mean(weighted_lat, adj_revenue),
+                      single_cluster = ifelse(length(unique(cluster))==1, unique(cluster),"multi"), 
+                      single_landing_state = ifelse(length(unique(single_state))==1, single_state, "multi"),
+                      single_port = ifelse(length(unique(name_single_port))==1, name_single_port, "multi"))
     
     return(list(num_fish=num_fish, yr_stats=yr_stats))
   }
@@ -68,6 +80,6 @@ annualRev <- function(data){
   all_metiers <- unique(data$metier)
   yrdf <- adj_revenue_diversity(all_metiers)
   
-  saveRDS(yrdf, "/Users/efuller/1/CNH/Analysis/Metiers/writing/code/1_cleaningData/yrdf.RDS")
+  saveRDS(yrdf, "/Users/efuller/1/CNH/processedData/catch/1_cleaningData/yrdf.RDS")
   return(yrdf)
 }

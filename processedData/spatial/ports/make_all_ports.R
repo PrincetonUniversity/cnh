@@ -14,6 +14,8 @@ pcid <- read.csv("/Users/efuller/1/CNH/rawData/WCspatial/pcid.csv", stringsAsFac
   all_ports <- subset(pcid,Pcid %in% represented_ports ) # find ports only in tickets
 # seaside-gearhart is weird, deal with whitespace
   all_ports$Name[grep("gearhart",all_ports$Name)] <- "seaside-gearhart" # reverse. gah
+# remove the washington version of long beach, is a community but not a landed port
+  ports <- ports[-51,]
   all_ports <- merge(all_ports, ports, by.x="Name",by.y="port",all.x=TRUE) # add latitudes
 # some pcids are "/", find those and take mean between latitudes
   slashed <- grep("/",all_ports$Name)
@@ -78,9 +80,12 @@ all_ports$state <- ifelse(all_ports$Agency=="CDFG", "CA",
 # find number of processors at each port ----
 library(plyr)
 num_procs <- ddply(tickets, .(pcid, year), summarize, num_procs = length(unique(processorid)))
-num_procs_all <- ddply(tickets, .(pcid), summarize, num_procs = length(unique(processorid)))
+num_procs_all <- ddply(num_procs, .(pcid), summarize, num_procs = mean(num_procs))
 
-# there's a lot of turnover from year to year. hard to know. will leave this out for the moment. 
+all_ports <- merge(all_ports, num_procs_all, by.x = "Pcid", by.y = "pcid", all.x=TRUE)
+
+# there's a lot of turnover from year to year. but will use average annual number of processors at a port
+# also Princeton has 70 first recievers. what's up with that?
 
 # write to csv ----
 write.csv(all_ports, "/Users/efuller/1/CNH/processedData/spatial/ports/all_ports.csv", row.names=FALSE)
