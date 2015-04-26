@@ -1,0 +1,421 @@
+---
+title: "draft"
+author: "Emma Fuller"
+date: "March 5, 2015"
+output:
+  pdf_document:
+    number_sections: yes
+bibliography: refs.bib
+---
+
+# Abstract
+We have become more and more interested in managing natural systems for human wellbeing but we still don't have a way to measure, or even comprehensively defining, such a policy goal. Calculating the human (often but not always monetary) value of ecosystem dynamics, i.e. ecosystem services, is a popular approach for relating natural systems to human ones but is static. One can calculate the ecosystem service provided under different scenarios, but it's much harder to gather data, both social and ecological, that can paint holistic pictures of linked social-ecological dynamics. The studies which have managed to do so (Brashares comes to mind in particular, Heather Leslie, Redy, others?) depict human and natural systems that so massively affect one another, it's no wonder we've done such a poor job at managing natural resources.  Here I use commercial fishing ecosystems of the US west coast and relate the dynamics of human wellbeing in the form of exposure to financial risk to characteristics of local ecology, market and management. In doing so I also highlight characteristics and dynamics that are most (management) and least (geography) promising for policy to modify.
+
+# Background
+
+Previous work has identified that diversification across fisheries is an indicator of how much financial risk to which a vessel is exposed. The more diversified a vessel is, the lower income variability they have, on average. Work in Alaska has suggested that local geography might be a contributing factor [@Sethi:2014jh] or limited entry management [@Kasperski:2013gb], but to my knowledge no work has empirically examined what predicts a vessel’s diversification across fisheries.
+
+Fisheries diversity could be a product of a number of social and/or ecological drivers. Limited entry management is plausible, but so are ecological drivers (are species abundant enough to be fished?, habitat availability - distance to rockfish habitat or deep water) and/or economic constraints (market availability - is there a place to sell the fish?), and capital (can you afford to buy the additional gear?).
+
+An important detail is that diversity is important if we assume the fisheries yields are highly variable and asynchronous. The variability and asynchrony is often due to the ecology of the species (i.e. tuna and whiting don't show up on the US west coast really until the summer). Or the variability can be management (changing catch limits year to year, salmon?). Regardless, there may be species with low-variability life-histories and management. Targeting these species may negate the need for diversification, and allow vessels to specialize. Along these lines, there may be pairs or triplets of fisheries with complementary variation that still reduces revenue variability at a yearly resolution. Thus before we devote attention to the prediction of diversification, we seek to understand whether diversification's effect on income volatility depends on the fisheries in which a vessel participates. 
+
+# Data Manipulations
+
+I define "vessel strategy" to be the composition of fisheries from which the vessel gets revenue. 100% of revenue from dungeness crab pots is an example of one strategy, 70% from tuna trolling and 30% from crab is another. This definition has a yearly resolution, thus a vessel could participate in a different strategy each year. For now, if a vessel participated in more than one strategy across five years, I classify it as `multi`. 
+```{r load_data, echo = FALSE, warning = FALSE, message= FALSE}
+yrdf <- readRDS("/Users/efuller/1/CNH/processedData/catch/1_cleaningData/yrdf.RDS")
+tickets <- readRDS("/Users/efuller/1/CNH/processedData/catch/fisheries_participation_profiles/tickets_plus.RDS")
+```
+
+The number of vessels using each strategy varies. The Dungeness-crabbing strategy is the largest with hundreds of vessels. At the other end of the spectrum a number of strategies are quite rare, with 1-4 vessels engaged. These strategies are often made up of marginal fisheries characterized by catches of species like  "unspecified octopus" or "unspecified mollusks". Further, confidentially agreeements require us to present results which aggregate data from no fewer than 3 vessels. Thus we do not consider any strategy that has fewer than 3 vessels. Finally, in order to examine inter-annual revenue variablity I need, at minimum, two years of landings data. To be conservative, I only examine vessels for which I have a full five years worth of data. 
+```{r filter_good_data, echo=FALSE, warning=FALSE, message=FALSE}
+# look for vessels that have at least 5 years of data
+vessel_years <- table(yrdf[[1]]$drvid)
+vessel_keep <- names(vessel_years)[which(vessel_years == 5)]
+yrdf[[1]] <- subset(yrdf[[1]], drvid %in% vessel_keep)
+yrdf[[2]] <- subset(yrdf[[2]], drvid %in% vessel_keep)
+tickets <- subset(tickets, drvid %in% vessel_keep)
+
+# small strats 
+count_strats <- table(yrdf[[2]]$single_cluster)
+small_strats <- names(count_strats)[which(count_strats <3)]
+drop_vessels <- yrdf[[2]]$drvid[which(yrdf[[2]]$single_cluster %in% small_strats)]
+
+yrdf[[1]] <- subset(yrdf[[1]], !(drvid %in% drop_vessels))
+yrdf[[2]] <- subset(yrdf[[2]], !(drvid %in% drop_vessels))
+tickets <- subset(tickets, !(drvid %in% drop_vessels))
+```
+After filtering for vessels with a minimum of $10,000 median revenues across 5 years of landings and removing vessels which participate in rare strategies I'm left with `r length(unique(yrdf[[2]]$drvid))` vessels and `r length(unique(tickets$trip_id))` trips and I find `r length(unique(tickets$metier))` metiers and `r length(unique(tickets$cluster))` strategies.[^10] 
+
+[^10]: See appendix for awfully formatted definition tables. Will fix in the future.
+
+Strategies are as follows:
+
+Strategy  Main fishery            Most often diversifies with...  
+--------- ----------------------- ------------------------------  
+8         dts trawl               pink shrimp                    
+9         hook and line brown,    ling cod  
+          black & yellow rockfish  
+multi     strategy not constant   NA
+          across years
+3         salmon troll            albacore troll 
+4         sablefish longline      salmon troll 
+5         spiny rock lobster pots other pot fisheries 
+6         squid seine             other forage seines
+7         red urchin divers       NA 
+15        swordfish gillnet       white seabass gillnet
+16        ridgeback prawn trawl   CA halibut in shrimp nets 
+17        spotted prawn pot       NA
+2         albacore troll          salmon troll
+21        bait shrimp trawl       CA halibut trawl  
+1         dungeness crab pots     salmon, albacore troll, 
+                                  sablefish longline
+10        sablefish pots          sablefish longline
+11        black rockfish          lingcod hook & line, 
+          hook & line             vermillion hook & line
+12        CA halibut hook & line  white seabass hook and line, 
+                                  vermillion hook and line
+13        whiting midwater trawl  salmon midwater trawl (bycatch?), 
+                                  dts trawl, spiny dogfish midwater 
+                                  (bycatch?)
+
+# Results
+
+## Strategy and diversity
+
+Below I plot the distributions of income variablity (coefficient of variation of annual revenue) by fishing strategy. If a vessel did not participate in the same strategy across all 5 years, they are thrown in the "multi" category. Each strategy is colored according to the log number of vessels which participated in each strategy. Black has the most vessels participating (strategy `1` has 637 vessels, `multi` has 335 vessels, while strategy `21` has 3 vessels, for example). Based on this, it looks like some strategies do better than others. 
+
+```{r boxplot_strat, echo=FALSE, warning=FALSE, message=FALSE}
+# reorder by median cov variation
+bymedian <- with(yrdf[[2]], reorder(x=single_cluster, cv_adj_revenue, median))
+
+# color by number of vessels in each
+library(RColorBrewer)
+# count strategies
+count_strats <- round(log(table(yrdf[[2]]$single_cluster)))
+paint <- colorRampPalette(brewer.pal(n = 9, "Greys"))(max(count_strats))
+paint_df <- as.data.frame(count_strats)
+paint_df$paint <- paint[paint_df[,2]]
+rownames(paint_df) <- paint_df$Var1
+paint_df <- paint_df[levels(bymedian),]
+
+par(oma=rep(0,4), mai=c(.75,.75,0.1,.1), cex = .7)
+boxplot(cv_adj_revenue ~ bymedian, yrdf[[2]], col = paint_df$paint, ylab="", xlab="", bor=F, border = "#4d4d4d")
+
+mtext(text = "fishing strategy", side = 1, line = 2.5, cex=.9)
+mtext(text = "coefficient of variation (annual income)", side = 2, line = 2.5, cex=.9)
+abline(h=1, lwd=3,lty=2, col="grey10")
+
+yrdf[[2]]$single_cluster <- as.factor(yrdf[[2]]$single_cluster)
+```
+
+To test for whether the effect of diversity simply reflects a particular strategy (participating in a particular subset of fisheries together), I look for the effect of diversity after controlling for vessel strategy by regressing income volatility against vessel strategy ID and diversity.
+
+```{r lm}
+lm1 <- lm(cv_adj_revenue ~ mean_simpson + single_cluster, data = yrdf[[2]])
+```
+
+```{r summary_lm, echo=FALSE, warning=FALSE, message=FALSE}
+library(pander)
+panderOptions("table.split.table", Inf)
+panderOptions("table.alignment.rownames","left")
+panderOptions("table.alignment.default", "left")
+panderOptions("round", 3)
+pander(summary(lm1))
+```
+
+I find that there is support for at least some of the strategies having a significantly different intercept than then strategy 1 (which is used as a baseline). Almost all strategy coefficients are significantly negative, which means they are associated with a decrease in mean variability relative to strategy 1 (except for `multi`). Because diversity is still significant, this still means that regardless of what fishing strategy a vessel chooses, the more diverse within that strategy the vessel is, the lower the inter-annual variation in revenue. To visualize this, I plot the predicted average variability in revenue against diversity for each strategy.
+
+```{r pred_strat, echo=FALSE,warning=FALSE,message=FALSE}
+pred_data <- data.frame(cv.revenue = lm1$fitted.values, 
+                        mean.diversity = yrdf[[2]]$mean_simpson, 
+                        strategy = factor(yrdf[[2]]$single_cluster), 
+                        state = factor(yrdf[[2]]$single_landing_state))
+strats <- unique(pred_data$strategy)
+points <- 1:length(strats)
+# change from greys to coloring by state
+greys <- colors()[grep("grey",colors())][seq(from=5, to=100, by = 5)]
+paint <- brewer.pal(n = length(unique(pred_data$state)), name = "Dark2")
+par(oma=rep(0,4), mai=c(.75,.75,0.1,.1), cex = .7)
+
+for(i in 1:length(strats)){
+  df <- subset(pred_data, strategy == strats[i])
+  df <- df[order(df$mean.diversity, decreasing = T),]
+  if(i == 1){
+    with(df, plot(mean.diversity, cv.revenue, ylim =c(0,.65), type = 'o', 
+                  xlim = c(0,.7), pch = points[i], cex = .85, col = paint[state], 
+                  ylab = "coefficient of variation (annual income)",
+                  xlab = "mean annual fisheries diversity (simpson)"))
+    }else{
+      with(df, points(mean.diversity, cv.revenue, ylim =c(0,.7), col = paint[state],
+                  xlim = c(0,.7), pch = points[i], cex = .85, type = 'o'))
+    }
+}
+legend(x = 0, y = .1, legend = strats, pch = points, horiz = FALSE, ncol = 5, col = greys, bty='n')
+legend(x = .6, y = .65, legend = unique(pred_data$state), col = paint, pch = 19, bty ='n')
+```
+
+It's also possible that the slopes on these relationships might differ for different strateiges. To test this, I plot the interaction between strategy and diversity covariates.
+
+````{r, echo=FALSE,warning=FALSE, message=FALSE, fig.height=6}
+library(lattice)
+ xyplot(cv_adj_revenue ~ mean_simpson | single_cluster, data = yrdf[[2]], 
+        groups = single_landing_state, pch = 3, 
+        auto.key=list(space="top", columns=4, title="State Landed", 
+                      cex.title=1, points = TRUE, lwd = 2),
+       panel = function(x, y, ...){
+         panel.xyplot(x, y, ...)
+         panel.lmline(x, y, ...)
+         }
+ )
+```
+
+Looking at the plots a few things are apparent: 
+
++ some strategies have very few vessels (those account mostly for the really steep, positive slopes)
++ crab (strategy 1) seems to have the characteristic quandratic relationship with diversity, less obvious in other strategies
++ even strategies with large numbers of vessels have relatively few vessels at the highest levels of diversity (i.e. strategy 2, 3, 4)
+
+Just retaining the major fisheries (i.e. dropping any strategy that has fewer than 20 boats: strategies 17, 21, 10, 12, 13, 16, 15, and 11) I look for significant interactions between diversity and strategy. 
+
+```{r, echo=FALSE,warning=FALSE, message=FALSE}
+sub_data = subset(yrdf[[2]], single_cluster %in% names(table(yrdf[[2]]$single_cluster))[which(table(yrdf[[2]]$single_cluster)>20)])
+```
+```{r}
+lm2 <- lm(cv_adj_revenue ~ mean_simpson + single_cluster +
+            mean_simpson:single_cluster, data = sub_data)
+```
+```{recho=FALSE,warning=FALSE,message=FALSE}
+pander(summary(lm2))
+```
+
+Only `strategy 9:diversity` and `multi strategy: diversity` are significant. Of these two, the former is positive (the slope on the relationship is positive) and the later is negative. The interaction term between `multi strategy: diversity` also removes the significance of the `multi strategy` main effect. 
+
+This leads to a couple of new questions:
+
+1. For strategies that have a negative relationship between diversity and revenue variability: what predicts diversity of a vessel? Why wouldn't everyone move down the diversity slide if they could?
+3. Why aren't everyone doing low-variability strategies? What predicts low-variability strategy participation?
+
+## Diversity and market variables
+I hypothesize that how diverse a vessel's fisheries participation (hereafter "diversity") is ultimately determined by ecological, market or management factors. Here I examine how diversity relates to market factors with the central intuition being that commercial fishermen can't participate in fisheries if they don't have a market in which to sell. We use two proxies to measure market availability
+
+1. distance of ports to major markets (defined as cities > 100,000 people as of the 2010 census)
+2. yearly average number of first recievers at a port. 
+
+```{r dist_proc, echo=FALSE, warning=FALSE, message = FALSE}
+par(oma=rep(0,4), mai=c(.75,.75,0.1,.1), cex = .7)
+all_ports <- read.csv("/Users/efuller/1/CNH/processedData/spatial/ports/all_ports.csv")
+with(all_ports, plot(km.big.city, num_procs, pch = 19, xlab = "",ylab = "", bty = "n", col = 'grey40'))
+mtext(text = "km to closet city with > 100,000 people", side = 1, cex = .8, line = 2.75)
+mtext(text = "average number of first receivers", side = 2, cex = .8, line = 3)
+
+# add text for top three ports
+top_three <- head(all_ports[order(all_ports$num_procs,decreasing = T),],3)
+with(top_three, text(x = km.big.city, y = num_procs, labels = Name, col = "black", pos = c(4,1,3)))
+```
+
+These two characteristics are negatively related: the further away from a major city, the fewer first receivers. I do see that there are many ports that are essentially in big cities (i.e. distances to big cities are $\approx$ 0) that have very few first receivers. The other thing to note is the exceptionally high number of first recievers in some places, particularly Princeton/Half Moon Bay. This seems too high, so I'd like to ask PacFin how to explain those numbers. 
+
+These two characteristics are at port level but our landings data are at the vessel level, so I take the revenue weighted mean of each port-characteristic.
+
+### First receivers
+First recievers are entities that are licensed to fill out a landing ticket. Often these are processors, although sometimes they're individuals who turn over the catch to processors. Rarely (according to our informal interviews) are they fishermen. Thus the number of first recievers is a somewhat optimistic measure of the number of processors (as multiple first recievers may deliver to a single processor). Which that in mind, we hypothesize that the number of first recievers might reduce the interannual income variability experienced by vessels. We hypothesize that having more first recievers at a port might indicate robust demand for catch, and thus result in willingness to pay good prices.[^2]
+
+[^2]: I suppose I should just test this directly with the average price per pound (controlling for species) as predicted by the number of first recievers.
+
+Below I seperate out vessels which land at only a single port across all 5 years and those that land at multiple ports. It's possible that multi-port vessels are not captured by any particular port characteristic, as these vessels are able to mix and match to find an optimal fit of ports for their catch. I haven't figured out what to do about this yet, but I'm plotting them seperately to figure out if the pattern is different. Below the widths of the boxplots are proportional to the relative number of observations within each. 
+
+```{r sep_procs,echo=FALSE,warning=FALSE, message=FALSE,fig.height=3}
+all_ports <- read.csv("/Users/efuller/1/CNH/processedData/spatial/ports/all_ports.csv")
+par(oma=rep(0,4), mai=c(.75,.75,0.1,.1), cex = .6) 
+
+# find single port vessels
+one_ports <- subset(yrdf[[2]], single_port!="multi")
+# cut into bins - looks like natural binning going on anyway
+one_ports$bin.proc <- cut(one_ports$w.num_procs, breaks = seq(0,80,10))
+
+# find multi ports
+multi_ports <- subset(yrdf[[2]], single_port=="multi")
+# cut into bins - looks like natural binning going on anyway
+multi_ports$bin.proc <- cut(multi_ports$w.num_procs, breaks = seq(0,80,10))
+
+# plot
+par(mfrow=c(1,2))
+par(oma=c(4,4,.2,.2), mai=rep(0,4), cex = .65)
+with(one_ports, boxplot(cv_adj_revenue~bin.proc,  col = "grey50", outline = T, 
+                        ylim = c(0,1.4) ,varwidth=T))
+text(x = 4.5, y = 1.35, label = paste0("single port vessels\nn= ",nrow(one_ports)), cex = 1 )
+
+with(multi_ports, boxplot(cv_adj_revenue~bin.proc, col = "grey50", yaxt="n", 
+                          outline = T, ylim = c(0,1.4), varwidth = TRUE))
+text(x = 4.5, y = 1.35, label = paste0("multi port vessels\nn= ",nrow(multi_ports)), cex = 1 )
+
+mtext(side = 1, text = "average annual number of first receivers", outer = TRUE, 
+      line = 2.5, cex = .7)
+mtext(side = 2, text = "coefficient variation (annual income)", line = 2.5, 
+      outer = TRUE, cex = .7)
+```
+
+```{r togeth_procs, echo=FALSE, warning=FALSE, message=FALSE,fig.height=3}
+# together
+par(mai = c(.7,.7,.1,.1), cex = .6)
+with(rbind(one_ports, multi_ports), boxplot(cv_adj_revenue~bin.proc, col = "grey50", varwidth = TRUE))
+text(x = 4.5, y = 1.4, label = paste0("all vessels\nn= ",nrow(rbind(one_ports, multi_ports))), cex = 1)
+mtext(text = "number of first recievers", side = 1, line = 2.5, cex = .7)
+mtext(text = "coefficient variation (interannual income)", side = 2, line = 2.5, cex = .7)
+```
+
+The first thing to note is that we do see a different pattern between vessels that land at multiple ports as compared to vessels that land at a single port. This might be due to small sample size issues with single-port vessels. 
+
+For the vessels than land at a single port, there's not a terribly strong relationship between variability in revenue and number of first recievers, although there may be a number of confounding variables. Port identity is probably a worthwhile thing to think about here, as the set of trips that make up the bin with > 70 first recievers are all from a single port. 
+
+For vessels that land at multiple ports there appears to be a slight negative relationship between the revenue weighted average number of first receivers and average interannual income variation although sample sizes drop off at as we move towards ports with > 60 first receivers. 
+
+While this relationship between number of processors and revenue variability doesn't look terribly strong, there is a relationship between strategy and diversity that might mediate this two covariates. For example, certain ports may have traits unobservable with our current variables that make it more likely that certain high variability strategies are found in higher proportions in one port versus another. So the real question is that if I control for variability inherent in the strategy, whether more processors at the port at which you land has a significant relationship with income variability. 
+
+```{r}
+lm_procs <- lm(cv_adj_revenue ~ w.num_procs + factor(single_cluster), data = yrdf[[2]])
+```
+
+```{r, echo=FALSE,warning=FALSE, message=FALSE}
+pander(summary(lm_procs))
+```
+
+This model only drops strategy 17 has having a significant negative relationship with income variability and there's a significant negative relationship with number of first receivers and income variability.  
+
+I'm not totally sure whether I should include diversity as a covariate here, since I think that the diversity of a vessel is, in part, due to the number of processors available. I include diversity as a covariate below and find that it reduces the effect of the number of first receivers (as expected), but that the number of first receivers is still weakly significant. 
+
+```{r}
+lm_procs_div <- lm(cv_adj_revenue ~ mean_simpson + w.num_procs + 
+                     single_cluster, data = yrdf[[2]])
+```
+
+```{r, echo=FALSE,warning=FALSE, message=FALSE}
+pander(summary(lm_procs_div))
+```
+
+For both the effect of number of processors is pretty weak relative to the effect of diversity, despite the fact that it's significant. 
+
+### Distance to big cities
+There also might be a relationship between income variability and distance to big cities. Similar to the plots above for number of processors, I plot the distance to big city for each vessel seperately for vessels that land at a single port versus those that land at multiple ports. 
+
+```{r sep_dist,echo=FALSE,warning=FALSE, message=FALSE,fig.height=3}
+all_ports <- read.csv("/Users/efuller/1/CNH/processedData/spatial/ports/all_ports.csv")
+par(oma=rep(0,4), mai=c(.75,.75,0.1,.1), cex = .6) 
+
+# cut into bins - looks like natural binning going on anyway
+one_ports$bin.dist <- cut(one_ports$w.dist_city, breaks = seq(0,300,50))
+
+# cut into bins - looks like natural binning going on anyway
+multi_ports$bin.dist <- cut(multi_ports$w.dist_city, breaks =  seq(0,300,50))
+
+# plot
+par(mfrow=c(1,2))
+par(oma=c(4,4,.2,.2), mai=rep(0,4), cex = .65)
+with(one_ports, boxplot(cv_adj_revenue~bin.dist,  col = "grey50", outline = T, 
+                        ylim = c(0,1.4) ,varwidth=T))
+text(x = 3.5, y = 1.35, label = paste0("single port vessels\nn= ",nrow(one_ports)), cex = 1 )
+
+with(multi_ports, boxplot(cv_adj_revenue~bin.dist, col = "grey50", yaxt="n", 
+                          outline = T, ylim = c(0,1.4), varwidth = TRUE))
+text(x = 3.5, y = 1.35, label = paste0("multi port vessels\nn= ",nrow(multi_ports)), cex = 1 )
+
+mtext(side = 1, text = "distance to closest large city (km)", outer = TRUE, 
+      line = 2.5, cex = .7)
+mtext(side = 2, text = "coefficient variation (annual income)", line = 2.5, 
+      outer = TRUE, cex = .7)
+```
+
+```{r togeth_dist, echo=FALSE, warning=FALSE, message=FALSE,fig.height=3}
+# together
+par(mai = c(.7,.7,.1,.1), cex = .6)
+with(rbind(one_ports, multi_ports), boxplot(cv_adj_revenue~bin.dist, col = "grey50", varwidth = TRUE))
+text(x = 3.5, y = 1.4, label = paste0("all vessels\nn= ",nrow(rbind(one_ports, multi_ports))), cex = 1)
+mtext(text = "distance to closest large city (km)", side = 1, line = 2.5, cex = .7)
+mtext(text = "coefficient variation (interannual income)", side = 2, line = 2.5, cex = .7)
+```
+
+Here both vessels that land at a single port or many ports have a similar relationship: the farther away a vessel lands from a big city, the more variabile the income. It's a slight relationship though. Adding this in to the fixed effect model that accounts for strategy I find 
+
+```{r}
+lm_dist <- lm(cv_adj_revenue ~ w.dist_city + factor(single_cluster), data = yrdf[[2]])
+```
+
+```{r, echo=FALSE,warning=FALSE, message=FALSE}
+pander(summary(lm_dist))
+```
+
+Here I notice that again the relationship between distance and income variability is significant and negative, it's weak. So weak in fact that when I round to 3 digits, it's effectively zero. It does knock out some strategies from being significant (strategy 2, 4, 5, 6, 7), which suggests to me that the distance from big cities might predict what strategy you participate in. This makes some sense as a mechanism: some strategies are not viable because markets are too far away and thus inaccessible. But it also makes some strategies significant that were previously not (strategy 3). Not sure how to interpret that. 
+
+Addding diversity in as an additional covariate
+
+```{r}
+lm_dist_div <- lm(cv_adj_revenue ~ w.dist_city + mean_simpson +  factor(single_cluster), data = yrdf[[2]])
+```
+
+```{r, echo=FALSE,warning=FALSE, message=FALSE}
+pander(summary(lm_dist_div))
+```
+
+The effect of distance gets smaller (again we see zero when I round) but stays extremely significant, diversity is still has a strongly negative relationship with income variability. This brings back strategy 2, 4, 5 and 6 back to being significantly negatively related to income variability, and erases strategy 3's significant relationship to income variability. Strategy 9 is now no longer significant. 
+
+## Diversity, Strategy and Ecology
+Besides market variables, the ecology of a port might limit the ability of vessels to participate in certain fisheries. In our informal interviews, Emily and I heard from observers that habitat could be limiting: distance to rocky habitat being too great for small, open access boats to travel. We also hypothesize that the sock status may strongly influence which fisheries one participates in. We heard many complaints about the small allocations of California Salmon, which were not mirrored farther north. Stock status is a largely regional covariate, while habitat close to port is a much more local one. 
+
+### Rocky habitat near port
+I could either do rocky habitat within a certain radius or distance to nearest rocky habitat. I think the downside of doing distance to nearest rocky habitat is that I would have to project the entire west coast. Alternatively if habitat is patchy, it could be really close but without an _area within a certain radius_ type measure, it would hard to get a feel for whether there was "enough". 
+
+# Next steps
+I see the question that this paper asks as 
+
+> _Do market/ecology/management covariates predict fisheries diversity/strategy participation at a vessel level?_ 
+
+market availability measured by 
+
+- distance between port of landing to major metropolitan area (LA, Portland, SF, etc.)
+- number of first receivers at port of landing
+
+ecological availability measured by
+
+- stock status of catch
+- habitat presence/absence within some radius of port
+
+limited entry
+
+- yes/no for each fishery whether it's limited entry
+
+These would each have different implications: 
+
++ if markets are important, number of processors might be a better metric than diversity to measure; 
++ if ecology is important then the importance of abundant fish to fishermen is reinforced, but if habitat measures are important can help to target where fishermen are likely to experience most and least amount of income variability. 
++ If limited entry is important, than Dan's original hypothesis is the right one, and managers should be aware of the consequences of limiting entry for vessels. 
+
+If nothing is significant, then we have no idea what predicts diversity, and I'm not sure. 
+
+Does this seem like the right direction to go? If so I guess I'm imagining a big regression with each of these things as vessel level/fishery level covariates. Which means I need to figure out two things
+
+1. What type of model to use? 
+2. How to make these measures into vessel-level covariates? Simplest approach is to restrict to vessels that land at only one port. Although does not deal with the fishery-level covariate adjustments (i.e. stock status of catch?). 
+
+Final thought: we've talked about doing a community-level analysis. That feels related, but not directly in line with what I've developed above. How to integrate?
+
+3. look at relationship between diversity and median income. I suspect there will be vessels that do really well so don't have to be diverse versus ones that are dealing with variability and marginal incomes. I think it would be desirable to only have to do one fishery, and people diversify because they have to (ala what we heard about everyone only diversifying in the 90s becuase fishing was getting tougher)
+
+
+# Appendix
+
+## Metier definitions
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(pander)
+panderOptions("table.split.table", Inf)
+panderOptions("table.style", "multiline")
+metiers <- read.csv("/Users/efuller/1/CNH/processedData/catch/3_exploreBuildwebs/ref_tables/metier_descrp.csv", stringsAsFactors = FALSE)
+pander(metiers)
+```
+
+## Strategy definitions
+```{r echo = FALSE, warning=FALSE, message=FALSE}
+strategies <- read.csv("/Users/efuller/1/CNH/processedData/catch/3_exploreBuildwebs/ref_tables/strategies.csv", stringsAsFactors = FALSE)
+pander(strategies)
+```
+# References

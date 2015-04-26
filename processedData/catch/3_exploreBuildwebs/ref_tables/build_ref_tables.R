@@ -27,7 +27,7 @@ characterize_metiers <- function(metier_choice, data = tickets){
   
   
   #   # count max species
-  #   barplot(log(sort(table(max_species$species), decreasing=T)), bor=F, las=2, cex.names=.75,ylab = "log number of trips", xlab="secies", col ="#f46d43")
+  #   barplot(log(sort(table(max_species$species), decreasing=T)), bor=F, las=2, cex.names=.75,ylab = "log number of trips", xlab="species", col ="#f46d43")
   
   # for each metier, what are the main ports?
   metier_trips <- subset(tickets, trip_id %in% catch_data$trip_id, select = c("trip_id", "grid","pcid", "year"))

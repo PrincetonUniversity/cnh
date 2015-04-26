@@ -1,0 +1,257 @@
+---
+title: 'Markets, ecology and risk: linking human well-being to ecosystems in a commercial
+  fishery system'
+author: "Emma Fuller, Jameal Samhouri, James Watson"
+date: "April 14, 2015"
+output:
+  pdf_document:
+    fig_caption: yes
+    keep_tex: yes
+    number_sections: yes
+  word_document: default
+bibliography: refs.bib
+---
+
+# Abstract
+Variability in returns is a chief concern of anyone making a livelihood from a natural system, be it farmers or fishermen. As predicted by porfolio theory, previous work has shown that diversification across commercial fisheries is negatively related to financial risk to which a vessel is exposed. Given the clear benefit of diversification across fisheries, we wonder why all vessels aren't highly diversified. Differences in diversity among vessels might be due to limited entry management, but it also might be due to ecological or economic variables that restrict access to certain species and/or markets. Here we develop an unsupervised way to sort trips into fisheries based on catch composition and gear and use fishing port level ecological and market variables to show that diversity of a vessel is related to both variables reflecting market accessibility and fish habitat. We discuss implications of these findings for management. 
+
+# Introduction
+As emphasis shifts to a "people and nature" framing of conservation, understanding the linked dynamics between ecosystems and the people who depend on the system becomes more important for both prediction and transparent tradeoffs between human well-being and ecological integrity. Here we link ecological, economic and human wellbeing measures using a commercial fishery system as an example. We demonstrate how such analyses can help clarify policy options and focus on characteristics of the system, ecological or economic that can improve human wellbeing while keeping ecological integrety in mind. 
+
+Previous work has identified that a fishing vessel's diversification across fisheries is an indicator of how much financial risk to which a vessel is exposed. The more diversified a vessel is, the lower income variability they have, on average. Work in Alaska has suggested that local geography might be a contributing factor [@Sethi:2014jh] or limited entry management [@Kasperski:2013gb], but to my knowledge no work has empirically examined what predicts a vessel’s diversification across fisheries.  Fisheries diversity could be a product of a number of social and/or ecological drivers. Limited entry management is plausible, but so are ecological drivers (are species present to be fished?) and/or economic constraints in the form of market availability (is there a place to sell the fish?). This is an important question because if geography is a general driver of low diversity and thus high revenue volatility, then there is little policy can do. However if limited entry management of fisheries is the major driver, then managers and policy-makers could have a big role in developing policy improve human wellbeing.
+
+An important detail is that diversity is important if we assume the fisheries yields are highly variable and asynchronous within and across years. Within year variability and asynchrony is often due to the ecology of the species (i.e. albacore tuna and pacific whiting arrive on the US west coast only in summer months) or management as is the case with seasonal fishery openings (i.e. Dungeness crab). Across year variability can be due to both management restrictions and recruitment failures (Chinook salmon has seen catches cut dramatically in some areas of California[^1]). Regardless, there may be species with low-variability life-histories and management. Targeting these species may negate the need for diversification, and allow vessels to specialize. Along these lines, there may be pairs or triplets of fisheries with complementary variation that still reduces revenue variability at a yearly resolution. Thus before we devote attention to the understanding of fisheries diversification, we seek to determine whether diversification's effect on income volatility depends on the fisheries in which a vessel participates.
+
+[^1]: From interviews, need to check
+
+We find that many strategies succeed at lowering variability, but diversity still has a significant negative effect on income variability, regardless of strategy used. In other words, in each strategy, the vessels which are most diverse have the lowest variability income. Given this result, we wonder why don't all vessels diversify given the reductions in income variability. We hypothesize that the ability to diversify may depend on the biogeographic locations of catch and market availability, along with ability to participate in open access fisheries. 
+
+# Methods
+
+## Data
+We use landing receipts from all commercial fisheries on the US west coast from 2009-2013 provided to us by PacFin. Environmental data layers come from the essential fish habitat (EFH) review. Data on population of coastal cities comes from the 2010 Census. Landing receipts include the following information for each trip: species caught, pounds, price per pound, date, port of landing, and vessel identifiers. We calculate revenues by multiplying the price per pound by the number of pounds reported and adjust revenue to 2009 levels to avoid inflation effects. Trips were classified as open access or limited entry using the Pacific Council's classification of groundfish trips and expert opinion (see Appendix).[^2]
+
+[^2]: Not complete yet, waiting for the expert opinion. Will eventually have a table with fishery and management classification and reference (Pacific Council designation, expert opinion - and if so, whom)
+
+## Metier (fisheries) definition
+Presently there exists no universal way to define a "fishery". In US West coast commercial landings, the Pacific Management Council has developed a set of sector based definitions for groundfish landings, but no equivalent exists for non-groundfish fisheries. In order to treat the dataset uniformly, we apply a metier analysis to this landing data. Previous metier analyses occur largely in Europe, although metier-like analyes have been performed in the Northeast US, classifying fishing data to define “operational fisheries” of New England [@Lucey:2013jy]. While promising as a way to classify fisheries for use in ecosystem-based management, these methods introduced spatial and temporal structure prior to defining fisheries. In our analysis such structure emerges from the data, and we are able to recover the commonly recognized major fisheries and their seasonality, along with more spatially and temporally restricted fisheries. These methods have the additional benefit of only requiring the catch composition of trips, making it possible to integrate data from both state and federal management databases which lack permitting data.
+
+A metier is defined as a gear-species target combination [@Deporte:2012kq]. We first define species targets and then assign these targets to gear to make the final metier designation. To find species target data we classify target species assemblages by first subsetting to all 2010 trips and searching for characteristic catch compositions. To find these assemblages we first split trips by gear type (using PacFin grgroups designation) and calcluate a pairwise dissimiliarity index for each trip within a gear/year subset using the Bray-Curtis dissimilarity index. This metric has the advantage of avoiding the double-0 problem common in species count data. The Bray-Curtis dissimilarity index is defined as
+
+$$BC_{ij} = \frac{2C_{ij}}{S_i + S_j}$$
+
+where $C_{ij}$ is the biomass of the lesser value for only those two species in common between both sites. Si and Sj are the total number of individuals counted in both trips. This index ranges between zero and one, with zero meaning the sites have the same composition and one meaning they share no species.
+
+We transform the disimilarity index to be a measure of similarity
+
+$$\text{Similarity} = 1-\mid BC \mid$$
+
+and build an undirected, weighted network in which nodes are trips, and edge widths are the similarity in species composition between trips. This allows a vessel to be represented in multiple nodes if it makes trips that vary substantially in catch composition. With this network we use the _infoMap_ algorithm to find communities (clusters or subgraphs) within the network (using the implementation in the `R` package `igraph`)[@Rosvall:2008fi; @Rosvall:2009ff].
+
+_infoMap_ is an information theoretic approach, which uses the probability flow of a random walker on a network as a proxy for the information flows in a real system. The objective of infoMap is to compress the description of the probability flow, and in doing so partitions the network into modules. _infoMap_ works by computing the fraction of time a node is visted by a random walker using a deterministically greedy search algorithm. Merges between modules that give the largest decrease in description length are made until further merging leads to increases of description length. Results are refined with a simulated annealing approach, starting at several different temperatures, with the run selected as the one that gives the shortest description of the network.
+
+We found that other commonly used clustering algorithms (i.e. k-means, hierarchical clustering) did poorly with this data. Many clustering algorithms do best when clusters are spherical in n-dimensional space, and/or require the number of clusters decided _a priori_. In this data we have fisheries participation may vary by several orders of magnitude (100s of trips to 100,000s of trips), and we wanted to avoid having to decide subjectively on the number of clusters.
+
+After dropping any modules that have fewer than five trips, we use a k-nearest-neighbor (knn) classifier to assign all other trips of each gear subset to those possible metiers. The nearest neighbor to each trip was found using the Bray-Curtis dissimilarity index (transformed into a similarity) and all analyses were performed using `R`.
+
+## Revenue diversity
+We measure revenue diversity (or portfolio diversification) with the Simpson’s diversity index [@Kasperski:2013gb; @Sethi:2014jh]. Simpson’s diversity index is calculated per vessel; i.e. have an index of $j = 1,\dots,N$ where  $N$ is the number of vessels. Thus $S_j$ is defined as
+$$ S_j = 1 - \sum^k_{i=1}p_i^2$$
+for $k$ fisheries with $p_i$ as the proportion of total gross revenue from fishery $i$. Here values of $0$ indicate no diversity (a single fishery), where values close to $1$ indicate high levels of diversity. We calculate the diversity indices each year a vessel is active and averaged across years. Diversity indices are calculated using the `vegan()` package in `R`. Vessels had to be active for at least two years in order to be included in this analysis.
+
+## Revenue variability
+Revenue variability is calculated as the coefficient of variation in annual revenues. For a single vessel $j$, the coefficient of variation ($CV$) is calculated as
+$$CV_j = \frac{\text{sd}(x)}{\text{mean}(x)}$$
+where $x$ is a vector of the annual revenues for vessel $j$.
+
+## Strategy definition
+I define "vessel strategy" to be the composition of fisheries from which the vessel gets revenue. 100% of revenue from dungeness crab pots is an example of one strategy, 70% from tuna trolling and 30% from crab is another. This definition has a yearly resolution, thus a vessel could participate in a different strategy each year. For now, if a vessel participated in more than one strategy across five years, I classify it as `multi`. 
+```{r load_data, echo = FALSE, warning = FALSE, message= FALSE}
+yrdf <- readRDS("/Users/efuller/1/CNH/processedData/catch/1_cleaningData/yrdf.RDS")
+tickets <- readRDS("/Users/efuller/1/CNH/processedData/catch/fisheries_participation_profiles/tickets_plus.RDS")
+```
+
+The number of vessels using each strategy varies. The Dungeness-crabbing strategy is the largest with hundreds of vessels. At the other end of the spectrum a number of strategies are quite rare, with 1-4 vessels engaged. These strategies are often made up of marginal fisheries characterized by catches of species like  "unspecified octopus" or "unspecified mollusks". Further, confidentially agreeements require us to present results which aggregate data from no fewer than 3 vessels. Thus we do not consider any strategy that has fewer than 3 vessels. Finally, in order to examine inter-annual revenue variablity I need, at minimum, two years of landings data. To be conservative, I only examine vessels for which I have a full five years worth of data. 
+```{r filter_good_data, echo=FALSE, warning=FALSE, message=FALSE}
+# look for vessels that have at least 5 years of data
+vessel_years <- table(yrdf[[1]]$drvid)
+vessel_keep <- names(vessel_years)[which(vessel_years == 5)]
+yrdf[[1]] <- subset(yrdf[[1]], drvid %in% vessel_keep)
+yrdf[[2]] <- subset(yrdf[[2]], drvid %in% vessel_keep)
+tickets <- subset(tickets, drvid %in% vessel_keep)
+
+# small strats 
+count_strats <- table(yrdf[[2]]$single_cluster)
+small_strats <- names(count_strats)[which(count_strats <3)]
+drop_vessels <- yrdf[[2]]$drvid[which(yrdf[[2]]$single_cluster %in% small_strats)]
+
+yrdf[[1]] <- subset(yrdf[[1]], !(drvid %in% drop_vessels))
+yrdf[[2]] <- subset(yrdf[[2]], !(drvid %in% drop_vessels))
+tickets <- subset(tickets, !(drvid %in% drop_vessels))
+```
+After filtering for vessels with a minimum of $10,000 median revenues across 5 years of landings and removing vessels which participate in rare strategies I'm left with `r length(unique(yrdf[[2]]$drvid))` vessels and `r length(unique(tickets$trip_id))` trips and I find `r length(unique(tickets$metier))` metiers and `r length(unique(tickets$cluster))` strategies.
+
+## Port level variables: markets and ecology
+Coming soon. 
+
+## Statistical models
+I square-root transform the revenue variability to achieve a normal distribution and use a linear regression to examine to quantify the relationship between revenue variability and mean annual revenue diversity. For models in which revenue diversity is the dependent variable I use general additive models (gams) with a quasi-biomodal logit link function.[^4] This is because the revenue diversity is bounded between zero and one. 
+
+[^4]: This was a guess based on what the internet told me. I was thinking we wanted a distribution bounded between 0 and 1 (as the Simpson's index is) and that the error distribution was binomial, since the error isn't constant and increases as a function of the mean between zero and one. I should note that the gam model estimates are similar in p-value to linear models and slopes look almost identical. 
+
+# Results
+
+## Strategy and diversity
+We replicate earlier findings that diversity of fisheries reduces income variation (Figure 1). We find that there is support for at least a few of the strategies to have a significantly different intercept than then strategy 1 (which is used as a baseline). Almost all strategy coefficients are significantly negative, which means they are associated with a decrease in mean variability relative to strategy 1 (except for `multi`). Because diversity remains significant, this means that regardless of what fishing strategy a vessel chooses, the more diverse within that strategy the vessel is, the lower the inter-annual variation in revenue (Tables 1 and 2). Including strategy identity significantly improves the model (AIC of original regression: $-218.9718$, AIC of strategy regression: $-425.6456$). We also investigate whether diversity operates in a similar way across for all strategies by testing whether interactions would improve this model. While there is support for interactions between diversity and strategy being important we find that it does not lower the AIC score (AIC of interaction model: $-415.9594$).
+
+For strategies that have a negative relationship between diversity and revenue variability we are left with the question of what predicts diversity of a vessel. Why wouldn't all vessels increase fisheries diversity slide? We switch our focus to evaluating the predictors of vessel diversity. 
+
+## Influence of markets, ecology and management on vessel diversity
+
+We first test whether economic covariates (distance to large cities or number of first receivers) predicts vessel diversity. We find that the number of first receivers is significantly postively related to the fisheries diversity of vessels, i.e. the more first receivers a port has at which a vessel lands, the more diverse those vessels tend to be (figure 2). We do not find any support for the distance from large cities as related to vessel diversity (figure 3).
+
+Macroecological characteristics of where a vessel fishes (proxied by the location of a port where the vessel lands) might also affect fisheries diversity. We test whether diversity of habitat types, absolute amount of rocky habitat or distance to deep water predicts fisheries diversity. I find that the diversity of habitat types (rocky, mixed, soft) is strongly and positively related to mean annual fisheries diversity (figure 4). The percentage of that habitat which is classified by the EFH as "hard substrate" is also postively and signficiantly related to fisheries diversity (figure 5). We also find that distance to upper and lower shelf are negatively and signfiicantly related to fisheries diversity, i.e. the further away from deep water a vessel tends to land, the less diverse the vessel is (figures 6 and 7).
+
+Finally we relate the presence of open access (OA) and limited entry (LE) fisheries to vessel diversity. Specifically, we hypothesize that the proportion of trips which are landed as open access is a proxy for measuring unobservable port characteristics, namely that the larger the percentage of total trips which OA makes up, the more viable those fisheries are. We find that as the percentage of OA trips increases vessels are ____ more diverse.[^3]
+
+[^3]: Haven't finished classifying these fisheries yet
+
+# Discussion
+Coming soon
+
+# further questions and notes
+
++ Which strategies/fisheries are the "best off" (highest revenues, lowest variability) using? The worst?
++ How to relate to management: open access probably matters most for vessels that can't afford to diversify into capital intensive fisheries (i.e. crab, tuna or salmon). Would expect poorer boats in open access to benefit more than richer boats 
++ Could look through strategies: i.e. `TWL_1` strategy as compared to `TLS_1` `HKL_1`, `HKL_3` type strategies. Would expect `HKL_3` to need acess to markets and habitat, not as important for `TWL_1`. 
+
+# Appendix
+Here I include figures and model outputs. 
+
+```{r fig1, echo=FALSE, warning=FALSE, message=FALSE, fig.cap="Fisheries diversity is measured by the average of the annual Simpsons index of diversity calculated using a vessel's yearly revenues from each fishery. Income variability is measured by the coefficient of variation across annual total revenues. The blue line is the linear regression of `income variability ~ fisheries diversity` which has a significant slope (p = 0)"}
+par(mai = c(.8, .8, .1, .2), cex = .7)
+plot(yrdf[[2]]$mean_simpson, sqrt(yrdf[[2]]$cv_adj_revenue), bty = "n", xlab = "",ylab="", pch = 19)
+lm0 <- lm(sqrt(cv_adj_revenue) ~ mean_simpson, data = yrdf[[2]])
+abline(lm0, lwd = 4, col = "#268bd2")
+mtext(side = 1, "Fishery diversity", outer = FALSE, line = 2.5)
+mtext(side = 2, "Income variability", outer = FALSE, line = 2.5)
+```
+
+```{r strat, echo=FALSE, message=FALSE, warning=FALSE}
+lm1 <- lm(sqrt(cv_adj_revenue) ~ mean_simpson + single_cluster, data = yrdf[[2]])
+library(pander)
+panderOptions("table.split.table", Inf)
+panderOptions("table.alignment.rownames","left")
+panderOptions("table.alignment.default", "left")
+panderOptions("round", 3)
+pander(lm1)
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+sub_data = subset(yrdf[[2]], single_cluster %in% names(table(yrdf[[2]]$single_cluster))[which(table(yrdf[[2]]$single_cluster)>20)])
+
+aov1 <- aov(cv_adj_revenue ~ mean_simpson*single_cluster, data = sub_data)
+pander(summary(aov1))
+```
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE,fig.cap="Fisheries diversity is measured by the average of the annual Simpsons index of diversity calculated using a vessel's yearly revenues from each fishery. Income variability is measured by the coefficient of variation across annual total revenues. The colored lines are the predicted values for each strategy for the fixed effects model which uses strategy identity."}
+par(mai = c(.8, .8, .1, .2), cex = .7)
+plot(yrdf[[2]]$mean_simpson, sqrt(yrdf[[2]]$cv_adj_revenue), col = "darkgrey", bty = "n", xlab = "",ylab="", pch = 19)
+library(RColorBrewer)
+strats <- unique(yrdf[[2]]$single_cluster)
+paint <- colorRampPalette(brewer.pal(8, "Dark2"))(length(strats))
+for(i in 1:length(strats)){
+  pred.data <- data.frame(preds = lm1$fitted.values[yrdf[[2]]$single_cluster==strats[i]], ind = yrdf[[2]]$mean_simpson[which(yrdf[[2]]$single_cluster==strats[i])], actual = sqrt(yrdf[[2]]$cv_adj_revenue[which(yrdf[[2]]$single_cluster==strats[i])]))
+  pred.data <- pred.data[order(pred.data$ind, decreasing = FALSE),]
+  lines(pred.data$ind, pred.data$preds, col = paint[i],lwd=3)
+  #points(pred.data$ind, pred.data$actual, col = paint[i])
+}
+mtext(side = 1, "Fishery diversity", outer = FALSE, line = 2.5)
+mtext(side = 2, "Income variability", outer = FALSE, line = 2.5)
+
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.cap="Number of first receivers is measured as the mean yearly number of first receivers at the port level. Each vessel is assigned a score based on a revenue-weighted average based on landings within a year. Fishery diversity is defined as mean annual Simpsons index of fisheries revenue. The teal line on the left is the gam model fit of of `fisheries diversity ~ first receivers` (p.value $= 9.666e-11$) plotted over the raw data. The plot on the right is a boxplot version of the data plotted on the left."}
+
+library(mgcv)
+lm_procs_gam <- gam(mean_simpson ~ w.num_procs, family = quasibinomial(link="logit"), data = yrdf[[2]])
+
+par(oma=c(3, 3, .1,.1), mai = c(0, 0, 0, 0), cex = .7, mfrow=c(1,2))
+plot(yrdf[[2]]$w.num_procs, yrdf[[2]]$mean_simpson, pch = 19,  xlab="",ylab="")
+points(yrdf[[2]]$w.num_procs, fitted(lm_procs_gam), pch = 19, col = "#2aa198")
+mtext(side = 2, "Fishery diversity", outer = FALSE, line = 2)
+proc_bin <- cut(yrdf[[2]]$w.num_procs,seq(0,80,10))
+boxplot(yrdf[[2]]$mean_simpson ~ proc_bin, col = "#2aa198",border = "#2A7E98", fill = TRUE, pch =19,yaxt="n")
+mtext(side = 1, "Revenue weighted mean number of first receivers", outer = TRUE, line = 2)
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.cap="Minimum distance to a big city is measured at the port level as the minimum distance to a city with a population $>100000$ according to the 2010 census. Each vessel is assigned a score based on a revenue-weighted average based on landings within a year. Fishery diversity is defined as mean annual Simpsons index of fisheries revenue. The pink line on the left is the gam model fit of `fisheries diversity ~ first receivers`, (p.value $= 0.2353$). The plot on the right is a boxplot version of the data plotted on the left."}
+
+gam_dist <- gam(mean_simpson ~ w.dist_city, family = quasibinomial(link="logit"), data = yrdf[[2]])
+
+par(oma=c(3, 3, .1,.1), mai = c(0, 0, 0, 0), cex = .7, mfrow=c(1,2))
+plot(yrdf[[2]]$w.dist_city, yrdf[[2]]$mean_simpson, pch = 19, xlab="",ylab="")
+points(yrdf[[2]]$w.dist_city[-which(is.na(yrdf[[2]]$w.dist_city))], fitted(gam_dist), pch = 19, col = "#d33682")
+mtext(side = 2, "Fishery diversity", outer = FALSE, line = 2)
+city_bin <- cut(yrdf[[2]]$w.dist_city,seq(0,350,70))
+boxplot(yrdf[[2]]$mean_simpson ~ city_bin, col = "#d33682",border = "#953682", fill = TRUE, pch =19,yaxt="n")
+mtext(side = 1, "Revenue weighted mean number of first receivers", outer = TRUE, line = 2)
+```
+
+```{r, echo=FALSE, warning=FALSE, message = FALSE, fig.cap = "Habitat diversity is measured as the Simpon's index of area of each of three possible types of habitat: soft, mixed and hard bottom substrate. Each vessel is assigned a score based on a revenue-weighted average based on landings within a year, averaged across years. Fishery diversity is defined as mean annual Simpsons index of fisheries revenue. The green line on the left is the gam model fit of `fisheries diversity ~ habitat diversity`, (p.value $= 4.368e-12$). The plot on the right is a boxplot version of the data plotted on the left."}
+par(oma=c(3, 3, .1,.1), mai = c(0, 0, 0, 0), cex = .7, mfrow=c(1,2))
+gam_habDiv <- gam(mean_simpson ~ w.habitat.simp.div, family = quasibinomial(link="logit"), data = yrdf[[2]])
+
+plot(yrdf[[2]]$w.habitat.simp.div, yrdf[[2]]$mean_simpson, pch = 19, xlab = "",ylab="")
+points(yrdf[[2]]$w.habitat.simp.div[-which(is.na(yrdf[[2]]$w.habitat.simp.div))], fitted(gam_habDiv), pch = 19, col = "#859900")
+mtext(side = 2, "Fishery diversity", outer = FALSE, line = 2)
+hab.div_bin <- cut(yrdf[[2]]$w.habitat.simp.div,seq(0,.3,.05))
+boxplot(yrdf[[2]]$mean_simpson ~ hab.div_bin, col = "#859900",border = "#626B00", fill = TRUE, pch =19,yaxt="n")
+mtext(side = 1, "Revenue weighted habitat diversity", outer = TRUE, line = 2)
+```
+
+```{r, echo=FALSE, warning=FALSE, message = FALSE, fig.cap = "Percent rocky habitat is calculated as the percent of substrate as categorized by EFH that is 'hard substrate' within a 100km radius from the port. Note, different overall percentages of substrate are categorized by EFH depending on the port geography. Each vessel is assigned a score based on a revenue-weighted average based on landings within a year, averaged across years. Fishery diversity is defined as mean annual Simpsons index of fisheries revenue. The purple line on the left is the gam model fit of `fisheries diversity ~ percent rocky habitat`, p value $=0.000871$. The plot on the right is a boxplot version of the data plotted on the left."}
+
+gam_rock <- gam(mean_simpson ~ w.per.hab1, family = quasibinomial(link="logit"), data = yrdf[[2]])
+
+par(oma=c(3, 3, .1,.1), mai = c(0, 0, 0, 0), cex = .7, mfrow=c(1,2))
+plot(yrdf[[2]]$w.per.hab1, yrdf[[2]]$mean_simpson, pch = 19,xlab = "",ylab="")
+points(yrdf[[2]]$w.per.hab1[-which(is.na(yrdf[[2]]$w.per.hab1))], fitted(gam_rock), pch = 19, col = "#6c71c4")
+mtext(side = 2, "Fishery diversity", outer = FALSE, line = 2)
+rock_bin <- cut(yrdf[[2]]$w.per.hab1,seq(0,.2,.05))
+boxplot(yrdf[[2]]$mean_simpson ~ rock_bin, col = "#6c71c4",border = "#6C4EC4", fill = TRUE, pch =19,yaxt="n")
+mtext(side = 1, "Revenue weighted percent rocky habitat", outer = TRUE, line = 2)
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+lm_div_rocks <- gam(mean_simpson ~ w.per.hab1*w.habitat.simp.div, family = quasibinomial(link="logit"), data = yrdf[[2]])
+```
+
+```{r, echo=FALSE, warning=FALSE, message = FALSE, fig.cap = "Minimum distance to between port of landing and upper shelf break is calculated using EFH's designation of upper and lower shelf breaks. Each vessel is assigned a score based on a revenue-weighted average of landings within a year, averaged across years. Fishery diversity is defined as mean annual Simpsons index of fisheries revenue. The yellow line on the left is the gam model fit of `fisheries diversity ~ distance to upper slope`, p.value $=8.823e-05$. The plot on the right is a boxplot version of the data plotted on the left."}
+
+gam_upslope <- gam(mean_simpson ~ w.dist_upper_slope, family = quasibinomial(link="logit"), data = yrdf[[2]])
+
+par(oma=c(3, 3, .1,.1), mai = c(0, 0, 0, 0), cex = .7, mfrow=c(1,2))
+plot(yrdf[[2]]$w.dist_upper_slope, yrdf[[2]]$mean_simpson, pch = 19,xlab = "",ylab="")
+points(yrdf[[2]]$w.dist_upper_slope[-which(is.na(yrdf[[2]]$w.dist_upper_slope))], fitted(gam_upslope), pch = 19, col = "#b58900")
+mtext(side = 2, "Fishery diversity", outer = FALSE, line = 2)
+upper_bin <- cut(yrdf[[2]]$w.dist_upper_slope,seq(0,140000,25000))
+boxplot(yrdf[[2]]$mean_simpson ~ upper_bin, col = "#b58900",border = "#995F00", fill = TRUE, pch =19,yaxt="n")
+mtext(side = 1, "Revenue weighted minimum distance to upper shelf break (meters)", outer = TRUE, line = 2)
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.cap = "Minimum distance to between port of landing and lower shelf break is calculated using EFH's designation of upper and lower shelf breaks. Each vessel is assigned a score based on a revenue-weighted average of landings within a year, averaged across years. Fishery diversity is defined as mean annual Simpsons index of fisheries revenue. The red line on the left is the gam model fit of `fisheries diversity ~ distance to lower slope`, p.value $=5.415e-10$. The plot on the right is a boxplot version of the data plotted on the left."}
+
+gam_downslope <- gam(mean_simpson ~ w.dist_lower_slope, family = quasibinomial(link="logit"), data = yrdf[[2]])
+
+par(oma=c(3, 3, .1,.1), mai = c(0, 0, 0, 0), cex = .7, mfrow=c(1,2))
+plot(yrdf[[2]]$w.dist_lower_slope, yrdf[[2]]$mean_simpson, pch = 19,xlab = "",ylab="")
+points(yrdf[[2]]$w.dist_lower_slope[-which(is.na(yrdf[[2]]$w.dist_lower_slope))], fitted(gam_downslope), pch = 19, col = "#cb4b16")
+mtext(side = 2, "Fishery diversity", outer = FALSE, line = 2)
+lower_bin <- cut(yrdf[[2]]$w.dist_lower_slope,seq(0,190000,25000))
+boxplot(yrdf[[2]]$mean_simpson ~ lower_bin, col = "#cb4b16",border = "#A23B16", fill = TRUE, pch =19,yaxt="n")
+mtext(side = 1, "Revenue weighted minimum distance to lower shelf break (meters)", outer = TRUE, line = 2)
+```
+
+
+# References

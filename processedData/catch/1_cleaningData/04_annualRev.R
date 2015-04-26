@@ -47,7 +47,7 @@ annualRev <- function(data){
                       lbs = sum(round_wt),
                       latitude = median(lat),
                       # latitude of landings weighted by yearly revenue
-                      weighted_lat = weighted.mean(lat, adj_revenue),
+                      w.lat = weighted.mean(lat, adj_revenue),
                       # is yearly, so just moves it cluster to yearly resolution
                       cluster = unique(cluster),
                       num_states = length(unique(state)), 
@@ -55,7 +55,20 @@ annualRev <- function(data){
                       num_ports  = length(unique(pcid)), 
                       name_single_port = ifelse(num_ports==1, unique(pcid), "multi"),
                       w.num_procs = weighted.mean(num_procs, adj_revenue),
-                      adj_revenue = sum(adj_revenue))
+                      w.dist_city = weighted.mean(km.big.city, adj_revenue),
+                      w.hab1 = weighted.mean(h1, adj_revenue),
+                      w.hab2 = weighted.mean(h2, adj_revenue),
+                      w.hab3 = weighted.mean(h3, adj_revenue),
+                      w.hab4 = weighted.mean(h4, adj_revenue),
+                      w.per.hab1 = weighted.mean(per.h1, adj_revenue),
+                      w.per.hab2 = weighted.mean(per.h2, adj_revenue),
+                      w.per.hab3 = weighted.mean(per.h3, adj_revenue),
+                      w.per.hab4 = weighted.mean(per.h4, adj_revenue),
+                      w.hab_simp_div = weighted.mean(habitat_simp, adj_revenue),
+                      w.dist_upper_slope = weighted.mean(dist_upper_slope, adj_revenue),
+                      w.dist_lower_slope = weighted.mean(dist_lower_slope, adj_revenue),
+                      adj_revenue = sum(adj_revenue),
+                      num_trips = length(unique(trip_id)))
     
     num_fish <- merge(num_fish, diversity_year, by=c("drvid","year"))
     
@@ -66,12 +79,30 @@ annualRev <- function(data){
                       sd_adj_revenue = sd(adj_revenue),
                       mean_adj_revenue = mean(adj_revenue),
                       mean_simpson = mean(simpsons),
+                      sd_simpson = sd(simpsons),
                       mean_shannon = mean(shannons),
                       med_latitude = median(latitude),
-                      mean_weight_lat = weighted.mean(weighted_lat, adj_revenue),
+                      mean_w.lat = weighted.mean(w.lat, adj_revenue),
                       single_cluster = ifelse(length(unique(cluster))==1, unique(cluster),"multi"), 
-                      single_landing_state = ifelse(length(unique(single_state))==1, single_state, "multi"),
-                      single_port = ifelse(length(unique(name_single_port))==1, name_single_port, "multi"))
+                      single_landing_state = ifelse(length(unique(single_state))==1, 
+                                                    single_state, "multi"),
+                      single_port = ifelse(length(unique(name_single_port))==1, 
+                                           name_single_port, "multi"),
+                      w.num_procs = weighted.mean(w.num_procs, adj_revenue),
+                      w.dist_city = weighted.mean(w.dist_city, adj_revenue), 
+                      w.hab1 = weighted.mean(w.hab1, adj_revenue), 
+                      w.hab2 = weighted.mean(w.hab2, adj_revenue), 
+                      w.hab3 = weighted.mean(w.hab3, adj_revenue),
+                      w.hab4 = weighted.mean(w.hab4, adj_revenue),
+                      w.per.hab1 = weighted.mean(w.per.hab1, adj_revenue), 
+                      w.per.hab2 = weighted.mean(w.per.hab2, adj_revenue),
+                      w.per.hab3 = weighted.mean(w.per.hab3, adj_revenue),
+                      w.per.hab4 = weighted.mean(w.per.hab4, adj_revenue),
+                      w.habitat.simp.div = weighted.mean(w.hab_simp_div, adj_revenue),
+                      w.dist_upper_slope = weighted.mean(w.dist_upper_slope, adj_revenue),
+                      w.dist_lower_slope = weighted.mean(w.dist_lower_slope, adj_revenue),
+                      median_trips = median(num_trips),
+                      sd_num_trips = sd(num_trips))
     
     return(list(num_fish=num_fish, yr_stats=yr_stats))
   }

@@ -1,0 +1,2 @@
++ `coastal_habitat_type1.tif` layer comes from EFH groundfish review [here](http://efh-catalog.coas.oregonstate.edu/synthesis/). Josh Daskin unzipped the `.mpk` file for me and saved as a series of rasters. In `R` I loaded each of those rasters and merged them with `tolerance = 1` and then saved then entire thing as a `.tif` file here. The raw data can be found in my `/Volumes/storage/efuller/Emma1` directory.
++ `port_habitats/` is a directory for the processs of me pulling out habitat data in a certain radius of each port. 

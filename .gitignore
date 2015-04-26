@@ -1,6 +1,7 @@
 
 # Plots #
 #########
+*.key
 *.gif
 *.pdf
 *.png
@@ -11,6 +12,11 @@
 
 # Data #
 ########
+*.tfw
+*.ovr
+*.xml
+*.sbx
+*.sbn
 *.csv
 *.xlsx
 *.xls

@@ -151,5 +151,46 @@ for(j in 1:nrow(all_ports)){
 # remove the 'city' from the names
   all_ports$min.city <- gsub(pattern = " city","", all_ports$min.city)
 
+# add habitat types to each port ----
+habitat <- read.csv("/Users/efuller/1/CNH/processedData/spatial/ports/PortsAndLanduseTypes.csv",stringsAsFactors = FALSE)
+habitat <- habitat[,c("GRIDCODE","Pcid", "Shape_Length","Shape_Area")]
+
+# caclulate habitat diversity/evenness for each port
+library(vegan)
+hab_div <- ddply(subset(habitat, GRIDCODE!=4), .(Pcid), summarize, habitat_simp = diversity(Shape_Area, index = "simpson")) 
+# drop type 4
+
+# convert to wide format
+library(reshape2)
+melt_habt <- melt(habitat, id.vars = c("Pcid","GRIDCODE"), measure.vars = "Shape_Area")
+cast_habt <- dcast(melt_habt, Pcid ~ GRIDCODE, fun.aggregate = sum)
+colnames(cast_habt)[2:ncol(cast_habt)] <- paste0("h", 1:4)
+
+# calculate percents for each
+cast_habt$per.h1 <- cast_habt$h1/rowSums(cast_habt[,2:5])
+cast_habt$per.h2 <- cast_habt$h2/rowSums(cast_habt[,2:5])
+cast_habt$per.h3 <- cast_habt$h3/rowSums(cast_habt[,2:5])
+cast_habt$per.h4 <- cast_habt$h4/rowSums(cast_habt[,2:5])
+cast_habt <- merge(cast_habt, hab_div)
+
+all_ports <- merge(all_ports, cast_habt, by = "Pcid",all.x = TRUE)
+
+# missing tacoma because doesn't have any overlap in 100km to EFH habitat layers
+
+# add depth to upper and lower slope ----
+lower <- read.csv("/Users/efuller/1/CNH/processedData/spatial/ports/lower_slope_dist.csv", stringsAsFactors = FALSE)
+lower <- lower[,c("Pcid","NEAR_DIST")]
+colnames(lower) <- c("Pcid","dist_lower_slope")
+
+upper <- read.csv("/Users/efuller/1/CNH/processedData/spatial/ports/upper_slope_dist.csv", stringsAsFactors = FALSE)
+upper <- upper[,c("Pcid","NEAR_DIST")]
+colnames(upper) <- c("Pcid","dist_upper_slope")
+
+dist_slopes <- merge(lower, upper, by = "Pcid")
+dist_slopes$dist_lower_slope[which(dist_slopes$dist_lower_slope==-1)] <- NA
+dist_slopes$dist_upper_slope[which(dist_slopes$dist_upper_slope==-1)] <- NA
+
+all_ports <- merge(all_ports, dist_slopes, all.x =TRUE)
+
 # write to csv ----
 write.csv(all_ports, "/Users/efuller/1/CNH/processedData/spatial/ports/all_ports.csv", row.names=FALSE)
