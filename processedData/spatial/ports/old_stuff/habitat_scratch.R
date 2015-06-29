@@ -1,3 +1,7 @@
+library(raster)
+habitat <- raster("/Users/efuller/1/CNH/processedData/spatial/EFH/substrate/coastal_habitat_type1.tif")
+habitat <- as.integer(habitat[])
+
 water_polys <- readRDS("/Users/efuller/Desktop/foo.RDS")
 
 p <- lapply(water_polys@polygons , slot , "Polygons")

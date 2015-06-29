@@ -30,7 +30,7 @@ if(location == "local"){
 
 # find onland points ----
   # load coastline polygon
-    load("../../../2_coastline.Rdata")
+    load("../2_coastline.Rdata")
     proj4string(WC) <- CRS("+proj=longlat +datum=WGS84")
   # convert lat/lon into spatial pointsi
   # remove points that are smaller than -180

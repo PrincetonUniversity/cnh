@@ -30,7 +30,7 @@ annualRev <- function(data){
     crab_inclusive <- crab_inclusive[-which(duplicated(crab_inclusive)),]
     
     # get mean latitude - find latitude and mean number of processors for each port 
-    all_ports <- read.csv("/Users/efuller/1/CNH/processedData/spatial/ports/all_ports.csv", 
+    all_ports <- read.csv("/Users/efuller/1/CNH/processedData/spatial/ports/all_ports_mpa.csv", 
                           stringsAsFactors=FALSE)
     crab_inclusive <- merge(crab_inclusive, all_ports, by.x="pcid",by.y="Pcid", all.x=TRUE, all.y = FALSE)
     # get yearly adj_revenue for diversity
@@ -67,6 +67,7 @@ annualRev <- function(data){
                       w.hab_simp_div = weighted.mean(habitat_simp, adj_revenue),
                       w.dist_upper_slope = weighted.mean(dist_upper_slope, adj_revenue),
                       w.dist_lower_slope = weighted.mean(dist_lower_slope, adj_revenue),
+                      w.mpa_cover = weighted.mean(mpa_cover, adj_revenue),
                       adj_revenue = sum(adj_revenue),
                       num_trips = length(unique(trip_id)))
     
@@ -101,6 +102,7 @@ annualRev <- function(data){
                       w.habitat.simp.div = weighted.mean(w.hab_simp_div, adj_revenue),
                       w.dist_upper_slope = weighted.mean(w.dist_upper_slope, adj_revenue),
                       w.dist_lower_slope = weighted.mean(w.dist_lower_slope, adj_revenue),
+                      w.mpa_cover = weighted.mean(w.mpa_cover, adj_revenue),
                       median_trips = median(num_trips),
                       sd_num_trips = sd(num_trips))
     

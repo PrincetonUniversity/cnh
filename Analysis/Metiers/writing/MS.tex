@@ -91,6 +91,12 @@ commercial fishery system}
 
 \section{Abstract}\label{abstract}
 
+Here we link ecological, economic and human wellbeing measures using a
+commercial fishery system as an example. We demonstrate how such
+analyses can help clarify policy options and focus on characteristics of
+the system, ecological or economic that can improve human wellbeing
+while keeping ecological integrety in mind.
+
 Variability in returns is a chief concern of anyone making a livelihood
 from a natural system, be it farmers or fishermen. As predicted by
 porfolio theory, previous work has shown that diversification across
@@ -112,11 +118,6 @@ As emphasis shifts to a ``people and nature'' framing of conservation,
 understanding the linked dynamics between ecosystems and the people who
 depend on the system becomes more important for both prediction and
 transparent tradeoffs between human well-being and ecological integrity.
-Here we link ecological, economic and human wellbeing measures using a
-commercial fishery system as an example. We demonstrate how such
-analyses can help clarify policy options and focus on characteristics of
-the system, ecological or economic that can improve human wellbeing
-while keeping ecological integrety in mind.
 
 Previous work has identified that a fishing vessel's diversification
 across fisheries is an indicator of how much financial risk to which a
@@ -186,11 +187,21 @@ Appendix).\footnote{Not complete yet, waiting for the expert opinion.
 \subsection{Metier (fisheries)
 definition}\label{metier-fisheries-definition}
 
+Previous work
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  ({\textbf{???}}) lots of references therein. Need to look about
+  previous work.
+\end{itemize}
+
 Presently there exists no universal way to define a ``fishery''. In US
 West coast commercial landings, the Pacific Management Council has
 developed a set of sector based definitions for groundfish landings, but
 no equivalent exists for non-groundfish fisheries. In order to treat the
 dataset uniformly, we apply a metier analysis to this landing data.
+
 Previous metier analyses occur largely in Europe, although metier-like
 analyes have been performed in the Northeast US, classifying fishing
 data to define ``operational fisheries'' of New England (Lucey and
@@ -307,15 +318,29 @@ Finally, in order to examine inter-annual revenue variablity I need, at
 minimum, two years of landings data. To be conservative, I only examine
 vessels for which I have a full five years worth of data.
 
+In this population of fishermen there is a large mass point at very low
+revenue diversity. Because we are interested in the how independent
+economic and environmental covariates affect the variation in diversity,
+we subset to vessels which participate in a yearly median number of
+fisheries greater than 1.
+
 After filtering for vessels with a minimum of \$10,000 median revenues
 across 5 years of landings and removing vessels which participate in
-rare strategies I'm left with 1506 vessels and 330982 trips and I find
-104 metiers and 23 strategies.
+rare strategies I'm left with 850 vessels and 186105 trips and I find 96
+metiers and 19 strategies. This population thus represent approximately
+56\% of the commercial vessels and brings in about 68\% of the total
+revenue in the 5 year period.
 
 \subsection{Port level variables: markets and
 ecology}\label{port-level-variables-markets-and-ecology}
 
 Coming soon.
+
+Landscape covariates were obtained by first plotting 100 km buffers
+around each port latitude and longitude. These port polygons were then
+overlaid with the GSCGH coastline polygon to remove any portion of the
+port polygon that was ``on land''. These port polygons were then
+overlaid on landscape covariates of interest.
 
 \subsection{Statistical models}\label{statistical-models}
 
@@ -323,15 +348,12 @@ I square-root transform the revenue variability to achieve a normal
 distribution and use a linear regression to examine to quantify the
 relationship between revenue variability and mean annual revenue
 diversity. For models in which revenue diversity is the dependent
-variable I use general additive models (gams) with a quasi-biomodal
-logit link function.\footnote{This was a guess based on what the
-  internet told me. I was thinking we wanted a distribution bounded
-  between 0 and 1 (as the Simpson's index is) and that the error
-  distribution was binomial, since the error isn't constant and
-  increases as a function of the mean between zero and one. I should
-  note that the gam model estimates are similar in p-value to linear
-  models and slopes look almost identical.} This is because the revenue
-diversity is bounded between zero and one.
+variable I use generalized linear models (glms) with a biomodal logit
+link function.{[}\^{}4{]} This is because the revenue diversity is
+bounded between zero and one.
+
+To interepret the main effects in the presence of interactions, we
+mean-centered continous covariates.
 
 \section{Results}\label{results}
 
@@ -347,13 +369,13 @@ with a decrease in mean variability relative to strategy 1 (except for
 regardless of what fishing strategy a vessel chooses, the more diverse
 within that strategy the vessel is, the lower the inter-annual variation
 in revenue (Tables 1 and 2). Including strategy identity significantly
-improves the model (AIC of original regression: \(-218.9718\), AIC of
-strategy regression: \(-425.6456\)). We also investigate whether
+improves the model (AIC of original regression: \(-699.2021\), AIC of
+strategy regression: \(-797.4598\)). We also investigate whether
 diversity operates in a similar way across for all strategies by testing
 whether interactions would improve this model. While there is support
 for interactions between diversity and strategy being important we find
 that it does not lower the AIC score (AIC of interaction model:
-\(-415.9594\)).
+\(-291.9023\)).
 
 For strategies that have a negative relationship between diversity and
 revenue variability we are left with the question of what predicts
@@ -369,8 +391,8 @@ number of first receivers) predicts vessel diversity. We find that the
 number of first receivers is significantly postively related to the
 fisheries diversity of vessels, i.e.~the more first receivers a port has
 at which a vessel lands, the more diverse those vessels tend to be
-(figure 2). We do not find any support for the distance from large
-cities as related to vessel diversity (figure 3).
+(figure 3). We do not find any support for the distance from large
+cities as related to vessel diversity (figure 4).
 
 Macroecological characteristics of where a vessel fishes (proxied by the
 location of a port where the vessel lands) might also affect fisheries
@@ -378,12 +400,14 @@ diversity. We test whether diversity of habitat types, absolute amount
 of rocky habitat or distance to deep water predicts fisheries diversity.
 I find that the diversity of habitat types (rocky, mixed, soft) is
 strongly and positively related to mean annual fisheries diversity
-(figure 4). The percentage of that habitat which is classified by the
-EFH as ``hard substrate'' is also postively and signficiantly related to
-fisheries diversity (figure 5). We also find that distance to upper and
-lower shelf are negatively and signfiicantly related to fisheries
-diversity, i.e.~the further away from deep water a vessel tends to land,
-the less diverse the vessel is (figures 6 and 7).
+(figure 5). The percentage of that habitat which is classified by the
+EFH as ``hard substrate'' is not postively and signficiantly related to
+fisheries diversity (figure 6). We also find that while distance to
+upper shelf is not significantly related to diversity (figures 7),
+distance to the boundary of the lower shelf is negatively and
+significantly related to fisheries diversity, i.e.~the further away from
+deep water a vessel tends to land, the less diverse the vessel is
+(figure 8).
 
 Finally we relate the presence of open access (OA) and limited entry
 (LE) fisheries to vessel diversity. Specifically, we hypothesize that
@@ -434,8 +458,9 @@ has a significant slope (p = 0)}
 \end{figure}
 
 \begin{longtable}[c]{@{}lllll@{}}
-\caption{Fitting linear model: sqrt(cv\_adj\_revenue) \textasciitilde{}
-mean\_simpson + single\_cluster}\tabularnewline
+\caption{Fitting generalized (gaussian/identity) linear model:
+sqrt(cv\_adj\_revenue) \textasciitilde{} mean\_simpson +
+single\_cluster}\tabularnewline
 \toprule
 \begin{minipage}[b]{0.31\columnwidth}\raggedright\strut
 ~
@@ -476,43 +501,28 @@ Pr(\textgreater{}\textbar{}t\textbar{})
 \textbf{mean\_simpson}
 \strut\end{minipage} &
 \begin{minipage}[t]{0.13\columnwidth}\raggedright\strut
--0.302
+-0.256
 \strut\end{minipage} &
 \begin{minipage}[t]{0.16\columnwidth}\raggedright\strut
-0.024
+0.036
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
--12.48
+-7.131
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 0
 \strut\end{minipage}\tabularnewline
 \begin{minipage}[t]{0.31\columnwidth}\raggedright\strut
-\textbf{single\_cluster10}
-\strut\end{minipage} &
-\begin{minipage}[t]{0.13\columnwidth}\raggedright\strut
--0.053
-\strut\end{minipage} &
-\begin{minipage}[t]{0.16\columnwidth}\raggedright\strut
-0.069
-\strut\end{minipage} &
-\begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
--0.768
-\strut\end{minipage} &
-\begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-0.443
-\strut\end{minipage}\tabularnewline
-\begin{minipage}[t]{0.31\columnwidth}\raggedright\strut
 \textbf{single\_cluster11}
 \strut\end{minipage} &
 \begin{minipage}[t]{0.13\columnwidth}\raggedright\strut
--0.228
+-0.225
 \strut\end{minipage} &
 \begin{minipage}[t]{0.16\columnwidth}\raggedright\strut
-0.04
+0.045
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
--5.643
+-5.04
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 0
@@ -521,46 +531,46 @@ Pr(\textgreater{}\textbar{}t\textbar{})
 \textbf{single\_cluster12}
 \strut\end{minipage} &
 \begin{minipage}[t]{0.13\columnwidth}\raggedright\strut
--0.001
+-0.044
 \strut\end{minipage} &
 \begin{minipage}[t]{0.16\columnwidth}\raggedright\strut
-0.055
+0.067
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
--0.023
+-0.651
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-0.982
+0.516
 \strut\end{minipage}\tabularnewline
 \begin{minipage}[t]{0.31\columnwidth}\raggedright\strut
 \textbf{single\_cluster13}
 \strut\end{minipage} &
 \begin{minipage}[t]{0.13\columnwidth}\raggedright\strut
--0.018
+-0.001
 \strut\end{minipage} &
 \begin{minipage}[t]{0.16\columnwidth}\raggedright\strut
 0.049
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
--0.357
+-0.029
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-0.721
+0.977
 \strut\end{minipage}\tabularnewline
 \begin{minipage}[t]{0.31\columnwidth}\raggedright\strut
 \textbf{single\_cluster15}
 \strut\end{minipage} &
 \begin{minipage}[t]{0.13\columnwidth}\raggedright\strut
-0.017
+0.023
 \strut\end{minipage} &
 \begin{minipage}[t]{0.16\columnwidth}\raggedright\strut
-0.042
+0.075
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-0.417
+0.303
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-0.677
+0.762
 \strut\end{minipage}\tabularnewline
 \begin{minipage}[t]{0.31\columnwidth}\raggedright\strut
 \textbf{single\_cluster16}
@@ -569,100 +579,70 @@ Pr(\textgreater{}\textbar{}t\textbar{})
 0.001
 \strut\end{minipage} &
 \begin{minipage}[t]{0.16\columnwidth}\raggedright\strut
-0.043
+0.062
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 0.017
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-0.987
-\strut\end{minipage}\tabularnewline
-\begin{minipage}[t]{0.31\columnwidth}\raggedright\strut
-\textbf{single\_cluster17}
-\strut\end{minipage} &
-\begin{minipage}[t]{0.13\columnwidth}\raggedright\strut
--0.179
-\strut\end{minipage} &
-\begin{minipage}[t]{0.16\columnwidth}\raggedright\strut
-0.069
-\strut\end{minipage} &
-\begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
--2.568
-\strut\end{minipage} &
-\begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-0.01
+0.986
 \strut\end{minipage}\tabularnewline
 \begin{minipage}[t]{0.31\columnwidth}\raggedright\strut
 \textbf{single\_cluster2}
 \strut\end{minipage} &
 \begin{minipage}[t]{0.13\columnwidth}\raggedright\strut
--0.097
+-0.078
 \strut\end{minipage} &
 \begin{minipage}[t]{0.16\columnwidth}\raggedright\strut
-0.018
+0.034
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
--5.282
+-2.315
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-0
-\strut\end{minipage}\tabularnewline
-\begin{minipage}[t]{0.31\columnwidth}\raggedright\strut
-\textbf{single\_cluster21}
-\strut\end{minipage} &
-\begin{minipage}[t]{0.13\columnwidth}\raggedright\strut
-0.032
-\strut\end{minipage} &
-\begin{minipage}[t]{0.16\columnwidth}\raggedright\strut
-0.089
-\strut\end{minipage} &
-\begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-0.355
-\strut\end{minipage} &
-\begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-0.723
+0.021
 \strut\end{minipage}\tabularnewline
 \begin{minipage}[t]{0.31\columnwidth}\raggedright\strut
 \textbf{single\_cluster3}
 \strut\end{minipage} &
 \begin{minipage}[t]{0.13\columnwidth}\raggedright\strut
-0.014
+0.047
 \strut\end{minipage} &
 \begin{minipage}[t]{0.16\columnwidth}\raggedright\strut
-0.028
+0.04
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-0.5
+1.19
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-0.617
+0.234
 \strut\end{minipage}\tabularnewline
 \begin{minipage}[t]{0.31\columnwidth}\raggedright\strut
 \textbf{single\_cluster4}
 \strut\end{minipage} &
 \begin{minipage}[t]{0.13\columnwidth}\raggedright\strut
--0.121
+-0.119
 \strut\end{minipage} &
 \begin{minipage}[t]{0.16\columnwidth}\raggedright\strut
-0.024
+0.051
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
--5.042
+-2.342
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-0
+0.019
 \strut\end{minipage}\tabularnewline
 \begin{minipage}[t]{0.31\columnwidth}\raggedright\strut
 \textbf{single\_cluster5}
 \strut\end{minipage} &
 \begin{minipage}[t]{0.13\columnwidth}\raggedright\strut
--0.13
+-0.103
 \strut\end{minipage} &
 \begin{minipage}[t]{0.16\columnwidth}\raggedright\strut
-0.016
+0.027
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
--8.243
+-3.788
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 0
@@ -671,13 +651,13 @@ Pr(\textgreater{}\textbar{}t\textbar{})
 \textbf{single\_cluster6}
 \strut\end{minipage} &
 \begin{minipage}[t]{0.13\columnwidth}\raggedright\strut
--0.129
+-0.176
 \strut\end{minipage} &
 \begin{minipage}[t]{0.16\columnwidth}\raggedright\strut
-0.021
+0.026
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
--6.182
+-6.669
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 0
@@ -686,28 +666,28 @@ Pr(\textgreater{}\textbar{}t\textbar{})
 \textbf{single\_cluster7}
 \strut\end{minipage} &
 \begin{minipage}[t]{0.13\columnwidth}\raggedright\strut
--0.108
+-0.055
 \strut\end{minipage} &
 \begin{minipage}[t]{0.16\columnwidth}\raggedright\strut
-0.021
+0.042
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
--5.163
+-1.29
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-0
+0.197
 \strut\end{minipage}\tabularnewline
 \begin{minipage}[t]{0.31\columnwidth}\raggedright\strut
 \textbf{single\_cluster8}
 \strut\end{minipage} &
 \begin{minipage}[t]{0.13\columnwidth}\raggedright\strut
--0.187
+-0.178
 \strut\end{minipage} &
 \begin{minipage}[t]{0.16\columnwidth}\raggedright\strut
-0.029
+0.04
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
--6.437
+-4.489
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 0
@@ -716,43 +696,43 @@ Pr(\textgreater{}\textbar{}t\textbar{})
 \textbf{single\_cluster9}
 \strut\end{minipage} &
 \begin{minipage}[t]{0.13\columnwidth}\raggedright\strut
--0.076
+-0.069
 \strut\end{minipage} &
 \begin{minipage}[t]{0.16\columnwidth}\raggedright\strut
-0.027
+0.029
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
--2.809
+-2.369
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-0.005
+0.018
 \strut\end{minipage}\tabularnewline
 \begin{minipage}[t]{0.31\columnwidth}\raggedright\strut
 \textbf{single\_clustermulti}
 \strut\end{minipage} &
 \begin{minipage}[t]{0.13\columnwidth}\raggedright\strut
-0.055
+0.036
 \strut\end{minipage} &
 \begin{minipage}[t]{0.16\columnwidth}\raggedright\strut
-0.01
+0.012
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-5.249
+2.976
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-0
+0.003
 \strut\end{minipage}\tabularnewline
 \begin{minipage}[t]{0.31\columnwidth}\raggedright\strut
 \textbf{(Intercept)}
 \strut\end{minipage} &
 \begin{minipage}[t]{0.13\columnwidth}\raggedright\strut
-0.738
+0.718
 \strut\end{minipage} &
 \begin{minipage}[t]{0.16\columnwidth}\raggedright\strut
-0.009
+0.014
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-86.2
+51.7
 \strut\end{minipage} &
 \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 0
@@ -811,13 +791,13 @@ Pr(\textgreater{}F)
 1
 \strut\end{minipage} &
 \begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
-2.531
+1.149
 \strut\end{minipage} &
 \begin{minipage}[t]{0.11\columnwidth}\raggedright\strut
-2.531
+1.149
 \strut\end{minipage} &
 \begin{minipage}[t]{0.11\columnwidth}\raggedright\strut
-58.66
+29.32
 \strut\end{minipage} &
 \begin{minipage}[t]{0.11\columnwidth}\raggedright\strut
 0
@@ -826,16 +806,16 @@ Pr(\textgreater{}F)
 \textbf{single\_cluster}
 \strut\end{minipage} &
 \begin{minipage}[t]{0.05\columnwidth}\raggedright\strut
-9
+5
 \strut\end{minipage} &
 \begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
-10.04
+2.972
 \strut\end{minipage} &
 \begin{minipage}[t]{0.11\columnwidth}\raggedright\strut
-1.115
+0.594
 \strut\end{minipage} &
 \begin{minipage}[t]{0.11\columnwidth}\raggedright\strut
-25.86
+15.18
 \strut\end{minipage} &
 \begin{minipage}[t]{0.11\columnwidth}\raggedright\strut
 0
@@ -844,31 +824,31 @@ Pr(\textgreater{}F)
 \textbf{mean\_simpson:single\_cluster}
 \strut\end{minipage} &
 \begin{minipage}[t]{0.05\columnwidth}\raggedright\strut
-9
+5
 \strut\end{minipage} &
 \begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
-1.461
+0.516
 \strut\end{minipage} &
 \begin{minipage}[t]{0.11\columnwidth}\raggedright\strut
-0.162
+0.103
 \strut\end{minipage} &
 \begin{minipage}[t]{0.11\columnwidth}\raggedright\strut
-3.763
+2.635
 \strut\end{minipage} &
 \begin{minipage}[t]{0.11\columnwidth}\raggedright\strut
-0
+0.023
 \strut\end{minipage}\tabularnewline
 \begin{minipage}[t]{0.36\columnwidth}\raggedright\strut
 \textbf{Residuals}
 \strut\end{minipage} &
 \begin{minipage}[t]{0.05\columnwidth}\raggedright\strut
-1413
+749
 \strut\end{minipage} &
 \begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
-60.95
+29.34
 \strut\end{minipage} &
 \begin{minipage}[t]{0.11\columnwidth}\raggedright\strut
-0.043
+0.039
 \strut\end{minipage} &
 \begin{minipage}[t]{0.11\columnwidth}\raggedright\strut
 NA
@@ -881,7 +861,7 @@ NA
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{MS_files/figure-latex/unnamed-chunk-2-1.pdf}
+\includegraphics{MS_files/figure-latex/unnamed-chunk-3-1.pdf}
 \caption{Fisheries diversity is measured by the average of the annual
 Simpsons index of diversity calculated using a vessel's yearly revenues
 from each fishery. Income variability is measured by the coefficient of
@@ -892,48 +872,48 @@ uses strategy identity.}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{MS_files/figure-latex/unnamed-chunk-3-1.pdf}
+\includegraphics{MS_files/figure-latex/unnamed-chunk-4-1.pdf}
 \caption{Number of first receivers is measured as the mean yearly number
 of first receivers at the port level. Each vessel is assigned a score
 based on a revenue-weighted average based on landings within a year.
 Fishery diversity is defined as mean annual Simpsons index of fisheries
-revenue. The teal line on the left is the gam model fit of of
+revenue. The teal line on the left is the glm model fit of of
 \texttt{fisheries diversity \textasciitilde{} first receivers} (p.value
-\(= 9.666e-11\)) plotted over the raw data. The plot on the right is a
+\(= 0.00407\)) plotted over the raw data. The plot on the right is a
 boxplot version of the data plotted on the left.}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{MS_files/figure-latex/unnamed-chunk-4-1.pdf}
+\includegraphics{MS_files/figure-latex/unnamed-chunk-5-1.pdf}
 \caption{Minimum distance to a big city is measured at the port level as
 the minimum distance to a city with a population \(>100000\) according
 to the 2010 census. Each vessel is assigned a score based on a
 revenue-weighted average based on landings within a year. Fishery
 diversity is defined as mean annual Simpsons index of fisheries revenue.
-The pink line on the left is the gam model fit of
+The pink line on the left is the glm model fit of
 \texttt{fisheries diversity \textasciitilde{} first receivers}, (p.value
-\(= 0.2353\)). The plot on the right is a boxplot version of the data
+\(= 0.616\)). The plot on the right is a boxplot version of the data
 plotted on the left.}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{MS_files/figure-latex/unnamed-chunk-5-1.pdf}
+\includegraphics{MS_files/figure-latex/unnamed-chunk-6-1.pdf}
 \caption{Habitat diversity is measured as the Simpon's index of area of
 each of three possible types of habitat: soft, mixed and hard bottom
 substrate. Each vessel is assigned a score based on a revenue-weighted
 average based on landings within a year, averaged across years. Fishery
 diversity is defined as mean annual Simpsons index of fisheries revenue.
-The green line on the left is the gam model fit of
+The green line on the left is the glm model fit of
 \texttt{fisheries diversity \textasciitilde{} habitat diversity},
-(p.value \(= 4.368e-12\)). The plot on the right is a boxplot version of
+(p.value \(= 0.0032\)). The plot on the right is a boxplot version of
 the data plotted on the left.}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{MS_files/figure-latex/unnamed-chunk-6-1.pdf}
+\includegraphics{MS_files/figure-latex/unnamed-chunk-7-1.pdf}
 \caption{Percent rocky habitat is calculated as the percent of substrate
 as categorized by EFH that is `hard substrate' within a 100km radius
 from the port. Note, different overall percentages of substrate are
@@ -941,10 +921,10 @@ categorized by EFH depending on the port geography. Each vessel is
 assigned a score based on a revenue-weighted average based on landings
 within a year, averaged across years. Fishery diversity is defined as
 mean annual Simpsons index of fisheries revenue. The purple line on the
-left is the gam model fit of
+left is the glm model fit of
 \texttt{fisheries diversity \textasciitilde{} percent rocky habitat}, p
-value \(=0.000871\). The plot on the right is a boxplot version of the
-data plotted on the left.}
+value \(=0.169\). The plot on the right is a boxplot version of the data
+plotted on the left.}
 \end{figure}
 
 \begin{figure}[htbp]
@@ -955,10 +935,10 @@ break is calculated using EFH's designation of upper and lower shelf
 breaks. Each vessel is assigned a score based on a revenue-weighted
 average of landings within a year, averaged across years. Fishery
 diversity is defined as mean annual Simpsons index of fisheries revenue.
-The yellow line on the left is the gam model fit of
+The yellow line on the left is the glm model fit of
 \texttt{fisheries diversity \textasciitilde{} distance to upper slope},
-p.value \(=8.823e-05\). The plot on the right is a boxplot version of
-the data plotted on the left.}
+p.value \(=0.0897\). The plot on the right is a boxplot version of the
+data plotted on the left.}
 \end{figure}
 
 \begin{figure}[htbp]
@@ -969,10 +949,24 @@ break is calculated using EFH's designation of upper and lower shelf
 breaks. Each vessel is assigned a score based on a revenue-weighted
 average of landings within a year, averaged across years. Fishery
 diversity is defined as mean annual Simpsons index of fisheries revenue.
-The red line on the left is the gam model fit of
+The red line on the left is the glm model fit of
 \texttt{fisheries diversity \textasciitilde{} distance to lower slope},
-p.value \(=5.415e-10\). The plot on the right is a boxplot version of
-the data plotted on the left.}
+p.value \(=5.23e-10\). The plot on the right is a boxplot version of the
+data plotted on the left.}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{MS_files/figure-latex/unnamed-chunk-10-1.pdf}
+\caption{Percent cover of MPAs are calculated using EFH's designation
+MPAs that have some restrictions or prohibitions of commercial fishing
+of any time. Each vessel is assigned a score based on a revenue-weighted
+average of landings within a year, averaged across years. Fishery
+diversity is defined as mean annual Simpsons index of fisheries revenue.
+The red line on the left is the glm model fit of
+\texttt{fisheries diversity \textasciitilde{} distance to lower slope},
+p.value \(=\). The plot on the right is a boxplot version of the data
+plotted on the left.}
 \end{figure}
 
 \section*{References}\label{references}
