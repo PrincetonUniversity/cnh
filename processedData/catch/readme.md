@@ -8,3 +8,5 @@
   + `04_annualRev.R`: calculates the yearly simpson and shannon-weiner revenue diversity, yearly revenue (only for species that were included in the clustering to begin with), and then takes the yearly average of these values. Saves as `yrdf.RDS` Because it's using `tickets_plus.RDS` to do this aggregation, it also includes strategy ID in the across year summary (if a vessel participated in only one fishery)
 
   Needs: to go through this and re-adjust paths and save final data frame in somewhere obvious/special.
+
+Added: code to link catch data to state/federal registration data to get vessel characteristics. 
