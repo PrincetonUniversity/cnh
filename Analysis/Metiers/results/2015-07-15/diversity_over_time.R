@@ -135,4 +135,11 @@
   # no time trend in big boats though
   summary(lm(simpsons ~ year, data = yrdf2[[1]][which(yrdf2[[1]]$len>40),]))
   
+  # what about at individual level?
+  AIC(lm(simpsons ~ year*drvid, data = yrdf2[[1]][which(yrdf2[[1]]$len>40),]))
+  AIC(lm(simpsons ~ year , data = yrdf2[[1]][which(yrdf2[[1]]$len>40),]))
+  
+  # year still not important if you control for individual vessel ID. 
+  
+  
   
