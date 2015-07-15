@@ -1,0 +1,77 @@
+---
+title: "Methods"
+author: "Emma Fuller"
+date: "July 12, 2015"
+bibliography: method_refs.bib
+csl: the-american-naturalist.csl
+output: 
+  pdf_document: 
+    number_sections: yes
+---
+
+# Question
+How does participation diversity (and revenue variability?) vary with ecological, economic, and/or management characteristics?
+
+# Materials and Methods
+This work makes use of fisheries landings data, habitat metrics, economic data, and management data. In the following sections we describe the datasets used and processing applied to extract independent and response variables. Finally we describe the statistical models applied. All analyses were performed using `R` [@R2015].
+
+## Data
+Data were consolidated from four databases recording fisheries landings, port, and vessel information, landscape and spatial management covariates, species diversity, and demographic data. 
+
+Fisheries landing data comes from the Pacific Fishery Information Network database [@pacfin2014], and includes landings from all vessels participating in the US Extended Economic Zone (EEZ) off the US west coast between 2009 and 2013. Landings reciepts report the amount of fish caught by market category. These market categories are approximately equivalent to species-level identification, although not exact. Rockfish are most likely to be approximate, as many species are difficult to distinguish from one another. However, the more economically important the difference between species, the more accurate the market categories.[^1] Thus in the following work we assume that vessels are targeting market categories, rather than species, as that is the economically relevant determination. 
+
+[^1]: Personal communication from Brad Stenberg
+
+For each market category, landing tickets report price per pound, date, port of landing, and vessel identifying information. After adjusting for inflation using the 2009 Consumer Price Index, we calculate vessel revenues by multiplying the price per pound by the number of pounds landed. We include only vessels with average annual revenues above $10,000 (adjusted to 2009 values), to exclude vessels for which fishing was a part time activity. To focus on major species, we remove landings from species that show up in fewer than 100 trips across our five year dataset and whose median catch is less than 100 pounds.[^4] We categorize individual landings to fisheries by performing a metier analysis, where a fishery is defined as a target assemblage and gear type (see Appendix). And we link landings data to vessel registration at both the state and federal level to obtain vessel length and horsepower, using the average if more than one record is found for a single year (i.e. registered in multiple states and/or state and federal registration). We cateogrize vessels as either small or large. Small boats are defined as $\leq$ 40ft based on distribution of vessel size for 2009-2013. The 40ft cutoff is also in line with the small boat category used by @Kasperski:2013gb. 
+
+[^4]: Am going to try the clustering without this, I think this was based on trying to do k-means and is no longer necessary. Also it's an awkward thing to have to defend. And then when we're looking at species diversity in landings data, we want to include those species again. So it seems overly unclear. 
+
+To capture differences in mangement in state fisheries we categorize each vessel by the state in which the majority of landings occur by revenue for each year. We also categorize whether each landing was in a seasonal fishery. A fishery is considered seasonal if, in any quarter, a fishery is not landed at the coast-wide scale. We calculate market value for each fishery in which a vessel participates as the sum[^6] of coast-wide landings revenue (i.e. volume $\times$ price) for each vessel-year. Finally we flag vessel-years participating in the groundfish trawl ITQ using DAHL sector rules developed by the Pacific Management Council. 
+
+[^6]: or average - check if correlated 
+
+We also use landings data to measure species diversity and taxonomic distinctness of commerically targeted species around each port. We convert landings into a presence-absence records by port and calculate species richness and taxonomic distinctness. Taxonomic distinctness is measured as  
+$$\Delta^+ = \frac{\sum\sum_{i<j}\omega_{ij}}{\frac{s(s-1)}{2}},$$
+where $s$ is the number of species present, and for the double summation, $i$ and $j$ range over these $s$ species. $\omega_{ij}$ is the distinctness weight [@Clarke:1998tc].[^3]
+
+[^3]: From @vegan2015: _These can be any distance structure among species, but usually it is found from established hierarchic taxonomy. Typical coding is that differences among species in the same genus is 1, among the same family it is 2 etc. However, the taxonomic differences are scaled to maximum 100 for easier comparison between different data sets and taxonomies. Alternatively, it is possible to scale steps between taxonomic level proportional to the reduction in the number of categories (Clarke and Warwick, 1999): if almost all genera have only one species, it does not make a great difference if two individuals belong to a different species or to a different genus_
+
+To check that landings data provide reliable estimates of underlying trends in diversity, we subset landings to those species caught by commerical bottom trawls and compare to fisheries independent data using the West Coast Groundfish Bottom Trawl Survey conducted by the Northwest Fisheries Science Center, U.S. National Marine Fisheries Service [@Keller:2005wo]. We use surveys[^2] for the same time duration (2009-2013) and assign survey trawls to a port if they occur within 100 km radius. We find these measures of species richness and taxonomic distinctness to be correlated.[^5]
+
+[^5]: Not completed yet, fingers crossed!
+
+[^2]: West coast annual? Triennial? Fall + Spring both?
+
+Landscape data was obtained from the Groundfish Essential Fish Habitat Synthesis [@NMFS:2013tm] which provides geospatial layers detailing bathymetry, substrate, and spatial restrictions to fishing. Using port latitudes and longitudes from the Pacific Management Councils list of fishing communities [@Norman:2007ws], we collate bathymetry, substrate and spatial fishing restirctions within a 100 km radius of each port after first masking using high resolution coastline polygons from GSHHG [@Wessel:2013wk]. Using these substrate data we calculate habitat diversity as the Simpsons diversity index of substrate type
+$$S_j = 1 - \sum^k_{i=1}p_i^2,$$
+so for $k$ substrate types, $p_i$ is the proportion of cells within 100 km of port $j$ which has substrate $i$. Substrate has three values: hard, mixed, and soft. Values of zero indicate no diversity, a single substrate type, and values close to one indicate high levels of diversity. Diversity indices are calculated using the `vegan()` package [@vegan2015]. Finally, using bathymetry data we calculated nearest distance from shelf for each port, and using the spatial management data we caluclated the percentage of cells with fishing restrictions. 
+
+To measure market availability we calculate the distance to nearest large cities (defined as population > 50,000 as of 2010 census) using the `ggmap()` package [@ggmap2013] and the average number of first recievers present in each port calculated from the landings data. 
+
+We measure revenue diversity (or portfolio diversification) with the Simpson’s diversity index [@Kasperski:2013gb; @Sethi:2014jh]. Simpson’s diversity index is calculated per vessel; i.e. have an index of $j = 1,\dots,N$ where $N$ is the number of vessels. Thus $S_j$ is defined as previously in eq. 2. As above, values of 0 indicate no diversity (a single fishery), where values close to 1 indicate high levels of diversity. We calculate the diversity indices each year a vessel is active and averaged across years. Vessels had to be active for at least two years in order to be included in this analysis.
+
+Revenue variability is calculated as the coefficient of variation in annual revenues. For a single vessel $j$, the coefficient of variation ($CV$) is calculated as
+$$CV_j = \frac{\text{sd}(x)}{\text{mean}(x)},$$
+where $x$ is a vector of the annual revenues for vessel $j$.
+
+## Statistical Models
+
+
+# Appendix
+## Metier analysis
+Presently there exists no universal way to define a fishery. In US West coast commercial landings, the Pacific Management Council has developed a set of sector based definitions for groundfish landings, but no equivalent exists for non-groundfish fisheries. In order to treat the dataset uniformly, we apply a metier analysis to this landing data. To assign each trip to a fishery we perform a metier analysis for the US west coast commercial fisheries [@Deporte:2012kq]. Previous metier analyses occur largely in Europe, although metier-like analyes have been performed in the Northeast US, classifying fishing data to define “operational fisheries” of New England [@Lucey:2013jy]. While promising as a way to classify fisheries for use in ecosystem-based management, these methods introduced spatial and temporal structure prior to defining fisheries. In our analysis such structure emerges from the data, and we are able to recover the commonly recognized major fisheries and their seasonality, along with more spatially and temporally restricted fisheries. These methods have the additional benefit of only requiring the catch composition of trips, making it possible to integrate data from both state and federal management databases which lack consistent permitting data.
+
+A metier is defined as a gear-species target combination [@Deporte:2012kq]. We first define species targets and then assign these targets to gear to make the final metier designation. To find species target data we classify target species assemblages by first subsetting to all 2010 trips and searching for characteristic catch compositions. To find these assemblages we first split trips by gear type (using PacFIN grgroups designation) and calcluate a pairwise dissimiliarity index for each trip within a gear/year subset using the Bray-Curtis dissimilarity index. This metric has the advantage of avoiding the double-0 problem common in species count data. The Bray-Curtis dissimilarity index is defined as
+$$BC_{ij}=\frac{2C_{ij}}{S_i + S_j}$$
+where $C_ij$ is the biomass of the lesser value for only those two species in common between both sites. $S_i$ and $S_j$ are the total number of individuals counted in both trips. This index ranges between zero and one, with zero meaning the sites have the same composition and one meaning they share no species.
+
+We transform the disimilarity index to be a measure of similarity
+$$\text{Similarity} = 1 - \mid BC \mid$$
+and build an undirected, weighted network in which nodes are trips, and edge widths are the similarity in species composition between trips. This allows a vessel to be represented in multiple nodes if it makes trips that vary substantially in catch composition. With this network we use the infoMap algorithm to find communities (clusters or subgraphs) within the network (Martin Rosvall and Bergstrom 2008; M Rosvall, Axelsson, and Bergstrom 2009).
+
+infoMap is an information theoretic approach, which uses the probability flow of a random walker on a network as a proxy for the information flows in a real system. The objective of infoMap is to compress the description of the probability flow, and in doing so partitions the network into modules. infoMap works by computing the fraction of time a node is visted by a random walker using a deterministically greedy search algorithm. Merges between modules that give the largest decrease in description length are made until further merging leads to increases of description length. Results are refined with a simulated annealing approach, starting at several different temperatures, with the run selected as the one that gives the shortest description of the network.
+We found that other commonly used clustering algorithms (i.e. k-means, hierarchical clustering) did poorly with this data. Many clustering algorithms do best when clusters are spherical in n-dimensional space, and/or require the number of clusters decided a priori. In this data we have fisheries participation may vary by several orders of magnitude (100s of trips to 100,000s of trips), and we wanted to avoid having to decide subjectively on the number of clusters.
+
+After dropping any modules that have fewer than five trips, we use a k-nearest-neighbor (knn) classifier to assign all other trips of each gear subset to those possible metiers. The nearest neighbor to each trip was found using the Bray-Curtis dissimilarity index (transformed into a similarity). 
+
+# References
