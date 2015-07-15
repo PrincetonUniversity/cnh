@@ -2,11 +2,12 @@
 title: "Methods"
 author: "Emma Fuller"
 date: "July 12, 2015"
-bibliography: method_refs.bib
-csl: the-american-naturalist.csl
-output: 
-  pdf_document: 
+output:
+  html_document: default
+  pdf_document:
     number_sections: yes
+csl: the-american-naturalist.csl
+bibliography: method_refs.bib
 ---
 
 # Question
