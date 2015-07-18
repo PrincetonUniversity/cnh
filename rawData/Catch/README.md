@@ -19,3 +19,13 @@ All are filtered to states Oregon and Washington and 2009-2013
 `ext_acm_ag_year.csv` is species comps from PacFin. Catch by area propotions data. 
 
 `ext_scm_ag_year.csv` is species comps from PacFin. Not sure if they are by area or port. Species composition data. 
+
+`gr.txt` pulled directly from pacfin 
+```
+wget -O gr.txt "http://pacfin.psmfc.org/pacfin_pub/data_rpts_pub/code_lists/gr.txt"
+```
+
+`sp.txt` can also be pulled directly from the web similarly
+```
+wget -O sp.txt "http://pacfin.psmfc.org/pacfin_pub/data_rpts_pub/code_lists/sp.txt"
+```

@@ -1,7 +1,7 @@
 ---
-title: "Methods"
+title: "What makes a fleet? A data-driven evaluation of ocean policies for vibrant coastal communities"
 author: "Emma Fuller"
-date: "July 12, 2015"
+date: "July 18, 2015"
 output:
   pdf_document:
     number_sections: yes
@@ -12,21 +12,98 @@ bibliography: method_refs.bib
 ---
 
 # Question
-How does participation diversity (and revenue variability?) vary with ecological, economic, and/or management characteristics?
+What makes up a fleet? Here we demonstrate a data-driven evalaution of national ocean policies for “vibrant coastal communities” before and after a major management change. 
+
+# Motivation
+Previous work on fleet dynamics have focused on single fleets. As we move from single fisheries to considering entire fisheries social-ecological systems, we need ways methods to define fleets from one another. Here we provide a data-driven method to define fleets in a large commercial fisheries system and demonstrate its use in analyzing the impacts of a managment change on port-communities. This approach unites the individaul-level focus common in fisheries economics to the ecosystem-based management approach popular among marine ecologists,  conservations and fisheries anthropologists. Because we find community-level language in federal policy, we belive this will be a particularly useful method to use in evaluating community level responses to management change.
 
 # Materials and Methods
-This work makes use of landings data, habitat metrics, economic data, and management data. In the following sections we describe the datasets and processing to extract independent and response variables. Finally we describe the statistical models we use. All analyses are performed using `R` [@R2015].
+This work makes use of landings data and vessel characteristics to classify landings into fisheries. We use these fisheries designations combined with port landings to characterize port communities. Finally we examine how port communities change before after ITQ implementation in the groundfish trawl fishery. All analyses are performed using `R` [@R2015] unless otherwise stated.
 
-## Data
-Data are consolidated from four databases which record fishery landings, port, and vessel information; landscape and spatial management covariates; species diversity; and demographic data. 
-
-Fisheries landings data comes from the Pacific Fishery Information Network database [@pacfin2014], and includes commercial landings from all vessels fishing in the US Extended Economic Zone (EEZ) off the US west coast between 2009 and 2013. Landings receipts report the amount of fish caught by market category. These market categories are approximately equivalent to species-level identification, although not exact. Rockfish are most likely to be approximate, as species are often difficult to distinguish between. However, the bigger the price differential between species, the more accurate the market categories.[^1] Thus in the following work we assume that vessels are targeting market categories, rather than species, as that is the economically relevant determination. 
+## Data preparation
+Fisheries landings data comes from the Pacific Fishery Information Network database [@pacfin2014], and include commercial landings from all vessels fishing in the US Extended Economic Zone (EEZ) off the US west coast between 2009 and 2013. Landings receipts report the amount of fish caught by market category. These market categories are approximately equivalent to species-level identification, although not exact. Rockfish are most likely to be approximate, as species are often difficult to distinguish between. However, the bigger the price differential between species, the more accurate the market categories.[^1] Thus in the following work we assume that vessels are targeting market categories, rather than species, as that is the economically relevant determination. 
 
 [^1]: Personal communication from Brad Stenberg
 
-For each market category, landing tickets report price per pound, date, port of landing, and vessel identifying information. After adjusting for inflation using the 2009 Consumer Price Index, we calculate vessel revenues by multiplying the price per pound by the number of pounds landed. We include only vessels with average annual revenues above $10,000 (adjusted to 2009 values), to exclude vessels for which fishing was a part time activity. To focus on major species, we remove landings from species that show up in fewer than 100 trips across our five year dataset and whose median catch is less than 100 pounds.[^4] We categorize individual landings to fisheries by performing a metier analysis, where a fishery is defined as a target assemblage and gear type (see Appendix). We link landings data to vessel registration at both the state and federal level to obtain vessel length and horsepower, using the average if more than one record is found for a single year (i.e. registered in multiple states and/or state and federal registration). We categorize vessels as either small or large. Small boats are defined as $\leq$ 40ft based on distribution of vessel size for 2009-2013. The 40ft cutoff is also in line with the small boat category used by @Kasperski:2013gb. 
+For each market category, landing tickets report price per pound, date, port of landing, and vessel identifying information. After adjusting for inflation using the 2009 Consumer Price Index, we calculate vessel revenues by multiplying the price per pound by the number of pounds landed.[^2] We include only vessels with average annual revenues above $10,000 (adjusted to 2009 values), to exclude vessels for which fishing was a part time activity. To focus on major species, we remove landings from species that show up in fewer than 100 trips across our five year dataset and whose median catch is less than 100 pounds.[^3] 
 
-[^4]: Am going to try the clustering without this, I think this was based on trying to do k-means and is no longer necessary. Also it's an awkward thing to have to defend. And then when we're looking at species diversity in landings data, we want to include those species again. So it seems overly unclear. 
+[^2]: This is currently `ppp*landedwt`, but maybe should be using `roundwt`. Need to check
+
+[^3]: Am going to try the clustering without this, I think this was based on trying to do k-means and is no longer necessary. Also it's an awkward thing to have to defend. And then when we're looking at species diversity in landings data, we want to include those species again. So it seems overly unclear. 
+
+## Defining fisheries
+Presently there exists no universal way to define a fishery. In US West coast commercial landings, the Pacific Management Council has developed a set of sector based definitions for groundfish landings, but no equivalent exists for non-groundfish fisheries. In order to treat the landings dataset uniformly, we apply a metier analysis to this landing data. To assign each trip to a fishery we perform a modified metier analysis for the US west coast commercial fisheries [@Deporte:2012kq]. Previous metier analyses occur largely in Europe, although metier-like analyses have been performed in the Northeast US, classifying fishing data to define “operational fisheries” of New England [@Lucey:2013jy]. While promising as a way to classify fisheries for use in ecosystem-based management, these methods introduced spatial and temporal structure prior to defining fisheries. In our analysis such structure emerges from the data, and we are able to recover the commonly recognized major fisheries and their seasonality, along with more spatially and temporally restricted fisheries. These methods have the additional benefit of only requiring the catch composition of trips, making it possible to integrate data from both state and federal management databases which lack consistent permitting data.
+
+A metier is defined as a gear-species target combination [@Deporte:2012kq]. Previous metier analyses involve a first step of defining species targets through clustering methods. There exists number methods by which to find characteristic assemblages in data, and is a topic that's recieving much attention in the 'big data' revolution. Previous metier analyses have used a variety of clustering algorithms including k-means [@Lucey:2013jy], hierarchical algomorative clustering [@Deporte:2012kq], 
+
+We first define species targets and then assign these targets to gear to make the final metier designation. 
+
+To find species target data we classify target species assemblages by first subsetting to all 2010 trips and searching for characteristic catch compositions. To find these assemblages we first split trips by gear type (using PacFIN `grgroups` designation, see table below).
+
+```{r gear.groups.table, echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
+setwd("/Users/efuller/1/CNH/")
+
+# if file doesn't exist, download from PacFin
+  if(!file.exists("rawData/Catch/gr_tree.txt")){
+    system('wget -O rawData/Catch/gr_tree.txt "http://pacfin.psmfc.org/pacfin_pub/data_rpts_pub/code_lists/gr_tree.txt"')
+  }
+
+# load gear table
+  grid <- read.fwf("/Users/efuller/1/CNH/rawData/Catch/gr_tree.txt", widths = c(22,54), skip = 7, n = 65, stringsAsFactors = FALSE)
+  colnames(grid) <- c("gear.group","description")
+  library(dplyr); library(stringr)
+  # cleaning up the frame, remove empty lines, lower case, remove columns, trim whitespace
+  grid <- grid[complete.cases(grid),]; 
+  grid <- grid %>%
+    mutate_each(funs(tolower)) %>%
+    mutate_each(funs(str_trim))
+  
+  grid <- grid[grep("^all", grid$description),] # just get gear groups
+  grid$gear.group <- gsub('\\\\_',"",grid$gear.group) # remove the weird slashes
+
+# load cleaned FTL data and calculate number of vessels and trips for each gear group
+  ftl <- readRDS("/Users/efuller/1/CNH/processedData/catch/1_cleaningData/filtered_ftl.RDS")
+  
+  # tabulate
+  gear.tab <- ftl %>%
+    group_by(grgroup) %>%
+    summarize(n.vessels = length(unique(drvid)), 
+              n.trips = length(unique(trip_id))
+              ) %>%
+    mutate(grgroup = tolower(grgroup)) %>%
+    arrange(desc(n.vessels)) %>%
+    rename(gear.group = grgroup)
+  
+  # put together
+  gear.tab <- merge(gear.tab, grid, by = "gear.group",all.x = TRUE, all.y = FALSE, sort = FALSE)
+  
+  # display table
+  library(pander)
+  set.alignment('left', row.names = 'left')
+  set.caption("PacFin gear groups, participation, and descriptions for US west coast landings data 2009-2013")
+  panderOptions('table.split.table', Inf)
+  pander(gear.tab, style = 'rmarkdown')
+```
+
+and calculate a pairwise dis-similiarity index for each trip within a gear/year subset using the Bray-Curtis dissimilarity index. This metric has the advantage of avoiding the double-0 problem common in species count data. The Bray-Curtis dissimilarity index is defined as
+$$BC_{ij}=\frac{2C_{ij}}{S_i + S_j}$$
+where $C_ij$ is the biomass of the lesser value for only those two species in common between both sites. $S_i$ and $S_j$ are the total number of individuals counted in both trips. This index ranges between zero and one, with zero meaning the sites have the same composition and one meaning they share no species.
+
+We transform the dissimilarity index to be a measure of similarity
+$$\text{Similarity} = 1 - \mid BC \mid$$
+and build an undirected, weighted network in which nodes are trips, and edge widths are the similarity in species composition between trips. This allows a vessel to be represented in multiple nodes if it makes trips that vary substantially in catch composition. With this network we use the infoMap algorithm to find communities (clusters or subgraphs) within the network (Martin Rosvall and Bergstrom 2008; M Rosvall, Axelsson, and Bergstrom 2009).
+
+infoMap is an information theoretic approach, which uses the probability flow of a random walker on a network as a proxy for the information flows in a real system. The objective of infoMap is to compress the description of the probability flow, and in doing so partitions the network into modules. infoMap works by computing the fraction of time a node is visited by a random walker using a deterministically greedy search algorithm. Merges between modules that give the largest decrease in description length are made until further merging leads to increases of description length. Results are refined with a simulated annealing approach, starting at several different temperatures, with the run selected as the one that gives the shortest description of the network.
+We found that other commonly used clustering algorithms (i.e. k-means, hierarchical clustering) did poorly with this data. Many clustering algorithms do best when clusters are spherical in n-dimensional space, and/or require the number of clusters decided a priori. In this data we have fisheries participation may vary by several orders of magnitude (100s of trips to 100,000s of trips), and we wanted to avoid having to decide subjectively on the number of clusters.
+
+After dropping any modules that have fewer than five trips, we use a k-nearest-neighbor (knn) classifier to assign all other trips of each gear subset to those possible metiers. The nearest neighbor to each trip was found using the Bray-Curtis dissimilarity index (transformed into a similarity). 
+
+
+
+
+We link landings data to vessel registration at both the state and federal level to obtain vessel length and horsepower, using the average if more than one record is found for a single year (i.e. registered in multiple states and/or state and federal registration). We categorize vessels as either small or large. Small boats are defined as $\leq$ 40ft based on distribution of vessel size for 2009-2013. The 40ft cutoff is also in line with the small boat category used by @Kasperski:2013gb. 
+
+
 
 To capture differences in mangement across state lines, we categorize each vessel by the state in which the majority of landings occur by revenue for each year. We also categorize whether a vessel gets at least 25% of their annual revenue from a seasonal fishery. A fishery is considered seasonal if, in any quarter, a fishery is not landed at the coast-wide scale (a list of these fisheries can be found in the Appendix). We calculate market value for each fishery in which a vessel participates as the sum[^6] of coast-wide landings revenue (i.e. volume $\times$ price) for each year. Finally we flag vessel-years participating in the groundfish trawl ITQ using DAHL sector rules developed by the Pacific Management Council. 
 
@@ -56,7 +133,6 @@ Revenue variability is calculated as the coefficient of variation in annual reve
 $$CV_j = \frac{\text{sd}(x)}{\text{mean}(x)},$$
 where $x$ is a vector of the annual revenues for vessel $j$.
 
-![predictor variables](variable_table.pdf)
 
 ## Statistical Models
 In the following we examine two sets of models: revenue variability as predicted by participation diversity and participation diversity predicted by proxies for market, management and ecology conditions.
@@ -68,22 +144,6 @@ Before we examine the effect of the ecology, management and market variables on 
 After first checking to ensure correlation among predictor variables are low, we examine the relationship between participation diversity and ecology, management and market variables. Here vessel-years are replicates and we use beta GLMs with a logit link (as Simpsons diversity is constrained between zero and one). We  use the vessel ID as a random effect and standardize categorical covariates (Schielzeth 2010 - Methods in Ecology and Evolution). We present effect size plots for models and examine interdependencies of different predictor variables.
 
 # Appendix
-## Metier analysis
-Presently there exists no universal way to define a fishery. In US West coast commercial landings, the Pacific Management Council has developed a set of sector based definitions for groundfish landings, but no equivalent exists for non-groundfish fisheries. In order to treat the dataset uniformly, we apply a metier analysis to this landing data. To assign each trip to a fishery we perform a metier analysis for the US west coast commercial fisheries [@Deporte:2012kq]. Previous metier analyses occur largely in Europe, although metier-like analyses have been performed in the Northeast US, classifying fishing data to define “operational fisheries” of New England [@Lucey:2013jy]. While promising as a way to classify fisheries for use in ecosystem-based management, these methods introduced spatial and temporal structure prior to defining fisheries. In our analysis such structure emerges from the data, and we are able to recover the commonly recognized major fisheries and their seasonality, along with more spatially and temporally restricted fisheries. These methods have the additional benefit of only requiring the catch composition of trips, making it possible to integrate data from both state and federal management databases which lack consistent permitting data.
-
-A metier is defined as a gear-species target combination [@Deporte:2012kq]. We first define species targets and then assign these targets to gear to make the final metier designation. To find species target data we classify target species assemblages by first subsetting to all 2010 trips and searching for characteristic catch compositions. To find these assemblages we first split trips by gear type (using PacFIN `grgroups` designation) and calculate a pairwise dis-similiarity index for each trip within a gear/year subset using the Bray-Curtis dissimilarity index. This metric has the advantage of avoiding the double-0 problem common in species count data. The Bray-Curtis dissimilarity index is defined as
-$$BC_{ij}=\frac{2C_{ij}}{S_i + S_j}$$
-where $C_ij$ is the biomass of the lesser value for only those two species in common between both sites. $S_i$ and $S_j$ are the total number of individuals counted in both trips. This index ranges between zero and one, with zero meaning the sites have the same composition and one meaning they share no species.
-
-We transform the dissimilarity index to be a measure of similarity
-$$\text{Similarity} = 1 - \mid BC \mid$$
-and build an undirected, weighted network in which nodes are trips, and edge widths are the similarity in species composition between trips. This allows a vessel to be represented in multiple nodes if it makes trips that vary substantially in catch composition. With this network we use the infoMap algorithm to find communities (clusters or subgraphs) within the network (Martin Rosvall and Bergstrom 2008; M Rosvall, Axelsson, and Bergstrom 2009).
-
-infoMap is an information theoretic approach, which uses the probability flow of a random walker on a network as a proxy for the information flows in a real system. The objective of infoMap is to compress the description of the probability flow, and in doing so partitions the network into modules. infoMap works by computing the fraction of time a node is visited by a random walker using a deterministically greedy search algorithm. Merges between modules that give the largest decrease in description length are made until further merging leads to increases of description length. Results are refined with a simulated annealing approach, starting at several different temperatures, with the run selected as the one that gives the shortest description of the network.
-We found that other commonly used clustering algorithms (i.e. k-means, hierarchical clustering) did poorly with this data. Many clustering algorithms do best when clusters are spherical in n-dimensional space, and/or require the number of clusters decided a priori. In this data we have fisheries participation may vary by several orders of magnitude (100s of trips to 100,000s of trips), and we wanted to avoid having to decide subjectively on the number of clusters.
-
-After dropping any modules that have fewer than five trips, we use a k-nearest-neighbor (knn) classifier to assign all other trips of each gear subset to those possible metiers. The nearest neighbor to each trip was found using the Bray-Curtis dissimilarity index (transformed into a similarity). 
-
 ## Seasonal Fisheries
 **FILL IN**
 
