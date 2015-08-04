@@ -1,0 +1,1 @@
+This is a subset of ftl_len.RDS for Emily to do the sugihara analysis with. It's subset to vessels that are in teh dataset for all 5 years, and only metiers tha t are responsible for a cumulative $40,000 in landings across all five years. 
