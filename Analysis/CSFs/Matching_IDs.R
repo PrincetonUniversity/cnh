@@ -1,18 +1,19 @@
-# Look to see if vessels present
+# Look to see if vessels present - data are only to 2013, but these receipts are for 2014
 # load data ----
 # load landing receipts 
 receipts <- read.csv("/Users/efuller/1/CNH/Analysis/CSFs/landing_receipts.csv",stringsAsFactors=FALSE)
 # load tickets
-tickets <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-09/code/3_exploreBuildwebs/tickets.RDS")
+tickets <- readRDS("/Users/efuller/1/CNH/processedData/catch/1_cleaningData/tickets.RDS")
 
 # look for matches between tickets and receipts----
 landed <- paste0("C",unique(receipts$Landing.Reciept.ID))
 csf_vessels <- unique(receipts$Vessel.ID)
-any(landed %in% unique(tickets$ftid))
-which(csf_vessels %in% unique(tickets$veid))
+any(landed %in% unique(tickets$ftid)) # find trips in receipt trip ids?
+which(csf_vessels %in% tickets$veid)
+which(csf_vessels %in% tickets$drvid) # but not in drvid bc don't match
 
 length(which(csf_vessels %in% unique(tickets$veid)))
-# 6 vessels out of 22 possible we have
+# 10 vessels out of 22 possible we have
 
 # look at these vessels catch ----
 overlap_vessels <- csf_vessels[which(csf_vessels %in% unique(tickets$veid))]

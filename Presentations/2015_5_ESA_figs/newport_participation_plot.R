@@ -7,9 +7,53 @@ library(igraph); library(reshape2); library(vegan); library(RColorBrewer)
 # calculate the bray curtis dissimilarity to look at vessel composition across fisheries. A fishery is very similar if the same vessels participate in the same way. 
 # need a metier by drvid matrix to run vegdist on
 
-# common names
+# common names and colors ----
 descrp <- read.csv("/Users/efuller/1/CNH/processedData/catch/3_exploreBuildwebs/ref_tables/metier_descrp_gn.csv", stringsAsFactors = FALSE)
 
+library(RColorBrewer)
+# each major gear is a color, and then color ramp within gear between light and dark color
+# pot = reds
+# tws = pinks
+# tls = yellows
+# msc = purples
+# hkl = greens
+# twl = oranges
+# net = blues
+
+descrp$paint <- NA
+
+# find number of pot gears
+n.gear = length(grep("POT",descrp$Metier))
+paint = rev(colorRampPalette(brewer.pal(9, "Reds"))(n.gear))
+descrp$paint[grep("POT",descrp$Metier)] <- paint
+
+n.gear = length(grep("TWS",descrp$Metier))
+paint = colorRampPalette(c("#FA9FB5","#E7298A"))(n.gear)
+descrp$paint[grep("TWS",descrp$Metier)] <- paint
+
+n.gear = length(grep("TLS",descrp$Metier))
+paint = colorRampPalette(c("#FFEDA0","#FED976"))(n.gear)
+descrp$paint[grep("TLS",descrp$Metier)] <- paint
+
+n.gear = length(grep("MSC",descrp$Metier))
+paint = colorRampPalette(brewer.pal(9, "Purples"))(n.gear)
+descrp$paint[grep("MSC",descrp$Metier)] <- paint
+
+n.gear = length(grep("HKL",descrp$Metier))
+paint = rev(colorRampPalette(brewer.pal(9, "Greens"))(n.gear))
+descrp$paint[grep("HKL",descrp$Metier)] <- paint
+
+n.gear = length(grep("TWL",descrp$Metier))
+paint = colorRampPalette(brewer.pal(9, "Oranges"))(n.gear)
+descrp$paint[grep("TWL",descrp$Metier)] <- paint
+
+n.gear = length(grep("NET",descrp$Metier))
+paint = colorRampPalette(brewer.pal(9, "Blues"))(n.gear)
+descrp$paint[grep("NET",descrp$Metier)] <- paint
+
+# hm, the color ramps dont' look great. maybe should just do a single color for each gear group
+
+# define participation plots ----
 define_participationPlot <- function(year_choose, port=NA, restrict=TRUE, tickets = tickets.df){
   if(is.na(port)){
     yr_tickets <- tickets[which(tickets$year %in% year_choose),]}
@@ -38,7 +82,7 @@ define_participationPlot <- function(year_choose, port=NA, restrict=TRUE, ticket
   
   contain_metier <- which(descrp$Metier %in% V(g)$name)
   
-  cn <- data.frame(cn = paste(descrp$Major_species[contain_metier], descrp$Major_gear[contain_metier],sep="\n"), metier = descrp$Metier[contain_metier], stringsAsFactors = FALSE)
+  cn <- data.frame(cn = paste(descrp$Major_species[contain_metier], descrp$Major_gear[contain_metier],sep="\n"), metier = descrp$Metier[contain_metier], paint = descrp$paint[contain_metier], stringsAsFactors = FALSE)
   cn <- cn[match(V(g)$name, cn$metier),] # reorder to match
   
   #   strong_edges <- E(g)$weight
@@ -47,7 +91,7 @@ define_participationPlot <- function(year_choose, port=NA, restrict=TRUE, ticket
   #   E(g_s)$weight <- strong_edges  
   V(g_s)$name <- cn$cn
   
-  V(g_s)$color <- "grey80"
+  V(g_s)$color <- cn$paint
   
   l <- layout.fruchterman.reingold(g_s,niter=500)
   
@@ -58,4 +102,7 @@ define_participationPlot <- function(year_choose, port=NA, restrict=TRUE, ticket
   return(g_s)
 }
 
+
 newport <- define_participationPlot(2009:2013, "NEW", tickets = filtered_ftl)
+
+paint_df <- data.frame(as.character(V(newport)$name),stringsAsFactors = FALSE)

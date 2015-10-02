@@ -1,29 +1,33 @@
-library(plyr)
+library(dplyr)
 library(stringr)
 library(vegan)
 library(reshape2)
 # load data ----
-tickets <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/writing/code/fisheries_participation_profiles/tickets_plus.RDS")
+tickets <- readRDS("/Users/efuller/1/CNH/processedData/catch/1_cleaningData/tickets.RDS")
+tickets <- rename(tickets, metier = metier.2010)
 
 # reference table for metiers ---- 
-neffort <- ddply(tickets, .(metier, year), summarize, ntrips = length(unique(trip_id)), nves = length(unique(drvid)))
-
-neffort <- neffort[order(neffort$nves, decreasing = T),]
+neffort <- tickets %>%
+  group_by(metier, year) %>%
+  summarize(ntrips = length(unique(trip_id)), nves = length(unique(drvid))) %>%
+  arrange(nves) 
 
 # for each metier, what are the commonly caught species?
 # define as for all trips of this metier, what is the species that is most often in the majority of catches?
 # so for each species in each metier, how many trips is it the majority?
 
 characterize_metiers <- function(metier_choice, data = tickets){
-  cat("subsetting catch data\n")
+  #cat("subsetting catch data\n")
   catch_data <- subset(tickets, metier == metier_choice, select = c("modified","landed_wt", "trip_id","drvid","ppp","drvid"))
   
   # find max species by trip.
   trips <- unique(catch_data$trip_id)
   max_species <- rep(NA, length(trips))
   
-  cat("calculate maximum species per trip\n")
-  max_species <- ddply(catch_data, .(trip_id), summarize, species = modified[which.max(landed_wt)], .progress = "text")
+  #cat("calculate maximum species per trip\n")
+  max_species <- catch_data %>%
+    group_by(trip_id) %>%
+    summarize(species = modified[which.max(landed_wt)])
   
   
   #   # count max species
@@ -64,13 +68,13 @@ other_ports <- c("DFO", "NWAFC")
 
 # load common names
 spid <- read.csv(
-  "/Users/efuller/1/CNH/Analysis/Metiers/writing/code/data/spid.csv", 
+  "/Users/efuller/1/CNH/processedData/catch/1_cleaningData/spid.csv", 
   stringsAsFactors=F)
 grid <- read.csv(
-  "/Users/efuller/1/CNH/Analysis/Metiers/writing/code/data/grid.csv", 
+  "/Users/efuller/1/CNH/Analysis/Metiers/data/grid.csv", 
   stringsAsFactors=F)
 pcid <- read.csv(
-  "/Users/efuller/1/CNH/Analysis/Metiers/writing/code/data/pcid.csv", 
+  "/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-09/code/data/pcid.csv", 
   stringsAsFactors = F)
 
 for(i in 1:length(met_data)){
@@ -135,7 +139,9 @@ df$At_sea <- NULL
 df$CP_MS <- NULL
 row.names(df) <- NULL
 
-write.csv(df, "/Users/efuller/1/CNH/Analysis/Metiers/writing/code/3_exploreBuildwebs/ref_tables/metier_descrp.csv",row.names = FALSE)
+df$Metier <- tolower(df$Metier)
+
+write.csv(df, "/Users/efuller/1/CNH/processedData/catch/3_exploreBuildwebs/ref_tables/metier_descrp.csv",row.names = FALSE)
 
 # make strategy reference table ----
 # what is the majority fishery (> .5)
