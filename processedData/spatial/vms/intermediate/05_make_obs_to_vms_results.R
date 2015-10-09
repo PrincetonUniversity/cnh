@@ -25,9 +25,9 @@
 
 user = "emma"
 if(user == "emma"){
-  infile.dir <- "/Users/efuller/1/CNH/processedData/spatial/vms/intermediate/05_make_obs_to_vms/"
+  infile.dir <- "/Volumes/LA-PRIVATE/CNH/processedData/spatial/vms/intermediate/05_make_obs_to_vms/"
   infiles <- dir(infile.dir)
-  obs <- read.csv("/Users/efuller/1/CNH/rawData/Observers/WCGOPobs/Samhouri_OBFTfinal_Allfisheries_ProcessedwFunction_2009-2012_110613.csv",stringsAsFactors = FALSE)
+  obs <- read.csv("/Volumes/LA-PRIVATE/CNH/rawData/Observers/WCGOPobs/Samhouri_OBFTfinal_Allfisheries_ProcessedwFunction_2009-2012_110613.csv",stringsAsFactors = FALSE)
 }
 
 match_list <- list()
