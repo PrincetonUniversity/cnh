@@ -3,7 +3,7 @@ library(stringr)
 library(vegan)
 library(reshape2)
 # load data ----
-tickets <- readRDS("/Users/efuller/1/CNH/processedData/catch/1_cleaningData/tickets.RDS")
+tickets <- readRDS("/Volumes/LA-PRIVATE/CNH/processedData/catch/1_cleaningData/tickets.RDS")
 tickets <- rename(tickets, metier = metier.2010)
 
 # reference table for metiers ---- 
@@ -68,13 +68,13 @@ other_ports <- c("DFO", "NWAFC")
 
 # load common names
 spid <- read.csv(
-  "/Users/efuller/1/CNH/processedData/catch/1_cleaningData/spid.csv", 
+  "/Volumes/LA-PRIVATE/CNH/processedData/catch/1_cleaningData/spid.csv", 
   stringsAsFactors=F)
 grid <- read.csv(
-  "/Users/efuller/1/CNH/Analysis/Metiers/data/grid.csv", 
+  "/Volumes/LA-PRIVATE/CNH/Analysis/Metiers/data/grid.csv", 
   stringsAsFactors=F)
 pcid <- read.csv(
-  "/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-09/code/data/pcid.csv", 
+  "/Volumes/LA-PRIVATE/CNH/Analysis/Metiers/results/2015-01-09/code/data/pcid.csv", 
   stringsAsFactors = F)
 
 for(i in 1:length(met_data)){
@@ -141,7 +141,7 @@ row.names(df) <- NULL
 
 df$Metier <- tolower(df$Metier)
 
-write.csv(df, "/Users/efuller/1/CNH/processedData/catch/3_exploreBuildwebs/ref_tables/metier_descrp.csv",row.names = FALSE)
+write.csv(df, "/Volumes/LA-PRIVATE/CNH/processedData/catch/3_exploreBuildwebs/ref_tables/metier_descrp.csv",row.names = FALSE)
 
 # make strategy reference table ----
 # what is the majority fishery (> .5)

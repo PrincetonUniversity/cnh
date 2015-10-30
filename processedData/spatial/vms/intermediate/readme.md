@@ -31,4 +31,6 @@
 + for each file it projects the trajectory into an Equal Area Lambers projection from projectionwizard.com. This is required to use the `gDistance()` function (more later).
 + It defines trips by measuring the distance between the west coast shoreline (also projected) and each VMS ping. Any distance > 1.5 km is labeled as an "at sea" point. Through some cumulative sums and differencing, this ultimately creates a column `only_trips` which has 0s for when the boat is not at sea, and odd numbers for each trip.
 + Then I link to trips, description, results and validation (to some extent) is written up in `04_link_mets_results.R`. Results in 6 new columns that have trip_ids (if any) otherwise NAs
-+ whole trajectory is saved for linking with Obs data. 
++ whole trajectory is saved for linking with Obs data.
+
+`obs_seg_James/`: segmentation from James
