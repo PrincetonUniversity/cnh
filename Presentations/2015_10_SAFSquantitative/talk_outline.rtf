@@ -1,0 +1,182 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf130
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 ArialMT;}
+{\colortbl;\red255\green255\blue255;\red38\green38\blue38;\red46\green77\blue159;}
+\margl1440\margr1440\vieww9860\viewh23700\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 DROP NET BOATS TOO??\
+\
+[introduction]\
+over the last decade a not totally uncontroversial, but broadly consistent picture has emerged about the state of our marine and coastal environment. details vary, but broadly put: decades of overfishing, pollution and habitat destruction have left marine and coastal ecosystems in decline. \
+\
+[pile of papers published about status of marine oceans with millennium ecosystem assessment on top?]\
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+[introduction]\
+Reasons for these declines are varied, and still not totally determined but include\
+\
++ negligence or lack of awareness of indirect effects \
++ conflict between various users\
++ fragmentation in jurisdictions and decision making\
+\
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+[introduction]\
+EBM is becoming an increasingly popular approach to address these problems and to rebuild marine and coastal systems\
+\
++ high level policy proclamations (examples)\
++ and in the US has become a central paradigm underlying living marine resource policy (Levin et al. 2009, [
+\f1\fs26 \cf2 \expnd0\expndtw0\kerning0
+National Oceanic and Atmospheric Administration (2006) Evolving an ecosystem approach to science and management through NOAA and its partners. Available: {\field{\*\fldinst{HYPERLINK "http://www.sab.noaa.gov/Reports/eETT_Final_1006.pdf"}}{\fldrslt \cf3 http://www.sab.noaa.gov/Reports/eETT_Final_1006.pdf}}. Accessed 5 December 2008.]\
+
+\f0\fs24 \cf0 \kerning1\expnd0\expndtw0 \'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+[introduction]\
+EBM defines management strategies for entire systems, not simply individual components of the ecosystem [12]. As a consequence, EBM takes into account interactions among ecosystem components and management sectors, as well as cumulative impacts of a wide spectrum of ocean-use sectors [13]. Importantly, EBM considers humans as an integral part of the ecosystem, since humans derive a portfolio of services from the ecosystem and also act as a driver influencing ecosystem processes. \
+\
+EMB is defined by management plans that focus on\
+\
++ entire systems: not individual components of the ecosystem\
++ (and therefore) interactions: among management sectors, cumulative impacts\
++ people: as an integral part of the ecosystem (we derive portfolio of services, but also act as a driver) \
+\
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+[introduction]\
+But the transition from EBM in theory and policy to practice has been slow. In part because there are non-trivial technical and scientific challenges\
+\
++ existing work: much research has sought to illuminate the connectivity within and between the biotic and abiotic components of these systems: i.e. considering the status of commercial fish stocks and ecosystem components that interact with those stocks (predators, prey, habitats, etc.) often using sophisticated modeling approaches such as OSMOSE, Ecopath/Ecosim, and Atlantis. \
+	+ For example, the latter is used in the integrated ecosystem assessment (IEA) framework proposed by Levin et al (2009) and adopted by the National Marine Fisheries Service to guide management decisions. \
+	+ Atlantis, like others, can be used to model simple trophic interactions and more highly complex ecological structures (Flower et al. 2013). \
+\
+These efforts focus almost exclusively on the ecological components of these systems, without consideration of the social or economic influences that interact across time and space. \
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+[introduction]\
+This talk will focus on the US west coast commercial fishing fleets fishing in the California Current. There has been lots of excellent work on the ecological side EBM in this system, much from this department. \
+\
+[john field ecopath model -revisit to know details]\
+\
+And even people are included, but we\'92re still missing how people connect marine systems and instead tend to treat fleets as unconnected across fisheries. \
+\
+This is a problem because fishermen often take a portfolio approach to fishing. \
+\
+[papers? suresh, holland, others?]\
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+[introduction]\
+Understanding these human interactions therefore represent an important frontier to EBM science.  In particular because if these are the same vessels and effort is not perfectly constrained, then changes in one fishery can affect participation in others. \
+\
+In this talk I\'92ll describe how I\'92ve quantified and visualized this connectivity, and examined whether it changes after a management change. \
+\
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+[prelim methods]\
+The setting\
+\
+Here is the US west coast. X amount of fish species, X amount of money, X amount of boats, mix of state and federally managed fish species. \
+\
+For this talk I\'92m using landing receipts (fish tickets) for all catch landed between 2009-2013 on the US west coast which comes from PacFin. I should also mention that for this analyses I only consider vessels that are making > $5000 average annual income, discard hake boats, and limit it to vessel that have landings in the period 2009-2010 and 2012-2013 period of the time series (for reasons that will become clear). This results in ~2000 vessels representing 88% of the landings and revenue on the US west coast during the time.\
+\
+[they look like this]\
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+[prelim methods]\
+There\'92s a bit of preliminary methods to get into first i.e.\
+\
+What is a fishery? Most work tends to look at a single fishery at a time, often from strong a priori understanding of the system (i.e. sablefish fixed gear fleets, chinook troll, etc.). To look at the entire system I sought a way I could use the data to tell me what the fisheries where, and look for natural breaks in the catch records rather than a long string of arbitrary logical conditions. \
+\
+So I decided on the description that has been used in Europe, and on the east coast called \'91metier\'92 in which you look for  unique combinations of characteristic catch assemblages and gears. \
+\
+So based on catch contents and gear used, each trip can be assigned a \'93realized fishery\'94 \
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+[prelim methods] - optional\
+\
+Gears used on the trip are easily determined from fish tickets and are of 6 broad categories: bottom trawl, shrimp trawl, hook and line, troll, pot, net, and miscellaneous. \
+\
+To get characteristic assemblages of species I used infoMap to group trips that had similar catch profiles. Here instead of landed wt I\'92m using revenue. So each trip has a certain amount of species and dollars they get for each species. This is similar to any ecological undertaking when survey different sites and want to know how similar species composition is. \
+\
+I use the hellinger distance, which deals is a true metric (what\'92s it called?) and deals with the double zero problem (Legendre & Legendre). i.e. if two trips land the same species it counts that as more important than if two species don\'92t land the same species. Euclidean distance weights these things identically. Ecologically we know that\'92s not the case.\
+\
+From that can flip to a similarity (because maximum is 2^/12) and build an undirected, weighed network. InfoMap is a clustering algorithm that essentially random walks on this network. After certain amount of time condenses into subgraphs (clusters) which eventually form assemblages.\
+\
+Result is these target assemblages. \
+\
+[square matrix] - block metier names\
+\
+Then combining these with gear used  you get a realized fishery\
+\
+[square matrix] - reveal metier names\
+\
+Something important to mention here, this condenses down multi-species assemblages to be a single fishery (like DTS is 1 fishery. Just like chinook troll is 1 fishery.)\
+\
+So these fisheries return familiar fisheries, and can see familiar spatial and temporal structure.\
+\
+So now I have a definition of a fishery at trip level, and we\'92re off to the races to look at whether and how vessels participate across these fisheries. \
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+To remind you: I\'92m interested in connectivity between fisheries and how it changes as a result in management. To flesh this out, I\'92ll consider two scales. The most intuitive (for me) is the vessel level. This is commonly the scale that economic analyses take. I\'92m also going to look at a place-based community scale, because this is frequently the focus of more geography/anthropological fisheries social science and Magnuson Stevens has some language about impacts on \'93fishing communities\'94 (NS8) so it seems relevant to do both. \
+\
+The management change I\'92m looking at is the implementation of ITQs in the limited entry groundfish trawl fleet. \
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+\
+So we currently have realized fisheries, now the question is how do vessels link them together. \
+\
+[fig 1 from paper]\
+\
+To do this, I calculate the effective shannon index which is a diversity index that measures both the number of fisheries a vessel participates in and the even-ness with which it does so. \
+\
+[ESI equation] (explain all terms)\
+\
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+Calculating this for the west coast commercial fleet in 2009-2010, you can see the following patterns in diversity. The first biggest thing to take away is that there are more generalists than specialists on the west coast. Emphasizing the need to consider the interactions across fisheries. \
+\
+You can break that down to regional levels, here vessels are binned based on their average latitude of landing. \
+\
+And I should also note that the generalism varies here. Most vessels are still fishing mostly in a single fishery. But a few are doing more. \
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+So now I do as similar thing at the community level. Now I\'92m looking at ports as the placed-base communities. Here I use the realized fisheries and they\'92re connected if a vessel lands in both. \
+\
+[fig 1 with community bit too]\
+\
+The edges here are measured as the proportion of vessels doing both. But directional, because they are normalized by each fishery\
+\
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+So some examples are as follows \
+\
+crescent city, newport, astoria, moss landing, monetary, westport, (map on right with points). \
+\
+can see the number of nodes and the complexity of the connections vary. so similar to the vessel level, I need a metric that will reflect both of these quantities. A more highly connected port is one that has both many nodes and lots of strong connections between them. \
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+\
+For this I use, what I\'92m calling, average fishery connectance. Simply the sum of the network edges/total number of nodes. This returns a sort of intuitive score because each network edge can at max be equal to one. So similar to the ESI, an AFC of 3 means that each node on average is at maximum fully connected to 3 other fisheries. (or more weakly connected to more). \
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+Calculating this for all ports between 2009-2010 (dropping ports that have fewer than 3 vessels which landed there during that time we get ____ ports. \
+\
+barplto of AFC\
+\
+We got some variability here, to provide some intuition this is Eureka again. I\'92m going to make this  a circle layout. Some connections across fisheries. \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 Eureka flat layout, circle layout\
+\
+And here\'92s SB. One of the most interconnectd ones. [know what the other two above those are - maybe have all of these networks in appendix]\
+\
+SB circle layout. \
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+So now equipped with these two measures of connectivity I look to see if there\'92s a change before and after catch share implementation. So I calculate these for the period 2009-2010 and 2012-2013 (leaving out 2011 which was when they were implemented) and I calculate the difference in these scores. So a delta = 0 means no change. A delta < 0 means a decline in connectivity and a delta > 0 means an increase in connectivity. \
+\
+Here I use catch share implementation as a selective perturbation to see if it had an effect on the vessels which participated in this fishery. So to do that I use the fish tickets to find all vessels that used quota in 2012-2013, these are the ITQ group. If ITQs changed their connectivity, I\'92d expect it to be different from that of the rest of the fleet. Of the fleet, there are ___ vessels that are part of this IFQ group. \
+\
+[model is delta = alpha + beta IFQ participation]\
+\
+With this measure there\'92s a dependence on where you start. If you have a connective score of 0, your delta is constrained to either be 0 or increase. (can\'92t get less diversified than a specialist). SImlarlty if you were maximally diversified/connected you could only stay the same or decline. Thus with any random variation, we\'92d expect the deltas to be biased upwards and downward, respectively. So I also include this in the regression to account for that bias. \
+\
+[model is delta = alpha + beta IFQ participation] + beta 2009-2010 connectivity score]\
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+Results\
+\
+Fitting the model, we find support that we should include the pre-diversity value in the regression (AIC)\
+\
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+Take aways\
+\
+That understanding connectivity among fisheries on west coast is extremely important given the fact that generalism is the norm, not exception. \
+\
+This sort of connectivity is starting to be thought of as a good thing at vessel level. Kasperski and Holland have shown that revenue is less variable year to year the more diversified a vessel is. Here it seems IFQs have inadvertently helped this. \
+\
+It also emphasizes the scale/resolution at which you measure makes a difference. And policy and management talks about both, but the answers are different. \
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+Thanks. would love to take questions!}

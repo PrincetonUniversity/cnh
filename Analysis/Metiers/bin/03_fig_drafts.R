@@ -2,7 +2,7 @@
 rm(list=ls())
 
 # load data ----
-tickets <- readRDS("/Volumes/LA-PRIVATE/CNH/Analysis/Metiers/bin/data_output/diversity_landings_data.RDS")
+tickets <- readRDS("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/data_output/diversity_landings_data.RDS")
 
 # figure 2 ----
 # making histograms by management zone
@@ -10,7 +10,7 @@ tickets <- readRDS("/Volumes/LA-PRIVATE/CNH/Analysis/Metiers/bin/data_output/div
 library(dplyr)
 library(vegan)
 
-ports <- read.csv("/Volumes/LA-PRIVATE/CNH/processedData/spatial/ports/all_ports.csv",stringsAsFactors = FALSE)
+ports <- read.csv("/Users/efuller/Desktop/CNH/processedData/spatial/ports/all_ports.csv",stringsAsFactors = FALSE)
 ports <- rename(ports, pcid = Pcid)
 
 # look at each vessel, calculate diversity 2009-2010, and average latitude
@@ -50,14 +50,14 @@ div_hist <- ggplot(subset(ves_summary[-which(is.na(ves_summary$mean.lat)),], div
 
 all_plot <- plot_grid(coastwide, by_zone, div_hist, labels = c("A","B","C"), ncol = 3, rel_widths = c(1,1,1.75))
 
-save_plot("/Volumes/LA-PRIVATE/CNH/Analysis/Metiers/bin/figures/fig_2.pdf", 
+save_plot("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/figures/fig_2.pdf", 
           all_plot,base_height = 8, base_width = 12)
 
 # figure 3 ----
 # make port networks and measure degree, betwenness
-port_df <- readRDS("/Volumes/LA-PRIVATE/CNH/Analysis/Metiers/bin/data_output/port_diversity_network_metrics.RDS")
+port_df <- readRDS("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/data_output/port_diversity_network_metrics.RDS")
 
-descrp <- read.csv("/Volumes/LA-PRIVATE/CNH/processedData/catch/3_exploreBuildwebs/ref_tables/metier_descrp.csv", stringsAsFactors = FALSE)
+descrp <- read.csv("/Users/efuller/Desktop/CNH/processedData/catch/3_exploreBuildwebs/ref_tables/metier_descrp.csv", stringsAsFactors = FALSE)
 
 # each major gear is a color, and then color ramp within gear between light and dark color
 # pot = reds
@@ -167,13 +167,55 @@ pdf("/Volumes/LA-PRIVATE/CNH/Analysis/Metiers/bin/figures/fig_3c.pdf",width = 16
   barplot(port_df$ic_pre, bor = F, ylab = "average fishery connectance", xlab="port")
 dev.off()
 
+# aux ploting - drop nodes with < 3 vessels
+gp <- function(g_s){
+  g=delete.vertices(g_s,which(V(g_s)$size<3))
+  plot(g, edge.width = E(g)$weight*3, layout = layout.fruchterman.reingold, vertex.size = log(V(g)$size)*4, vertex.label.color = "grey30", vertex.label.cex = .75, vertex.label.family="sans", vertex.frame.color = NA, edge.curved=TRUE, edge.arrow.size = .25, edge.color = "black")
+}
+
 sb <- define_participationPlot(year=2009:2010, port = "SB", tickets = tickets)
 erk <- define_participationPlot(year=2009:2010, port = "ERK", tickets = tickets)
 
+crs <- define_participationPlot(year=2009:2010, port = "CRS", tickets = tickets)
+new <- define_participationPlot(year=2009:2010, port = "NEW", tickets = tickets)
+ast <- define_participationPlot(year=2009:2010, port = "NEW", tickets = tickets)
+mnt <- define_participationPlot(year=2009:2010, port = "MNT", tickets = tickets)
+mos <- define_participationPlot(year=2009:2010, port = "MOS", tickets = tickets)
+wpt <- define_participationPlot(year=2009:2010, port = "WPT", tickets = tickets)
+nea <- define_participationPlot(year=2009:2010, port = "NEA", tickets = tickets)
+orf <- define_participationPlot(year=2009:2010, port = "ORF", tickets = tickets)
+
+load("/Users/efuller/Desktop/CNH/processedData/spatial/2_coastline.Rdata")
+par(bg="transparent")
+plot(WC, col = 'grey50',bg="transparent", axes=FALSE,bor=F)
+points(ports$lon[which(ports$pcid=="NEA")], ports$lat[which(ports$pcid=="NEA")],col='dodgerblue',pch=19)
+
+plot(WC, col = 'grey50',bg="transparent", axes=FALSE,bor=F)
+points(ports$lon[which(ports$pcid=="WPT")], ports$lat[which(ports$pcid=="WPT")],col='dodgerblue',pch=19)
+
+plot(WC, col = 'grey50',bg="transparent", axes=FALSE,bor=F)
+points(ports$lon[which(ports$pcid=="AST")], ports$lat[which(ports$pcid=="AST")],col='dodgerblue',pch=19)
+
+plot(WC, col = 'grey50',bg="transparent", axes=FALSE,bor=F)
+points(ports$lon[which(ports$pcid=="NEW")], ports$lat[which(ports$pcid=="NEW")],col='dodgerblue',pch=19)
+
+plot(WC, col = 'grey50',bg="transparent", axes=FALSE,bor=F)
+points(ports$lon[which(ports$pcid=="CRS")], ports$lat[which(ports$pcid=="CRS")],col='dodgerblue',pch=19)
+
+plot(WC, col = 'grey50',bg="transparent", axes=FALSE,bor=F)
+points(ports$lon[which(ports$pcid=="ERK")], ports$lat[which(ports$pcid=="ERK")],col='dodgerblue',pch=19)
+
+plot(WC, col = 'grey50',bg="transparent", axes=FALSE,bor=F)
+points(ports$lon[which(ports$pcid=="MNT")], ports$lat[which(ports$pcid=="MNT")],col='dodgerblue',pch=19)
+
+plot(WC, col = 'grey50',bg="transparent", axes=FALSE,bor=F)
+points(ports$lon[which(ports$pcid=="SB")], ports$lat[which(ports$pcid=="SB")],col='dodgerblue',pch=19)
+
 pdf("/Volumes/LA-PRIVATE/CNH/Analysis/Metiers/bin/figures/fig_3a.pdf",width = 8, height = 8)
   par(bg="transparent")
-  plot(sb[[1]], edge.width = E(sb[[1]])$weight*1, 
-       layout = layout.circle, vertex.size = log(V(sb[[1]])$size)*2, 
+  g=delete.vertices(sb[[1]],which(V(sb[[1]])$size<3))
+  plot(g, edge.width = E(g)$weight*1, 
+       layout = layout.circle, vertex.size = log(V(g)$size)*2, 
        vertex.label.color = "black", vertex.label.cex = .5, 
        vertex.label.family="sans", vertex.frame.color = NA, 
        edge.curved=TRUE, edge.arrow.size = .05, edge.color = "black")
@@ -181,22 +223,27 @@ dev.off()
 
 pdf("/Volumes/LA-PRIVATE/CNH/Analysis/Metiers/bin/figures/fig_3b.pdf",width = 8, height = 8)
   par(bg="transparent")
-  plot(erk[[1]], edge.width = E(erk[[1]])$weight*1, layout = layout.circle, vertex.size = log(V(erk[[1]])$size)*4, vertex.label.color = "black", vertex.label.cex = .75, vertex.label.family="sans", vertex.frame.color = NA, edge.curved=TRUE, edge.arrow.size = .05, edge.color = "black")
-dev.off()
+  g=delete.vertices(erk[[1]],which(V(erk[[1]])$size<3))
+  plot(g, edge.width = E(g)$weight*1, 
+       layout = layout.circle, vertex.size = log(V(g)$size)*2, 
+       vertex.label.color = "black", vertex.label.cex = .5, 
+       vertex.label.family="sans", vertex.frame.color = NA, 
+       edge.curved=TRUE, edge.arrow.size = .05, edge.color = "black")
+  dev.off()
 
 # figure 4 ----
 # making linear regression
 
-diversities <- readRDS("/Volumes/LA-PRIVATE/CNH/Analysis/Metiers/bin/data_output/vessel_diversity_landings.RDS")
+diversities <- readRDS("/users/efuller/Desktop/CNH/Analysis/Metiers/bin/data_output/vessel_diversity_landings.RDS")
 sub_data <- subset(diversities, hake == 0)
 
 # individual model
 lm1 <- lm(delta.eff.shannon_2010 ~ eff.shannon_2010, sub_data)
 lm2 <- lm(delta.eff.shannon_2010 ~  eff.shannon_2010 + ifq, sub_data)
 lm3 <- lm(delta.eff.shannon_2010 ~ ifq, sub_data)
-
+lm4 <- lm(delta.eff.shannon_2010 ~ ifq + eff.shannon_2010 + ifq*eff.shannon_2010, sub_data)
 # port model
-port_df <- readRDS("/Volumes/LA-PRIVATE/CNH/Analysis/Metiers/bin/data_output/port_diversity_network_metrics.RDS")
+port_df <- readRDS("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/data_output/port_diversity_network_metrics.RDS")
 
 # look before and after in ports
 t.test(port_df$ic_pre,port_df$ic_post)
@@ -205,6 +252,7 @@ with(subset(port_df, ifq==1), t.test(ic_pre, ic_post))
 lm_port1 <- lm(ic_delta ~ ic_pre, port_df)
 lm_port <- lm(ic_delta ~  ic_pre + ifq, port_df)
 lm_port3 <- lm(ic_delta ~ ifq, port_df)
+
 
 # sim to get effects 
 library(arm)
@@ -363,6 +411,6 @@ ex_space$fishery <- as.factor(ex_space$fishery)
 
 ggplot(ex_space, aes(x = lat)) + geom_bar(aes(weight=revenue, fill = fishery),position="dodge",binwidth=1)+ ylab("revenue ($)") + xlab("latitude")  + theme_classic() + scale_y_sqrt()  + scale_fill_manual(values = c("grey40","grey80")) +  scale_y_continuous(trans = "reverse") + coord_flip() + theme(plot.background =  element_rect(fill="transparent"), panel.background = element_rect(fill="transparent"), legend.background = element_rect(fill='transparent'))
 
-load("/Volumes/LA-PRIVATE/CNH/processedData/spatial/2_coastline.Rdata")
+load("/Users/efuller/Desktop/CNH/processedData/spatial/2_coastline.Rdata")
 plot(WC, col = 'black',bg="transparent", axes=TRUE)
 
