@@ -3,7 +3,7 @@ library(stringr)
 library(vegan)
 library(reshape2)
 # load data ----
-tickets <- readRDS("/Volumes/LA-PRIVATE/CNH/processedData/catch/1_cleaningData/tickets.RDS")
+tickets <- readRDS("/Users/efuller/Desktop/CNH/processedData/catch/1_cleaningData/tickets.RDS")
 tickets <- rename(tickets, metier = metier.2010)
 
 # reference table for metiers ---- 
@@ -68,13 +68,13 @@ other_ports <- c("DFO", "NWAFC")
 
 # load common names
 spid <- read.csv(
-  "/Volumes/LA-PRIVATE/CNH/processedData/catch/1_cleaningData/spid.csv", 
+  "/Users/efuller/Desktop/CNH/processedData/catch/1_cleaningData/spid.csv", 
   stringsAsFactors=F)
 grid <- read.csv(
-  "/Volumes/LA-PRIVATE/CNH/Analysis/Metiers/data/grid.csv", 
+  "/Users/efuller/Desktop/CNH/Analysis/Metiers/data/grid.csv", 
   stringsAsFactors=F)
 pcid <- read.csv(
-  "/Volumes/LA-PRIVATE/CNH/Analysis/Metiers/results/2015-01-09/code/data/pcid.csv", 
+  "/Users/efuller/Desktop/CNH/Analysis/Metiers/results/2015-01-09/code/data/pcid.csv", 
   stringsAsFactors = F)
 
 for(i in 1:length(met_data)){
