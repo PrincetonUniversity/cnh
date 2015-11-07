@@ -184,4 +184,8 @@ if(any(is.na(state_list))){
   state_list <- state_list[-which(is.na(state_list))]
 }
 
+saveRDS(port_list, "/Users/efuller/Desktop/CNH/Analysis/participation_plots/analysis/port_list.RDS")
+saveRDS(county_list, "/Users/efuller/Desktop/CNH/Analysis/participation_plots/analysis/county_list.RDS")
+saveRDS(state_list, "/Users/efuller/Desktop/CNH/Analysis/participation_plots/analysis/state_list.RDS")
+
 # calculate fishery statistics ----
