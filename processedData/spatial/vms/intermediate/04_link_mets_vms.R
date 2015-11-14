@@ -78,7 +78,8 @@ data.dir <- "/Users/efuller/Desktop/CNH/processedData/spatial/vms/intermediate/0
 vms_files <- dir(data.dir)
 # just to pick up
 start_i <- ifelse(window_size==0, 128, 
-                  ifelse(window_size==24, 265, 1))
+                  ifelse(window_size==24, 265, 
+                         ifelse(window_size==72, 147, 1)))
 for(b in start_i:length(vms_files)){
 
 ves <- readRDS(paste0(data.dir,vms_files[b]))
