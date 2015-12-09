@@ -141,7 +141,7 @@ row.names(df) <- NULL
 
 df$Metier <- tolower(df$Metier)
 
-write.csv(df, "/Volumes/LA-PRIVATE/CNH/processedData/catch/3_exploreBuildwebs/ref_tables/metier_descrp.csv",row.names = FALSE)
+write.csv(df, "/Users/efuller/Desktop/CNH/processedData/catch/3_exploreBuildwebs/ref_tables/metier_descrp.csv",row.names = FALSE)
 
 # make strategy reference table ----
 # what is the majority fishery (> .5)
@@ -229,4 +229,4 @@ define_strategy <- function(cid, df,graph = "no"){
 
 strat_df$type <- ifelse(strat_df$median.income.div==0, "specialist", ifelse(is.na(strat_df$sd.income.div),NA,"generalist"))
 
-write.csv(strat_df, "/Users/efuller/1/CNH/Analysis/Metiers/writing/code/3_exploreBuildwebs/ref_tables/strategies.csv",row.names=FALSE)
+write.csv(strat_df, "/Users/efuller/Desktop/CNH/Analysis/Metiers/writing/code/3_exploreBuildwebs/ref_tables/strategies.csv",row.names=FALSE)

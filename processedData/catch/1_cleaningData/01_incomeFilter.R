@@ -9,7 +9,7 @@ incomeFilter <- function(){
 # load data----
 
 ftl <- read.csv(
-  "/Users/efuller/1/CNH/rawData/Catch/FTL_2009-2013_w-o-c_samhouri.csv", 
+  "/Users/efuller/Desktop/CNH/rawData/Catch/FTL_2009-2013_w-o-c_samhouri.csv", 
   stringsAsFactors = F)
 # because ftid is not unique by year, compile ftid and year together
 ftl$trip_id <- paste0(ftl$ftid, ftl$year)
@@ -20,12 +20,15 @@ ftl <- ftl[-which(duplicated(ftl)),]
 # remove vessel 0, *****, and UNKNOWN
 ftl <- ftl[-grep(pattern = "[****]",ftl$veid),]
 ftl <- ftl[-which(ftl$veid %in% c("0","UNKNOWN")),]
-
+ftl <- ftl[which(ftl$pargrp == "C" & ftl$removal_type %in% c("C","D")),]
+ftl <- ftl[-grep("^ZZZ",ftl$drvid),]
 # Find annual income, adjust to 2009 ----
 
-# Adjust income to 2009 using CPI (see here http://stackoverflow.com/questions/12590180/inflation-adjusted-prices-package)
+# Adjust income to 2009 using CPI 
+# (see here http://stackoverflow.com/questions/12590180/inflation-adjusted-prices-package)
 library(quantmod)
-getSymbols("CPIAUCSL", src="FRED") # get CPI. The CPI inflation calculator at the BLS uses the latest monthly value for a given year. 
+getSymbols("CPIAUCSL", src="FRED") # get CPI. 
+# The CPI inflation calculator at the BLS uses the latest monthly value for a given year. 
 library(lubridate)
 
 ftl$revenue <- ftl$ppp *ftl$landed_wt

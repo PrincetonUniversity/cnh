@@ -4,7 +4,7 @@ filter_rare <- function(data){
   
 # merge nominal and species market categories ----
   # load species ids
-  spid <- read.csv("/Users/efuller/1/CNH/processedData/catch/spid.csv", 
+  spid <- read.csv("/Users/efuller/Desktop/CNH/processedData/catch/spid.csv", 
                    stringsAsFactors=F)
   
   # some problems - make common name identical across species
@@ -48,7 +48,6 @@ filter_rare <- function(data){
   dub_gears <- unique(filtered_ftl[,c("trip_id","grgroup")])
   rm_ves <- unique(dub_gears$trip_id[which(duplicated(dub_gears$trip_id))])
   no_dups <- subset(filtered_ftl, !(trip_id %in% rm_ves))
-#  saveRDS(no_dups, "/Users/efuller/1/CNH/Analysis/Metiers/writing/code/1_cleaningData/filtered_ftl.RDS")
 #----
 return(no_dups)
 }

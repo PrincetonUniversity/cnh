@@ -1,116 +1,40 @@
-# comparing classifications of major species versus clusters. 
-
-# load metiers
-#----
-# load data
-filtered_ftl <- readRDS("code/1_cleaningData/filtered_ftl.RDS")
-
-files <- list.files("code/2_defineMetiers/") # load 2010 predicted metiers
-pred_files <- files[grep("2010cluster_key.txt",files)]
-class_files <- files[grep("2010p",files)]
-predicteds <- do.call(rbind, lapply(paste0("code/2_defineMetiers/",pred_files), read.csv))
-classifieds <- do.call(rbind, lapply(paste0("code/2_defineMetiers/", class_files), readRDS))
-predicteds$ftid <- paste0(predicteds$ftid, 2010)
-predicteds$node <- NULL
-colnames(predicteds) <- c("trip_id", "metier")
-colnames(classifieds) <- c("trip_id", "metier")
-
-metiers <- rbind(classifieds, predicteds)
-
-# merge metiers
-tickets <- merge(filtered_ftl, metiers, by = "trip_id")
-length(unique(tickets$trip_id)) == length(unique(metiers$trip_id))
-
-tickets$metier <- paste(tickets$grgroup, tickets$metier, sep="_")
-
-saveRDS(tickets, "code/3_exploreBuildwebs/tickets.RDS")
-#----
-# find major species in each catch
-#----
-library(plyr)
-# by both revenue and volume
-maj <- ddply(tickets, .(trip_id), summarize, m.rev = modified[which.max(adj_revenue)], m.vol = modified[which.max(landed_wt)]) # takes awhile
-
-# append to tickets that have both cluster ID and major ID
-trips <- unique(tickets[,c("trip_id","metier","grgroup")])
-trips <- merge(trips, maj, by ="trip_id")
-
-trips$m.rev <- paste(trips$m.rev, trips$grgroup, sep="_")
-trips$m.vol <- paste(trips$m.vol, trips$grgroup, sep="_")
-saveRDS(trips, "code/3_exploreBuildwebs/trips.RDS")
-#----
-# calculate ARI
-#----
-library(e1071)
-table(trips$m.rev, trips$metier)
-classAgreement(table(trips$metier, trips$m.rev))$crand
-
-#----
-# visualize fisheries
-#----
-# rows are fisheries, columns are by revenue
-percents <- table(trips$metier, trips$m.rev)/rowSums(table(trips$metier,trips$m.rev))
-library(vegan);library(RColorBrewer)
-dca <- decorana(percents)
-tabasco(decostand(percents,"log"), dca,col=c("white",rev(colorRampPalette(brewer.pal(9,"Blues"))(10))),cexRow=.25,cexCol=.6, add.expr=list(abline(v=7,col="grey"), text(x = 15, y = 375, "tls_1\nsalmon troll"), abline(v=48, col="grey")))
-
-saveRDS(percents, "code/new_things/percents.RDS")
-
-#----
-#bipartite networks
-#----
-melt_catch <- melt(tickets, measure.vars = "landed_wt", id.vars = c("modified","metier"))
-d_catch <- dcast(melt_catch,  modified~metier, fun.aggregate = sum)
-web <- d_catch
-row.names(web) <- web[,1]
-web <- web[,-1]
-web <- as.matrix(web)
-plotweb(web)
-
-# take top 10 by volume
-plotweb(web[,names(sort(colSums(web),decreasing=T)[1:15])],arrow="both",text.rot=90)
-
-saveRDS(web, "code/3_exploreBuildwebs/web.RDS")
-
 #----
 # characterizing data
 #----
-library(plyr)
+library(dplyr)
 # number of metiers each year
-tickets <- readRDS("code/3_exploreBuildwebs/tickets.RDS")
-over_years <- ddply(tickets, .(year), summarize, num_metiers = length(unique(metier)))
+tickets <- readRDS("/Users/efuller/Desktop/CNH/processedData/catch/1_cleaningData/tickets.RDS")
+over_years <- tickets %>%
+  group_by(year) %>%
+  summarize(num_metiers = length(unique(metier.2010)))
 range(over_years$num_metiers)
 
 # for each metier, what are the number of trips and vessels?
-neffort <- ddply(tickets, .(metier, year), summarize, ntrips = length(unique(trip_id)), nves = length(unique(drvid)))
-
-neffort <- neffort[order(neffort$nves, decreasing = T),]
+neffort <- tickets %>%
+  group_by(metier.2010, year) %>%
+  summarize(ntrips = length(unique(trip_id)), nves = length(unique(drvid))) %>%
+  arrange(-nves)
 
 # for each metier, what are the commonly caught species?
 # define as for all trips of this metier, what is the species that is most often in the majority of catches?
 # so for each species in each metier, how many trips is it the majority?
 
 characterize_metiers <- function(metier_choice, data = tickets){
-  cat("subsetting catch data\n")
-  catch_data <- subset(tickets, metier == metier_choice, select = c("modified","landed_wt", "trip_id","drvid","ppp","drvid"))
+  catch_data <- subset(tickets, metier.2010 == metier_choice, select = c("modified","landed_wt", "trip_id","drvid","ppp","drvid"))
   
   # find max species by trip.
   trips <- unique(catch_data$trip_id)
   max_species <- rep(NA, length(trips))
   
-  cat("calculate maximum species per trip\n")
-  max_species <- ddply(catch_data, .(trip_id), summarize, species = modified[which.max(landed_wt)], .progress = "text")
-  
-  
-  #   # count max species
-  #   barplot(log(sort(table(max_species$species), decreasing=T)), bor=F, las=2, cex.names=.75,ylab = "log number of trips", xlab="secies", col ="#f46d43")
+  max_species <- catch_data %>%
+    group_by(trip_id) %>%
+    summarize(species = modified[which.max(landed_wt)])
   
   # for each metier, what are the main ports?
   metier_trips <- subset(tickets, trip_id %in% catch_data$trip_id, select = c("trip_id", "grid","pcid", "year"))
   tls_12 <- unique(metier_trips)
   grid = sort(table(metier_trips$grid), decreasing = T)
   pcid = sort(table(metier_trips$pcid), decreasing = T)
-  
   
   return(list(catch_data = catch_data, max_species = max_species, grid = grid, pcid = pcid))
 }
@@ -139,9 +63,9 @@ df$number_vessels <- NA
 other_ports <- c("DFO", "NWAFC")
 
 # load common names
-spid <- read.csv("code/data/spid.csv", stringsAsFactors=F)
-grid <- read.csv("code/data/grid.csv", stringsAsFactors=F)
-pcid <- read.csv("code/data/pcid.csv", stringsAsFactors = F)
+spid <- read.csv("/Users/efuller/Desktop/CNH/processedData/catch/1_cleaningData/spid.csv", stringsAsFactors=F)
+grid <- read.csv("/Users/efuller/Desktop/CNH/Analysis/Metiers/data/grid.csv", stringsAsFactors=F)
+pcid <- read.csv("/Users/efuller/Desktop/CNH/Analysis/Metiers/results/2015-01-09/code/data/pcid.csv", stringsAsFactors = F)
 
 for(i in 1:length(met_data)){
   df$Metier[i] <- names(met_data[i])
@@ -205,7 +129,7 @@ df$At_sea <- NULL
 df$CP_MS <- NULL
 row.names(df) <- NULL
 
-saveRDS(df, "code/3_exploreBuildwebs/metier_descrp.RDS")
+write.csv(df, "/Users/efuller/Desktop/CNH/processedData/catch/3_exploreBuildwebs/ref_tables/metier_descrp.csv")
 
 #----
 # building participation networks
@@ -221,10 +145,10 @@ define_participationPlot <- function(year_choose, port=NA, restrict=TRUE){
   if(!is.na(port)){
     yr_tickets <- tickets[which(tickets$year %in% year_choose & tickets$pcid==port),]
   }
-  m_by_v <- melt(yr_tickets, id.vars = c("metier","drvid"), measure.vars = "trip_id")
+  m_by_v <- melt(yr_tickets, id.vars = c("metier.2010","drvid"), measure.vars = "trip_id")
   m_by_v <- unique(m_by_v)
-  cast_mv <- dcast(m_by_v, metier~drvid, length)
-  rownames(cast_mv) <- cast_mv$metier
+  cast_mv <- dcast(m_by_v, metier.2010~drvid, length)
+  rownames(cast_mv) <- cast_mv$metier.2010
   cast_mv <- cast_mv[,-1]
   # remove any metiers that aren't used at all
 
@@ -273,6 +197,7 @@ graphs <- list(gs_09, gs_10, gs_11, gs_12, gs_13, pre_ITQ, post_ITQ, gs_all)
 saveRDS(graphs, "code/3_exploreBuildwebs/particp_graph.RDS")
 
 # do participation networks by port
+library(plyr)
 port_popularity <- ddply(tickets, .(pcid), summarize, num_Ves = length(unique(drvid)))
 port_popularity <- port_popularity[order(port_popularity$num_Ves, decreasing = T),]
 
