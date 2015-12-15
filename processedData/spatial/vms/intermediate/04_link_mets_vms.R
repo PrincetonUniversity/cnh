@@ -76,11 +76,8 @@ wc_proj <- spTransform(WC,CRS("+proj=aea +lat_1=35.13863306500551 +lat_2=46.3960
 # go through each track, save both new trajectory and fish tickest that are not found in VMS
 data.dir <- "/Users/efuller/Desktop/CNH/processedData/spatial/vms/intermediate/03_overlapMetier/"
 vms_files <- dir(data.dir)
-# just to pick up
-start_i <- ifelse(window_size==0, 128, 
-                  ifelse(window_size==24, 265, 
-                         ifelse(window_size==72, 147, 1)))
-for(b in start_i:length(vms_files)){
+
+for(b in 1:length(vms_files)){
 
 ves <- readRDS(paste0(data.dir,vms_files[b]))
 
