@@ -4,6 +4,7 @@ library(ggplot2)
 library(cowplot)
 library(tidyr)
 library(scales)
+library(reshape2)
 
 # set working directory to CNH
 setwd("/Users/jameal.samhouri/Documents/CNH_shared")
@@ -162,8 +163,47 @@ df.cor.trips.adj_year <- df.cor.adj_year %>%
 # quantities
 ##########################################
 ##########################################
-threshold <- 5 # minimum number of vessels for performing correlation test
 
+# subset out pairs of metiers with less than a cutoff number of vessels that do both
+
+cutoff <- 10 # minimum number of vessels for performing correlation test
+
+# for(i in 5:(dim(df.cor.rev)[2]-1)){
+#   vessels.that.do.both <- intersect(which(!is.na(df.cor.rev[,i])), which(!is.na(df.cor.rev[,i+1])))
+#   num.vessel.temp <- nrow(df.cor.rev[vessels.that.do.both,])
+#   if(num.vessel.temp < cutoff) {
+#     df.cor.rev[vessels.that.do.both,c(i+4,i+5)] <- NA
+#   }            
+# }
+
+count_dat <- df.cor.rev[,5:14]
+
+count_mat <- matrix(data = NA, ncol = ncol(count_dat),nrow=ncol(count_dat))
+colnames(count_mat) <- colnames(count_dat)
+rownames(count_mat) <- colnames(count_dat)
+
+for(i in 1:nrow(count_mat)){
+  row_met = rownames(count_mat)[i]
+  sub_ves <- count_dat[which(!is.na(count_dat[,i])),]
+  for(j in 1:ncol(count_mat)){
+    count_mat[i,j] <-  length(which(!is.na(sub_ves[,j])))
+  }
+}
+
+count_dat_adj_year <- df.cor.rev.adj_year[,5:14]
+
+count_mat_adj_year <- matrix(data = NA, ncol = ncol(count_dat_adj_year),nrow=ncol(count_dat_adj_year))
+colnames(count_mat_adj_year) <- colnames(count_dat_adj_year)
+rownames(count_mat_adj_year) <- colnames(count_dat_adj_year)
+
+for(i in 1:nrow(count_mat_adj_year)){
+  row_met = rownames(count_mat_adj_year)[i]
+  sub_ves <- count_dat_adj_year[which(!is.na(count_dat_adj_year[,i])),]
+  for(j in 1:ncol(count_mat_adj_year)){
+    count_mat_adj_year[i,j] <-  length(which(!is.na(sub_ves[,j])))
+  }
+}
+       
 panel.spearman <- function(x, y, ...) {
   horizontal <- (par("usr")[1] + par("usr")[2]) / 2; 
   vertical <- (par("usr")[3] + par("usr")[4]) / 2; 
@@ -175,31 +215,53 @@ panel.spearman <- function(x, y, ...) {
 pairs(df.cor.rev[,5:dim(df.cor.rev)[2]], lower.panel = panel.smooth, upper.panel = panel.spearman, col = alpha("steelblue",0.25), cex = 0.5, pch=19)
 
 # pairs plot based on adjusted years
+setwd("/Users/jameal.samhouri/Documents/CNH_shared/Analysis/ses_network")
+pdf("Pairs plot based on revenues, adjusted years.pdf", width = 10, height = 7)
 pairs(df.cor.rev.adj_year[,5:dim(df.cor.rev.adj_year)[2]], lower.panel = panel.smooth, upper.panel = panel.spearman, col = alpha("steelblue",0.25), cex = 0.5, pch=19)
+#pairs(df.cor.rev.adj_year[,5:dim(df.cor.rev.adj_year)[2]])
+dev.off()
 
-pairs(df.cor.rev.adj_year[,5:dim(df.cor.rev.adj_year)[2]])
+m1 <- cor(df.cor.rev.adj_year[,5:dim(df.cor.rev.adj_year)[2]], method="spearman",use="pairwise.complete.obs")
+# ignore correlations where number of vessels that participate in pair of metiers is <cutoff
+cutoff <- 10 # minimum number of vessels for performing correlation test
+m1.ignore <- m1
+m1.ignore[which(count_mat_adj_year < cutoff)] <- NA
+
+write.csv(m1.ignore, "Correlations between metiers based on revenues, adjusted years.csv")
+
+m1.ignore.melt <- melt(m1.ignore, id.vars=rownames(m1.ignore))
+ggplot(m1.ignore.melt, aes(x=Var1,y=Var2,fill=value,colour=value))+
+  geom_tile()+
+  scale_fill_gradient2(low="red",mid="white",high="blue")+
+  scale_colour_gradient2(low="red",mid="white",high="blue")+
+  theme_acs()+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position="top")+
+  xlab("")+
+  ylab("")
+ggsave("Correlation matrix based on revenues, adjusted years.pdf")
+
+
+
+
+pairs(df.cor.lbs.adj_year[,5:dim(df.cor.lbs.adj_year)[2]], lower.panel = panel.smooth, upper.panel = panel.spearman, col = alpha("steelblue",0.25), cex = 0.5, pch=19)
+
+
+
 
 ### NEXT STEPS
-#2 REDO PAIRS PLOTS AND SAVE
-#3 PREDICT CORRELATIONS BETWEEN METIERS BASED ON YEAR, STRATEGY (MAYBE YEAR, VESSEL SIZE)
-  #A) USE THESE CORRELATIONS TO DEFINE INTERACTION STRENGTHS IN UNDIRECTED NETWORKS
+#1 REDO PAIRS PLOTS AND SAVE
+#2 PREDICT CORRELATIONS BETWEEN METIERS BASED ON YEAR, STRATEGY (MAYBE YEAR, VESSEL SIZE)
+  #A) USE THESE CORRELATIONS TO DEFINE INTERACTION STRENGTHS IN UNDIRECTED NETWORKS. MAKE DIAGNOAL MATRICES REPRESENTING UNDIRECT NETWORKS BASED ON CORRELATIONS OF REVENUES, POUNDS, TRIPS
+#3 RUN FCM TO EQUILIBRIUM AND WITH SIMULATED CRAB CLOSURE FOR COASTWIDE NETWORK - JAMEAL'S HOMEWORK
+#4 EMMA'S HOMEWORK: ANALYZE STRUCTURAL PROPERTIES OF COASTWIDE UNDIRECTED PARTICIPATION NETWORK BASED ON INTERACTIONS STRENGTHS FROM CORRELATIONS VS (PROPRTION OF VESSELS THAT DO I AND J RELATIVE TO TOTAL NUMBER THAT DO I OR J), SUGGEST PORTS WITH SUFFICIENT NUMBER OF VESSELS TO REPEAT THIS ANALYSIS ON
+#5 USING PORTS SUGGESTED BY EMMA, PARAMETERIZE PARTICIPATION NETWORKS AND ANALYZE STRUCTURAL PROPERTIES OF 
 
 
 
 
 
   
-cor(df.cor.rev[,7], df.cor.rev[,9], use="complete.obs")
-
-ggplot(df.cor.rev, aes(x=Var1,y=Var2,fill=value,colour=value))+
-  geom_tile()+
-  scale_fill_gradient(low="white",high="orange")+
-  scale_colour_gradient(low="white",high="orange")+
-  theme_acs()+
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position="top")+
-  xlab("")+
-  ylab("")
 
 
 
