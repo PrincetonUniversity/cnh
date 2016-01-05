@@ -28,9 +28,16 @@
 `04_link_mets_vms.R`
 
 + loops through each vessel track from `03_overlapMetier`
-+ for each file it projects the trajectory into an Equal Area Lambers projection from projectionwizard.com. This is required to use the `gDistance()` function (more later).
++ I check for observer trips which are linked with multiple fish tickets and remove those trips. This is because with two trips landings of potentially different fisheries, it's impossible to put this observed trip into a training set for one fishery or the other. So these are flagged as `obs_dup = 1`
++ I also drop any data points with longitude > 0 or < -150 (some huge outliers found manually in the VMS data, this cleans them up).
++ for each file it projects the trajectory into an Equal Area Lambers projection from projectionwizard.com. This is required to use the `gDistance()` function.
 + It defines trips by measuring the distance between the west coast shoreline (also projected) and each VMS ping. Any distance > 1.5 km is labeled as an "at sea" point. Through some cumulative sums and differencing, this ultimately creates a column `only_trips` which has 0s for when the boat is not at sea, and odd numbers for each trip.
-+ Then I link to trips, description, results and validation (to some extent) is written up in `04_link_mets_results.R`. Results in 6 new columns that have trip_ids (if any) otherwise NAs
++ Then I link to trips, I find each fish ticket for the vessel in fish tickets, and based on the "time window" argument (0, 24, 36, 72, 168), I match VMS fishing trips that land within a time window prior to the fish ticket being reported. If more than one VMS trip occurred in that time window, both are assigned to the same fish tickets. Similarly, if more than one fish ticket occurs on the same day, both fish tickets are assigned to the same VMS trips.
++ I also calculate revenue, total lbs, and several measures of revenue/lbs per unit effort. I calculate the total distance a vessel travels and the total time spent on the water. These are `lbs_time`, `rev_time`, `lbs_dist`, etc. I also add the total number of fish tickets that were combined, that's `n.trips` and revenue and lbs are also standardized by that. These values are saved for each lat/lon point on a fishing trip. This is incase a trip is collapsed to a single point.
 + whole trajectory is saved for linking with Obs data.
+
+`05_make_obs_to_vms.R`
+
++ goes through each trajectory in `04_link_mets_vms\` and finds if any trips are observed. If they are, then finds the intervals of time when the boat had set gear. For all VMS points between the down and up, is labeled.
 
 `obs_seg_James/`: segmentation from James

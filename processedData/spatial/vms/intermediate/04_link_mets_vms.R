@@ -44,10 +44,12 @@ link_vms.tickets <- function(window_size){
   dubs_tix$tix4[grep("^NA",dubs_tix$tix4)] <- NA
   dubs_tix$tix5[grep("^NA",dubs_tix$tix5)] <- NA
   
+  # make vector of all fish tickets that are part of an observed trip 
+  # which is linked to more than 1 fish ticket
   duplicate_ftids <- unique(c(dubs_tix$tix1, dubs_tix$tix2, dubs_tix$tix3, dubs_tix$tix4, dubs_tix$tix5))
-  duplicate_ftids <- duplicate_ftids[-which(is.na(duplicate_ftids))]
+  duplicate_ftids <- duplicate_ftids[-which(is.na(duplicate_ftids))] # drop NA
   
-  # what's the maximum number of catches landed by a single vessel in a day? ----
+# what's the maximum number of catches landed by a single vessel in a day? ----
   # load catch
   catch <- readRDS("/Users/efuller/Desktop/CNH/processedData/catch/1_cleaningData/tickets.RDS")
   #vms <- readRDS("/Users/efuller/Desktop/CNH/processedData/spatial/vms/intermediate/04_matchMetier/VMS_catch.RDS")
@@ -88,8 +90,8 @@ find_trips <- function(vessel_track, coastline = wc_proj,
   # project for gDistance
   # default is Equal Area Albers
   # make sure no positive longitudes
-  if(any(vessel_track$longitude>0)){
-    vessel_track <- subset(vessel_track, longitude < 0)
+  if(any(vessel_track$longitude>0 | vessel_track$longitude < -150)){
+    vessel_track <- subset(vessel_track, longitude < 0 & longitude > -150)
   }
   
   # make vessel track sp object, assign default lat/lon of NAD83
@@ -235,19 +237,11 @@ for(j in 1:nrow(c2_bydate)){
   }
 }
 
-#  trips_wo_vms <- trips_wo_vms[-which(trips_wo_vms=="NA")]
-#   if(length(trips_wo_vms)!=0){
-#     no_vms_landings <- data.frame(trip_id= trips_wo_vms[-1,drop=FALSE],stringsAsFactors=FALSE)
-#     no_vms_landings <- left_join(no_vms_landings, c2)
-#     saveRDS(no_vms_landings, paste0("/Users/efuller/Desktop/CNH/processedData/both/matching_metiers/VMS_tracks_wMets/","no_vms_landings_v",unique(v2_track$doc.num),".RDS"))
-#     rm(no_vms_landings, trips_wo_vms)
-#   }
-
 # merge metier with trip_id
 met_track <- merge(as.data.frame(v2_track), dplyr::select(c2_bydate, starts_with("trip_id"), metier.2010),all.x = TRUE, all.y = FALSE)
 met_track <- met_track[order(met_track$date.time),]
 
-# rename aggregate trips
+# rename aggregate trips - adds an agg_id
 met_agg <- met_track %>%
   dplyr::select(only_trips, starts_with("trip_id")) %>%
   distinct() %>%
