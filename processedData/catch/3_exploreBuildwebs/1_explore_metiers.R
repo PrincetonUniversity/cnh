@@ -86,7 +86,7 @@ for(i in 1:length(met_data)){
   df$multi_species[i] <- "no"
   # if none, then anything over 19% of majority catch
   if(length(maj_species)==0){
-    maj_species <- names(freqsp[which(freqsp >=19)])
+    maj_species <- names(freqsp[which(freqsp >=10)])
     df$multi_species[i] <- "yes"
   }
   
