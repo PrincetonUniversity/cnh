@@ -4,11 +4,12 @@ define_participationPlot <- function(year_choose, port=NA, restrict=FALSE, ticke
   
   descrp$paint <- NA
   library(RColorBrewer)
+  descrp$Metier <- tolower(descrp$Metier)
   
   # find number of pot gears
-  n.gear = length(grep("pot",descrp$Metier))
+  n.gear = length(grep("pot",tolower(descrp$Metier)))
   paint = rev(colorRampPalette(brewer.pal(9, "Reds"))(n.gear))
-  descrp$paint[grep("pot",descrp$Metier)] <- paint
+  descrp$paint[grep("pot",tolower(descrp$Metier))] <- paint
   
   n.gear = length(grep("tws",descrp$Metier))
   paint = colorRampPalette(c("#FA9FB5","#E7298A"))(n.gear)

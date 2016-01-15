@@ -2,7 +2,7 @@
 rm(list=ls())
 
 # load data ----
-tickets <- readRDS("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/data_output/diversity_landings_data.RDS")
+tickets <- readRDS("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/04_data_output/vessel_landings_data.RDS")
 vessel_stats <- readRDS("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/04_data_output/vessel_stats.RDS")
 
 # figure 2 ----
