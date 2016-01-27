@@ -92,6 +92,8 @@ top10 <- tickets %>%
 
 top10
 
+write.csv(top10,"Top 10 metiers by revenue and yields 2009-2013.csv", row.names=FALSE)
+
 ### UNADJUSTED YEARS ###
 
 # make data frame identifying strategy used by each vessel (1, 2, or 3+ metiers), with unadjusted years
@@ -310,6 +312,9 @@ cutoff <- 10 # minimum number of vessels for performing correlation test
 m1.trips.ignore <- m1.trips
 m1.trips.ignore[which(count_mat_adj_year < cutoff)] <- NA
 length(which(is.na(m1.trips.ignore)))
+
+# matrix for FCM analysis
+write.csv(m1.trips.ignore, "Correlations between metiers based on trips (symmetric matrix), adjusted years.csv")
 
 # make corr matrix into a lower diagonal matrix only
 m1.trips.ignore[upper.tri(m1.trips.ignore)] <- NA #, diag=TRUE
