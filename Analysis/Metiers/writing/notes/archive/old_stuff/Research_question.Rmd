@@ -1,0 +1,48 @@
+---
+title: "Research question - Fishing & Foraging"
+author: "Emma Fuller"
+date: "August 26th, 2014"
+output: rmarkdown::tufte_handout
+bibliography: references.bib
+---
+
+## Motivation
+One of the failures of fisheries management is account for the diversity in fishing operations [@boonstra2014classifying].\marginnote{Salas \& Gaertner 2004; Degnbol et al. 2006}
+
+\marginnote{Multispecies fishery definition: ICES 2003}
+It's difficult to manage multispecies fisheries with techniques developed for single species fisheries, such as TAC [@boonstra2014classifying].\marginnote{Degnbol \& McCay 2007}
+
+Failure of management can have knock on effects with fishermen loosing trust in policy makers competence and willingness to comply with regulations [@boonstra2014classifying]. \marginnote{King \& Sutinen 2010; Nielsen \& Mathiesen 2003; McClay \& McGoodwin 1995}. 
+
+Fishing practices vary and are constantly changing, which makes it a key source of uncertainty \marginnote{Fulton et al. 2011}. 
+
+Translation of diversity of fishing practices to relatively uniform and limited number of categories is crucial for management [@boonstra2014classifying] \marginnote{Deporte et al. 2012}. 
+
+## Background - methods
+Categorization involves a tradeoff between parsimony and complexity [@boonstra2014classifying]. \marginnote{Marchal 2008, p. 686}
+
+Three type of fishing units: fleet, fishery and métier are currently used in fisheries science to classify the heterogeneity of fishing behavior, of which fleet and métier are the most commonly used [@boonstra2014classifying]. 
+
+A fleet describes the characteristics of a distinct group of fishing vessels (lenght, fishing gear used), while a métier describes groups of vessels that share common fishing practices [@boonstra2014classifying]. \marginnote{Marchal 2008; Ulrich et al. 2012}.
+
+Metiers focuse on practices, rather than static characteristics of gear and vessels, so tries to include fishing intention -- where to fish and for how long, which species to target, and which gear to use as part of the classification. The objective is to identify métiers that can account for the heterogenity and dynamics of fishing practices [@boonstra2014classifying].\marginnote{Ulrich et al. 2012}
+
+Criticisms of metiers are that they can describe how different fishers fish, but not why.\marginnote{Hind 2012} That it can measure the degree of heterogeneity but not explain which ecological, social or economic factors cuase fishers to maintain or change their ways of fishing [@boonstra2014classifying].
+
+Previous work has _postulated_ intentions to address this gap: one could assume that fishers are utility maximizers \marginnote{Bockstael \& Opaluch 1983; Gordon 1954}. But this might be better fit to fleet averages rather than smaller groups of fishers [@boonstra2014classifying].\marginnote{Holland 2008}
+
+## Previous findings
+
+@boonstra2014classifying
+  ~ Introduces _fishing styles_ and applies it to Swedish Baltic Sea fisheries 
+  ~ Produce a typology of _fishing practices_, which resembles metier anlaysis \marginnote{Deporte et al. 2012} based on logbooks. 
+Salas & Gaertner 2004
+  ~ An average fisher rarely exists in multispecies, multigear fisheries
+Christensen & Raakjaer 2006
+  ~ Even within a group of relatively homogenous groups of fishers that target the same species or work with the same type of gears, different modes of behavior can be observed
+
+## Research questions
+
+
+
+## References

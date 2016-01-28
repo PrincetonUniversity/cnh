@@ -1,0 +1,59 @@
+\documentclass[a4paper,10pt]{report}
+\let\oldmarginpar\marginpar
+\renewcommand\marginpar[1]{\-\oldmarginpar[\raggedleft\footnotesize #1]%
+{\raggedright\footnotesize #1}}
+\usepackage{charter}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{array}
+\usepackage[bitstream-charter]{mathdesign}	% using charter font for math
+\usepackage{natbib}
+\usepackage{gensymb}
+\usepackage{epstopdf}
+\usepackage{multirow} %for multi column spanning rows or multi row spanning columns
+ \usepackage{rotating} %for rotating tables
+ \usepackage{subfig} %to have figures within figures
+\usepackage{multicol}
+ \usepackage{ulem} % Allows for underlining without weird formatting glitches. 
+ \usepackage{pifont}% Allows for use of ZipfDingbats font
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor} % Allows colored font
+\usepackage{hyperref} %allows hyperlinks in the document
+\usepackage[linecolor=black,backgroundcolor=white,bordercolor=white,textsize=small]{todonotes}
+\usepackage{wrapfig}
+\usepackage[top=0.5in, bottom=0.75in, outer=1.5in, inner=0.5in, heightrounded, marginparwidth=1in, marginparsep=0.25in]{geometry}
+\usepackage{marginnote}
+\usepackage{hyperref}
+ \begin{document}
+
+\section*{Why global scenarios need ecology - \cite{Bennettetal:2003}}
+The\marginnote{\footnotesize {\bf Current status:} have glanced at both marked papers, may be useful see comments next to them for more. Not super excited.} authors argue that ecology is simplified in scenario building. Specifically, that there are implicit assumptions made about whether ecological change will generate feedbacks or not. Thus ecologists should get more involved with scenario building to correct this. Also, ecologists can benefit from scenario building because it's an alternate communication pathway and has some advantages over predictive modeling. 
+
+Overall useful in that it provides some case studies on ecological feedbacks, and encourages me to look at the Millennium Ecosystem Assessment. And interesting because it highlights these implicit assumptions that are made about ecosystem function. Unfortuately it's not super clear what an `ecological feedback' actually is, I think they're defining ecological feedbacks as any change in the ecosystem that causes additional changes either in the ecological subsystem or that reaches over to the social subsystem. 
+\subsection*{Notes}
+\begin{itemize}
+\item Making the argument that currently global scenarios include ecology by assuming that it's entirely dictated by human actions. They don't include ecological feedbacks. 
+\item Argue that scenarios are a useful way of thinking about the future when uncertainty is large (prediction entails only considering a single possible future). 
+\item However recent reviews have found that the way ecology is incorporated in these scenarios make strong assumptions about ecosystem function. Specifically they don't take into account feedbacks and make assumptions about how resilient ecosystems are. 
+\item Recent studies have suggested that ecological feedbacks and emergent properties of interacting subsystems can and do serve as major drivers of global process (Higgens eta l. 2002)
+\item Provides an example of another socioecological cascade: in the area around Lake Malawi, scientists observed that the parasitic disease schistosomiasis was becoming increasingly common. Turns out that it was because snails, the parasite's intermediate host, had become more abundant in the regions of the lake near the shore. This was due to a decline in mulluscivores caused by invasive species and intensified fishing. Ironically, more intensive fishing was facilitated by use of mosquito netting, which had been provided to local people to protect them from malaria-carrying mosquitos (Stauffer et al. 1997). 
+\item Another example of ecological feedbacks is the correlation between malaria and low economic growth found in Sachs and Malaney (2002). 
+\item I think they're defining ecological feedbacks as any change in the ecosystem that causes additional changes either in the ecological subsystem or that reaches over to the social subsystem. 
+\item Also mentions the Millennium Assessment, wonder what they have to say about ecosystem feedbacks. 
+\item Does underscore the importance for understanding feedbacks between ecosystem services and between ecosystem services and human well being. The latter is the link I'm focused on. 
+\end{itemize}
+
+\subsection*{Sources to follow up on}
+\begin{itemize}
+\item Higgens \marginnote{\footnotesize Posits that multiple stable states can exist, and critical transitions etc. Not useful}et al. 2002: recent studies have suggested that ecological feedbacks and emergent properties of interacting subsystems can and do serve as major drivers of global processes. 
+
+I think this refers to feedbacks between human and ecological subsystems. But specifically the ecology back to human direction. Which is excellent.
+\item Reynolds \marginnote{\footnotesize This is a book, didn't look at it} et al. 2002: another ecological feedback example potentially. I think it will detail how changes in land use can promote desert expansion. 
+\end{itemize}
+
+\bibliographystyle{cbe}
+\bibliography{refs_new}
+
+\end{document}
+

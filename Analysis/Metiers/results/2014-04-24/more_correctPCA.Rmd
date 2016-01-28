@@ -1,0 +1,162 @@
+---
+title: "PCA-more correct"
+author: "Emma Fuller"
+date: "April 24, 2014"
+output: html_document
+---
+
+```{r,echo=FALSE,message=FALSE,cache=TRUE}
+require(cluster)
+require(ggplot2)
+require(dplyr)
+require(reshape2)
+require(plyr)
+require(scales)
+require(data.table)
+require(RColorBrewer)
+require(qgraph)
+require(scatterplot3d)
+```
+
+## Setup data to do PCA/clustering on
+Load data
+
+```{r, cache=TRUE}
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-24/log_tripTable.Rdata")
+# if doesn't exist, run bottom of formatFTL.R IN THIS FOLDER!
+```
+
+## PCA on $log(lbs)$
+
+```{r, cache=TRUE}
+pca_loglb <- log_tripTable[,!"tripID", with=FALSE]
+pca_out_loglb <- prcomp(pca_loglb, scale=TRUE)
+summary(pca_out_loglb)
+```
+
+Requires 30 PCs to keep > 80% of the variance. Trying to get a feel for what the PCs represent
+
+```{r, cache=TRUE,echo=FALSE}
+x <- pca_out_loglb$rotation[,1]
+y <- pca_out_loglb$rotation[,2]
+z <- pca_out_loglb$rotation[,3]
+
+plot(x, y, type='p', pch=20, xlab='Comp.1', ylab='Comp.2')
+s3d = scatterplot3d(x, y, z, xlab='Comp.1', ylab='Comp.2', zlab='Comp.3', pch = 20)
+```
+
+The absolute value of the rotation (loadings) represent how much each species abundance contributes. Color-coding by the management grouping. 
+
+```{r,cache=TRUE,echo=FALSE}
+spid <- read.csv("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-24/spid.csv",as.is=TRUE)
+spid_sub <- subset(spid, select=c("SPID","mgmt_grp"))
+paint <- data.frame(SPID=names(x))
+paint <- merge(paint, spid_sub, "SPID")
+spectrum <- colorRampPalette(brewer.pal(8,"Set1"))(length(unique(paint$mgmt_grp)))
+colors <- as.numeric(as.factor(paint$mgmt_grp))
+legend_col <- alpha("grey85",0.25)
+
+par(bg="white")
+plot(x,y, type='p',pch=19, lwd=3,xlab='Comp.1', ylab='Comp.2', col=alpha(spectrum[colors],.75),cex=2,bty="n")
+legend("topleft", legend=tolower(unique(paint$mgmt_grp)),pch=19, col=spectrum[unique(colors)],title="Species group:",bg=legend_col,box.col=legend_col)
+```
+
+```{r, echo=FALSE,cache=TRUE}
+s3d = scatterplot3d(x, y, z, xlab='Comp.1', ylab='Comp.2', zlab='Comp.3', pch = 19,color=alpha(spectrum[colors],.75))
+legend("top", legend=tolower(unique(paint$mgmt_grp)),pch=19, col=spectrum[unique(colors)],title="Species group:", cex=1,ncol=4,bg="grey94", box.col="grey94")
+
+```
+
+Clear that PC1 captures the variation in groundfish and a bit of other. Looking one step forward at PCs 2, 3, and 4. 
+
+```{r, echo=FALSE,cache=TRUE}
+x <- pca_out_loglb$rotation[,2]
+y <- pca_out_loglb$rotation[,3]
+z <- pca_out_loglb$rotation[,4]
+
+plot(x,y, type='p',pch=19, lwd=3,xlab='Comp.2', ylab='Comp.3', col=alpha(spectrum[colors],.75),cex=2,bty="n")
+legend("bottomright", legend=tolower(unique(paint$mgmt_grp)),pch=19, col=spectrum[unique(colors)],title="Species group:",bg=legend_col,box.col=legend_col)
+```
+
+```{r,echo=FALSE,cache=TRUE}
+s3d = scatterplot3d(x, y, z, xlab='Comp.2', ylab='Comp.3', zlab='Comp.4', pch = 19,color=alpha(spectrum[colors],.75))
+legend("top", legend=tolower(unique(paint$mgmt_grp)),pch=19, col=spectrum[unique(colors)],title="Species group:", cex=.75,ncol=4,bg="grey94",box.col="grey94")
+
+```
+
+PCs 3, 4, and 5
+
+```{r, echo=FALSE,cache=TRUE}
+x <- pca_out_loglb$rotation[,3]
+y <- pca_out_loglb$rotation[,4]
+z <- pca_out_loglb$rotation[,5]
+
+plot(x,y, type='p',pch=19, lwd=3,xlab='Comp.3', ylab='Comp.4', col=alpha(spectrum[colors],.75),cex=2,bty="n")
+legend("bottomleft", legend=tolower(unique(paint$mgmt_grp)),pch=19, col=spectrum[unique(colors)],title="Species group:",ncol=4,bg="grey94", box.col="grey94")
+```
+
+
+```{r,cache=TRUE,echo=FALSE}
+s3d = scatterplot3d(x, y, z, xlab='Comp.3', ylab='Comp.4', zlab='Comp.5', pch = 19,color=alpha(spectrum[colors],.75))
+legend("top", legend=tolower(unique(paint$mgmt_grp)),pch=19, col=spectrum[unique(colors)],title="Species group:", cex=.75,ncol=4,bg="grey94",box.col="grey94")
+```
+
+Looks like there's not a whole lot of variation on PC5, and looking at the scree plot, this shows the same thing. Although it is catching a bit more of the s
+
+```{r, echo=FALSE,cache=TRUE}
+plot(pca_out_loglb,type='l')
+```
+
+In general it looks like groundfish are really what's driving this variation. I wonder if I subset the data down to just groundfish species, would I be able to capture the variation in just 4 PCs?
+
+## Filtering out groundfish
+
+```{r,cache=TRUE}
+grndfsh <- subset(spid, mgmt_grp=="GRND", select=c("SPID","common_name","complex","mgmt_grp"))
+col_keep <- names(log_tripTable)[names(log_tripTable) %in% grndfsh$SPID]
+
+grnd_logTrips <- log_tripTable[,col_keep,with=FALSE]
+
+pca_grnd <- prcomp(grnd_logTrips)
+summary(pca_grnd)
+```
+
+Indeed, 5 PCs is all that's need to represent these suckers. Let's plot to see what they represent
+
+```{r, cache=TRUE,echo=FALSE}
+
+x <- pca_grnd$rotation[,1]
+y <- pca_grnd$rotation[,2]
+z <- pca_grnd$rotation[,3]
+
+# color by complex
+
+grndfsh_sub <- subset(grndfsh, select=c("SPID","complex"))
+paint <- data.frame(SPID=names(x))
+paint <- merge(paint, grndfsh_sub, "SPID")
+spectrum <- colorRampPalette(brewer.pal(4,"Dark2"))(length(unique(paint$complex)))
+colors <- as.numeric(as.factor(paint$complex))
+
+#par(xpd=TRUE, mar=c(5,4,4,2))
+plot(x,y, type='p',pch=19, lwd=3,xlab='Comp.1', ylab='Comp.2', col=alpha(spectrum[colors],.75),cex=2,bty="n")
+text(x,y,names(x),cex=0.5,lwd=2,pos=1)
+legend("bottomright",legend=unique(paint$complex),col=unique(spectrum[colors]),pch=19,ncol=2,bg="grey94",box.col="grey94")
+
+s3d = scatterplot3d(x, y, z, xlab='Comp.1', ylab='Comp.2', zlab='Comp.3', pch = 19,color=alpha(spectrum[colors],.75))
+
+s3d.coords <- s3d$xyz.convert(x, y,z)
+text(s3d.coords$x, s3d.coords$y,     # x and y coordinates
+          labels=names(x),       # text to plot
+          pos=4, cex=.5) 
+legend("top", legend=tolower(unique(paint$complex)),pch=19, col=spectrum[unique(colors)],title="Species group:",ncol=4,bg="grey94",box.col="grey94")
+```
+
+Will save the groundfish PCA outputs, along with newly improved PCA outputs for the updated `log_tripTable.Rdata`. 
+
+```{r,cache=TRUE}
+save(pca_out_loglb, file="/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-24/pca_out_loglb.Rdata")
+save(pca_grnd, file="/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-24/pca_grnd.Rdata")
+```
+
+In particular, can see that PC1 captures sablefish as the maximimum point on Comp.1 is and the minimum on Comp.2 is pacific whiting. Black rockfish is the maximum for Comp.3. 
+

@@ -1,0 +1,49 @@
+---
+title: "Sablefish maps"
+author: "Emma Fuller"
+date: "September 29, 2014"
+geometry: margin=.25in
+output:
+  pdf_document:
+    fig_caption: yes
+---
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+fishing_points <- readRDS("/Users/efuller/1/CNH/Analysis/VMS/2014-09-29/fishing_points.RDS")
+trawl_sable <- readRDS("/Users/efuller/1/CNH/Analysis/VMS/2014-09-29/trawl_sable.RDS")
+library(RColorBrewer); library(sp); library(maptools);library(mapdata); library(lattice); library(raster)
+
+```
+## Getting only sablefish trips
+Using logbooks from 2009-2013, I included trips that had sablefish in their catch. Using the trip departure and return dates, along with vessel ID, I subset the VMS data to only include points that were during the trip out. 
+
+With this data I removed any VMS points that had an instantaneous speed recorded as greater than 40 knots or equal to zero. This left me with a bimodal distribution as shown below. Based on visual inspection, I counted all VMS points which had an instantaneous speed of 5 as "fishing" (to the left of the red line). 
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4, fig.cap='Speed distribution of all sablefish vessels'}
+par(mai = c(.8,.8,.2,0), mgp = c(2, 1, 0))
+plot(density(trawl_sable$Avg_Speed), xlab = "speed (knots)", lwd = 2, bty = "n", col = "slategrey", cex.lab = .75, cex.axis = .75, main = "")
+abline(v = 5, lty = 3, lwd = 2, col="indianred")
+```
+
+The following panels are subset to spring trawls (fishing trips taking place in May, June or July) or autumn trawls (fishing trips taking place in August, September, October). The rest of the fishing trips are discarded. 
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.cap="Fishing intensity measured by the number of relocations per cell", fig.height=9, fig.width = 5.1}
+par(mfrow=c(2,5), mai = c(0,0,.3,0))
+years = 2009:2013
+season = c("spring","fall")
+paint <- colorRampPalette(colors=c("steelblue3","wheat2","wheat","wheat1","whitesmoke" ,"white"))
+for(j in 1:2){
+  for(i in 1:5){
+    if(j == 2 & i == 5) break
+    df <- subset(fishing_points, trawl_season == season[j] & year == years[i])
+    rast <- raster()
+    extent(rast) <- extent(fishing_points) # this might be unnecessary
+    ncol(rast) <- 20 # this is one way of assigning cell size / resolution
+    nrow(rast) <- 100
+    r2 <- rasterize(coordinates(df), rast, fun=function(x,...)length(x))
+    plot(r2, main = paste(season[j], years[i], sep = " "), axes = F, bty = "n", 
+         legend = FALSE, col = paint(255), colNA = "steelblue")
+    map('worldHires',add=T, fill = TRUE, col=  "grey", bor=FALSE)
+  }
+}
+
+```

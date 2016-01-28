@@ -1,0 +1,56 @@
+This is BibTeX, Version 0.99d (TeX Live 2011)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: Annotated_bib.aux
+The style file: cbe.bst
+Database file #1: refs.bib
+Name 1 in "Hennessey, T, and Healey, M." has a comma at the end for entry HennesseyHealey:2000
+while executing---line 1079 of file cbe.bst
+Name 1 in "Hennessey, T, and Healey, M." has a comma at the end for entry HennesseyHealey:2000
+while executing---line 1079 of file cbe.bst
+Name 1 in "Hennessey, T, and Healey, M." has a comma at the end for entry HennesseyHealey:2000
+while executing---line 1154 of file cbe.bst
+Warning--empty year in Ladeetal:2013
+Warning--empty year in Leibbrandtetal:ND
+Warning--empty chapter and pages in Nelsonetal:2005
+You've used 126 entries,
+            2016 wiz_defined-function locations,
+            1315 strings with 33002 characters,
+and the built_in function-call counts, 54630 in all, are:
+= -- 5058
+> -- 2731
+< -- 75
++ -- 996
+- -- 952
+* -- 5363
+:= -- 9453
+add.period$ -- 378
+call.type$ -- 126
+change.case$ -- 1104
+chr.to.int$ -- 124
+cite$ -- 129
+duplicate$ -- 1817
+empty$ -- 3446
+format.name$ -- 1156
+if$ -- 10410
+int.to.chr$ -- 3
+int.to.str$ -- 0
+missing$ -- 128
+newline$ -- 633
+num.names$ -- 378
+pop$ -- 826
+preamble$ -- 1
+purify$ -- 1106
+quote$ -- 0
+skip$ -- 1269
+stack$ -- 0
+substring$ -- 3882
+swap$ -- 432
+text.length$ -- 9
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 752
+warning$ -- 3
+while$ -- 375
+width$ -- 0
+write$ -- 1515
+(There were 3 error messages)

@@ -1,0 +1,413 @@
+---
+title: "Risk and foodwebs"
+author: "Emma Fuller"
+date: "October 6, 2014"
+output:
+  pdf_document:
+    keep_tex: yes
+    number_sections: yes
+bibliography: refs.bib
+---
+
+# Introduction
+
+Previous work has suggested that fishermen participate in a diverse set of fisheries to reduce exposure to risk. In Alaska, @sethi2014alaskan found that the larger and more diverse a community's fishing portfolio was, the less variable yearly revenues were. Similarly, @kasperski2013income found a dome-shaped relationship between annual revenue variability and revenue diversification in the US Westcoast groundfish and Alaskan fisheries. 
+
+Here we use a metier analysis to define fisheries and determine whether diversity in fisheries participation affects variability in revenue. We are able to expand previous analyses of the US Westcoast groundfish fishery [@kasperski2013income] to all commercial fisheries on the US Westcoast by using a metier approach to define fisheries based on catch composition. This approach lets us seemlessly integrate data on participation in both state and federal fisheries. We find that diversity of revenue decreases year-to-year variance across US Westcoast commercial fisheries. 
+
+# Data and Methods
+
+## Catch Data
+This work uses fish ticket data from the US Westcoast commercial fisheries from 2009-2013, a total of 501,386 trips and 5,982 vessels. PacFin records species by "market category". For most easily identifiable and highly marketable species this is equivalent to species name. However for a number of rockfish that are difficult to distinguish, their market category is some flavor of "unspecified rockfish". We keep the raw market categories in this analysis with the argument that the resolution of the market and the targeting behavior of fishermen are equivalent. 
+
+Catch by species was totaled for each trip. We drop species from consideration that are caught in fewer than 100 trips over 5 years and with a median catch off less than 100 lbs. This drops 121 trips (less than half of one percent of total trips) and 60 market categories (i.e. species). A list of these species, along with median catch and number of trips found in is in the Appendix. We also drop any trips with the `grgroup` of `DRG` (dredge) as there are fewer than 5 trips overall for this gear type. 
+
+## Fisheries definition
+Income diversity is typically defined as an index which integrates both number of fisheries and proportion of trips a vessel partipates within annually [@kasperski2013income; @sethi2014alaskan]. This metric therefore requires some definition of a "fishery". Fisheries are commonly defined as
+
+> A unit determined by an authority or other entity that isengaged in raising and/or harvesting fish. Typically, the unit is defined in terms of some or all of the following: people involved, species or type of fish, area of water or seabed, method of fishing, class of boats and purpose of the activities ([FA0](http://www.fao.org/fi/glossary/), @fletcher2005flexible).
+
+Previous work on risk and revenue diversity on the US West Coast and Alaska tends to make use of gear, area and type of fish to define fisheries [@kasperski2013income], or existing management jurisdictions [@sethi2014alaskan]. Federally managed groundfish fisheries require vessels to submit logbooks which include permits. However for the state-managed fisheries we frequently only have the the fish ticket. This means our primary source of information about the fishery comes from the composition of catch. In order to use of the non-groundfish data we needed a way to classify to which fishery a trip belonged by composition of catch. To address these issues we used a metier analysis approach to define fisheries (gear-species target combinations) [@deporte2012regional]. Thus in the following analysis we are considering a metier equivalent to a fishery.  
+
+Metier-like analyes have been performed in the Northeast US, classifying fishing data to define "operational fisheries" of New England [@lucey2013operational]. While promising as a way to classify fisheries for use in ecosystem-based management, these methods introduced spatial and temporal structure prior to defining fisheries. In our analysis such structure emerges from the data, and we are able to recover the commonly recognized major fisheries and their seasonality, along with more spatially and temporally restricted fisheries. These methods have the additional benefit of only requiring the catch composition of trips, making it possible to integrate data from both state and federal management databases. 
+
+### Metier analysis 
+A metier is defined as a gear-species target combination [@deporte2012regional]. We first define species targets and then assign these targets to gear to make the final metier designation. 
+
+To find species target data we classify target species assemblages by first subsetting to all 2010 trips and searching for characteristic catch assemblages. To find these assemblages we first split trips by gear type (using PacFin `grgroups` designation) and calcluate a pairwise dissimiliarity index for each trip within a gear/year subset using the Bray-Curtis dissimilarity index. This metric has the advantage of avoiding the double-0 problem common in species count data. The Bray-Curtis dissimilarity index is defined as
+
+$$ BC_{ij} = \frac{2C_{ij}}{S_i+S_j} $$
+
+where $C_{ij}$ is the biomass of the lesser value for only those two species in common between both sites. $S_i$ and $S_j$ are the total number of individuals counted in both trips. This index ranges between 0 and 1, with 0 meaning the sites have the same composition and 1 meaning they share no species.
+
+We transform the disimilarity index to be a measure of similarity
+
+$$ \text{Similarity}= 1 - \mid BC\mid $$
+
+and build an undirected, weighted network in which nodes are trips, and edge widths are the similarity in species composition between trips. With this network we use the _infoMap_ algorithm to find communities (clusters or subgraphs) within the network (using the implementation in the `R` package `igraph`)[@rosvall2008maps; @rosvall2009map]. 
+
+_InfoMap_ is an information theoretic approach, which uses the probability flow of a random walker on a network as a proxy for the information flows in a real system. The objective of _infoMap_ is to compress the description of the probability flow, and in doing so partitions the network into modules. _InfoMap_ works by computing the fraction of time a node is visted by a random walker using a deterministically greedy search algorithm. Merges between modules that give the largest decrease in description length are made until further merging leads to increases of description length. Results are refined with a simulated annealing approach, starting at several different temperatures, with the run selected as the one that gives the shortest description of the network. 
+
+We found that other commonly used clustering algorithms (i.e. k-means, hierarchical clustering) did poorly with this data. Many clustering algorithms do best when clusters are spherical in n-dimensional space, and/or require the number of clusters decided _a priori_. In this data we have fisheries participation may vary by an order of magnitude (100s of trips to 100,000s of trips), and we wanted to avoid having to decide subjectively on the number of clusters.
+
+After dropping any modules that have fewer than 5 trips, we use a `knn` classifier to assign all other trips of each gear subset to those possible metiers.[^2] The nearest neighbor to each trip was found using the Bray-Curtis dissimilarity index (transformed into a similarity) and all analyses were performed using `R`.
+
+[^2]: In 2011 ITQs went in to a subset of the fisheries, namely the trawl groundfish fisheries. This change in management may change the assemblage of species caught together. To check for sensitivity based on year chosen as training year, we trained the `knn` classifier on both pre- (2010) and post- (2012) catch share implementation. We found no significant difference in how trips were assigned to metiers. But see the appendix for futher details. 
+
+## Income diversity
+We measure income diversity (or portfolio diversification) with the Simpson's diversity index [^1]  [@kasperski2013income; @sethi2014alaskan]. Simpson's diversity index is calculated per vessel; i.e. have an index of $j=1,\dots,N$ where $N$ is the number of vessels. Thus $S_j$ is defined as 
+
+[^1]: But see the Appendix for an equivalent analysis using the Shannon-Weaver index. 
+
+$$S_j = 1- \sum_{i=1}^k  p_i^2$$
+
+for $k$ fisheries with $p_i$ as the proportion of total gross revenue from fishery $i$. Here values of 0 indicate no diversity (a single fishery), where values close to 1 indicate high levels of diversity.
+
+We calculate the diversity indices each year a vessel is active and averaged across years. Diversity indices are calculated using the `vegan()` package in `R`. Vessels had to be active for at least 2 years in order to be included in this analysis. 
+
+## Income variability
+Income variability is calculated as the coefficient of variation in annual revenues. For a single vessel $j$ , the coefficient of variation ($CV$) is calculated as
+
+$$CV_j = \frac{\text{sd}(x)}{\text{mean}(x)},$$
+
+where $x$ is a vector of the annual revenues for vessel $j$. 
+
+# Results
+
+## Metier analysis
+There were between 102 and 112 metiers represented each year, and a total of 114 metiers total. These metiers, along with the most commonly caught species, number of vessels, and number of trips made, as well as their spatial distribution, are listed in the Appendix. The table is structured to record the metier, the major species, major gear types used, the percentage of trips falling in California (CA), Oregon (OR), and Washington (WA), the number of trips, and the number of vessels. The table is ordered from metiers with most trips to fewest. Major species are defined in one of two ways: 
+
+1. More than 50% of the trips have a majority of this species by weight
+2. No species is the majority in more than 50% of the trips, the species listed are the majority in at least 19% of the trips
+
+If there is no species present as a majority catch in more than 50% of the trips it's considered a multispecies fishery, this is noted in the table. 
+
+Familiar structure emerges from these metiers, which is reassuring. In particular commonly recognized fisheries are all present: dungeness crab pot fishery (`POT_1`), red sea urchin diving fishery (`MSC _1`), albacore trolling (`TLS_2`), salmon trolling (`TLS_1`), sablefish fixed gear (longline `HKL_1`, pot `POT_4`), pacific whiting midwater trawl (`TWL_3`), pink shrimp (`TWS_1`), among others. 
+
+One of the more interesting angles is the trawl fisheries. Trips using trawls are managed in aggregate in accordance to what they're not (i.e. "non-whiting groundfish"). However there seems to be some structure to this unifomly managed population. 
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, results='asis',}
+library(pander)
+df <- readRDS("code/3_analyzeMetiers/metier_descrp.RDS")
+colnames(df) <- c("Metier", "Major species", "Major gear types", "CA", "OR", "WA", "trips", "multisp.","vessels")
+set.alignment(c('left', 'right', 'right', 'center','center', 'center', 'center', 'center','center'))
+gf <- df[grep("TWL", df$Metier),]; rownames(gf) <- NULL
+row.names(gf) <- NULL
+pander(gf, split.tables = Inf, style = "multiline")
+```
+
+It should also be noted that major species is not necessarily the same as targeted species. Because this is a reflection of only the catch data, I only list the majority in the catch.[^5] This probably examples `TWL_1`. With at least 40% of trips coming back with a majority of dover sole, the other species are likely sablefish and thornyheads. However they are caught in lower abundances, despite being targeted. 
+
+[^5]: But this is something I think might be useful for better characterizing these metiers. I would expect target species would have a high relative abundance within a catch (i.e. be a majority species) and/or have a high relative price. I could imagine some targetting index for species $i$ in trip $j$ like $T_{ij} = \left(\frac{\text{lbs }sp_{ij}}{\text{mean lbs } s_j}\right)\left(\frac{\text{price }sp_{ij}}{\text{mean price }s_j}\right)$
+
+## Diversity and Risk
+We find a negative relationship between income variability and diversity of fisheries. Shaded areas are 95% confidence intervals. 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(ggplot2); library(scales)
+yrdf <- readRDS("code/3_analyzeMetiers/yrdf.RDS")
+
+simp2 <- lm(cv_revenue ~ mean_simpson + I(mean_simpson^2), subset(yrdf[["yr_stats"]], !is.na(cv_revenue)))
+
+p_quadratic <- ggplot(subset(yrdf[["yr_stats"]], !is.na(cv_revenue)), aes(x = mean_simpson, y = cv_revenue)) + 
+  geom_point(alpha=.75, size = 1) +
+  geom_smooth(method = "lm", formula = y ~ x + I(x^2), colour="steelblue", size=1) +
+  theme_minimal() + 
+  ylab("CV(annual revenue)") + 
+  xlab("mean Simpson's index") + 
+  annotate("text", x = .4, y = 1.95,
+           label = paste("y == ",round(simp2$coefficients[1],2),"+ ",
+                         round(simp2$coefficients[2],2),"* x",
+                         round(simp2$coefficients[3],2),"* x^{2}"), parse=T, size = 3) + 
+    annotate("text", x = .4, y = 1.85,
+           label = paste0("slope p values = ",
+                         scientific_format()(summary(simp2)$coefficients[2,4]), "; ", 
+                         scientific_format()(summary(simp2)$coefficients[3,4])),size = 2.5)
+
+p_quadratic
+```
+
+
+
+
+
+## Other plots
+
+Residuals are definitely heteroscedastic. 
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+par(mfrow=c(2,2),mai=rep(.35,4))
+plot(simp2, cex=.35)
+```
+
+Wonder if there's a real divide between amount of revenue that's brought in. 
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+cumulative <- yrdf$yr_stats[order(yrdf$yr_stats$mean_revenue, decreasing=T),]
+plot(cumsum(cumulative$mean_revenue)/sum(cumulative$mean_revenue),type='h',col="steelblue",xlab="number of vessels",ylab="cumulative proportion of mean revenue",bty="n", cex.lab=.75, cex.axis = .75)
+abline(v=2000,lwd=2,lty=3,col="lightgray")
+abline(h=1, lwd=2, col="indianred")
+```
+
+30% of the boats are responsible for 90% of the cumulative mean revenue. This suggests to me that perhaps I should pull the highest earning boats from the rest of the population and see if the patterns still hold. 
+
+Plotting mean revenue versus fisheries diversity. There's one outlier who makes more than 8 million dollars on average. Removing that boat and plotting both mean(revenue) and sd(revenue) and fisheries diversity. 
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE,fig.height=3}
+source("code/helper_functions/multiplot.R")
+
+mean <- ggplot(subset(yrdf[["yr_stats"]], !is.na(cv_revenue & mean_revenue < 7500000)), aes(x = mean_simpson, y = log(sd_revenue))) + geom_point(alpha=1, size = 1) + theme_minimal() 
+
+sd <- ggplot(subset(yrdf[["yr_stats"]], !is.na(cv_revenue) & mean_revenue < 7500000), aes(y = log(mean_revenue), x = mean_simpson)) + geom_point(alpha=1, size = 1) + theme_minimal() 
+
+multiplot(mean, sd, cols=2)
+```
+
+# Discussion
+
+I find a negative relationship between diversity of fisheries and year-to-year variation in annual revenues. This is broadly predicted by portfolio theory that portfolios with more assets will tend to have lower variance, especially if assets (here fisheries) vary asynchronously. Further I have expanded previous work on the US Westcoast to demonstrate that this relationship holds broadly across all US Westcoast commercial fisheries. 
+
+I have also developed a new approach to define metiers, or operational fisheries, for the US West coast commerical fisheries. This approach has the benefit of not placing _a priori_ assumptions about the spatial or temporal nature of the fisheries, allowing such structure to emerge from the data. 
+
+# Appendix
+
+## Filtered species
+To focus on species commonly caught, we remove species that were caught in fewer than 100 trips with a median catch weight of less than 100 lbs. Boxplots showing distribution of catch by species is shown, red boxes are species that were dropped from the analysis.  
+
+```{r 1_cleaningData,echo=FALSE,warning=FALSE,message=FALSE}
+# cleaning data
+  library(ggplot2)
+  melt_ftl <- readRDS("code/1_cleaningData/melt_ftl.RDS")
+  spdf <- readRDS("code/1_cleaningData/spdf.RDS")
+  spdf$spid <- as.character(spdf$spid)
+# find species that have fewer than 100 trips and less than 100lbs median pounds
+  small_spds <- spdf$spid[which(spdf$num_trips < 100 & spdf$median_catch < 100)]
+# plot boxplot, order by median value
+  bymedian <- with(melt_ftl, reorder(modified, -value, median))
+# plot in boxplot, color by those removed
+  paint <- rep("white",length(levels(bymedian)))
+  indx <- which(spdf$spid %in% small_spds)
+  paint[which(levels(bymedian) %in% spdf$spid[indx] )] <- "red"
+
+  ggplot(melt_ftl, aes(x = bymedian, y = log(value))) + geom_boxplot(fill=paint, outlier.size = .75, lwd=.15, fatten = 3) + theme_minimal() +  theme(axis.text.x = element_text(angle=45, vjust=1, size = 2)) +xlab("Species") + ylab("log(lbs)")
+```
+Species excluded are shown below with the number of trips they were found in and their median catch in pounds.
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(pander); library(dplyr)
+little_spdf <- subset(spdf, num_trips < 100, median_catch < 100)
+little_spdf$sd <- NULL
+
+spid <- read.csv("code/1_cleaningData/spid.csv", stringsAsFactors=F)
+
+common_names <- select(spid, SPID, common_name)
+
+little_spdf <- merge(little_spdf, common_names, by.x = "spid", by.y = "SPID", all.x=T, all.y=F)
+little_spdf$common_name <- tolower(little_spdf$common_name)
+little_spdf <- little_spdf[order(little_spdf$num_trips, decreasing =T),]
+little_spdf <- little_spdf[,c("spid", "common_name", "num_trips","median_catch")]
+colnames(little_spdf) <- c("spid", "common name", "number of trips", "median catch (lbs)")
+rownames(little_spdf) <- NULL
+pander(little_spdf, justify = "left", split.table=Inf)
+```
+
+## Sensitivity of classifying year
+To check whether our metier designations were sensitive to the year used to train the k-nearest-neighbors classifier we trained the knn classifier on years before (2010) and after (2012) ITQ implementation. To check agreement between partition results, we used the adjusted Rand index (ARI) [@rand1971objective]. The Rand index measures the accuracy of the partitions, and weights equally false positives and false negatives. The Rand index is calculated as 
+
+$$ RI = \frac{a + b}{a + b + c + d} $$
+
+where $a + b$ can be considered as the number of agreements between the two partititions, and $c + d$ as the number of disagreements between the partitions. The Rand index can take a value between 0 and 1, with a Rand index = 1 indicating the partitions are identical. The Rand index does not take into account the possibility that agreements happen between the two partitions due to chance (i.e. the expected $RI$ of a randomly partitioned dataset is not 0), and as the number of clusters increases $RI$ approaches 1. The adjusted Rand index (ARI) has been proposed to address these limitations [@hubert1985comparing] and is calculated as 
+
+$$ \text{ARI} = \frac{ {n \choose 2}(a + d) - [(a+b)(a+c) + (c+d)(b+d)]  }{ {n\choose 2}^2 - [(a+b)(a+c) + (c+d)(b+d)]}.$$
+
+I calculated the adjusted Rand Index ($ARI$) using the `R` library `e1071`, function `classAgreement()` for each gear group and each year that wasn't trained (2009, 2011, 2013). Results are as follows. Agreement between training sets are high, with only the gear group NET in 2013 with a value $< 0.9$.[^3][^4]
+
+[^3]: Should I also show the results of 2010 trained 2010 and 2012 trained 2012 to each other? Is that circular?
+
+[^4]: Haven't yet found any reference to what an acceptably high value of the $ARI$ is. 
+
+```{r message=FALSE, echo=FALSE, warning=FALSE, results='asis'}
+ARI <- readRDS("code/3_analyzeMetiers/adjustRandIndex.RDS")
+pander(ARI, justify = "left", split.table=Inf)
+```
+
+## Metier results
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+library(pander)
+df <- readRDS("code/3_analyzeMetiers/metier_descrp.RDS")
+colnames(df) <- c("Metier", "Major Species", "Major gear types", "CA", "OR", "WA", "trips", "multispecies","vessels")
+set.alignment(c('left', 'right', 'right', 'center','center', 'center', 'center', 'center','center'))
+pander(df, style = "multiline", split.tables = 300)   
+```
+
+## Participation networks
+Using these metiers I can build participation networks, where metiers (nodes) are connected by edges with a weight proportional to the number of vessels that participate in both fisheries within the given time window. This provides a useful visualization of the connectivity of these fisheries. The node size is proportional to the number of vessels which landed a trip in that metier. The colors are the "community" of which each metier is a part. Communities are defined again using _infoMap_ as implemented in the `igraph()` package in `R`. I interpret these to be clusters of fisheries that are frequently participated in tandem. 
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(igraph)
+top_ports <- readRDS("code/3_analyzeMetiers/top_ports.RDS")
+par(mfrow=c(3,4), mai=c(0,0,.1,0))
+titles = c("Newport, OR", "Coos Bay, OR", "Astoria, OR","San Francisco, CA","Fort Bragg, CA", "Westport, WA","Ilwaco, WA","Bodega Bay, CA","Princeton, CA", "Tillamook, OR")
+for(i in 1:length(top_ports)){
+  l <- layout.fruchterman.reingold(top_ports[[i]],niter=500,area=vcount(top_ports[[i]])^2.3,repulserad=vcount(top_ports[[i]])^2.8)
+  
+  plot(top_ports[[i]], axes= F, layout = l, 
+     vertex.size = log(V(top_ports[[i]])$size)+5, edge.width = E(top_ports[[i]])$weight*3, 
+     vertex.label.family = "sans", vertex.label.cex = .5, 
+     vertex.label.color = "black", vertex.frame.color = NA, 
+     vertex.label.degree=-pi/2, vertex.label.dist=.3, vertex.label=tolower(V(top_ports[[i]])$name))
+  mtext(text = titles[i],side = 3, line = 0, cex =.65)
+}
+```
+
+Across years these networks are too interconnected to be usefully visualized, breaking them apart by port provides a much better understanding (but see Appendix for coast-wide versions). Here I show catches for 2009 across the top ten ports by number of vessels which landed trips (unique vessel IDs). Visual inspection shows that `POT_12` (dungeness crab) and `TLS_22` (Albacore troll) look highly connected and central to many of these networks. 
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(ggplot2)
+degree <- readRDS("code/3_analyzeMetiers/degree.RDS")
+coloring <- readRDS("code/3_analyzeMetiers/coloring.RDS")
+ggplot(degree, aes(y=degree, x = reorder(metier, -degree, fun=median))) + geom_boxplot(fill = coloring$color,colour=coloring$color) +theme_minimal() + xlab("metier") + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 4))
+```
+
+Here the distribution of degrees is shown, ordered from highest to lowest median degree and colored by the number of ports where the metier is found (blue is high i.e all 10, red is low -- only 1)
+
+`[also the idea that some of these metiers could be structured not only by states, but by ports. Certainly the species sampling for rockfish show port/time of year structure. And haven't looked these through time, really]`
+
+`[Also should think about the ratio of trips to vessels. If each vessel does it once (at the extreme) it's unlikely that it's a fishery, so much as a particular assemblage that's hit randomly]`
+
+## Participation networks across years
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(igraph); library(scales)
+
+g <- readRDS("code/3_analyzeMetiers/particp_graph.RDS")
+titles <- c("2009","2010","2011","2012","2013","", "", "All years")
+xranges <- c(rep(c(-1.1, 1.3), 5),"","",c(-1.1,1.3))
+           
+  l <- g[[8]]
+
+par(mai=c(0,0,.25,0), mfrow=c(2,3))
+for(i in c(1:5,8)){
+plot(g[[i]], axes= F, layout = layout.fruchterman.reingold, 
+     vertex.size = 4, edge.width = E(g[[i]])$weight, 
+     vertex.label.family = "sans", vertex.label.cex = .2, 
+     vertex.label.color = "black", vertex.frame.color = NA, 
+     vertex.label.degree=-pi/2, vertex.label.dist=.3, layout=l, rescale = T,
+     edge.color = alpha("grey",E(g[[i]])$weight))
+mtext(text = titles[i],side = 3, line = 0)
+}
+
+```
+
+## Linear versus quadratic
+
+@kasperski2013income suggest a quadratic relationship between revenue variability and diversity. Using $AIC$ as a model selection tool, I find that the quadratic model improves the fit. 
+
+```{r, echo=FALSE,message=FALSE,warning=FALSE,results='asis'}
+library(pander)
+
+yrdf <- readRDS("code/3_analyzeMetiers/yrdf.RDS")
+
+simp1 <- lm(cv_revenue ~ mean_simpson, subset(yrdf[["yr_stats"]], !is.na(cv_revenue)))
+simp2 <- lm(cv_revenue ~ mean_simpson + I(mean_simpson^2), subset(yrdf[["yr_stats"]], !is.na(cv_revenue)))
+
+shan1 <- lm(cv_revenue ~ mean_shannon, subset(yrdf[["yr_stats"]], !is.na(cv_revenue)))
+shan2 <- lm(cv_revenue ~ mean_shannon + I(mean_shannon^2), subset(yrdf[["yr_stats"]], !is.na(cv_revenue)))
+
+aic = array(dim=c(2,5))
+colnames(aic) = c("model", "k","Likelihood","AIC",expression(delta))
+aic[1,1] <- "linear"; aic[2,1]  <- "quadratic"
+aic[1,2] <- 3; aic[2,2] <- 4
+aic[1,3] <- round(logLik(simp1),2); aic[2,3] <- round(logLik(simp2),2)
+aic[1:2,4] <- c(round(AIC(simp1),2), round(AIC(simp2),2))
+aic[1:2,5] <- c(round(AIC(simp2)-AIC(simp1),2),0)
+set.caption("Simpsons diversity")
+pander(aic)
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(ggplot2); library(scales)
+
+source("code/helper_functions/multiplot.R")
+
+p_linear <- ggplot(subset(yrdf[["yr_stats"]], !is.na(cv_revenue)), aes(x = mean_simpson, y = cv_revenue)) + 
+  geom_point(alpha=.75, size = 1) +
+  geom_smooth(method = "lm", formula = y ~ x, colour="steelblue", size=1) +
+  theme_minimal() + 
+  ylab("CV(annual revenue)") + 
+  xlab("mean Simpson's index") + 
+  annotate("text", x = .5, y = 1.75, 
+           label = paste0("y = ", round(simp1$coefficients[1],2)," + ",
+                          round(simp1$coefficients[2],2),"x\nslope p value = ",
+                          scientific_format()(summary(simp1)$coefficients[2,4])),size=3)
+
+p_quadratic <- ggplot(subset(yrdf[["yr_stats"]], !is.na(cv_revenue)), aes(x = mean_simpson, y = cv_revenue)) + 
+  geom_point(alpha=.75, size = 1) +
+  geom_smooth(method = "lm", formula = y ~ x + I(x^2), colour="steelblue", size=1) +
+  theme_minimal() + 
+  ylab("CV(annual revenue)") + 
+  xlab("mean Simpson's index") + 
+  annotate("text", x = .4, y = 1.95,
+           label = paste("y == ",round(simp2$coefficients[1],2),"+ ",
+                         round(simp2$coefficients[2],2),"* x",
+                         round(simp2$coefficients[3],2),"* x^{2}"), parse=T, size = 3) + 
+    annotate("text", x = .4, y = 1.85,
+           label = paste0("slope p values = ",
+                         scientific_format()(summary(simp2)$coefficients[2,4]), "; ", 
+                         scientific_format()(summary(simp2)$coefficients[3,4])),size = 2.5)
+
+multiplot(p_linear, p_quadratic, cols=2)
+```
+
+
+## Alternative diversity measure: Shannon Weaver index
+
+The Shannon-Weaver index is defined as 
+
+$$SW = -\sum^k_{i=1}p_i\ln p_i$$
+
+for $k$ fisheries, and $p_i$ is the proportion of total gross revenue from fishery $i$. As diversity increases, $SW$ increases from 0. 
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+shannon_quadratic <- ggplot(subset(yrdf[["yr_stats"]], !is.na(cv_revenue)), aes(x = mean_shannon, y = cv_revenue)) + 
+  geom_point(alpha=.75, size = 1) + 
+  geom_smooth(method="lm", formula = y ~ x + I(x^2), colour="steelblue", size = 1) + 
+  theme_minimal() + 
+  ylab("CV(annual revenue)") + 
+  xlab("mean Shannon-Weaver Diversity index") + 
+  annotate("text", x = 1, y = 1.95,
+           label = paste("y == ",round(shan2$coefficients[1],2),"+ ",
+                         round(shan2$coefficients[2],2),"* x",
+                         round(shan2$coefficients[3],2),"* x^{2}"), parse=T,size=3) + 
+    annotate("text", x = 1, y = 1.85,
+           label = paste0("slope p values = ",
+                         scientific_format()(summary(shan2)$coefficients[2,4]), "; ", 
+                         scientific_format()(summary(shan2)$coefficients[3,4])),size=2.5)
+
+shannon_linear <- ggplot(subset(yrdf[["yr_stats"]], !is.na(cv_revenue)), aes(x = mean_shannon, y = cv_revenue)) + 
+  geom_point(alpha=.75, size = 1) + 
+  geom_smooth(method="lm", colour="steelblue", size = 1) + 
+  theme_minimal() + 
+  ylab("CV(annual revenue)") + 
+  xlab("mean Shannon-Weaver Diversity index") + 
+  annotate("text", x = 1, y = 1.75, 
+           label = paste0("y = ", round(shan1$coefficients[1],2)," + ", 
+                          round(shan1$coefficients[2],2),"x\nslope p value = ",
+                          scientific_format()(summary(shan1)$coefficients[2,4])), size = 3)
+
+multiplot(shannon_linear, shannon_quadratic, cols=2)
+```
+
+```{r, echo=FALSE, message=FALSE, results='asis'}
+aic_shan <- array(dim=c(2,5))
+colnames(aic_shan) <- c("model", "k","Likelihood","AIC",expression(delta))
+aic_shan[1,1] <- "linear"; aic_shan[2,1]  <- "quadratic"
+aic_shan[1:2,2] <- c(3, 4)
+aic_shan[1,3] <- round(logLik(shan1),2); aic_shan[2,3] <- round(logLik(shan2),2)
+aic_shan[1:2,4] <- c(round(AIC(shan1),2), round(AIC(shan2),2))
+aic_shan[1:2,5] <- c(round(AIC(shan2)-AIC(shan1),2),0)
+set.caption("Shannon-Weaver diversity")
+pander(aic_shan)
+```
+
+# References

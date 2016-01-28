@@ -1,0 +1,386 @@
+\documentclass[a4paper,10pt]{article}
+\let\oldmarginpar\marginpar
+\renewcommand\marginpar[1]{\-\oldmarginpar[\raggedleft\footnotesize #1]%
+{\raggedright\footnotesize #1}}
+\usepackage{charter}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{array}
+\usepackage[bitstream-charter]{mathdesign}	% using charter font for math
+\usepackage{natbib}
+\usepackage{gensymb}
+\usepackage{epstopdf}
+\usepackage{multirow} %for multi column spanning rows or multi row spanning columns
+ \usepackage{rotating} %for rotating tables
+ \usepackage{subfig} %to have figures within figures
+\usepackage{multicol}
+ \usepackage{ulem} % Allows for underlining without weird formatting glitches. 
+ \usepackage{pifont}% Allows for use of ZipfDingbats font
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor} % Allows colored font
+\usepackage{hyperref} %allows hyperlinks in the document
+\usepackage[linecolor=black,backgroundcolor=white,bordercolor=white,textsize=small]{todonotes}
+\usepackage{wrapfig}
+\usepackage[top=0.75in, bottom=0.75in, outer=.75in, inner=0.75in, heightrounded, marginparwidth=1in, marginparsep=0.25in]{geometry}
+\usepackage{marginnote}
+\usepackage{hyperref}
+\usepackage{makeidx}	% package for building and including an index
+\makeindex	% makes the index
+\begin{document}
+
+{\Huge References Read}
+
+\tableofcontents
+\section{Questions}
+Need to make sure that I answer the following questions along with the index categories
+
+\begin{enumerate}
+\item References about IFD
+\item Anthropological papers looking at foraging theory 
+\item How do CPUE models look at longer term stock dynamics? Or whether proposed fishing behavior is optimal for the fishermen?
+\item conclusions on what traits lead to hyperstability or hyperdepletion in fish stocks?
+\end{enumerate}
+
+\section{Literature Review}
+
+\subsection{Harvesting strategies in the fishing literature}
+
+\subsubsection{Quantifying fishing effort: a synthesis of current methods and their applications - \cite{McCluskeyetal:2008}}
+
+As spatial management becomes more common there's an increasing need for spatial data to characterize the system. Unsurprisingly the best data is the data that's at the finest temporal and spatial resolution, and VMS and electronic logbooks (either self-reported or observer reported) tend to be the most accurate. When effort data is not available estimates based on interviews or statistical relationships between habitat type and fishing practices are sometimes used. Regardless, a lack of specific, accessible and reliable data is a common challenge regardless of fishery type (recreational, artisanal or commercial). 
+
+The biggest challenge given poor data coverage is the ability to extrapolate effort data into areas where no data exists. And regardless of how well the data capture heterogeneity among the fleet, the amount of information shared among skippers, skipper skill, vessel competition for physical access or physical information, repetitive fishing in the same area and technological advances influence the efficiency of fishing effort (Hilborn 1985, Gaertner and Dreyfus-Leon 2004, Bez et al. 2006, Bishop 2006, Branch et al. 2006).
+
+For me, this is good news. A framework that can take into account the characteristics of the fishery: the gear, the layout of the fishery, the stock ecology, may be able to provide some mechanistic predictions of how these intangible, but important, characteristics are likely to vary. The ability to understand whether individuals should share information, how they should distribute effort over space, or the competition likely between vessels are all questions that understanding individual harvesting strategy can help answer. 
+
+\index{Catch data} 
+
+\subsubsection{Fleet dynamics and fishermen behavior: lessons for fisheries managers-  \cite{Branchetal:2006}}
+
+Behavior can affect CPUE indices through changes in fishing location and/or depth, gear, and/or targeting different subsets of the population (spawning aggregations) (Branch et al. 2006). The analysis of CPUE plays a disproportionally large role in stock assessments because CPUE data is relatively cheap and easy to collect. 
+
+CPUE is used assuming that it's proportional to stock abundance. CPUE is standardized to account for increases in fishing power (changing technology), but can't be standardized to incorporate change in fishermen strategies on the water (sharing information). It's already been recognized that CPUE can exhibit hyperstablity and hyperdepletion where the CPUE either lags behind or falls much more quickly than the stock abundance (respectively). 
+
+The simplest assumption in using CPUE data is that trends in CPUE are linearly related to abundance. But CPUE is the most likely of all data in puts to be influenced by fleet dynamic sand fishermen behavior, including increases in fishing power, information sharing, switching between target species, prices and costs. 
+
+Branch et al. (2006) highlights information transfer as a major way that CPUE could remain unaffected. If abundance declines, but search time remains low, stock assessments based on such data won't record the change in abundance.
+
+You might think that spatial patterns in CPUE can be examined to determine where fish are present at highest abundances and hence where productivity is greatest, but CPUE turns out to be constant over large spatial areas in fisheries ranging from oceanic longline fleets to crabbers to abalone divers. The ideal free distribution predicts the when foragers have perfect knowledge about resources in number of different areas, and there is no cost to choosing among the areas, then the attempts of each forager to maximize their profitability will result in an equalization of profit rates in all areas. At this equilibrium, the number of foragers (fishermen or fishing effort) in each area will reflect the abundance better than the profit rate (CPUE). 
+
+\index{Catch data} \index{behavior} \index{information}
+
+\subsubsection{Effect of habitat patchiness on the catch rates of a Mediterranean coastal bottom long-line fishery \cite{Stobartetal:2012}}
+
+The more habitat specific the species was the bigger the CPUE discrepancy was. 
+
+\index{Catch data} \index{patchiness}
+
+\subsubsection{Folly and fantasy in the analysis of spatial catch rate data - \cite{Walters:2003}}
+About how spatial catch data can be useful but non spatial ones are typically not. 
+
+\index{Catch data} \index {patchiness}
+
+\subsubsection{An investigation of human vs. technology-induced variation in catchability for a selection of European fishing fleets -- \cite{Mahevasetal:2011}}
+Looking at whether human traits or technological better explain differences in catchability. Found that taking non-traditional gear information into account explained catch better, but individual differences in fishermen didn't account to much. Interesting because you'd think individual fishermen differences would be apparent when experience played a larger role in fishing success. 
+
+\subsubsection{Least squares estimates of the Schaefer production model: some Monte Carlo simulation results - \cite{Uhler:1980}}
+The CPUE is then substituted into the state equation, and the resulting estimation problem will suffer from errors-in-variables bias. This problem was diagnosed in the fisheries literature by an economist. 
+
+\index{Catch data}
+
+\subsubsection{Fishery management under multiple uncertainty -- \cite{Sethietal:2005}}
+Examples of bioeconomic modeling with uncertainty. These papers have extensions to deal with spatial structures of the resource, regulatory instruments, capital adjustments, etc. But assume optimal behavior on part of fisherman. Possibly useful here. Consideration of uncertainty on part of data collection, but ignore location choice. 
+
+Not sure where this fits yet. I don't think it pertains exactly to catch data. I think it's more a fleet level population model. 
+
+\index{bioeconomic model}
+
+\subsubsection{Fisheries management with stock growth uncertainty and costly capital adjustment -- \cite{Singhetal:2006}}
+Examples of bioeconomic modeling with uncertainty. These papers have extensions to deal with spatial structures of the resource, regulatory instruments, capital adjustments, etc. Solving for optimal harvesting and thus management. No discussion of individual fishermen. 
+Not sure where this fits yet. I don't think it pertains exactly to catch data. I think it's more a fleet level population model. 
+
+\index{bioeconomic model}
+
+\subsubsection{Effects of management tactics on meeting conservation objectives for Western North American groundfish fisheries -- \cite{Melnychuketal:2012}}
+
+Meta analysis to see if fisheries implementing catch shares actually do better than otherwise would be expected. Hilborn's management paper. I think he found that the biggest determinant of biological success was having a robust management program. This is useful because if true, would suggest that human behavior doesn't matter. Need to address what's going on in this paper and really understand it. This fits under the category of what problems are happening in fisheries that researching human behavior can help with. This is considering how management, and therefore human behavior at fleet level, affects biological outcome
+
+Not sure how to use this right now. 
+
+\index{empirical review}
+
+\subsubsection{Characterizing fishing effort and spatial extent of coastal fisheries -- \cite{Stewartetal:2010}}
+Maps coastal fishing pressure in coastal areas in six ocean regions. Not sure how to use this yet. 
+
+\index{maps effort}
+
+\subsubsection{A step towards seascape scale conservation: using vessel monitoring systems (VMS) to map fishing activity --\cite{WittGodley:2007}}Example paper using VMS data to map fishing intensity in British Isles. Not sure how to use this yet. 
+
+\index{maps effort}
+
+\subsubsection{Uncertainty, search, and information in fisheries-- \cite{MangelClark:1983}}
+
+This paper looks at how fishermen should allocate effort of a series of historical fishing grounds to maximize expected returns on fish. But in particular are looking at how gaining information through the season can improve this. They formulate a model based on the idea that while the exact mean density of fish ``clumps'' on a fishing ground ($\lambda$) is unknown, there's a estimated prior distribution. The model incorporates information in that there are two periods of fishing: a first allocation of vessels on the grounds, after which the distribution of $\lambda$ is updated to reflect how many encounters were made with fish in the first period, and then vessels are redistributed. They find the optimal number of vessels at each patch and the total excepted value (\$). This has a major assumption that $\lambda$ remains constant through the season (fishing doesn't decrease the density). 
+
+Also considers when there's only one patch that's very far away from port, and so fishermen can't go back and forth between the port and the ground. This relaxes the assumption that $\lambda$ should stay constant through the season, and now fish can be depleted. They compare a cooperative searching strategy (information is shared) and a competitive one. The cooperative one is always better. Although if there's increasing variance around $\lambda$ the competitive strategy improves more relative to itself. But never surpasses the cooperative one.
+
+This paper also has 4 nice case studies of the pacific tuna fishery, australian prawn, west coast prawn and british columbia salmon fishery. doesn't end up doing anything with that data, but summarizes the ecology, gear, spatial scale, and management of each. might be useful example for what's relevant characteristics for framework. 
+
+\index{information} \index{optimal effort}
+
+\subsubsection{Aggregation and fishery dynamics: a theoretical of schooling and the purse seine tuna fisheries -- \cite{ClarkMangel:1979}}
+Looks at how a model that incorporates non uniform catchability affects CPUE and management implications therein. Models exploited fish stocks and a tuna fishery. Looks at the effect aggregation (presumably of boats) has on yield-effort relationships. Finds that the predictions of a yield-effort relationship are different from general production fishery models. Discusses management implications of these different relationships. Just illustrating that density estimates are sensitive to assumptions in CPUE. 
+
+\index{information} \index{optimal effort}
+
+\subsubsection{Fishing for knowledge -- \cite{Wilson:1990}}
+
+Discusses the issue of searching for fishermen. From a social point of view. Will be useful to focus in on that part of harvesting behavior and good background. 
+
+\index{information}
+
+\subsubsection{Can management measures ensure the biological and economical stabilizability of a fishing model?-- \cite{JerryRaissi:2010}}
+
+Typical fleet level model but allows price to fluctuate endogenously
+
+\index{fleet model}
+
+\subsubsection{The use of optimal foraging theory in the understanding of fishing strategies: A case from Sepetiba Bay (Rio de Janeiro State, Brazil) -- \cite{Begossi:1992}}
+Uses optimal foraging theory to understand fishing strategies in Sepetiba Bay (Rio de Janerio State, Brazil). 
+
+\index{foraging theory} \index{behavior} \index{artisanal}
+
+\subsubsection{The use of optimal foraging theory to assess the fishing strategies of Pacific Island artisanal fishers: A methodological review -- \cite{Aswani:1998}}
+Uses optimal foraging theory to assess the fishing strategies of Pacific Island artisanal fishers
+
+\index{behavior} \index{foraging theory} \index{artisanal}
+
+\subsubsection{The lobster fiefs: economic and ecological effects of territoriality in the Maine lobster industry -- \cite{Acheson:1975}}
+Social norms affect harvesting patterns, affect biology of lobsters. Another Maine lobster example. Classic, I think.
+
+\index{anthropology} \index{behavior}
+\subsubsection{Location choice in New England trawl fisheries: old habits die hard -- \cite{HollandSutinen:2000}}
+Looks at harvesting location choice in New England trawl fisheries. Interesting tidbit that over time as stocks became more variable that fishermen changed to relying more on others' information than on own experience. Example of fishermen changing behavior to find more optimal strategies?
+
+\index{behavior} \index{information}
+\subsubsection{Ludwig's Ratchet and the Collapse of New England Groundfish Stocks -- \cite{HennesseyHealey:2000}}
+Looks at history of groundfish collapse in New England and how economic, social and cultural drivers cause fishers to act in ways unanticipated by management which in turn can undermine the intent of management actions. Should be useful as an example highlighting the importance of human behavior.
+
+\index{behavior}
+
+\subsubsection{The Social Aspects of Fishing Effort -- \cite{Gezelius:2007}}
+Not technically an SES because doesn't include any information on ecological dynamics. But good example of what types of fishermen behavior exist.
+
+\index{behavior} \index{information}
+
+\subsubsection{Fishing in Alaska, and the sharing of information -- \cite{Orth:1987}}Another example of fishermen behavior and how it might affect harvesting
+
+\index{behavior} \index{information}
+
+\subsubsection{Kin-selection, reciprocal altruism, and information sharing among Maine lobstermen -- \cite{Palmer:1991}}Anthropological study looking at how Maine fishermen share information differently in different communities. How this affects harvest?
+\index{behavior} \index{information}
+
+\subsubsection{Ode to the Sea: The socio-ecological underpinnings of social norms -- \cite{Leibbrandtetal:ND}}
+Example of social and ecological connection. Focuses on a longer time-scale though than I'm thinking. But still evidence that the environmental context humans operate within matters.
+
+\index{information} \index{behavior}
+
+\subsubsection{Models for fishing and models of success -- \cite{Palsson:1988}}
+icelandic skippers, are there differences in skill that account for differences in catches?
+
+\index{behavior}
+
+\subsubsection{What you know is who you know? Communication patterns among resource users as a prerequisite for co-management-- \cite{CronaBodin:2006}}
+Looks at social networks in a coastal community in Kenya. Examines how information flows between groups, and finds that fishermen are segregated by gear type, and the most centrally connected group (and thus possibly the most influential one) might have the least incentive to manage the resource sustainably (migrant, deep-sea fishermen). Suggests that the inability to manage the resource sustainably might be due to the social structure of the people in the community.
+
+\index{behavior}
+
+\subsubsection{To dream of fish: the causes of Icelandic skippers' fishing success -- \cite{PalssonDurrenberger:1982}}
+Discusses how fishing success is determined in Icelandic fishery
+
+\index{behavior}
+
+\subsubsection{finding fish: the tactics of Icelandic skippers--\cite{DurrenbergePalsson:nd}}
+about how economic analysis of overlooks the ethology of fishermen..or something?
+
+
+%% following are RUM economic models 
+{Hutton 2004} Use a RUM to predict fisher location choice. Incorporate RUM results into simulation model to estimate changes in fishing pattern for short term after an area closure. {Curtis 2004} uses a RUM to understand how assumptions about perfect information influence the outcome of the model. Use data from the Hawaii long-line fishery to test. {Eggert 2004} Use a RUM to predict choice of gear.{Vermard 2008} Uses a random-utility-model to predict trip choice and is parameterized for the Bay of Biscay pelagic fleet. Then use the model to predict how trip choices will change after the closure of the European anchovy fishery. Then discuss the capacity of a behavioral model to predict responses to closure. Specifically focused on using a RUM to predict choice of target species.{Andersen 2012} Models fisher decision on fishing area and target species using surveys and aggregate indicators (catch, effort) to structure and parameterize their model. Use a RUM and put in a bunch of variables. Including weather, management and price.{Marchal 2009} Investigated the combined choices of fishing ground, gear, and/or target species using a RUM. Showed that tradition was important in determining location choice. {Valcic 2009b} Compares predicted change in behavior (using a RUM) with actual change in behavior when a policy changes. Identifies a fundamental problem with RUM is that the choice itself changes with policy change, not well accounted for in discrete choice modeling framework currently. {Eisenack 2006} Looks at a bioeconomic model and shows that participatory management is likely to be successful. Unclear how human behavior enters into things. But use “game-theoretic” and “socio-economic mechanisms” so.{Lane 1988; Lane 1989} Operations research that looks at how location choice (1989) and investment decisions (1988)
+
+%% Following are calls for human behavior to be included 
+
+Smith (2000) The importance of specific decision parameters varies among fisheries, and appropriate fisher expectations of maximizing utility and the associated uncertainty is critical when testing behavior hypotheses for individual fishers.Grafton et al. (2006) Argues that failures in traditional management is the failure to align fishermen and management incentives. And thus implies that we need to include fishermen behavior into biological management.Arlinghausetal:2013 A recent review for recreational fisheries, but calling for explicit connections between human behavior and fisheries management. Fulton et al. (2011) Argument to pull human behavior into fisheries. Human behavioral dynamics tend to be under appreciated in fisheries models. Unexpected responses of humans to management interventions have been identified as one of the key sources of uncertainty in fisheries management.van Putten et al. (2011) Survey of how fishing behavior has been included. Maybe useful for what’s still left to be done. And a bit on the motivation side of why fishing is an ideal system.Haynie and Pfeiffer (2012) Call for human behavior to be more explicitly included in fisheries management. Provide their own framework.Degnbol and McCay (2007) Argument for why human drivers must be incorporated into management policies. Probably really useful for finding problems fishermen behavior can be useful for.Hilborn (2007) A review by Hilborn about the status of incorporating fishermen behavior into fisheries management. Likely useful for a review of the issues that fishermen behavior can help solve. Moving the world’s fisheries towards biological, economic and social sustainability requires understanding the motivation of fishermen, and designing a management regime that aligns societal objectives with the incentives provided to fishermen. There is a general consensus that successful fisheries come from aligning incentives for fishermen and society. Examples include the Pew Commission on Ocean Policy recommendations and the US Commission on Ocean Policy. Human behavior and incentives determine outcomes in all fisheries. Branch et al. (2006) Review of issues that human drivers can account for, and findings on human drivers. Likely useful for identifying what issues are amenable to fishermen behavior. Argues that a fishery consists of two components: populations of fish and the humans capturing the fish. Most attention has been focused on the fish subsystem, more needs to be focused on the human side. Rarely are fish managed, almost all regulatory action affects the fishing fleets pursuing the fish. Thus, studying fishing fleets and their behavior should be as important a part of fisheries science as studying the ecology or population dynamics of the fish. Argues that fishing management has operated under the paradigm that if you take care of the fish, you will manage fish well. This is relevant for Smith et al. (2008)’s argument that fisheries management has been focused exclusively on the ecology of the system. Hilborn et al. (2005) Propounding human drivers to be incorporated into fisheries management. Probably good in conjunction with Smith’s paper on how human drivers have been overlooked.Salas and Gaertner (2004) General review paper that argues for fishermen behavior to be included.Wilen et al 2002
+
+\subsection{Foraging Theory}
+
+\subsubsection{\cite{Charnov:1976}}
+This is the paper which proposed the marginal value theorem (MVT). This is a movement rule that determines how long a predator should spend in a habitat patch given the quality of the habitat (in terms of what the energetic cost is to hunt for prey).
+
+\index{patchiness} \index{movement rule} \index{metapopulation model}
+
+\subsubsection{\cite{MacArthurPianka:1966}}
+This paper (I think) introduces the idea of a patch choice model and an optimal diet model. The optimal patch model wants to know, if patches are listed according to quality, in descending order, how many patches should a predator optimally visit (gains in calories greater than the loss). The two variables to consider are the average time spending hunting for prey within a patch and the mean travel time (between patches) per prey item eaten
+
+The optimal diet model is similar, if prey items are ranked from best to worst, how many of them should be included in the diet while a predator is searching within a patch. The variables considered are the time it takes to search for a prey item and the time it takes to pursue it. Adding more prey decreases the time it takes to search (assuming prey encountered randomly, in proportion to abundance in patch), but will increase mean pursuit time.  
+
+Foundation of optimal foraging ideas, but is static conceptually. Also requires that searching is random. And even if you can improve your mean search time, there's nothing here about when your search time is not related to the abundance of the species. Although I haven't spent too much time thinking through the implications here. 
+
+\subsubsection{\cite{Gaylordetal:2005}}
+Steve Pacala prompted me to think about for what type of species would fine scale harvesting patterns matter. In particular, he suggested that species that are size structured (substantial ontogenic shift in habitat due to size), and tend to self-assort by size, ought to be more sensitive in numerical dynamics to fishing patterns. 
+
+I have found a paper, {Gaylord 2005}, which looks at how size structure changes the yields that MPAs return to fisheries. In this paper they find that MPAs will increase fisheries yields most for species that experience density dependence after dispersal, and that have sedentary, long-lived adults. 
+
+Gives some ideas for crucial components to include for ecology:
+\begin{itemize}
+\item That all fish species have at least two distinct phases: larval (which includes dispersal) and fish
+\end{itemize}
+
+\subsubsection*{Methods}
+Here they use an integrodifference equation with Gaussian dispersal. They assume symmetric dispersal and that adults don't move from where they are dispersed to. Also assume Beverton-Holt/Ricker density dependence either before or after larvae are dispersed. 
+
+They add two stages to the model in order to capture the fact that older, larger adults tend to build up inside reserves. This change means that larvae not only compete with each other, but also with already-resident adults. They also assume that older adults have twice the reproductive rate as newly dispersed individuals, trying to mimic the fact that big adults are more fecund. Also assume that older individuals weigh 1.5x that of newly dispersed individuals. Again to account for increased biomass inside reserves. Both adults and juveniles are assumed to have the same natural survival rate, and juveniles move into the adult class at rate gamma. 
+
+Fishing is implemented either ``traditionally'' or with MPA reserves. Traditional fishing is some specified fraction of the individuals are fished out uniformly across all space. With MPAs there is some fraction of land set aside from which no fishing takes place, while fishing occurs without restriction everywhere else. 
+
+\subsubsection*{Notes}
+This means that they assume that there's no spatial structure to the fish population except that imposed by MPAs. 
+
+\subsubsection*{Results}
+Unsurprisingly, when pre-dispersal density dependence is present for a population that is not size structured, MPAs do worse than than traditional fishing in terms of fisheries yields. This is because the increase in fish density inside reserves reduces larval production. 
+
+When size-structure is considered the MPA's effectiveness is amplified. 
+
+\subsubsection*{Main conclusions}
+MPAs should be extremely helpful for species that have post-dispersal density dependence, and adults whose fecundity increases with size and are sedentary. 
+
+\subsection*{\cite{Lawetal:2000}}
+\begin{itemize}
+\item Offers a series of useful questions to ask about ABMs. Most importantly, you should be able to determine the asymptotic states of the system, and the ecological signal that characterize's the system's representative behavior. 
+
+\end{itemize}
+\subsection*{\cite{Fryxelletal:2007}}\index{discipline: group foraging}
+\begin{itemize}
+\item Mass-action, and its attendant assumption of a particular functional response, is violated by social groups of predators and/or prey
+\item Introduce new functional response that accounts for grouping and apply it to the Serengeti ecosystem, examining how the stability of the system varies as either predators or prey or both group. 
+\item Considering lions, all prey are gregarious, and so have a nonlinear relationship between prey-group density (groups km$^{-2}$) and population density. Group formation reduces food intake rates below the levels expected under random mixing. 
+\item Parameterize the interactions between lions and wildebeest and find that grouping stabilizes interactions between lions and wildebeest. 
+\item These results suggest that social groups rather than individuals are the basic building blocks around which predator-prey interactions should be modeled and that group formation may provide the underlying stability of many ecosystems. 
+\item Developed 4 functional responses:
+\begin{enumerate}
+\item Null response: assume that lions forage solitarily and prey are randomly distributed
+\[\Psi(N)=\frac{aN}{1+a(h_1+h_2)N}\]
+where $a$ is the area of effective search per unit time, $h_1$ is the expected time to attack and subdue each prey item, $h_2$ is the expected time to consume and digest each prey, $N$ is prey density per km$^2$, and $\Psi(N)$ is prey intake per predator per day. 
+\item Grouped lion functional response: which changes the handling time of prey 
+\[\Psi(N,G) = \frac{aN}{G+a(Gh_1+h_2)N}\]
+where $G$ is the predator group size. 
+\item Grouped prey functional response: The encounter rate changes so that this functional response is a modified type II functional response (same as eq. 1) 
+\[\Psi(N)=\frac{acN^b}{1+a(h_1+h_2)cN^b}\]
+where the modified encounter rate is $acN^b$, $c=e^{\text{intercept}}$ and $b$ is the slope of the linear regression of $\ln(\text{prey group density})$ versus $\ln(\text{prey density, }N)$. 
+\item Functional response assuming both lions and prey are grouped: equations 2 and 3 are combined
+\[\Psi(N,G) = \frac{acN^b}{G+a(Gh_1+h_2)cN^b}\]
+\end{enumerate}
+\item find that if you parameterize a set of ODEs describing lions and wildebeest, using the null functional response (individual prey and predators), the system is unstable. However adding predator or prey sociality makes the system stable, and when both predators and prey are social, then the system is most stable of all. 
+\begin{itemize}
+\item[*] \textit{Not sure, does this just reduce the dominant eigenvalue towards stability? Or does it actually switch from positive to negative?}
+\end{itemize}
+\item Explanation for herd sociality effect is that herd formation reduces search efficiency by predators by creating `holes' across the landscape that would otherwise be occupied by asocial prey. For predators, group foraging is hypothesized to reduce search efficiency because of overlaps in perceptual ranges. 
+\begin{itemize}
+\item[*]\textit{Interesting, perceptual ranges may not affect fishermen who cooperate with one another. Maximize their ability to search, think this is what Mangel does in his work}
+\end{itemize}
+\item \textit{Also don't specify whether the sociality of animals is due to an innate tendency to cluster, or that they all are attracted to the same areas. I don't think this matters, because only considering what the end result (clustering) does to predator-prey interactions. But it might affect the relationship between individual and group density: if all at same attractor, then it would be maybe more nonlinear?}
+\item Acknowledge that cooperation of predators may compensate, at least a little bit, for the reduced attack rates (i.e. are more successful given an attack?). However, for lions at least, the available evidence does not demonstrate such an effect. Instead suggest that lions derive benefits from sociality in terms of female protection against infanticidal males and territorial battles. 
+\begin{itemize}
+\item[*]\textit{``Most lions refrain from contributing to group hunts except when pursuing a Cape buffalo,'' but this would meant that lions are not hunting in groups..?}
+\item[*]\textit{Does a functional response distinguish between attack and successful capture?}
+\end{itemize}
+\item Looking at time series of wildebeest and lions over time, do not find evidence that lions control wildebeest abundance, but instead that wildebeest are food limited. This is in agreement with the fact that group formation reduces the prey attack rate (top-down effects) dramatically.
+\item The methods were as follows:
+\begin{itemize}
+\item Derive 4 functional forms showing a range of sociality in predators and prey. These were variants of the type II functional response, ``that is most commonly applied in predator-prey models.''
+\item Parameterize these functional responses by finding:
+\begin{itemize}
+\item The amount of meat consumed by each lion (the amount of fish given per boat)
+\item the time expenditure per hunt (how long searching before finding a school)
+\item the number of hunts required for each kill (success rate for fishermen)
+\item the time expenditure per kill (how long it takes to net and pull in fish?)
+\item the time expenditure for the consumption of prey (how long it takes to haul and process fish on board before moving again?)
+\item the effective search radius for hunting lions (obvious for fishermen -- fish finder?)
+\item the digestive pause in lions
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+\subsection*{\cite{Hilborn:2009}} \index{discipline: fisheries science}
+\begin{itemize}
+\item Fisheries are not static systems whose dynamics are determined solely by management actions.The human element in fisheries has its own dynamics and consists of individuals or firms seeking to maximize their own well-being. 
+\end{itemize}
+
+\subsection*{\cite{Ostrom:2009}} \index{discipline: SES}
+\begin{itemize}
+\item  {\bf Multiple levels of public goods problems}: organizing to create rules that specify rights and duties of participants creates a public good for those involved. Everyone included in the community of users would benefit from this public good, whether they contribute or not. Thus getting out of the tragedy of the commons is itself a second-level dilemma. Further, investing in monitoring and sanctioning activities so as to increase the likelihood that participants follow the agreements they have mad also generates a public good. Thus, investing in in monitoring is a third-level dilemma.
+
+\item  {\bf Gaps in conventional theory of common pool resources}: can't explain why in some settings users are able to create and sustain agreements to avoid serious problems of overuse. And it does not predict well when government ownership will perform appropriately or how privatization will improve outcomes \citep{Ostrom:2009}. 
+
+\item  Field research has shown that a set of attributes of the resource and resource users correlate with increased likelihood of self-organization. These attributes are split into two categories, resource and resource user:
+
+Categories of Resource
+
+\begin{enumerate}
+\item Feasible improvement: resource conditions are not so devastated that it is useless to organize, or so underused that there's little advantage of organizing
+\item Indicators: there are reliable and valid indicators of the condition of the resource are frequently available at relatively low cost. 
+\item Predictability: The flow of resource units is relatively predictable 
+\item Spatial extent: The resource system is sufficiently small, given the transportation and communication technology in use, and users can develop an accurate knowledge of external boundaries and internal microenvironments. 
+\end{enumerate}
+
+Categories of the Resource users
+
+\begin{enumerate}
+\item Salience: Resource users are dependent on their resource system for a major portion of their livelihood
+\item Common understanding: Resource users have developed a shared image of how the resource system operates and how actions affect each other and the resource system 
+\item Low discount rate: Resource users do not heavily discount benefits to be achieved from the resource in the future as contrasted to the present.
+\item Trust and reciprocity: Resource users trust each other to keep promises and dealt to one another with reciprocity. 
+\item Autonomy: Resource users are able to determine access and harvest rules without external authorities countermanding them.
+\item Prior organizational experience and local leadership: Resource users have learned at least minimal skills of organization and leadership through participation in other local associations or learning about ways that neighboring groups have organized. 
+\end{enumerate}
+
+When a group of resource users shares these attributes about the resource system and themselves, they are more likely to agree that all would be better off if they could develop and generally abide by a set of institutional rules for governing their common-pool resource \citep{Ostrom:2009}. 
+
+\item  Many of the attributes (especially about resource users) are dependent on the political context of the resource users. Larger regimes can facilitate local self-organization by providing frequent, accurate information about resources, and setting up ways for resource users to communicate. Perceived benefits to resource users are highest when their is clear information about the resource, the users, and the threats facing the resource \citep{Ostrom:2009}. 
+
+\item  Costs of monitoring and sanctioning those who do not play by the rules established by users are very high if the authority to make and enforce these rules is not recognized by a higher governmental authority \citep{Ostrom:2009}.
+
+\item The search for rules that improve the outcomes obtained in commons dilemmas is an incredibly complex task whether undertaken by users or by government officials. It involves a potentially infinite combination of specific rules that could be adopted in any effort to match the rules to the attributes of the resource system. Instead of assuming that designing rules that improve performance of common pool resources is a relatively simple analytical task, we need to understand that the institutional design process as involving an effort to tinker with a larger number of component parts. {\bf Policy changes are experiments based on more or less informed expectations about potential outcomes and the distribution of these outcomes for participants across time and space.} \index{motivation}
+\end{itemize}
+
+\subsection*{\cite{Wormetal:2009}}
+\begin{itemize}
+\item In \cite{Wormetal:2009} (on which Ray Hilborn is an author), they say that they identify proximate tools, not ultimate socioecological drivers, that have enabled some regions to prevent or reduce overfishing, while others remain overexploited \citep{Wormetal:2009}. 
+\item It would be an important next step to dissect the underlying socioeconomic and ecological variables that enabled some regions to conserve, restore, and rebuild marine resources \citep{Wormetal:2009}. 
+\end{itemize}
+
+\subsection*{\cite{Schluteretal:2012}}
+\begin{itemize}
+\item {\bf The difference between bioeconomic modeling and SES modeling}: Bioeconomic modeling focuses on determining the socially or individually optimal harvest levels that maximize profit under the constraints of the resource. Feedbacks between social and ecological realms are considered, but diverse actors of the social system are not considered and resource dynamics are generally very simple. SES modeling includes complex ecological dynamics as well as heterogenous resource users that receive multiple ecosystem services from the ecological system \citep{Schluteretal:2012}. This is pretty well laid out in figure 2 in the paper, but also note that information flow (the dotted lines) are included in SES models. 
+\end{itemize}
+
+\subsection*{\cite{Bennettetal:2003}}
+Makes argument for ecologist getting involved in global scenario building.  \marginnote{\footnotesize I'm not sure that ecosystem services are the right angle. But seem relevant. And interesting to me for how you link ecosystem function (and specifically species interactions) to economic/social measures of wellbeing} \href{run:/Source_Summaries/Bennett_et_al_2003.tex}{\color{cyan}See paper summary here}. Generally don't think it will be useful because it's not very detailed. May provide more examples of social-ecological cascades. 
+
+\subsection*{\cite{Levietal:2012}}
+Look at how letting more salmon upstream will benefit bears. Directly compares economic loss to Sockeye fisheries in Bristol Bay and BC to how it would improve population status of grizzlies. Fin win-win scenarios in coastal stocks, where reducing yearly catch (and increasing escapement) results in higher densities of bears and increased profit because of higher yields in low productivity years. However find a tradeoff in interior stocks within the Fraser River where biomass of salmon is low. Increasing salmon allocations to ecosystems would benefit threatened bear populations at the cost of reduced long-term yields. This approach allows direct comparisons between costs and benefits in economic and ecological terms, which facilitates management decisions. 
+
+Might be valuable for how conservation policies need to take into account the social drivers of hunting in order to make successful management change. 
+
+\subsection*{\cite{Coadetal:2013}}
+Look at 10 years of data on  bushmeat hunting in Gabon and how it relates to socioeconomic status. Found that the total offtake remained constant, but that the number of hunters declined, distance of traps away from the village increased, and several large-bodied species became locally extinct. Points out that studying wildlife declines only focuses on the ecological effects, but not the drivers of, wildlife hunting. But successful conservation interventions will ultimately depend on a refined understanding of the drivers of, and the context in which, overhunting occurs and cites Caughley \& Gunn 1996. Which is a book, I think and that is highly reviewed on Amazon. Should get it, I think.  Another example of tropical bushmeat hunting. 
+
+\printindex
+
+
+\bibliographystyle{cbe}
+\bibliography{unread,read}
+
+
+\end{document}
+

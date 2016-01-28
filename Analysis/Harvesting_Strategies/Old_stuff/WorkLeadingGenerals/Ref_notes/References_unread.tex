@@ -1,0 +1,525 @@
+\documentclass[a4paper,10pt]{article}
+\let\oldmarginpar\marginpar
+\renewcommand\marginpar[1]{\-\oldmarginpar[\raggedleft\footnotesize #1]%
+{\raggedright\footnotesize #1}}
+\usepackage{charter}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{array}
+\usepackage[bitstream-charter]{mathdesign}	% using charter font for math
+\usepackage{natbib}
+\usepackage{gensymb}
+\usepackage{epstopdf}
+\usepackage{multirow} %for multi column spanning rows or multi row spanning columns
+ \usepackage{rotating} %for rotating tables
+ \usepackage{subfig} %to have figures within figures
+\usepackage{multicol}
+ \usepackage{ulem} % Allows for underlining without weird formatting glitches. 
+ \usepackage{pifont}% Allows for use of ZipfDingbats font
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor} % Allows colored font
+\usepackage{hyperref} %allows hyperlinks in the document
+\usepackage[linecolor=black,backgroundcolor=white,bordercolor=white,textsize=small]{todonotes}
+\usepackage{wrapfig}
+\usepackage[top=0.75in, bottom=0.75in, outer=.75in, inner=0.75in, heightrounded, marginparwidth=1in, marginparsep=0.25in]{geometry}
+\usepackage{marginnote}
+\usepackage{hyperref}
+\usepackage{makeidx}	% package for building and including an index
+\makeindex	% makes the index
+\definecolor{sol_blue}{RGB}{38,139,210}
+\definecolor{sol_orange}{RGB}{203,75,22}
+\definecolor{sol_red}{RGB}{220,50,47}
+\definecolor{sol_base2}{RGB}{238,232,213}
+\definecolor{sol_base1}{RGB}{147,161,161}
+\definecolor{sol_green}{RGB}{133,153,0}
+\definecolor{sol_cyan}{RGB}{42,161,152}
+\definecolor{sol_violet}{RGB}{108,113,196}
+\definecolor{sol_magenta}{RGB}{211,54,130}
+\definecolor{sol_yellow}{RGB}{181,137,0}
+\begin{document}
+{\Huge References Unread}
+
+\noindent These are papers that I have not yet entered into my summary document, but are on my mind. Roughly attempted to organize them into categories. Blue is a paper I'm excited to read, grey are papers I don't have in Sente yet. 
+\vspace{0.5cm}
+
+%%%%%%%%%%%%%%%%%%%%%%
+\section{Probably marginal}
+Vaguely related, not top priority. Not sure what category
+
+\begin{description}
+\item[\cite{Nelsonetal:2005}] Summarizes major drivers in change of ecosystems. All are anthropogenic. Good argument that there's a general need to understand how humans affect their environment. 
+\item[Millennium Ecosystem Assessment] Possibly useful, in discussing the importance of ecosystem changes to human well being. But I suspect that it's too blunt. Aren't as interested in fine-scale changes in behavior, but rather when does ecosystem change cause starvation, or war, etc. Really broad changes. 
+
+Might be useful to have as a foil. Not focused on those broad scale changes but more on coevolution. And that matters because...
+\item[\color{cyan} \href{http://www.psmag.com/magazines/pacific-standard-cover-story/joe-henrich-weird-ultimatum-game-shaking-up-psychology-economics-53135/}{Weirdest people in the world}] Possible that this might be a useful vein to explored. This discusses how cultural (environmental) contexts matter in how humans perceive and respond to their world. By extension then, how you gather resources determines how you're likely to form social norms. 
+\item[\cite{McCarthyetal:2001}:]Ecological-economic or game-theoretic models used to analyze the consequences of changing policy instruments 
+\item[\cite{Brekkeetal:2007}:] Ecological-economic or game-theoretic models used to analyze the consequences of changing policy instruments 
+\item[\cite{JohannesenSkonhoft:2009}:] Ecological-economic or game-theoretic models used to analyze the consequences of changing policy instruments 
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%
+\section{Need}
+Why care about human behavior in ecological models?
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Calls for linking social and ecological systems: Social-Ecological Systems} 
+Motivation for why social-ecological systems are important to think about
+
+\begin{description}
+\item[\cite{Liuetal:2007b}] Another overview of SES, but think this is more related to introducing them. I think it will provide lots of case studies and examples of problems. 
+\item[\cite{Liuetal:2007}] Overview of SES (but calls them CHANS). Remember it being very broad and agreeing with a lot of the things it said. Would be a good place to start on what type of problems an SES framework is uniquely set up to study. 
+\item[\cite{Folkeetal:2002}] Call for SES, adaptive management and treating everything as complex adaptive systems. After the Liu articles, not sure this will have a lot to add. 
+\item[\cite{Levinetal:2012}] Makes the argument that SES should be treated as complex adaptive systems. Didn't love it when I first read it, but skimming it looks useful for motivation arguments (why linking is important). 
+\item[\cite{Schluteretal:2012}] Overview of SES, likely to have arguments and references on the importance of linking ecological and human communities.
+\item[\cite{Dietzetal:2003}] Another Ostrom paper, an overview on governing the commons, published in Science. Might provide overview of the field, but not particularly optimistic that it will give an argument for using SES frameworks. 
+\item[\cite{Walkeretal:2002}] A management framework using SES and complex adaptive systems. Use two case studies. May mostly be useful for their arguments about the strengths of SES as a management approach. 
+\item[van Vliet \& Nasi 2008]  Combining biological approaches with ethnobiological and socioeconomic approaches is pivotal to predicting broader hunting sustainability -- but found in \cite{Levietal:2012}. Will be more about bushmeat hunting than fisheries. But still a call to put together human and ecological dynamics for management. 
+\item \cite{Derissenetal:2011}: perspective of ecological economics is bringing a societal objective of sustainability to center stage along with the consideration of resilience. 
+\item \cite{Folkeetal:2010}: resilience thinking is a perspective of analysis of SESs that emphasizes their nonlinear dynamics and surprise, feedbacks between social and ecological systems across temporal and spatial scales. Also information on how resilience research has shifted from purely ecological resilience to how to adapt and transform social systems to maintain SES resilience. 
+
+
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Empirical examples}
+Empirical examples of studies documenting social ecological systems, regardless of type of system
+
+\begin{description}
+\item[Davies \& Brown] Hunting effort may interact with changes in bushmeat prices, alternative livelihoods, and hunter household wealth and demography -- found in \cite{Levietal:2012}. 
+\item[\cite{Brasharesetal:2011}] Examines the relationship between bushmeat consumption and socioeconomic and demographic variables. Questions the assumed win-win situation between poverty alleviation and biodiversity conservation. Finds that as household wealth increases, demand for bushmeat also increases. Not sure that it'll be useful, but is an example of connecting the two. Might be useful as a case-study for what's not useful. As in, here's a pattern, but what you really want is a mechanistic link. Another paper about tropical bushmeat hunting. 
+\item[\cite{Goldenetal:2011}] Links child nutrition to wildlife consumption in Madagascar. Finds that the less protein from bushmeat consumed, the more the child is undernourished, which causes developmental problems and increased susceptibility to diseases. Quantifies the cost of restricting wildlife harvest. An example of linking the two that quantifies tradeoffs. Although there's no win-win here. Either through  unsustainable harvest or complete restriction of harvest, eventually these human communities will loose their access to protein. Does highlight that nutrition and attention to social conditions are required for conservation approaches. That might be useful. 
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Modeling (theoretical?) examples}
+
+\begin{description}
+\item[\cite{BarrettArcese:1998}]\marginnote{\footnotesize Is an example of linking ecological and economic processes} build a simulation model to look at integrated conservation and development programs (ICDP) designed to examine the socioeconomic drivers that cause wildlife harvest. The model links a biological model of Serengeti wildebeest to a model of household demand for game meat, where the price of game meat and the wage rate for labor are both endogenous. The authors then calculate the time to crisis (when either management would have to renege on the amount of meat contractually agreed upon or allow an unsustainable harvest of the herd). show that people's decision making regarding the relative effort devoted to hunting depends on broader economic incentives and the availability of alternative livelihoods, such as agriculture 
+\item[\cite{Horanetal:2011}] Example of a paper that links the two. Remember really liking it, makes human behavior change endogenous. What were the conclusions? Useful example? Arguments for why this approach is necessary?  Used a bioeconomics framework to study how different institutional settings affect critical tipping points between alternative regimes.  \href{run:/Source_Summaries/Horan_et_al_2011.tex}{\color{cyan}See paper summary here} \index{Phenomena}
+\item[\cite{Ladeetal:2013}] Recent paper that looks at regime shifts with coupled ecological and economic system. They have a line in there where they mention that how human's use the resource and the drivers that control that is not well understood. Good to be detailed about that particular type of linkage between the two sub-systems. 
+\item[\cite{Tavonietal:2012}] Competitor-defector theoretical model. 
+\item[\cite{CrepinLindahl:2009}] Look a grazing system, model livestock and grass interaction and allow farmers to maximize profits in a differential game. A good background on economics terminology. Ecological-economic or game-theoretic models used to analyze the consequences of changing policy instruments 
+\item[\cite{Dixitetal:2012}] Look at the optimal level of insurance Kenyan herdsman should engage in. Insurance is the process of allowing neighbors to send you cattle in bad grazing years, with the agreement that in the future you may send some of your cattle when you have a bad year. Also more useful because actually grounds it in a specific system, and maybe looks to see if what they found theoretically is what you find empirically. Also interested in their motivations for why this work is important. 
+\item[\cite{Grantetal:2002}] Make a modeling framework for Luhmann's theory (don't know what that is). But is an example of putting basically everything into an SES framework. 
+\item[\cite{Grossetal:2006}:] Examples of models with more complex social dynamics. 
+\item[\cite{McAllisteretal:2006}:] Examples of models with more complex social dynamics. 
+\item[\cite{Galvinetal:2006}:] Examples of changing socio-ecological conditions. 
+\item[\cite{Dougilletal:2010}:] Examples of changing socio-ecological conditions. 
+\item[\cite{MilnerGullandetal:2006}:] Examples of changing socio-ecological conditions. 
+\item \cite{Janssenetal:2004}: Nonlinearities and nonconvexities in ecological dynamics incorporated into bioeconomic modeling. Only a few models truly address social-ecological feedbacks in a dynamic way (i.e. by modeling adaptive human behavior). These include early models that investigate learning and adaptation to environmental change of resource users with limited information about nonlinear ecological dynamics and the effect those processes have on resilience. 
+\item[\cite{Carpenteretal:1999}:] Only a few models truly address social-ecological feedbacks in a dynamic way (i.e. by modeling adaptive human behavior). These include early models that investigate learning and adaptation to environmental change of resource users with limited information about nonlinear ecological dynamics and the effect those processes have on resilience. 
+\item[\cite{Janssenetal:2000}:] Only a few models truly address social-ecological feedbacks in a dynamic way (i.e. by modeling adaptive human behavior). These include early models that investigate learning and adaptation to environmental change of resource users with limited information about nonlinear ecological dynamics and the effect those processes have on resilience. 
+\end{description}
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+\section{Fisheries systems as models}
+{\bf Prompt:} Fishermen (and their direct harvest of fish) provide an ideal model system to examine whether consideration of human harvesting behavior can improve management policy. Below I review the current state of fisheries, common problems, and examples of how human behavior has been suggested to be included and examples where it actually was.  
+
+%%%%%%%%%%%%%%%%%%%
+\subsection{Issues in Fisheries}
+{\bf Prompt:} What are the main issues marine fisheries are dealing with? What's the latest status on the problems and solutions that have been tried out. Idea is to show context of problems in which people are calling for more human behavior work. 
+\subsubsection{Current state}
+\begin{description}
+\item[\cite{Essington:2010}] Meta-analysis of catch shares, shows that landings and biomass are more stable (less variability) after ITQs go in. According to Costello et al. (2010) there is no theoretical literature linking incentive based fisheries management to increased stability of stocks. This seems like an opening. Kind of. 
+
+Also mentions that there are a dearth of quantitative policy assessments that identify the types of ecological responses and social-ecological contexts in which they are likely to manifest. Cites a payment for ecosystem services (PES) study: [2]
+
+Primary goal is: to change the incentive structure of management so that users of natural resources are more likely to promote long-term sustainability and stewardship of the resource (6-9). Not sure what this means. Mostly incentive structure discussions refer to those of the users, not the management. 
+\item[\cite{Wormetal:2009}] This is the big science paper with Hilborn and Worm on it. Have a nice small bit in the end: 
+\begin{quote}
+The data that we have compiled cannot resolve why inherently complex fish-fisher-management systems behaved differently in these cases; possible factors are a combination of abundant resources and low human population, slow development of domestic fisheries, and little interference from international fleets. It would be an important next step to dissect the underlying socioeconomic and ecological variables that enabled some regions to conserve, restore, and rebuild marine resources. 
+\end{quote}
+Good summary of what the status is of catch collapse: big problem for fisheries.
+
+\item[\cite{VertPreetal:2013}] This paper is the Hilborn one that is a meta analysis examining how productivity and recruitment of fish are related. Big unknowns about this. But have kept thinking that the different types of fish productivity-recruitment patterns they find might be 3 ways to test how human behavior should influence it (or not). 
+This might be too broad, but is the problem I wanted to address before Steve said it was too worked over. 
+
+But also see the response to the paper: \cite{Szuwalski:2013} and then the authors response to that: \cite{VertPreetal:2013b}
+\item[\cite{Melnychuketal:2012b}] Meta analysis to see if fisheries implementing catch shares actually do better than otherwise would be expected. Hilborn's management paper. I think he found that the biggest determinant of biological success was having a robust management program. This is useful because if true, would suggest that human behavior doesn't matter. Need to address what's going on in this paper and really understand it. This fits under the category of what problems are happening in fisheries that researching human behavior can help with. 
+\item[\cite{Costelloetal:2010}] Evaluating whether catch-shares work. Another one. Should read after \cite{Melnychuketal:2012b} because that one is more recent. 
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Proposed management needs/solutions}
+{\bf Prompt:} These are papers that either diagnose what the problems are with fisheries (often from a multidisciplinary perspective) and/or how to fix those problems. 
+
+\begin{description}
+\item[\cite{Graftonetal:2006}] Argues that failures in traditional management is the failure to align fishermen and management incentives. And thus implies that we need to include fishermen behavior into biological management. 
+\item[\cite{Graftonetal:2008}] A paper that argues that the failures in fisheries are due to information failures, transition costs, and use and non-use conflicts and capacity constraints. Argues that only through better governance and stronger institutions can things be made better. Again, a solutions paper. But seems broad and vague. Can't really tell what the message is besides management needs to `do better.'
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{What's wrong with fisheries?}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{How to fix the problems with fisheries? Often from a high-level}
+\begin{description}
+\item[\cite{BradyWaldo:2009}] Discusses how to fix fisheries, and specifically when assigning property rights (mostly through ITQs) are the right answer. Pretty focused on social science, but also might provide a good background of the history of Sweden's fisheries. Which, if that will be a case study, would be good to know about. Not immediately clear how this fits in though. It might break down the problem of 'fisheries' management though. As in, what are all the dimensions along which a fishery is possible to be managed by. That could be very useful for thinking about case studies. 
+\item[\cite{Wilsonetal:2006}] Case study documenting an attempt to include local knowledge into adaptive management framework
+\item[\cite{Nielsen:2003}] Presents an analytical framework to analyze compliance and legitimacy in fisheries management. Not a solution per say, but implication is that lack of compliance and legitimacy is a problem with some management programs, and these need to be fixed. And they can only be fixed if we can discuss the problems accurately. 
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Fisheries are good model systems: calls for human behavior}
+Increasingly there are calls to include human behavior explicitly in fisheries management to address common problems.
+
+\begin{description}
+\item[\cite{Smith:2012}] Describes state of fisheries economics, recent review. Discusses within season effects, which is what I'm most interested in. 
+\item[\cite{Arlinghausetal:2013}] A recent review for recreational fisheries, but calling for explicit connections between human behavior and fisheries management. 
+\item[\cite{Fultonetal:2011}] Argument to pull human behavior into fisheries. Human behavioral dynamics tend to be under appreciated in fisheries models. Unexpected responses of humans to management interventions have been identified as one of the key sources of uncertainty in fisheries management.
+\item[\cite{vanPuttenetal:2011}] Survey of how fishing behavior has been included. Maybe useful for what's still left to be done. And a bit on the motivation side of why fishing is an ideal system. 
+\item[\cite{Wilenetal:2002}] Example of ecological and economic considerations linked to give management policy suggestions. This is the sea urchin empirically parameterized model. No mechanisms maybe?Mostly statistical? But argues that we should replace ad-hoc modeling of human behavior that currently happens in fisheries science, should do behavioral modeling.
+
+Say that over the past two decades prominent fisheries scientists have criticized conventional fisheries management methods  saying that fisheries are much too complex for the simple fishery-wide MSY type policies (and references therein). 
+
+Given that we need more complex, and probably spatial, management, what processes are important to consider? Dispersal processes are important, but so is the spatial dispersal of harvesting. And all the current (as of 2002) MPA literature surveyed, ignored fishermen spatial behavior.  However they don't provide citations for the examples of the literature they surveyed. 
+\item[\cite{Wilen:1979}] Early paper that's often cited as a reason to include fisher behavior more frequently. Might have some discussion of why fisher behavior should be included, beyond that it's just not so far. Should be read first. 
+\item[\cite{HayniePfeiffer:2012}] Call for human behavior to be more explicitly included in fisheries management. Provide their own framework. I remember reading it and liking my framework more. But example paper of how to frame it? Possibly how to present it as a main point of a presentation, rather than in the introduction?
+\item[\cite{DegnbolMcCay:2007}] Argument for why human drivers must be incorporated into management policies. Probably really useful for finding problems fishermen behavior can be useful for. 
+\item[\cite{Gutierrezetal:2011}] Another paper on how human behavior (and management regime) can affect success in fisheries. May be useful for what correlations exist between human behavior and fisheries biological success. Probably not focused on feedbacks though. Which is what I want. 
+\item[\cite{Hilborn:2007}] A review by Hilborn about the status of incorporating fishermen behavior into fisheries management. Likely useful for a review of the issues that fishermen behavior can help solve. 
+\item[\cite{Branchetal:2006}] Review of issues that human drivers can account for, and findings on human drivers. Likely useful for identifying what issues are amenable to fishermen behavior.  Argues that a fishery consists of two components: populations of fish and the humans capturing the fish. Most attention has been focused on the fish subsystem, more needs to be focused on the human side.
+\item[\cite{Hilbornetal:2005}] Propounding human drivers to be incorporated into fisheries management. Probably good in conjunction with Smith's paper on how human drivers have been overlooked. 
+\item[\cite{Jensenetal:2012}] This is the marine fisheries as ecological experiments paper. Useful for overview of why fisheries are a good model system for any ecological work, let alone human behavior focused work. 
+
+
+\cite{Wilenetal:2002} believe that the only way to get an accurate assessment of proposed spatial policies to model how fishermen are expected to reallocate their effort. However, they also show that detailing fishermen behavior also affects non spatial management tools (here size-limits). Specifically, how fishermen redistribute when size-limits are enforced reduces egg production in red sea urchins (used as a case-study) more than the model without fishermen's behavior predicts. 
+\item[\cite{SanchiricoWilen:2001}] Show that in an integrated bioeconomic system, the spatial equilibrium that emerges in an exploited metapopulation model spends as much on economic parameters (costs and prices) as it does on biological parameters (growth, dispersal, mortality rates). 
+\item[\cite{SalasGaertner:2004}] General review paper that argues for fishermen behavior to be included. 
+\item[\cite{GarciaCharles:2008}] Should be a paper that confirms to the following: Models mainly focused on the ecological dynamics of a fishery largely omitting dynamics of harvesters and rule-making agents (hopefully this will be a rule of the development of EBM, etc.) Remember this as extremely long and hard to read. 
+\end{description}
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Examples of fisheries as social-ecological systems generally}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Anthropological approaches}
+Currently missing Bonnie McKay's work, and Kevin St. Martin?
+\begin{description}
+\item[\cite{Gaertneretal:1999}] Looks at how Venezuelan skippers' behavior affected the catchability of surface tuna schools. Used data from onboard purse seiners and found that fishermen's decisions about chasing and setting a school were influenced by the skipper's skill, the fishing equipment used, the features of the tuna school, and some environmental factors. Because fisheries used thresholds of fish size and school size, it may introduce serious bias in the analysis of catch rate and abundance relationship. And an average daily activity record of a purse seiner shows that proportion of time spent in search and in setting activities highlights the impact that new fishing equipment may have on fishing power. Looks super interesting and useful!
+\item[\cite{Wilsonetal:2007}] No review of social-ecological systems would be complete without mentioning the Maine lobstermen. 
+\item[\cite{Acheson:1975}] Social norms affect harvesting patterns, affect biology of lobsters. Another Maine lobster example. Classic, I think. 
+\item[\cite{Stenecketal:2011}] More recent discussion of lobsters and those that harvest them. With a conservation spin on it. 
+\item[\cite{Gezelius:2007}] Not technically an SES because doesn't include any information on ecological dynamics. But good example of what types of fishermen behavior exist. \href{run:/Source_Summaries/Gezelius2007_summary.tex}{\color{cyan}See paper summary here}
+\item[\cite{Orth:1987}] Another example of fishermen behavior and how it might affect harvesting. \href{run:/Source_Summaries/Orth1987_summary.tex}{\color{cyan}See paper summary here}
+\item[\cite{HennesseyHealey:2000}] Looks at history of groundfish collapse in New England and how economic, social and cultural drivers cause fishers to act in ways unanticipated by management which in turn can undermine the intent of management actions. Should be useful as an example highlighting the importance of human behavior. 
+\item[\cite{McCayetal:2011}] Looks at the SES marine system of the Mid-Atlantic Bight, focusing on Atlantic surf clams and the associated fishery and management system. Looks at how research has treated this system. Looks very useful as an example of the way to look at marine SES. 
+\item[\cite{CronaBodin:2006}] Looks at social networks in a coastal community in Kenya. Examines how information flows between groups, and finds that fishermen are segregated by gear type, and the most centrally connected group (and thus possibly the most influential one) might have the least incentive to manage the resource sustainably (migrant, deep-sea fishermen). Suggests that the inability to manage the resource sustainably might be due to the social structure of the people in the community. 
+\item[\cite{Wilson:1990}] Discusses the issue of searching for fishermen. From a social point of view. Will be useful to focus in on that part of harvesting behavior and good background. (This is a reference listed twice, also in examples of papers including fishermen behavior)
+\item[\cite{PalssonDurrenberger:1982}] Discusses how fishing success is determined in Icelandic fishery
+\item[\cite{Palmer:1991}] Anthropological study looking at how Maine fishermen share information differently in different communities. How this affects harvest?
+\item[\cite{Leibbrandtetal:ND}] Example of social and ecological connection. Focuses on a longer time-scale though than I'm thinking. But still evidence that the environmental context humans operate within matters. 
+\end{description}
+
+\subsubsection{Conservation related}
+\begin{description}
+\item[\cite{Rowcliffeetal:2005}] Not strictly fisheries focused, but details the link that \cite{Brasharesetal:2004} made between Ghanian fisheries and bushmeat consumption. Human behavior is the link between these two ecological systems, and to understand either, the human component must be understood. This paper might spark new ideas, but probably will need to cite \cite{Brasharesetal:2004} for any facts. 
+\item[\cite{Brasharesetal:2004}] The paper that links Ghanian fisheries to bushmeat hunting. Example of fisheries as part of a large SES. Clearly shows how consideration of human drivers is crucial for understanding how hunting of bushmeat will change in the future. 
+\item[\cite{Plaganyietal:2013}] Example of coupling economic, social and ecological processes to make suggestions about management. integrating indigenous livelihoods using a 3 part model: social, biological and ecological models with a bayesian framework. Think I should review it because it seems like the upper bound of complexity in the types of models I want to produce. Also look at the motivation for writing the paper, what's the problem they're trying to solve?  \href{run:/Source_Summaries/Plaganyi_et_al_2013.tex}{\color{cyan}See paper summary here}
+
+\end{description}
+
+\subsubsection{Theoretical Ecology}
+Examples of papers that are looking at system dynamics, but from a theoretical ecology perspective rather than management. 
+\begin{description}
+\item[\cite{Crepin:2007}] Looks at fast and slow variables and non convexities in resource dynamics and examines likelihood for regime shifts. Might be a useful approach (didn't read closely enough to be sure), and it does include endogenous management. Although she endogenously manages management, and management is trying to maximize utility. So that means harvest can shift, depending on ecological dynamics, but not spatially. And it's only whether harvest increases or decreases on the herbivorous fish (coral reef example with coral, algae, and herbivorous fish. It was unclear whether they explicitly model piscivorous fish, or just include a predation term in the herbivorous fish equation. Looking at fast and slow variables in a coral reef SES model. Example of nonlinearities and nonconvexities in ecological dynamics incorporated into bioeconomic modeling. 
+\item[\cite{Kramer:2008}] Model for three trophic level system (algae and coral, herbivorous fish, piscivorous fish) being harvested adaptively by humans. Links a non spatial harvesting model on top, let's fishermen change species depending on price and costs. Good example of simple models, but not analytically tractable. \href{run:/Source_Summaries/Kramer_2008.tex}{\color{cyan}See paper summary here}
+\item[\cite{Bascompteetal:2005}] Not so much calling for human behavior to be included. But discuses the community implications for human harvesting. I think this could be a good reason to want to know how fishermen target their prey either by species identity, temporally or spatially. These have community implications that can affect both the fishermen and the marine ecosystem. Thinking that this can represent some of the ways that harvesting may be effecting wider ecosystem processes. Way more papers in the EBM literature on this though. If I decide to develop this angle, need to go through papers like the report on forage fish. 
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Fisheries Management}
+
+Examples of fisheries science papers considering humans explicitly, but not harvesting behavior 
+\begin{description}
+\item[\cite{Hilborn:2009}:] Fisheries are not static systems whose dynamics are determined solely by management actions. The human element in fisheries has its own dynamics and consists of individuals or firms seeking to maximize their own well-being. 
+\item[\cite{Sethietal:2005}:] Examples of bioeconomic modeling with uncertainty. These papers have extensions to deal with spatial structures of the resource, regulatory instruments, capital adjustments, etc. 
+\item[\cite{Singhetal:2006}:] Examples of bioeconomic modeling with uncertainty. These papers have extensions to deal with spatial structures of the resource, regulatory instruments, capital adjustments, etc. 
+\item[\cite{Weitzman:2002}:] Examples of bioeconomic modeling with uncertainty. These papers have extensions to deal with spatial structures of the resource, regulatory instruments, capital adjustments, etc. 
+\item[\cite{CostelloPolasky:2008}:] Examples of bioeconomic modeling with uncertainty. These papers have extensions to deal with spatial structures of the resource, regulatory instruments, capital adjustments, etc. 
+\item[\cite{Costelloetal:2001}:] Examples of bioeconomic modeling with uncertainty. These papers have extensions to deal with spatial structures of the resource, regulatory instruments, capital adjustments, etc. 
+\item[\cite{Eisenacketal:2006}:] Examples of bioeconomic modeling with uncertainty. These papers have extensions to deal with spatial structures of the resource, regulatory instruments, capital adjustments, etc. 
+\item[\cite{CarpenterBrock:2004}:] SES resilience modeling example of fisheries (policies for spatial fisheries in a landscape). 
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Examples of papers considering harvesting behavior explicitly}
+\begin{description}
+\item[\cite{Andersenetal:2012}] Models fisher decision on fishing area and target species using surveys and aggregate indicators (catch, effort) to structure (and parameterize?) their model. Use a 'discrete choice random utility model' and put in a bunch of variables. Including weather, management and price. Looks interesting, not familiar with this type of model. But seems pretty relevant. Published after the recent review, so should check out because won't be covered there. Likely also really useful in that it may present some empirical work on what fishermen have said they base their decisions on. Which is surprisingly rare so far. \href{run:/Source_Summaries/Andersen_et_al_2012.tex}{\color{cyan}See paper summary here}
+\item[\cite{Stewartetal:2010}] Maps coastal fishing pressure in coastal areas in six ocean regions. 
+\item[\cite{Marchaletal:2009}] Investigated the combined choices of fishing ground, gear, and/or target species using a RUM. 
+\item[\cite{Valcic:2009}] Spatial behavior of fishermen.
+\item[\cite{BranchHilborn:2008}] Looks at how fishermen harvesting behavior changes after management regulations go in for bycatch. 
+\item[\cite{Smithetal:2008}] Another example of statistical modeling of incorporating fishermen behavior endogenously and examines management suggestions. This is the econometrics paper that evaluates management suggestions and compares a economic-biological linked set of models to just a biological one. Super useful. Uses a meta-population model of reef-fish fishery in Gulf of Mexico and simulated economic and ecological data. Find that it's possible under certain circumstances to recover both biological and economic parameters of a linked spatial-dynamic system from only economic data. 
+\item[\cite{Vermardetal:2008}] Uses a random-utility-model to predict trip choice and is parameterized for the Bay of Biscay pelagic fleet. Then use the model to predict how trip choices will change after the closure of the European anchovy fishery. Then discuss the capacity of a behavioral model to predict responses to closure. Specifically focused on using a RUM to predict choice of target species. 
+\item[\cite{WittGodley:2007}] Example paper using VMS data to map fishing intensity in British Isles. 
+\item[\cite{Abernethyetal:2007}] most quantitative behavioral analyses of commercial fishers construct a decision function on theoretical economic theory or knowledge in the literature, and few studies have asked fishers directly host hey construct and evaluate their expectations, e.g. via interviews. This is an example of interviews. 
+\item[\cite{SoulieThebaud:2006}] Using an ABM to look at how fleets are expected to respond to management changes in the short term. Also might provide a review of these models. 
+\item[\cite{Salasetal:2004}] most quantitative behavioral analyses of commercial fishers construct a decision function on theoretical economic theory or knowledge in the literature, and few studies have asked fishers directly host hey construct and evaluate their expectations, e.g. via interviews. This is an example of interviews. 
+\item[\cite{Huttonetal:2004}] Use a RUM to predict fisher location choice. 
+\item[\cite{CurtisMcConnell:2004}] Uses a RUM to predict target species. 
+\item[\cite{EggertTveteras:2004}] Use a RUM to predict choice of gear. 
+\item[\cite{Littleetal:2004}] Case study using line fishery on the Great Barrier Reef. Look at how information changes spatial distribution. They compare when fishermen act independently and when they `watch' one another. And show what attempt information has on harvesting.
+\item[\cite{GaertnerDreyfusLeon:2004}] ABM to look at the shape of the relationship between CPUE and abundance in a tun purse-seine fishery. Used neural networks to model the decision to move between patches and how to search within a patch. The results show that CPUE and abundance show hyperstability, a phenomenon common in schooling fisheries. But the individual state-variables of the virtual system at a specific spatial and temporal scale may affect the results of the simulation. This looks incredibly relevant. Exactly what I wanted to look at in a more general way. 
+\item[\cite{DreyfusLeonKleiber:2001}] Spatial ABM of the yellowfin tuna fishery in the eastern Pacific Ocean. Schools of fish and fishing vessels move in the landscape. Consider two scenarios: no fishing regulation and another with area closure during the last quarter of the year. Goal is to understand effort redistribution when regulations are implemented, because this is not well understood and authors suggest that this modeling approach can be helpful to predict effects of regulation. Is an example trying to help managers understand what fishermen do when regulations go in. Good example of very simplistic human behaviors. And great relevance to CPUE measures.
+\item[\cite{Smith:2000}] The importance of specific decision parameters varies among fisheries, and appropriate fisher expectations of maximizing utility and the associated uncertainty is critical when testing behavior hypotheses for individual fishers.
+ \item[\cite{HollandSutinen:2000}] Looks at harvesting location choice in New England trawl fisheries. 
+ \item[\cite{PelletierFerraris:2000}] Classifies fishing activity in mixed fisheries on a trip basis by the gear used, alternative rigging specifications (e.g. mesh size), fishing ground, and/or target species
+\item[\cite{MistiaenStrand:2000}] fishers are exposed to various levels of uncertainty, they can either behave as risk-seekers that explore areas with high uncertainty, expecting extra-high payoffs, or be risk-averse, preferring to minimize risk by searching for alternatives with a more stable payoff
+\item[\cite{DreyfusLeon:1999}] An ABM with two distinct decision making properties. The first is to decide whether to stay at the present patch and the other is how to search the patch for prey. Compare with empirical data (I think) and find some similarities. Particularly useful because I'm thinking about these two decisions in the simple patch model. 
+\item[\cite{CampbellHand:1999}] Uses a RUM to predict fisher location choice. 
+\item[\cite{Aswani:1998}] Uses optimal foraging theory to assess the fishing strategies of Pacific Island artisnal fishers
+\item[\cite{Vignaux:1996}] found that the New Zealand purse-seine fleet had a tendency to move to areas where other vessels where fishing, expecting better catch success in those areas. 
+\item[\cite{Hancocketal:1995}] Empirical paper that looks at size of catch and time spent during 11 voyages of two purse-seiners looking for jack mackerel. Breaks down vessel behavior (cursing versus searching), and generally trying to get at the CPUE metric. Looks super interesting. 
+\item[\cite{McGarvey:1994}] Uses a Scheffer model and allows harvest to vary according to costs and prices. Then applies it to the Georges Bank sea scallop fishery.  Dynamic model that has density-dependent recruitment, age structure of fish stock, lognormal environmental recruitment variability, and gear selectivity. Looks how stock and effort change. I think all fishermen are the same. Maybe gear and ecology, but no information. Useful not for methods, but as an example of what's come before.
+\item[\cite{Begossi:1992}] Uses optimal foraging theory to understand fishing strategies in Sepetiba Bay (Rio de Janerio State, Brazil)
+\item[\cite{HilbornWalters:1987}] Classic paper from the 80s examining fleet dynamics. Here the authors simulate stock and fleet dynamics and looks at how fishermen allocate their search effort when differential catch rates, prices, or area-specific desirabilities are incorporated. Seems like it treats all fishermen the same.
+\item[\cite{Hilborn:1985}] Another of the 80s papers on fleet dynamics. Is a classic. 
+\item[\cite{MangelClark:1983}] Uses models to compare two strategies of searching for fish: cooperative versus competitive. Determine the optimal allocation of search effort over time. Another of the 80s papers focusing on fleet dynamics. I think they assume either everyone shares all information or everyone shares no information though. 
+\item[\cite{BockstaelOpaluch:1983}] Uses a RUM to predict choice of fishing gear
+\item[\cite{AllenMcGlade:1986}] Develops Lotka-Volterra type models and examines how variations in stock translate into catch. Also simulates a multispecies, multifleet spatial model calibrated to the Nova Scotian groundfish fisheries and presents the `stochasts' and `cartesian' fishermen.
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{The Issue of Effort}
+Not sure if, or how, this fits. Studying how effort changes seems central to understanding how fishermen behavior affects fish. And so a review of its study is likely in order. Focus is what we know, and what are the remaining questions? Also a possible question: is it known when to expect hyperstabilty or hyperdepletion, beyond general statistical analyses? Determining CPUE from optimal harvesting strategies in different systems may provide predictions on whether hip
+\begin{description}
+\item[\cite{MangelBeder:1985}] Discusses using a Poisson process to model a search. Discusses how fishermen can search for fish. Did not read too closely. Focuses on how the process of searching for fish determine some dynamics
+\item[\cite{MangelClark:1986}] To harvest fish, you have to find them first. This paper reviews search theory, an applied mathematics approach to finding objects. And then shows its role in natural resource modeling. Written at an introductory level, probably a good first reference to start on. Also provides case study for fishing. The case study of fishing though assumes all boats share information (I think), and does not consider depletion. 
+\item[\cite{Branchetal:2011}] The paper that looks at how CPUE varies with price and species definitions. Finds that lots of `collapsed' species can be explained by failure to account for those features. Useful when thinking about the problems of CPUE, and to consider that the failures of CPUE are so broad that fishermen behavior may only play a small part. 
+\item[\cite{Hilborn:2012}] Review of quantitative modeling in fisheries. Good source for understanding how effort has been dealth with historically. 
+\item[\cite{McCluskeyetal:2008}] Catch is the most common metric for evaluating fisheries, but the total amount of effort expended is necessary to interpret it 
+\item[\cite{Branchetal:2006}] CPUE is used assuming that it's proportional to stock abundance. CPUE is standardized to account for increases in fishing power (changing technology), but can't be standardized to incorporate change in fishermen strategies on the water (sharing information). It's already been recognized that CPUE can exhibit hyperstablity and hyperdepletion where the CPUE either lags behind or falls much more quickly than the stock abundance (respectively). This will be a good reference to start with when considering CPUE. Although possibly first look at \cite{Branchetal:2011}. 
+\item[\cite{ClarkMangel:1979}] Models exploited fish stocks and a tuna fishery. Looks at the effect aggregation (presumably of boats) has on yield-effort relationships. Finds that the predictions of a yield-effort relationship are different from general production fishery models. Discusses management implications of these different relationships. Just illustrating that density estimates are sensitive to assumptions in CPUE. So only addresses ecology and how that affects fishing behavior. Not so much on technology or social.
+\item[\cite{CookeBeddington:1984}] Classic paper on how CPUE is biased in fisheries. Possibly also when it's most likely to be biased mechanistically. May be useful as a base to say, people have not looked at things mechanistically since this paper. 
+\item[\cite{Ristetal:2008}] Paper detailing how effort is quantified in bushmeat hunting papers. Then empirically tests these results by following hunters in Equatorial Guinea. Finds mixed support. May be useful to show how CPUE is relevant outside of fisheries, or when I have more specific questions about effort in mind. \href{run:/Source_Summaries/Rist_et_al_2008.tex}{\color{cyan}See paper summary here}
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%
+\section{Ecological Approaches}
+\begin{description}
+\item[\cite{Lawetal:2000}:] An introductory chapter from textbook on spatial ecology. Discusses the mean-field assumption. Useful for considering fisheries as a predator prey system, and the assumptions of mean-field that have long gone along with that conceptualization.
+\end{description} 
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+\section{Methods}
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Fisheries systems in social-ecological framework: conceptual terminology}
+\begin{description}
+\item[\cite{Schluteretal:2013}] Describes the SES framework
+\item[\cite{McGinnisOstrom:nd}] Another paper describing the SES framework. Not sure how they differ.
+\item[\cite{Cox:2013}] A case study of application of the SES framework. Might be best to start with this one, see how applying the framework clarifies the questions and results, if at all. 
+\item[\cite{Ostrom:2010}] Overview paper (possibly her Nobel acceptance speech?) and useful as a broad overview of SES. 
+\item[\cite{Ostrom:2009}] Science paper on the framework of SES. Another broad overview. 
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Bioeconomic models}
+\begin{description}
+\item[\cite{ConradSmith:2012}] Review and history of bioeconomic modeling in fisheries, probably really useful for putting work in context. 
+\item[\cite{Hilborn:2012}] Review and history of quantitative fisheries modeling. Useful for getting history of the field and past developments. 
+\item[\cite{Pesendorfer:2006}] Review of economic theory relating to behavior. Would be good to have background of the ways in which behavioral economics thinks and quantifies choices. 
+\item[\cite{Fudenberg:2006}] Review of economic theory relating to behavior. Would be good to have background of the ways in which behavioral economics thinks and quantifies choices. 
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Foraging Theory}
+\begin{description}
+\item[\cite{Wiedenmannetal:2011}] Another state-dependent foraging model. Might help to clarify methods?  \href{run:/Source_Summaries/Wiedenmann_etal_2011.tex}{\color{cyan}See paper summary here}
+\item[\cite{MangelPlant:1985}] Long paper about how fishermen might be expected to gather information and make decisions about spatial allocation of effort. \href{run:/Source_Summaries/MangelPlant_1985.tex}{\color{cyan}See paper summary here}
+\item[\cite{Torneyetal:2011}] Big Colin's paper looking at under what conditions you should signal about a resource. \href{run:/Source_Summaries/Torney_et_al_2011.tex}{\color{cyan}See paper summary here}
+
+\item[\cite{GiraldeauCaraco:2000}] Social Foraging theory book. Will probably be a useful reference. \href{run:/Source_Summaries/Social_Foraging_Theory.tex}{\color{cyan}See paper summary here}
+\item[\cite{ClarkMangel:1984}] Classic foraging work, possibly brought on by their work on fishermen? Important to know. 
+\end{description}
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Models}
+\subsubsection{Patch Model}
+\begin{description}
+\item[\cite{Abramsetal:2012}] The patch model that I want to alter as an experiment
+\item[\cite{Abramsetal:2011}] Has predator switching functions in appendix. 
+\item[\cite{Ives:1992}] Has the original local information predator switching function. 
+\item[\cite{DreyfusLeon:1999}] An ABM with two distinct decision making properties. The first is to decide whether to stay at the present patch and the other is how to search the patch for prey. Compare with empirical data (I think) and find some similarities. Particularly useful because I'm thinking about these two decisions in the simple patch model. 
+\end{description}
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{VMS and ABMS}
+\begin{description}
+\item[\cite{JanssenOstrom:2006}] Summarizes approaches to social sciences, and how ABMs are useful. But leaves the question of how to test the validity of an ABM unanswered. 
+\end{description}
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+\section{Uncategorized}
+
+\begin{itemize}
+\item \cite{SchluterPahlWostl:2007, Schluteretal:2009, Leslieetal:2009, Kellneretal:2011}: and the linkages and tradeoffs between different ecosystem services 
+\item \cite{MacyWiller:2002}: Complex systems research has addressed how decentralized local interactions of heterogeneous autonomous agents give rise to collective outcomes such as system-level population dynamics or cooperation and collective action between resource users. These studies can help to better understand mechanisms driving evolution of SESs and determining system-level properties, such as resilience.
+\item \cite{Chadesetal2011}: embed exogenous network structures into an optimization model. Their work develops robust rules of thumb for prioritizing where and when to monitor and manage across various types of ecological network structures. In this case, the structure of the ecological network is used to guide recommendations for human behavior. 
+\item \cite{Lubelletal:2011} use a network approach to map the participation of actors across multiple water management policies. Outcomes are not the result of a single institution, and this paper is an example of network methods in unpacking the coordination of multiple policies or institutions for natural resource management.
+\item \cite{CarpenterBrock:2004}: Show how spatial shifts of anglers fooling local collapse of fish populations in heterogeneous landscape of lakes can lead to serial collapse in neighboring fisheries. So fishermen could either attempt to follow prey or become displaced not other populations/fisheries. 
+\item \cite{Ostrom:2007}: common framework for SESs
+
+\item \cite{Dichmontetal:2006}: example of management strategy evaluation in fisheries. 
+\item \cite{Bunnefeldetal:2011, Fultonetal:2004, Smithetal:2007, Dichmontetal:2008, Maraveliasetal:2010, Littleetal:2005, Littleetal:2009}: examples of management strategy evaluation. 
+\item \cite{JeffreyMcIntosh:2006}: examples of feedbacks - dynamics of the social system affect the evolution of the biophysical environment, which in turn affects the dynamics or evolution of the social system.
+\item \cite{Nicholsonetal:2009}: Models of SES that incorporate realistic representations of the linked dynamics of well-being and ecological change would be a major advance $\rightarrow$t he goal of abstract models is to talk about mechanism, seems like realistic models would only be useful if could definitely tell what was resulting in model dynamics
+\item \cite{Schluteretal:2009}: use an ABM to investigate the evolution of the tradeoff between two ecosystem services derived from water use in an arid environment: crop production through irrigated agriculture and fish production in a deltaic fishery. Show that a system evolves multiple uses of the water resource is more robust to variability in water flow, even though using water only for irrigation gives a higher economic return.
+\item \cite{Smajgletal:2008}: model of endogenous institutional change. 
+\item \cite{Torneyetal:2011}: Big Colin's modeling paper about signaling. How does he figure out the optimal strategy for signally and go from ABM to analytical. Seems like what I want to do here. What are the optimal strategies and how to go from ABM to analytical
+
+\item \href{run:Exploring the ‘public goods game’ model to overcom.pdf alias}{\color{Blue}Kraak 2010}: Looks at the role of exploiting fishermen behavior (exploit is the wrong word) to get better management, rather than being exclusively top down. Might give some ideas about under what circumstances you'd expect fishermen to cooperate. Could I put it in my framework? 
+\item \href{run:Drivers of change in ecosystem condition and servi.pdf alias}{\color{Blue}Nelson et al. 2005}: Looks at what human drivers change ecosystem services. From brief glance appears to be mostly terrestrial, but maybe an example of what types of drivers could be expected do change ecosystem services. 
+\item \href{run:Alternative models of individual behaviour and imp.pdf alias}{\color{Blue}Van Den Bergh et al. 2000}: Paper about the assumptions that economic models require, specifically about whether or not humans optimize. Might be good for thinking about how to model human behavior. Also think this is the paper that `satisfizing' comes from. 
+\item \href{run:/Source_summaries/Foraging flights 2013 Proceedings of the National.pdf alias}{\color{Blue}Ornes 2013}: News feature from PNAS, about L\'evy walks in marine predator foraging behavior. L\'evy walks are characterized by random probabilities in both direction and step length (I think), and look like a series of small brownian motion steps with occasional huge steps between bouts of small scale movement. The news article in PNAS is a review of the argument about whether marine predators exhibit L\'evy walks in their searching patterns. But also interesting to see if humans exhibit this type of search behavior when looking for fish. Might be a useful first step to look up some of the work this news article is summarizing. 
+
+\end{itemize}
+
+Refs concerning...
+\begin{itemize}
+\item The idea that human behavior is predictable: 
+\begin{itemize}
+\item in Fulton et al. 2011, Ball 2005, Miller \& Page 2007 (what aspects of human behavior are predictable in these papers?)
+\end{itemize}
+\item Papers that have looked at fishermen behavior: 
+\begin{itemize}
+\item From van Putten et al. 2012: Branch et al. 2005, Vernard et al. 2008
+\end{itemize}
+\item Types of fisheries:
+\begin{itemize}
+\item Mia's recommendation for Norway fisheries, in my notebook.
+\item Johnsen 2013: Is fisheries governance possible? 
+\end{itemize}
+\end{itemize}
+
+\begin{itemize}
+\item Fishermen moving between patches:
+\begin{itemize}
+\item Poisson process may not be appropriate for modeling shoal discovery rate. \cite{CookeBeddington:1984} look at how catchability ($q$) in the Gordon-Scheffer constant effort harvesting model should vary depending on handling time. Note that modeling shoal discovery process as Poisson assumes that the probability of encountering another shoal is constant. Which will not be true if fish are autocorrelated in distribution, or otherwise non-randomly distributed. 
+\item Makes me think of \cite{MangelClark:1983} and whether they use a Poisson distribution for how often fishermen come into contact with fish on a harvesting ground. From first pass, they use a gamma distribution. Which seems pretty close to Poisson. But really not sure.
+\item Looks like the gamma distribution is used when the conjugate prior is a Poisson distribution in Bayesian statistics. Which is what \cite{MangelClark:1983} are using. 
+\end{itemize}
+\end{itemize}
+
+\begin{itemize}
+\item Simon forwarded me two papers: \cite{Smithetal:2011, Levinetal:2012}. 
+\begin{itemize}
+\item \cite{Smithetal:2011} is about the ecosystem-level impacts of harvesting lower-trophic level species. Have read it before, lots of questions and comments in the Sente file. Might be worth revisiting those issues for a new perspective. 
+\item \cite{Levinetal:2012} Have already read this one too. Remember not being very impressed the first time, but glancing over it, it may have some value for the argument on how socio-ecological systems should be modeled for policy/management reasons. 
+\end{itemize}
+
+\end{itemize}
+
+\subsection*{The assembly, collapse and restoration of food webs - \cite{Dobsonetal:2009}}
+Makes the point that if we're going to argue for nature conservation because of economic benefits, than ``we need to develop a theory the thinks ecosystem services to food-web structure.'' I like that. Goes on to say that we need to figure out how to conserve the relevant assemblages of species that provide the emergent ecosystem services we depend upon. 
+
+\subsection*{People to read up on with roughly their disciplines}
+\begin{itemize}
+\item Anthropological approaches
+\begin{itemize}
+\item Bonnie McCay
+\item Kevin St. Martine
+\end{itemize}
+\item SES approaches
+\begin{itemize}
+\item Jim Wilson: Jim Wilson's fisherman behavior papers, like on lobsters (Wilson et al. 2007 PNAS) and urchins (Johnson et al. 2012 Fish Res). 
+\end{itemize}
+\item Jim Sanchirico's spatial model of fisheries
+\end{itemize}
+
+\section*{Why include fisher behavior explicitly?}
+\begin{itemize}
+\item \cite{Andersenetal:2012}\marginnote{\footnotesize no reason why those behaviors are important. Only that they're ignored.}
+ argues that fishermen behavior should be included more frequently citing \cite{Wilen:1979, Branchetal:2006} and that management has focused on biological processes but ignoring fishers response to changes in resource availability, market conditions and management regulations citing \cite{Hilborn:2007, SalasGaertner:2004, HilbornWalters:1992}. 
+ \item Understanding behavior of fishermen is the key ingredient to successful fisheries management and the aggregate behavior of fishing fleets can be predicted and managed with appropriate incentives \citep{Hilborn:2007}
+ \item The goal of \cite{Hilborn:2007}  is to explore our understanding of how individual fishermen and fishing fleets behave, and  to use that as a window on what leads to different outcomes in different fisheries management systems. The overriding them, regarding fishermen behavior, is that fishermen respond to incentives. 
+  \item Moving the world's fisheries towards biological, economic and social sustainability requires understanding the motivation of fishermen, and designing a management regime that aligns societal objectives with the incentives provided to fishermen \citep{Hilborn:2007}
+ \item \cite{Hilborn:2007} cites management surprises (when fishermen respond in ways surprising to managers) as a reason that the motivation and incentives of fishermen need to be understand in order to understand how they respond to management. 
+ \item \cite{Hilborn:2007} provides evidence that as a whole, fishing fleets behave rationally in their spatial allocation and discarding behavior, and thus in aggregate, make decisions to maximize their well-being within the constraints of the legal and institutional incentives that are imposed on them. And the TAC regulations, or days at sea regulations make it obvious that the incentives set up cause a race to fish. 
+ \item There is a general consensus that successful fisheries come from aligning incentives for fishermen and society.\marginnote{\footnotesize This is an opportunity to discuss nature conservancy and conservation international changing missions?} Examples include the Pew Commission on Ocean Policy recommendations and the US Commission on Ocean Policy \citep{Hilborn:2007}
+ \item Human behavior and incentives determine outcomes in all fisheries \citep{Hilborn:2007}. 
+ \item The key with successful incentives is that increased income will not come via an increased catch, but by reducing costs \citep{Hilborn:2007}. This is often the goal of ITQs, by guaranteeing an amount of catch, allows fishermen to minimize costs since profits are (in a sense) capped. 
+ \item Bycatch quotas put in an incentive to avoid bycatch and there are a number of fisheries that have self-organized to avoid and reduce bycatch rates \citep{Hilborn:2007}. 
+ \item Aligning incentives are also important because much of the data for fisheries management comes from the fishermen themselves (logbooks, effort maps, catch samples). In an adversarial environment, these data will be of low quality and hard to come by \citep{Hilborn:2007}. 
+ \item There has been very little systematic attempt to evaluate the success and failures of individual fisheries. \marginnote{\footnotesize Not sure if this is still true, \cite{Wormetal:2009} is maybe an example of this?}
+ \item Understanding human behavior and incentives will be the key to success in all fisheries \citep{Hilborn:2007}.
+ \item Because fishing fleets behave rationally within the imposed regulatory structures, \cite{Branchetal:2006} call for fisheries managers to create individual incentives that align fleet dynamics and fishermen behavior with the intended societal goals. 
+ \item Rarely are fish \marginnote{\footnotesize Fine, but what are the insights human behavior would give us?} managed, almost all regulatory action affects the fishing fleets pursuing the fish. Thus, studying fishing fleets and their behavior should be as important a part of fisheries science as studying the ecology or population dynamics of the fish \citep{Branchetal:2006}. 
+\item The goal of \cite{Branchetal:2006} is to provide a review to managers of the dynamics of fishing fleets: what determines where fishermen fish, how much they fish, how they invest in new fishing gear, and how they respond to regulation and enforcement. Because managers should be aware of these behaviors, and currently they are not. 
+\item Argues that fishing management has operated under the paradigm the tif you take care of the fish, you will manage fish well \cite{Branchetal:2006}. This is relevant for \cite{Smithetal:2008}'s argument that fisheries management has been focused exclusively on the ecology of the system. 
+\item \cite{Branchetal:2006} \marginnote{\footnotesize These are longer time-scales then we're interested in at first pass} focuses on longer-term fishermen behavior: expansion of fishing capacity and entry and exit of participants, management attempts of fleet reduction, subsidies, buybacks and dramatic TAC reductions.
+\item On a longer timescale, fisheries may change in that fish that were previously bycatch or unknown to fishermen could be added. This could be affected by technology (lower costs of catching), or from new entrants with knowledge not had by the residents.
+\item Behavior can affect CPUE indices through changes in fishing location and/or depth, gear, and/or targeting different subsets of the population (spawning aggregations) \cite{Branchetal:2006}. The analysis of CPUE plays a disproportionally large role in stock assessments because CPUE data is relatively cheap and easy to collect \citep{Branchetal:2006}. 
+\item \marginnote{\footnotesize examples in \cite{Branchetal:2006} of fleets that have improved CPUE through improved technology} The simplest assumption in using CPUE data is that trends in CPUE are linearly related to abundance. But CPUE is the most likely of all data in puts to be influenced by fleet dynamic sand fishermen behavior, including increases in fishing power, information sharing, switching between target species, prices and costs \citep{Branchetal:2006}. 
+\item \cite{Branchetal:2006} highlights information transfer as a major way that CPUE could remain unaffected. If abundance declines, but search time remains low, stock assessments based on such data won't record the change in abundance. 
+\item \marginnote{\footnotesize see \cite{Branchetal:2006} for primary literature, and more details on examples} You might think that spatial patterns in CPUE can be examined to determine where fish are present at highest abundances and hence where productivity is greatest, but CPUE turns out to be constant over large spatial areas in fisheries ranging from oceanic longline fleets to crabbers to abalone divers. The ideal free distribution predicts the when foragers have perfect knowledge about resources in number of different areas, and there is no cost to choosing among the areas, then the attempts of each forager to maximize their profitability will result in an equalization of profit rates in all areas. At this equilibrium, the number of foragers (fishermen or fishing effort) in each area will reflect the abundance better than the profit rate (CPUE).   
+\item Fisheries management is people management, and fisheries managers need to understand how individuals and fleets behave in response to regulation in order to design fisheries management systems that will achieve the desired social, economic and biological objectives \citep{Branchetal:2006}. 
+\item Individuals and fishing fleets act rationally to maximize their individual well-being. If we understand the economic and social circumstances of the fishery, we can usefully explain and indeed predict the consequences of polices \citep{Branchetal:2006}. 
+\item The behavior of fishing fleets and fishermen can be guided toward desirable actions by providing appropriate incentives. Responses of individuals and fishing fleets to management systems can be predicted based on individual utility maximization, and managers need to understand the economic and social forces affecting individual behavior when designing management systems. 
+\end{itemize}
+ 
+ \subsection*{State of fisheries globally?}
+ \begin{itemize}
+ \item \cite{Wormetal:2009} for this one maybe?
+ \end{itemize}
+
+\section*{Models that consider fisheries explicitly}
+\begin{itemize}
+\item One problem of modeling fisher behavior is that the main factors influencing fisher choice are usually not available in traditional catch-and-effort databases. Instead proxies need to be developed from available fisheries data to reflect the key decision variables \citep{Smith:2000}\footnote{but from \cite{Andersenetal:2012}. Need to confirm in original source.}
+\item Aspects of short-term behavior of fishermen
+\begin{itemize}
+\item Fishermen are traditionally assumed to be utility maximizers \citep{vanPuttenetal:2011}\footnote{but from \cite{Andersenetal:2012}. Need to confirm original source}
+\item In most fisheries, short term behavioral decisions are made in an environment of uncertainty, where the fisher does not know how all the stocks are distributed and where the greatest utility/profit is obtained \citep{MangelClark:1983}.\footnote{but from \cite{Andersenetal:2012}, need to check original source}
+\item Fishermen use whatever information is available to them which can include catch success of other fishers, past fishing success and patterns, tradition, availability of stocks, and management regulations, when attempting to maximize their expected utility \citep{HilbornWalters:1992, SalasGaertner:2004}.\footnote{but from \cite{Andersenetal:2012}, also what are `expected stocks'?}
+\end{itemize}
+\item Most quantitative predictive modeling of fisher behavior consists of constructing a decision function based on either theoretical economic theory or knowledge in the literature, and few studies have directly asked fishermen how they construct and evaluate their expectations. But see \cite{Andersenetal:2012, HollandSutinen:2000, Salasetal:2004, Abernethyetal:2007} for exceptions.\footnote{Haven't read \cite{HollandSutinen:2000, Salasetal:2004, Abernethyetal:2007} yet}
+\item Catch information from other fishermen are usually considered as a key economic behavioral driver \citep{SalasGaertner:2004}.\footnote{but found in \cite{Andersenetal:2012}, need to go to original papers}
+\end{itemize}
+
+\subsection{Phenomena}
+\begin{itemize}
+\item \cite{HayniePfeiffer:2012}
+\item \cite{Jensenetal:2012}
+\item \cite{Melnychuketal:2012b}
+\end{itemize}
+
+\subsection{Effort in fisheries}
+\begin{itemize}
+\item \cite{WittGodley:2007}
+\item \cite{Wilenetal:2002}
+\item \cite{Branchetal:2011}
+\item \cite{Branchetal:2006}
+\item \cite{MangelPlant:1985}
+\item \cite{Branchetal:2011}
+\item \cite{MangelClark:1983}
+\end{itemize}
+
+\subsection{General SES}
+\begin{itemize}
+\item \cite{Schluteretal:2013}
+\item \cite{Cox:2013}
+\item \cite{Liuetal:2007}
+\item \cite{Schluteretal:2012}
+\item \cite{McGinnisOstrom:nd}
+\end{itemize}
+\printindex
+
+\bibliographystyle{cbe}
+\bibliography{unread,read}
+
+
+\end{document}
+

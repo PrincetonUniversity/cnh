@@ -1,0 +1,294 @@
+---
+title: "Impact of Catch Shares on Human connectivity of Fisheries"
+author: "Emma Fuller, Jameal Samhouri, James Watson"
+date: "July 18, 2015"
+output:
+  word_document: default
+  pdf_document:
+    number_sections: yes
+  html_document: default
+csl: the-american-naturalist.csl
+bibliography: method_refs.bib
+---
+```{r, echo=FALSE, warning=FALSE,message=FALSE}
+library(ggplot2)
+```
+
+# Introduction
+In EBM great strides have been taken to improve the understanding of ecological connectivity in systems but we’re still missing how people connect marine systems. Instead we often treat fleets as unrelated across fisheries. This is a problem given that fishermen often take a portfolio approach to fishing. On the west coast, for example, more than 60% of fishermen fish in multiple fisheries, effectively connecting them. And fisher behavior, especially across fisheries, is central as it will mediate how changes in management translate into changes in the marine environment. 
+
+Further human connectivity not only is important to management understanding and predicting system level dynamics, but human connectivity (i.e. diversity of participation) has been tied to good things for human livelihood: reduced inter-annual revenue variability/exposure to risk. The Magnuson Stevens Act explicitly calls for management to account for how changes in management affect people involved in these fisheries. Increasingly natural resource management is mandated to consider human wellbeing alongside the integrity of ecosystem processes and functions. Management is also tasked with setting explicit and measurable goals and we lack ways measuring human wellbeing, especially at the community level. 
+
+Here we present an approach for measuring human connectivity of fisheries at individual and community level and use it to evaluate how a change in management affects anthropogenic connectivity in US west coast commercial fisheries. Here we use the implementation of ITQs for the west coast groundfish trawl fishery as a natural experiment to see how it affected communities. Previous work has hypothesized that ITQs will allow vessels to be more flexible, since they face less of an opportunity cost with ITQs. We measured both the individual level of diversity for vessels which fished in the groundfish ITQ fishery before and after ITQ implementation. We also examined the changes in network statistics. By comparinrg vessel-level changes with those observed in the larger place-based communities, we find evidence that catch shares have increased the diversity of vessel participation, but not affected the connectivity among fisheries at a port level. 
+
+# Methods
+We examine how vessels and ports change in the number and even-ness with which they participate across fisheries before and after catch share implementation in the groundfish trawl fishery. We use vessel-level landings data to classify landings into realized fisheries, and use these fisheries designations to characterize vessels' participation in fisheries before and after the implementation of catch shares. All analyses are performed using `R` [@R2015] unless otherwise noted.
+
+## Data 
+Fisheries landings data comes from the Pacific Fishery Information Network database [@pacfin2014], and include commercial landings from all vessels fishing in the US Extended Economic Zone (EEZ) off the US west coast between 2009 and 2013. Landings receipts report the amount of fish caught by market category. These market categories are approximately equivalent to species-level identification, although not exact. Rockfish are most likely to be approximate, as species are often difficult to distinguish. However, the bigger the price differential between species, the more accurate the market categories.[^1] Thus in the following work we assume that vessels are targeting market categories, rather than species, as that is the economically relevant determination. 
+
+[^1]: Personal communication from Brad Stenberg
+
+For each market category, landing tickets report price per pound, date, port of landing, and vessel identifying information. After adjusting for inflation using the 2009 Consumer Price Index, we calculate vessel revenues by multiplying the price per pound by the number of pounds landed.[^2]
+
+[^2]: Revenue = `ppp*landed_wt`
+
+## Realized Fisheries
+We define a realized fishery as a gear-type targetting a coherent species assemblage [@vanPutten:2011bj]. The Pacific Management Council has developed a set of sector based definitions similar to this approach for the federally managed groundfish landings, but no equivalent exists for non-groundfish fisheries. In order to treat the landings dataset uniformly, we apply a metier-like analysis to this landing data [@Deporte:2012kq]. Our goal was to develop a method that could be used across fisheries with wildly different assemblages (i.e. distinguishing rockfish assemblages from groundfish trawls from pink shrimp trawls) in an unsupervised manner. Previous metier analyses occur largely in Europe, although metier-like analyses have been performed in the Northeast US, classifying fishing data to define “operational fisheries” of New England [@Lucey:2013jy]. 
+
+The first step of these methods is to define species targets through clustering species composition of landings. There exists a number methods by which to find characteristic assemblages in data, and is a topic that's recieving much attention in approaches to finding clusters in social and neural network analysis. Previous metier analyses have used a variety of clustering algorithms including k-means [@Lucey:2013jy], hierarchical algomorative clustering [@Deporte:2012kq], and hierarchical ascending classification [@Pelletier:ISmLZefX]. Catch data is a high dimensional dataset, due to the fact that a single groundfish trawl can bring in > 20 species. Because these clustering methods do poorly with high-dimensional data [CITE], dimensionality reducing approaches in the form of PCAs are often applied prior to the clustering step.
+
+Because our goal is to develop a single analysis pipeline to classify fisheries coast-wide (rather than within a multi-species sector as has been done previously), our dimensionality was three times the dimensionality of previously analyzed landings data.  With this degree of complexity in our data, ordination techniques were not sufficent to reduce the data to two to three principal axes for which k-means and hierarchical clustering do best. Finally, because we desired an unsupervised approach to classify fisheries, we avoided exploratory methods such as k-means and hierarchical clustering which require a subjective descision of an optimal clustering solution [CITE - also BIC tecniques for cluster solutions]. 
+
+Given our goals, we use the infoMap algorithm. infoMap is an information theoretic approach, which uses the probability flow of a random walker on a network as a proxy for the information flows in a real system. The objective of infoMap is to compress the description of the probability flow, and in doing so partitions the network into modules. infoMap works by computing the fraction of time a node is visited by a random walker. Merges between modules that give the largest decrease in description length are made until further merging leads to increases of description length. Results are refined with a simulated annealing approach, starting at several different temperatures, with the run selected as the one that gives the shortest description of the network.
+
+Because we are calculating pair-wise distances between trips, our distance matrix becomes intractable quickly, and we are unable to construct a single distance matrix which contains the pairwise distances of all trips. Instead we use 2010 as the base-year, making the assumption that all fisheries present in the time period of our data (2009-2013) are landed in 2010, although we also complete the analysis using 2012 as the base year and find no substantial difference in classification (see Appendix). To reduce the size of the distance matrices we split the trips by gear type (using PacFIN `grgroups` designation, see table below). 
+
+```{r gear.groups.table, echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
+
+# if file doesn't exist, download from PacFin
+  if(!file.exists("/Users/efuller/1/CNH/rawData/Catch/gr_tree.txt")){
+    system('wget -O /Users/efuller/1/CNH/rawData/Catch/gr_tree.txt "http://pacfin.psmfc.org/pacfin_pub/data_rpts_pub/code_lists/gr_tree.txt"')
+  }
+
+# load gear table
+  grid <- read.fwf("/Users/efuller/1/CNH/rawData/Catch/gr_tree.txt", widths = c(22,54), skip = 7, n = 65, stringsAsFactors = FALSE)
+  colnames(grid) <- c("gear.group","description")
+  library(dplyr); library(stringr)
+  # cleaning up the frame, remove empty lines, lower case, remove columns, trim whitespace
+  grid <- grid[complete.cases(grid),]; 
+  grid <- grid %>%
+    mutate_each(funs(tolower)) %>%
+    mutate_each(funs(str_trim))
+  
+  grid <- grid[grep("^all", grid$description),] # just get gear groups
+  grid$gear.group <- gsub('\\\\_',"",grid$gear.group) # remove the weird slashes
+
+# load cleaned FTL data and calculate number of vessels and trips for each gear group
+  ftl <- readRDS("/Users/efuller/1/CNH/processedData/catch/1_cleaningData/filtered_ftl.RDS")
+  
+  # tabulate
+  gear.tab <- ftl %>%
+    group_by(grgroup) %>%
+    summarize(n.vessels = length(unique(drvid)), 
+              n.trips = length(unique(trip_id))
+              ) %>%
+    mutate(grgroup = tolower(grgroup)) %>%
+    arrange(desc(n.vessels)) %>%
+    rename(gear.group = grgroup)
+  
+  # put together
+  gear.tab <- merge(gear.tab, grid, by = "gear.group",all.x = TRUE, all.y = FALSE, sort = FALSE)
+  gear.tab$description <- gsub("all ","",gear.tab$description)
+  
+  # display table
+  library(pander)
+  set.alignment('left', row.names = 'left')
+  set.caption("PacFin gear groups, participation, and descriptions for US west coast landings data 2009-2013")
+  panderOptions('table.split.table', Inf)
+  pander(gear.tab, style = 'rmarkdown')
+```
+
+We calculate a pairwise distance for each trip within a gear/year subset using the Hellinger distance ($H$). This metric has the advantage of avoiding the double-zero problem common in species count data and retains statistical properties of raw species-abundance data [@legendre2012numerical]. Using the same notation as @legendre2001ecologically, we consider a species abundance data table $Y=[y_{ij}]$ of size ($n\times p$) with catches (rows) $i=\{1\dots n\}$ and species (columns) $j=\{1\dots p\}$. Here row (catch) sums are noted as $y_{i+}$ and column (species) sums as $y_{+j}$ with the overall sum being $y_{++}$. We draw an important distinction however, as the entries of this table are not biomass, but revenue. This then makes species that generate more revenue more important in calculating distances and devalue incidential catch (often valued at or close to zero). The Hellinger distance between two landings represented by vectors of species revenues $\mathbf{x}_1$ and $\mathbf{x}_2$ is defined as
+$$ H(\mathbf{x}_1, \mathbf{x}_2) = \sqrt{\sum^p_{j = 1}\left[\sqrt{\frac{y_{1j}}{y_{1+}}} - \sqrt{\frac{y_{2j}}{y_{2+}}} \right]^2}.$$
+This distance ranges between zero and $\sqrt{2}$, with zero meaning the sites have identical compositions and $\sqrt{2}$ meaning they share no species.
+
+We transform the dissimilarity index to be a measure of similarity
+$$\text{Similarity} = \sqrt{2} - H,$$
+and build an undirected, weighted network in which nodes are trips, and edge widths are the similarity in species composition between trips.[^4] This allows a vessel to be represented in multiple nodes if it makes trips that vary substantially in catch composition. With this network we use the infoMap algorithm to find communities (clusters or subgraphs) within the network (Martin Rosvall and Bergstrom 2008; M Rosvall, Axelsson, and Bergstrom 2009).
+
+[^4]: although technically I make any similarity $<0$ into $0$. We get very small negative numbers (i.e. $2^{-16}$) due to rounding errors. See [here](http://stackoverflow.com/questions/19444674/approximation-rounding-errors-in-r-in-simple-situations) for some explanation of rounding errors in R. 
+
+We use a k-nearest-neighbor (knn) classifier using a single nearest neighbor to assign all other trips of each gear subset to those possible metiers. The nearest neighbor to each trip was found using the Hellinger distance defined above.
+
+## Measuring Diversity
+To determine whether catch shares affects how vessels particpate across fisheries, we develop two methods: one at the vessel level and the second at the port level. 
+
+### Vessel Level
+To measure the change in the number of fisheries a vessel participates in we calculate the effective Shannon index [@jost2006entropy] for each vessel each year where amount of revenue in each metier is the unit of diversity. Here then the diversity ($D$) for a single vessel $j$ is 
+$$D_j = e^{-\sum^F_{i = 1}p_i\ln p_i}$$
+where $F$ is the total number of fisheries and $p_i$ is the proprotion of total revenue a total vessel obtained for fishery $i$ in some time period. Thus the effective Shannon index of revenue diversity reflects both the number of fisheries in which a vessel participates, but also the evenness with which a vessel's effort is spread. 
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+load("/Users/efuller/1/CNH/Analysis/Metiers/bin/vessel_subset_stats.Rdata")
+```  
+We measure the change in diversity as the the difference between pre- (2009-2010) and post- (2012-2013) revenue diversity for each vessel. Participation in catch shares is defined as the presence of any landing using quota in the period 2012-2013. We restricted this analysis to vessels which have have an average annual revenue of more than $`r min_rev` (adjusted for 2009 dollars) across this five year period and had commercial landings before and after the implementation of catch shares in 2011. This leaves us with `r num.ves` vessels which are responsible for `r round(percent.dollars, 2)*100`% of total revenue and `r round(percent.lbs, 2)*100`% landings of landed commercial catch over the examined time period (2009, 2010, 2012, 2013).
+
+### Port level 
+To evaluate community level effects on fisheries connectivity we introduce participation networks. Here each node is a realized fishery. The width of the edges are proportional to the number of vessels which participate in both fisheries. Thus wide edges are fisheries that have vessels moving back and forth between them while thin/absent edges mean these fisheries have few/no vessels in common. As with the realized fisheries, the width of the edges is calculated as the Hellinger similarity between the fleet (i.e. vessel) composition in each of the two connected fisheries. 
+```{r,echo=FALSE, warning=FALSE,message=FALSE, fig.cap="Here the nodes represent the percentage of revenue derived from each realized fishery in the time period 2009-2010, and this plot has been filtered to only show the realized fisheries responsible for at least 99% of the total revenue landed in Newport, OR during this time period."}
+library(igraph)
+g <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/bin/newport_prior.RDS")
+l <- layout.fruchterman.reingold(g,niter=500)
+V(g)$name <- c("dungeness\ncrab pot","albacore\ntuna troll","DST trawl","whiting mid-\nwater trawl","sablefish\nlong-line","pink shrimp\ntrawl",'sablefish\nfish pot',"salmon\ntroll")
+par(mai=c(0,0,.6,0))
+plot(g, edge.width = E(g)$weight*20, layout = l, vertex.size = (V(g)$size), vertex.label.color = "black", vertex.label.family="sans", vertex.frame.color = NA, vertex.color="grey80", vertex.label.cex = .75,main="Newport, OR\n2009-2010")
+```
+These networks allow the application of existing network statistics to characterize how participation varies across communities of fishers. In this case, we consider the port the unit of community, based in part on the previous work NOAA has done in characterizing port communities. 
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+port_df <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/bin/port_diversity_landings.RDS")
+```
+We measure community diversity as mean degree of the network. This measure has the benefit of being simple, but reflecting both the total number of fisheries (nodes) that are landed at a given port, and the connectivity between them. Thus to calculate the change in mean degree of a port's participation network we use landings in the period pre- (2009-2010) and post-catch shares (2012-2013) to construct two networks for each plot, calculate the mean degree, and take the difference. In our data, landings were reported at `r nrow(port_df)`, however `r length(which(is.na(port_df$delta.degree)))` ports did not have landings before and/or after 2011 to be able to compare the change in port level revenue diversity. We report the results for the remaining `r nrow(port_df) - length(which(is.na(port_df$delta.degree)))` ports below. 
+
+Catch share presence is defined as the presence of any vessel using catch share quota to land at the port in the period 2012-2013. 
+
+## Statistical Models
+A feature of our response variable is that we expect a relationship between pre-catch shares diversity and the change in diversity.  With some random fluctuation, we expect a negative relationship between the revenue diversity in the first time step and $\Delta$ revenue diversit. Thus we fit a linear regression which includes revenue diversity prior to catch shares, and a dummy variable for IFQ participation. 
+
+$$\Delta D_j = \beta_1 + \beta_2 \text{catch shares} + \beta_3 D_{\text{pre}} + \epsilon_j$$
+
+Where $\Delta D_j$ is the change in participation diversity of vessel's fishery landings, $\text{catch shares}$ is a dummy variable for participation in catch shares, and $S_{\text{pre}}$ is the participation diversity  pre-catch shares, $\epsilon$ is the error term which we assume is IID. 
+
+# Results
+## Defining fisheries
+In our analysis temporal and spatial structure emerges from the data, and we are able to recover the commonly recognized major fisheries and their seasonality, along with more spatially and temporally restricted fisheries. Below we plot the pattern of landings for four realized fisheries: albacore trolling, sablefish long-line, dungeness crab pots, and pink shrimp trawl. 
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+sub_trips <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/bin/ex_trips.RDS")
+ggplot(sub_trips, aes(x = tdate, y = n.trips, group = fishery)) + geom_bar(stat='identity') + facet_wrap(~fishery, nrow=5, scales = "free_y") + theme_minimal() + xlab("date") + ylab("number of trips landed")
+```
+In these fisheries we see the expected seasonality, suggesting that the unsupervised classification of landings into realized fisheries accurately reflects the fisheries present on the west coast. This is a useful complement to previous analyses since it largely validates the species groups used to define fisheries. There are some improvements offered in this approach, namely that it can distinguish between fisheries targeting the same species in different ways (i.e. there is a long line, pot and trawl fishery for sablefish), adds important targeted fisheries previously overlooked (e.g. lingcod) and adds some nuance to more regional, state-managed fisheries: i.e. finds a spiny-lobster fishery, red urchin fishery, along with a number of nearshore rockfish realized fisheries (e.g one dominated by lingcod), all of which are restricted to California. 
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+sub_port <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/bin/sub_port.RDS")
+ggplot(sub_port, aes(y = n.trips, x = lat)) + 
+  geom_bar(stat='identity', col='black', size = .5) + 
+  facet_wrap(~fishery, ncol=5)  + theme_minimal() + 
+  coord_flip() + 
+  scale_y_sqrt() + xlab("latitude") + ylab("number of trips landed") 
+```
+Our methods have the additional benefit of only requiring the catch composition of trips, making it possible to integrate data from both state and federal management databases which lack consistent permitting data across states. See the appendix for a full list of realized fisheries. 
+
+## Impacts of management change
+A feature of our response variable is that we expect a relationship between pre-IFQ revenue diversity and $\Delta$ diversity. (i.e. a vessel with a revenue diversity equal to zero prior to catch shares can only increase or stay the same. Similarly, if a vessel is at the theoretical maximum diversity, the revenue diversity can only decline or remain the same after catch share implementation. Thus with some random fluctuation (i.e. due to changes in global market prices for commercially important species, storms durning peak fishing seasons, etc.), we expect a negative relationship between revenue diversity prior to catch shares and the observed change in revenue diversity ($\Delta$ diversity). 
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+diversities <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/bin/vessel_diversity_landings.RDS")
+sub_data <- subset(diversities, hake == 0 & single.fishery_2010 == 0)
+lm1 <- lm(delta.eff.shannon_2010 ~ eff.shannon_2010, sub_data)
+```  
+We find this to be the case, with revenue diversity prior to 2011 negatively related to the change in diversity between the two time periods (p value $\approx$ `r round(summary(lm1)$coefficients[2,4])`)
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(scales)
+lbl = paste("R^2 == ", round(summary(lm1)$adj.r.squared, 2))
+lbl1 = paste("p == ",round(summary(lm1)$coeff[2,4], 5))
+ggplot(sub_data, aes(x = eff.shannon_2010, y = delta.eff.shannon_2010)) + geom_point(color = alpha("black", alpha = .15)) + theme_classic() + stat_smooth(method = 'lm', col = 'black', lwd = 1) + xlab("effective shannon revenue diversity prior to catch share implementation") + ylab("change in effective shannon revenue diversity\nafter catch shares") + annotate("text", x = 7, y = 4, label = lbl, parse = TRUE, size = 4) + annotate("text", x = 6.82, y = 3.5, label = lbl1, parse = TRUE, size = 4)
+```
+The strict "L" shape is reflective of the constraints of $\Delta$ diversity: a vessel can't get less diverse than it begain prior to the implementation of catch shares. Theoretically a similar bound exists at the top of the plot, however no vessels are close to the theoretical maximum revenue diversity. 
+
+Controlling for the effect of diversity prior to catch share implementation we find that vessels which participated in catch shares are associated with an increase in revenue diversity after IFQ implementation.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+lm2 <- lm(delta.eff.shannon_2010 ~  eff.shannon_2010 + ifq, sub_data)
+
+sub_data$pred_delta.eff.shannon_2010 <- predict(lm2, sub_data)
+
+lbl2 = paste("R^2 == ", round(summary(lm2)$adj.r.squared, 2))
+lbl3 = paste("p == ",round(summary(lm2)$coeff[2,4], 5))
+
+ggplot(sub_data, aes(x = eff.shannon_2010, y = delta.eff.shannon_2010)) + geom_point(color = alpha("black", alpha = .15)) + geom_abline(intercept = coefficients(lm2)[1], slope = coefficients(lm2)[2], lwd = 1) + geom_abline(intercept = coefficients(lm2)[1], slope = coefficients(lm2)[2] + coefficients(lm2)[3], lwd = 1) + theme_classic() + annotate("text",x = 7, y = -.2, label = "IFQ participating\nvessels", size = 4) + annotate("text",x = 7, y = -2, label = "non-IFQ\nvessels", size = 4) + xlab("effective shannon revenue diversity prior to catch share implementation") + ylab("change in effective shannon revenue diversity\nafter catch shares") + annotate("text", x = 7, y = 4, label = lbl2, parse = TRUE, size = 4) + annotate("text", x = 6.87, y = 3.5, label = lbl3, parse = TRUE, size = 4)
+```
+
+We find that a model including an effect for IFQ participation improves the fit ($\Delta$AIC = `r round(AIC(lm1) - AIC(lm2),2)`). 
+
+At the community level we find no evidence to suggest that ports which have catch share quota landed at them become more diverse after catch shares.
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+lm_port <- lm(delta.degree ~ has.ifq, port_df)
+lbl_coef <- paste("p ==", round(summary(lm_port)$coefficients[2,4], 2))
+ggplot(port_df[complete.cases(port_df),], aes(x = factor(has.ifq), y = delta.degree)) + geom_boxplot(fill = 'grey80') + theme_classic() + xlab("IFQ landings at port") + ylab("change in average degree of\nparticipaton network") + annotate('text',x = 2, y = 9, label = lbl_coef, parse = TRUE)
+```
+
+# Discussion
+We might not expect that degree distributions would change as result of increasing vessel switching. The fact that we do not see an effect of IFQs might indicate that the increased diversity of vessels are occuring not because vessels are entering new fisheries (and thus creating new connections between fisheries) but instead evening their participaton across the fisheries in which these vessels already participate. 
+
+# Appendix
+
+## Using 2012 as a base year
+To check whether our metier designations were sensitive to the year used to train the k-nearest-neighbors classifier we trained the knn classifier on years before (2010) and after (2012) ITQ implementation. To check agreement between partition results, we used the adjusted Rand index (ARI) [@rand1971objective]. The Rand index measures the accuracy of the partitions, and weights equally false positives and false negatives. The Rand index is calculated as
+$$RI = \frac{a + b}{a+b+c+d},$$
+where $a+b$ can be considered as the number of agreements between the two partititions, and $c+d$ as the number of disagreements between the partitions. The Rand index can take a value between zero and one, with $RI = 1$ indicating the partitions are identical. The Rand index does not take into account the possibility that agreements happen between the two partitions due to chance (i.e. the expected $RI$ of a randomly partitioned dataset is not zero), and as the number of clusters increases $RI$ approaches one. The adjusted Rand index ($ARI$) has been proposed to address these limitations [@hubert1985comparing] and is calculated as
+$$ \text{ARI} = \frac{ {n \choose 2}(a + d) - [(a+b)(a+c) + (c+d)(b+d)]  }{ {n\choose 2}^2 - [(a+b)(a+c) + (c+d)(b+d)]}.$$
+I calculated the adjusted Rand Index using the `R` library `mclust`, function `adjustedRandIndex()` overall and then for each gear group and each year that wasn't trained (2009, 2011, 2013). Results are as follows.
+```{r, echo=FALSE, warning = FALSE, message = FALSE}
+# compare classification results using 2010 versus 2012 as base year
+load("/Users/efuller/1/CNH/processedData/catch/1_cleaningData/ARI_total.Rdata")
+```
+
+Agreement between training sets are high, across all data $ARI =$ `r round(ARI_total,2)`. Breaking it down by gear-type, almost all gears have very close agreement with the exception of the hook and line gear group (HKL). 
+
+```{r, echo=FALSE, warning = FALSE, message = FALSE}
+by_year <- readRDS("/Users/efuller/1/CNH/processedData/catch/1_cleaningData/by_year.RDS")
+library(pander)
+pander(by_year)
+```
+
+Examining hook-and-line in detail we plot the agreement between classifications and find the main source of disagreement is limited to a few fisheries. Here base years 2012 is along the top and 2010 based classifications are along the bottom. The width of the connection is proportional to the number of trips, and any connections representing fewer than 5 trips have been removed for visual clarity. 
+
+```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.width = 8}
+library(bipartite)
+hkl_disagree <- readRDS("/Users/efuller/1/CNH/processedData/catch/1_cleaningData/hkl_disagree_clean.RDS")
+plotweb(hkl_disagree, labsize = .75)
+```
+
+Here we see the difference is driven largely by two groups of fisheries: metier `HKL_2` in 2012 grouping together several fisheries that are found when using 2010 based landings and by `HKL_1` from 2010 grouping together `HKL_1` and `HKL_8` from 2012. 
+
+Examining these subsets independently, we find that all these fisheries appear distinct (i.e. a non-random collection of species targeted). We plot these below, but briefly those landings that were classified as `HKL_2` in 2012 but 
+
++ and are `HKL_2` in 2010, represent largely black rockfish
++ are `HKL_6` in 2010 (bottom) are landings largely dominated by grass rockfish, cabezon, and black and yellow rockfish
++ are `HKL_4` in 2010 
++ classified as `HKL_2` in both classifications are dominated by black rockfish
+
+Despite these differences using the 2012 derived realized fisheries we find similar results, the diversity measures are highly correlated with one another.
+```{r, echo=FALSE, warning=FALSE,message=FALSE}
+lbl5 <- paste("cor ==", round(cor(sub_data$delta.eff.shannon_2012, sub_data$delta.eff.shannon_2010),2))
+ggplot(sub_data, aes(x = delta.eff.shannon_2010, y = delta.eff.shannon_2012)) + geom_point() + theme_classic() + annotate("text", x = 3, y = - 3, label = lbl5, parse = TRUE, size = 4) + xlab("change in diversity using 2010 as a base year") + ylab("change in diveristy using 2012 as a base year")
+```
+When fitting the model using 2012 realized fisheries, we find the order and magnitude of effects matching and a similar improvement in model fit. 
+
+```{r}
+lm3 = lm(delta.eff.shannon_2012 ~  eff.shannon_2012, sub_data)
+summary(lm3)
+lm4 = lm(delta.eff.shannon_2012 ~  eff.shannon_2012 + ifq, sub_data)
+summary(lm4)
+AIC(lm3) - AIC(lm4)
+```
+
+## Comparing to recent Holland & Kasperski results
+Recent work examining the west coast fleets diversification using a different approach has found the opposite effect of catch shares: that diversification of ITQ-landing trawl vessels declines. Holland & Kasperski however use a different method for defining fisheries (and hence diversity), use a different measure of diversity, over a different time period, and with a different set of vessels. I explain in more detail the differences between our methods, and then outline the analysis I completed to compare and contrast our results. 
+
+### Differences in methods
+1. **Fisheries Definition**:
+    + Holland & Kasperski define fisheries at a species level, i.e. the percentage of revenue due to pink shrimp across some time period (in their case, yearly). 
+    + This is distinguished from our approach which finds the realized pink shrimp fishery, and calculates the percentage of revenue from all landings classified as this realized fishery. 
+    + In practice this means that we may have slightly more revenue based on any bycatch. Additional differences include sablefish: because our realized fisheries are a combination of gear-species, the long-line, pot and trawl sablefish fisheries are each a distinct fishery.
+2. **Diversity definition**: 
+    + Holland & Kasperski use Shannon-Weiner diversity, and the Effective Shannon-Weiner diversity index. This is a similar measure to Simpson's in that it captures both the number of fisheries and the evenness across fisheries from which a vessel recieves revenue. 
+3. **Time periods**: 
+    + Kasperski & Holland calculate reveneu diversity annually and examine changes over time. 
+    + We group all landings across a two year period before and after catch shares. 
+    + Differences may arise in how fisheries which span the calendar year fall. The biggest concern here is Dungeness crab which can open anywhere from November to January. 
+3. **Different vessels**:
+    + Because many vessels travel from the west coast up to Alaska, Kasperski & Holland include all landings in Alaska and the west coast. Because we only have access to west coast landings data, we only see landings on the west coast. This may reduce the revenue diversity, especially for vessels that derive substantail revenue from Alaska landings. 
+    
+### Comparative analysis
+To figure out what causes the differences in our results, I replicate Holland & Kasperki's analysis in the following way
+
+1. Calculate revenue diversity using species groups rather than metier groups
+2. Calculate revenue diversity as above at 3 different time scales: annually (taking annual average before catch shares), grouping before and after landings (i.e. revenue diversity for pre 2009-2010 and 2012-2013), and adjusting for crab: taking a full period November-November before and after catch shares: i.e. Nov 2009- Nov 2010; Nov 2012-Nov 2013
+
+
+In order to determine which of these differences are responsible for our divergent results, we replicate Holland & Kasperski's methods in 3 different ways. 
+
+## Ports evaluated
+```{r}
+# will add port, state, percentage of revenue/lbs landed in time period, and list those ports that we excluded
+```
+
+## Realized Fisheries
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+realized_fisheries <- read.csv("/Users/efuller/1/CNH/processedData/catch/3_exploreBuildwebs/ref_tables/metier_descrp.csv", stringsAsFactors = FALSE)
+library(pander)
+pander(realized_fisheries)
+```
+# References

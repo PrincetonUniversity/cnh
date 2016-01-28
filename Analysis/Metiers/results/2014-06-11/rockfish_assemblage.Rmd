@@ -1,0 +1,195 @@
+---
+title: "Rockfish complexes"
+author: "Emma Fuller"
+date: "June 16, 2014"
+output: pdf_document
+---
+
+I'm trying to figure out the differences between the [maps of rockfish areas](http://www.pcouncil.org/wp-content/uploads/georock.pdf) and the species complexes for rockfish listed in in the [PacFin species tables](http://pacfin.psmfc.org/pacfin_pub/data_rpts_pub/code_lists/sp.txt). This is because I'd like the rockfish all aggregated into a depth based species complex (nearshore, shelf, slope). I made a csv file that combines both sets of information. I'm trying to see if there's a characteristic detph profile associated with these rockfish assemblages. If there is, I can just assign rockfish species by depth. 
+
+```{r settingupData,echo=FALSE}
+require(plyr)
+data <- read.csv("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-06-11/georock_pacfin.csv",stringsAsFactors=F)
+data$depth_dist_b <- as.numeric(data$depth_dist_b)
+data$depth_dist_t <- as.numeric(data$depth_dist_t)
+pacfin_slope <- subset(data, pacfin_N == "NSLP" | pacfin_S == "SSLP")
+```
+
+The most obvious difference between the rockfish area lists and the PacFin lists is there is no slope rockfish complex for the rockfish area. 
+```{r,echo=FALSE,message=FALSE}
+unique(pacfin_slope$georock_S)
+unique(pacfin_slope$georock_N)
+```
+
+## What's the depth distribution?
+
+First looking at slope rockfish
+
+```{r, echo=FALSE}
+depth_range <- function(subset){ # plot and return mean range
+index <- seq(1,nrow(subset))
+depth_range <- c(subset$depth_dist_t,subset$depth_dist_b)
+
+plot(c(index,index),depth_range,pch=19,col="turquoise3",bty="n",xlab="",main="Depth Dist")
+arrows(index,as.numeric(subset$depth_dist_t), index, as.numeric(subset$depth_dist_b),length=0,lwd=4,col="turquoise3")
+
+points(c(index,index),c(subset$depth_hi_dens,subset$depth_lo_dens),pch=19,col="tomato1")
+arrows(index,as.numeric(subset$depth_hi_dens),index, as.numeric(subset$depth_lo_dens),length=0,col="tomato1",lwd=5)
+text(index,runif(nrow(subset),min(subset$depth_dist_t,na.rm=T),max(subset$depth_dist_b,na.rm=T)),subset$Common_name,cex=1)
+}
+depth_range(pacfin_slope)
+```
+
+what about shelf and nearshore rockfish
+
+```{r,echo=FALSE}
+pacfin_shelf <- subset(data, pacfin_N == "NSLF" | pacfin_S =="SSLF")
+pacfin_nearshore <- subset(data, pacfin_N == "NSHR" | pacfin_S == "SSRD" | pacfin_S == "SSRS")
+
+depth_range(pacfin_nearshore)
+depth_range(pacfin_shelf)
+```
+
+Want to look at the average ranges for each group. Start with the pacfin species complexes
+
+```{r,echo=FALSE}
+
+depth_ranges <- data.frame(depth = c(pacfin_shelf$depth_dist_t,pacfin_shelf$depth_dist_b,pacfin_slope$depth_dist_t,pacfin_slope$depth_dist_b,pacfin_nearshore$depth_dist_t,pacfin_nearshore$depth_dist_b), pacfin = c(rep("shelf",2*nrow(pacfin_shelf)),rep("slope",2*nrow(pacfin_slope)), rep("nearshore",2*nrow(pacfin_nearshore))))
+
+boxplot(depth~pacfin,data=depth_ranges,col=c("turquoise","turquoise2","turquoise3"),pch=19,main="PacFin rockfish complexes") # alright, that's good. That outlier is blue rockfish, exists in original table. double checked. 
+
+# what about highest density ranges
+
+hi_dens_range <- data.frame(depth = c(pacfin_shelf$depth_hi_dens,pacfin_shelf$depth_lo_dens,pacfin_slope$depth_hi_dens,pacfin_slope$depth_lo_dens,pacfin_nearshore$depth_hi_dens,pacfin_nearshore$depth_lo_dens),pacfin = c(rep("shelf",2*nrow(pacfin_shelf)),rep("slope",2*nrow(pacfin_slope)), rep("nearshore",2*nrow(pacfin_nearshore))))
+
+boxplot(depth~pacfin,data=hi_dens_range,col=c("tomato1","tomato2","tomato3"),add=T,lwd=2)
+```
+
+what about the georock distributions 
+
+```{r, echo=FALSE}
+georock_nearshore <- subset(data, georock_N == "NSHR" | georock_S == " SSRS")
+georock_shelf <- subset(data, georock_N == "NSHLF" | georock_S == "SSLF")
+
+depth_range(georock_nearshore)
+depth_range(georock_shelf)
+
+g_range_dens <- data.frame(depth = c(georock_nearshore$depth_hi_dens,georock_nearshore$depth_lo_dens,georock_shelf$depth_hi_dens,georock_shelf$depth_lo_dens),georock = c(rep("nearshore",2*nrow(georock_nearshore)),rep("shelf",2*nrow(georock_shelf))))
+g_range_tot <- data.frame(depth = c(georock_nearshore$depth_dist_t,georock_nearshore$depth_dist_b,georock_shelf$depth_dist_t,georock_shelf$depth_dist_b),georock=c(rep("nearshore",2*nrow(georock_nearshore)),rep("shelf",2*nrow(georock_shelf))))
+
+boxplot(depth~georock,data=g_range_tot,col=c("light green","dark green"))
+boxplot(depth~georock, data=g_range_dens,col=c("light pink","magenta"),add=T)
+```
+
+let's compare the two
+
+```{r,echo=FALSE}
+boxplot(depth~pacfin,data=depth_ranges,col=c("turquoise","turquoise2","turquoise3"),pch=19,main="PacFin rockfish complexes") #
+boxplot(depth~georock,data=g_range_tot,col=c("light green","dark green"),add=T)
+
+boxplot(depth~pacfin,data=hi_dens_range,col=c("tomato1","tomato2","tomato3"),lwd=2)
+boxplot(depth~georock, data=g_range_dens,col=c("light pink","magenta"),add=T)
+```
+
+looks pretty good for overlap. What about the species that are left without species complexes. 
+
+```{r,echo=FALSE}
+none <- subset(data, pacfin_N == "none" & pacfin_S == "none")
+none <- none[-which(is.na(none$depth_dist_b)),] # getting rid of the thornyheads. they don't have good ranges
+
+adj_depth_range <- function(subset,ylim){ # plot and return mean range
+  subset <- subset[order(subset$depth_dist_b),]
+  index <- seq(1,nrow(subset))
+  depth_range <- c(subset$depth_dist_t,subset$depth_dist_b)
+  
+  plot(c(index,index),depth_range,pch=19,col="turquoise3",bty="n",xlab="",main="Depth Dist",ylim=ylim)
+  arrows(index,as.numeric(subset$depth_dist_t), index, as.numeric(subset$depth_dist_b),length=0,lwd=4,col="turquoise3")
+  
+  points(c(index,index),c(subset$depth_hi_dens,subset$depth_lo_dens),pch=19,col="tomato1")
+  arrows(index,as.numeric(subset$depth_hi_dens),index, as.numeric(subset$depth_lo_dens),length=0,col="tomato1",lwd=5)
+  text(index,rep(c(50,90),times=5),subset$Common_name,cex=1)
+}
+
+# first plot the pacfin data, then the unidentified rockfish from pacfin from shallowest to deepest
+par(mfrow=c(1,2))
+boxplot(depth~pacfin,data=depth_ranges,col=c("turquoise","turquoise2","turquoise3"),pch=19,main="PacFin rockfish complexes",ylim=c(0,460)) 
+boxplot(depth~pacfin,data=hi_dens_range,col=c("tomato1","tomato2","tomato3"),add=T,lwd=2)
+adj_depth_range(none,c(0,460))
+
+# annotate with what georock says about these species
+
+text(c(1,2,3,4,5,6,7,8,9,10),c(100,120,150,170,190,160,170,320,250,400),c("nearshore","none","none","shelf","nearshore","none","shelf","none","shelf","shelf"))
+```
+
+based on this I think dusky rockfish look like nearshore. But are there any in the FTL?
+
+```{r,echo=FALSE}
+FTL <- read.csv("/Volumes/NOAA_Data/CNH/Data/Catch/FTL_2009-2013_2014-03-21.csv",stringsAsFactors=FALSE)
+colnames(FTL)<-tolower(colnames(FTL))
+species_tot <- ddply(FTL, .(spid),summarize,total = sum(landed_wt))
+```
+
+how about dusky rockfish
+```{r}
+any(species_tot$spid=="DUSK") # nope. doesn't matter
+```
+
+how about california scorpion fish
+```{r}
+any(species_tot$spid=="SCOR") # nope. doesn't matter
+any(species_tot$spid=="SCR1") # nope. doesn't matter
+```
+
+how about harlequin
+```{r}
+any(species_tot$spid=="HLQN") # nope. doesn't matter
+```
+
+how about shortbelly
+```{r}
+any(species_tot$spid=="SBL1") # yep. georock calls it shelf. seems ok. 
+species_tot[species_tot$spid=="SBL1",]
+```
+
+how about black
+```{r}
+any(species_tot$spid=="BLK1") # yep.
+species_tot[species_tot$spid=="BLK1",] # georock calls it nearshore. 
+# seems like it goes awful deep to be nearshore. but i'll go with it
+```
+how about puget sound rockfish
+```{r}
+any(species_tot$spid=="PUGT") # nope.
+```
+
+how about widow
+```{r}
+any(species_tot$spid=="WDW1") # yep.
+species_tot[species_tot$spid=="WDW1",] 
+# considered shelf. alright.
+```
+
+how about darkblotched
+```{r}
+any(species_tot$spid=="DBR1") # yep. 
+species_tot[species_tot$spid=="DBR1",] 
+# no designation from either list. I'd guess slope 
+# because of the high density range area listed. 
+```
+how about yelloweye
+```{r}
+any(species_tot$spid=="YEY1") # yep. 
+species_tot[species_tot$spid=="YEY1",] 
+# considered shelf, go with that
+```
+
+how about canary
+```{r}
+any(species_tot$spid=="CNR1") # yep. 
+species_tot[species_tot$spid=="CNR1",] 
+# considered shelf, go with that
+```
+
+in conclusion will put darkblotched into slope complex, yelloweye, canary, widow, shortbelly into shelf, black into nearshore
+
+

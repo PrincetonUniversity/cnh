@@ -1,0 +1,97 @@
+---
+title: "Catch Profiles by vessel over time"
+author: "Emma Fuller"
+date: "June 2, 2014"
+output: html_document
+---
+```{r echo=FALSE}
+setwd("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-06-02")
+load("../2014-05-17/clust_prop.Rdata")
+load("../2014-05-17/input_data/prop_tripTable_2014-05-17.Rdata")
+require(plyr)
+require(ggplot2)
+```
+
+Here the goal is to take the catch profiles that were generated[^1] and look at composition by vessel. Did vessels have mostly one type of catch profile, multiple, etc. And to look at a time series where the y axis is the number of trips in a particular catch profile. 
+
+[^1]: 30 principle components retained, `sampsize` is 1000, `samples` is 100, clustered on proportion of species in catch. This is a 35 cluster solution. 
+
+```{r}
+# connect catch profile to vessel ID and trip return date. Need to get rid of repeats in prop_tripTable
+
+tripTable <- prop_tripTable[[2]]
+unique_table <- tripTable[!duplicated(tripTable$tripID),]
+unique_table$cp <- clust_prop$clustering
+
+# there are 2801 vessels in this datset. let's subset just to vessels that are in all five years to start. 
+by_year <- table(unique_table$veid, unique_table$year)
+year_df <- data.frame(y09 = by_year[,1], y10 = by_year[,2], y11 = by_year[,3], y12 = by_year[,4], y13 = by_year[,5], veid = rownames(by_year))
+
+# go by year, pull out any rows that have a zero in any of the four columns
+all_yr <- subset(year_df, y09!=0 & y10!=0 & y11!=0 & y12!=0 & y13!=0)
+
+# subset to just look at these vessels (cut in about a half)
+
+mj_trips <- subset(unique_table, veid %in% all_yr$veid)
+
+# keeps about 70% of the original trips
+
+# now need to go by veid, to make time series by trip date. Let's try with first vessel to see what it looks like
+
+v1 <- subset(mj_trips, veid=="1000000")
+date <- ddply(v1, .(tripID), summarize, date= as.Date(strsplit(tripID,"_")[[1]][1]))
+v1$date <- strsplit(v1$tripID,"_")[[1]][1]
+v1$date <- date$date
+
+ord_v1 <- v1[order(v1$date),]
+ggplot(ord_v1, aes(x=date,y=cp, label=cp)) + geom_line() + geom_text(aes(colour=factor(cp)), size=8)
+
+# this guy is crazy diverse. let's label all catch profiles by species associated with them
+
+poss_cp <- data.frame(cp=unique(ord_v1$cp),shorthand=c("salmon","salmon","sablefish","crab","albacore","pink_shrimp","ghost_shrimp","whiting","rockfish","sardine","rockfish","dogfish","salmon","rockfish","rockfish","flatfish","flatfish","flatfish","flatfish","salmon","lingcod"))
+m_v1 <- merge(ord_v1,poss_cp,by="cp")
+
+ggplot(m_v1, aes(x=date,y=as.numeric(shorthand), label=shorthand)) + geom_line() + geom_text(aes(colour=factor(shorthand)))
+
+## let's try another
+v2 <- subset(mj_trips, veid=="921578")
+date <- ddply(v2, .(tripID), summarize, date= as.Date(strsplit(tripID,"_")[[1]][1]))
+v2$date <- date$date
+
+ord_v2 <- v2[order(v2$date),]
+ggplot(ord_v2, aes(x=date,y=cp, label=cp)) + geom_line() + geom_text(aes(colour=factor(cp)), size=8)
+
+## and another
+
+over_time <- function(vid, mj_trips){
+  v_ind <- subset(mj_trips, veid==vid)
+  date <- ddply(v_ind, .(tripID),summarize, date=as.Date(strsplit(tripID,"_")[[1]][1]))
+  v_ind$date <- date$date
+  
+  ord_v_ind <- v_ind[order(v_ind$date),]
+  #ggplot(ord_v_ind, aes(x=date,y=cp,label=cp))+geom_line()+geom_text(aes(colour=factor(cp)), size=8)
+  plot(ord_v_ind$date,ord_v_ind$cp, col=ord_v_ind$cp,type="o",pch=19, main=vid,cex=3,lwd=0.5)
+  text(ord_v_ind$date,ord_v_ind$cp,ord_v_ind$cp, cex=1.5, col="white")
+}
+
+
+rando_boats <- sample(mj_trips$veid,3)
+par(mfrow=c(1,3))
+for(i in 1:length(rando_boats)){
+  over_time(rando_boats[i],mj_trips)
+}
+```
+
+My conclusion from this brief foray is that there are some profiles that seem to be misclassified. For example the ghost-shrimp catch profile is seemingly only caught with crab pots, which makes me think they end up as non-targeted catch. Which also suggests that dominant species is not the best way to assume targeted species. Salmon probably should be one catch profile, albacore is a good catch profile. CP 12 (dogfish) is probably a bycatch. Ittends to show up once in the course of 5 years. Same with cp 6, that is black rockfish, it shows up so infrequently. 
+
+I'm also suprised that a number of boats seem to go out for a trip or two of shrimp before switching back to something else. Of course there are boats that seem to do shrimp throughout the summer. But I didn't expect to see anyone dipping into shrimp. 
+
+One conclusion is that I think looking at yearly catch profiles by vessel would be a good way to wash out some of these seemingly outlier hauls. 
+
+But check out vessel `536873`, seems highly regular
+
+```{r}
+over_time(536873,mj_trips)
+```
+
+Also a good place to start working on the catch profiles is the ghost shrimp issue. That showed up again and again, but I think looks like something that happens once or twice during crabbing season. 

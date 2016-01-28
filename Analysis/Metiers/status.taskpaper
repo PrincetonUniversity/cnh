@@ -1,0 +1,23 @@
+Metiers paper:
+	- review previous work on catch assemblages on west coast, what else has been found? how do my metiers compare? are there other arguments in those papers for why metiers are important? (like maybe they haven't been done for a long time and so things could have changed)
+	- should i also be running metiers or observer derived data to show it doesn't make that big of a difference?
+	- double check that i'm finding metiers by revenue
+	reading/writing:
+		- decide how to frame paper: ecosystem production function? resource diversification/generalist v. specialist?
+		- convince myself that my metier approach is novel, useful and the right way to do this. Look at other west coast catch assemblage papers. How do my results differ?
+		- Susan Hanna references and previous work. Social scientist who has thought about ecosystem connections between people
+		- Mckelvey & Smith: specialist and generalist, useful theoretical framework?
+			Have some assumptions about constant start-up costs, which maybe could be useful parameter to mess with. Also discuss the impact of natural variability, which is something I could characterize from the catch data. And raises the idea about instead of looking at vessels as the unit of analyses, looking at the fishery. What proportion of specialists and generalists in each? 
+	OA/LE:
+		- make a column that gives the number of trips for each state for fisheries we need to classify
+		- how to deal with the fact that halibut doesn't show up as its own fishery?
+	Regressions:
+		- make covariate table like Jameal suggested	
+
+Archive:
+	- run regression on MPAs @done(2015-05-07) @project(Metiers paper / Regressions)
+	MPA analysis: @done(2015-05-07) @project(Metiers paper / MPA analysis)
+		- make port buffers (100 km radius) @done(2015-05-07)
+		- find only "at sea" buffers (i.e. mask by land) @done(2015-05-07)
+		- find how much of that at sea buffer is covered by the `MPAs_restrict_prohib_commercial_fiishing` add to port database @done(2015-05-07)
+		- run beta-regression, is this a predictor of diversity? @done(2015-05-07)

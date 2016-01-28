@@ -1,0 +1,70 @@
+This is BibTeX, Version 0.99d (TeX Live 2012)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: References_read.aux
+The style file: cbe.bst
+Database file #1: unread.bib
+Database file #2: read.bib
+Warning--I didn't find a database entry for "Branchetal:2006"
+Warning--I didn't find a database entry for "Mahevasetal:2011"
+Warning--I didn't find a database entry for "Sethietal:2005"
+Warning--I didn't find a database entry for "Singhetal:2006"
+Warning--I didn't find a database entry for "ClarkMangel:1979"
+Warning--I didn't find a database entry for "Wilson:1990"
+Warning--I didn't find a database entry for "Acheson:1975"
+Warning--I didn't find a database entry for "Gezelius:2007"
+Warning--I didn't find a database entry for "Orth:1987"
+Warning--I didn't find a database entry for "Palmer:1991"
+Warning--I didn't find a database entry for "CronaBodin:2006"
+Warning--I didn't find a database entry for "PalssonDurrenberger:1982"
+Warning--I didn't find a database entry for "Ostrom:2009"
+Warning--I didn't find a database entry for "Wormetal:2009"
+Warning--I didn't find a database entry for "Schluteretal:2012"
+Warning--I didn't find a database entry for "Coadetal:2013"
+Warning--empty year in DurrenbergePalsson:nd
+Warning--can't use both author and editor fields in Hilborn:2009
+Warning--empty chapter and pages in Hilborn:2009
+Warning--can't use both author and editor fields in Lawetal:2000
+Warning--empty chapter and pages in Lawetal:2000
+Warning--empty year in Leibbrandtetal:ND
+You've used 24 entries,
+            2016 wiz_defined-function locations,
+            706 strings with 9371 characters,
+and the built_in function-call counts, 9446 in all, are:
+= -- 891
+> -- 375
+< -- 16
++ -- 130
+- -- 124
+* -- 895
+:= -- 1624
+add.period$ -- 72
+call.type$ -- 24
+change.case$ -- 180
+chr.to.int$ -- 24
+cite$ -- 30
+duplicate$ -- 345
+empty$ -- 653
+format.name$ -- 164
+if$ -- 1817
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 26
+newline$ -- 123
+num.names$ -- 72
+pop$ -- 139
+preamble$ -- 1
+purify$ -- 182
+quote$ -- 0
+skip$ -- 237
+stack$ -- 0
+substring$ -- 715
+swap$ -- 81
+text.length$ -- 1
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 140
+warning$ -- 6
+while$ -- 69
+width$ -- 0
+write$ -- 289
+(There were 22 warnings)

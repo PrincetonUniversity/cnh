@@ -1,0 +1,199 @@
+---
+title: "Int_results"
+author: "Emma Fuller"
+date: "November 24, 2014"
+output: beamer_presentation
+---
+
+## Refresh
+
+- Which year I used was a problem, 2010 and 2012 disagreed for `HKL` trips
+
+## What's changed
+
+- Running Infomap with newly updated `C++` code
+- Changed the similarity measure from bray-curtis to be hellinger distance
+- nominal and regular species ids are merged
+
+## Results
+
+- No improvement for `HKL` problem
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(pander)
+ARI <- readRDS("analyze_metiers/adjustRandIndex.RDS")
+pander(ARI)
+```
+
+## Diversity plot
+
+```{r, echo=FALSE, warning=FALSE,message=FALSE}
+
+library(ggplot2); library(scales)
+yrdf <- readRDS("analyze_metiers/yrdf.RDS")
+
+simp2 <- lm(cv_revenue ~ mean_simpson + I(mean_simpson^2), subset(yrdf[["yr_stats"]], !is.na(cv_revenue)))
+
+p_quadratic <- ggplot(subset(yrdf[["yr_stats"]], !is.na(cv_revenue)), aes(x = mean_simpson, y = cv_revenue, colour = mean_latitude)) + 
+  geom_point(alpha=.75, size = 2.5) +
+  geom_smooth(method = "lm", formula = y ~ x + I(x^2), colour="steelblue", size=1) +
+  theme_minimal() + 
+  ylab("CV(annual revenue)") + 
+  xlab("mean Simpson's index") + 
+  annotate("text", x = .4, y = 1.95,
+           label = paste("y == ",round(simp2$coefficients[1],2),"+ ",
+                         round(simp2$coefficients[2],2),"* x",
+                         round(simp2$coefficients[3],2),"* x^{2}"), parse=T, size = 3) + 
+    annotate("text", x = .4, y = 1.85,
+           label = paste0("slope p values = ",
+                         scientific_format()(summary(simp2)$coefficients[2,4]), "; ", 
+                         scientific_format()(summary(simp2)$coefficients[3,4])),size = 2.5) +
+  scale_colour_gradient2(low="orange", high="brown", midpoint = 40)
+
+p_quadratic
+```
+
+## Questions, next steps
+
+- Is there a database with lat/lon for all ports from NOAA?
+- What to do about `HKL` problem?
+- Start on beta regression, gathering other variables
+    - horsepower, boat length, type of fish, price category, management, seasonal
+    - ideas for price category, type of fish
+    
+
+## `HKL` problem: details
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(e1071)
+
+agreement <- function (gear, year) {
+  df10 <- readRDS(paste0("/Users/efuller/1/CNH/Analysis/Metiers/results/2014-11-20/classify/2010p",gear, year,".RDS"))
+  df12 <- readRDS(paste0("/Users/efuller/1/CNH/Analysis/Metiers/results/2014-11-20/classify/2012p",gear, year,".RDS"))
+  
+  df10$predicted_metier <- paste0(df10$predicted_metier,"_10")
+  df12$predicted_metier <- paste0(df12$predicted_metier,"_12")
+  
+  predicted_df <- merge(df10, df12, by = "trip_id")
+  table(predicted_df$predicted_metier.x, predicted_df$predicted_metier.y)
+}
+```
+Classification agreement measured by the adjusted rand index ($ARI$) is super low for `HKL` trips
+
+```{r}
+classAgreement(agreement("HKL",2009))$crand 
+```
+
+## `HKL` problem: details
+Looks like `1_10` and `1_12` metiers are what mostly what's causing this
+
+```{r}
+classAgreement(agreement("HKL",2009)[-1,][,-1])$crand
+```
+but still not great.. i would take it though
+
+## `HKL` problem: details
+
+In `1_12` I have `2_10`, `3_10`, `5_10`, `6_10`, and `8_10`, what are those?
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+barplot(head(sort(agreement("HKL",2009)[,1],decreasing=T),4),bor=F,ylab="# trips",xlab="metier",main="Composition of 1_12")
+```
+
+## `HKL` problem: `1_12`: `2_10`
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+gear = "HKL"
+year = 2009
+df10 <- readRDS(paste0("/Users/efuller/1/CNH/Analysis/Metiers/results/2014-11-20/classify/2010p",gear, year,".RDS"))
+df12 <- readRDS(paste0("/Users/efuller/1/CNH/Analysis/Metiers/results/2014-11-20/classify/2012p",gear, year,".RDS"))
+
+df10$predicted_metier <- paste0(df10$predicted_metier,"_10")
+df12$predicted_metier <- paste0(df12$predicted_metier,"_12")
+
+predicted_df <- merge(df10, df12, by = "trip_id")
+tickets <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/results/2014-11-19/define_metiers/filtered_ftl.RDS")
+tickets_09 <- merge(tickets, predicted_df, by = "trip_id")
+
+library(reshape2)
+
+trip_comp <- function(year10_met, year12_met,tick = tickets_09){
+  trip_comp <- vector("list")
+  trip_comp$tickets <- subset(tick, predicted_metier.x == year10_met &
+                                predicted_metier.y == year12_met)
+  
+  trip_comp$num_trips <- length(unique(trip_comp$tickets$trip_id))
+  
+  # what gears?
+  ot_gears <- with(trip_comp, unique(tickets[,c("grid", "trip_id")]))
+  trip_comp$num_gears <- with(trip_comp, table(tickets$grid))
+  
+  # what species?
+  melt_ot <- with(trip_comp, melt(tickets, id.vars=c("modified","trip_id"), 
+                                  measure.vars = "landed_wt"))
+  cast_ot <- with(trip_comp, dcast(melt_ot, trip_id ~ modified, 
+                                   fun.aggregate = sum))
+  rownames(cast_ot) <- cast_ot$trip_id; cast_ot$trip_id <- NULL
+  
+  trip_comp$total_catches <- sort(colSums(cast_ot),decreasing=T)
+  
+  # what's the maximum catch for each species?
+  max_sp <- apply(cast_ot,1, which.max)
+  max_sp <- sort(table(max_sp),decreasing=T)
+  names(max_sp) <- colnames(cast_ot[as.numeric(names(max_sp))])
+  trip_comp$majority_species <- max_sp
+  
+  barplot(trip_comp$total_catches, bor=F,las=2,cex.names=.75, 
+          main = "total caught")
+  barplot(trip_comp$majority_species, bor=F, las=2, cex.names=.75, 
+          main="majority of catch")
+  return(trip_comp)
+}
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+par(mfrow=c(2,1))
+twoten <- trip_comp(year10_met="2_10",year12_met="1_12")
+```
+
+## `HKL` problem: `1_12`: `3_10`
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+par(mfrow=c(2,1))
+threeten <- trip_comp(year10_met="3_10",year12_met="1_12")
+```
+
+## `HKL` problem: `1_12`: `6_10`
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+par(mfrow=c(2,1))
+sixten <- trip_comp(year10_met="6_10",year12_met="1_12")
+```
+
+## `HKL` problem: `1_12`: `5_10`
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+par(mfrow=c(2,1))
+sixten <- trip_comp(year10_met="5_10",year12_met="1_12")
+```
+
+## `HKL` problem
+
+Mostly seems like all of these 2010 metiers 2012 has put together should be seperate. Let's look at 2012 based classifications. 
+
+In 2010 we have together `2_12` and `4_12`
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE,fig.height=4}
+barplot(head(sort(agreement("HKL",2009)[1,],decreasing=T),2),bor=F,ylab="# trips",xlab="metier",main="Composition of 1_10")
+```
+
+## `HKL` problem `1_10`: `2_12`
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+par(mfrow=c(2,1))
+twotwelve <- trip_comp(year10_met="1_10",year12_met="2_12")
+```
+
+## `HKL` problem `1_10`: `4_12`
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+par(mfrow=c(2,1))
+twotwelve <- trip_comp(year10_met="1_10",year12_met="4_12")
+```

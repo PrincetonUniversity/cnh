@@ -1,0 +1,126 @@
+\documentclass[]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+    \usepackage{xltxtra,xunicode}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+  \newcommand{\euro}{€}
+\fi
+% use microtype if available
+\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{longtable,booktabs}
+\ifxetex
+  \usepackage[setpagesize=false, % page size defined by xetex
+              unicode=false, % unicode breaks when used with xetex
+              xetex]{hyperref}
+\else
+  \usepackage[unicode=true]{hyperref}
+\fi
+\hypersetup{breaklinks=true,
+            bookmarks=true,
+            pdfauthor={Emma Fuller},
+            pdftitle={Mgmt\_grp clusters},
+            colorlinks=true,
+            citecolor=blue,
+            urlcolor=blue,
+            linkcolor=magenta,
+            pdfborder={0 0 0}}
+\urlstyle{same}  % don't use monospace font for urls
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\setcounter{secnumdepth}{0}
+
+\title{Mgmt\_grp clusters}
+\author{Emma Fuller}
+\date{July 10, 2014}
+
+\begin{document}
+
+\begin{center}
+\huge Mgmt\_grp clusters \\[0.2cm]
+\large \emph{Emma Fuller}\\[0.1cm]
+\large \emph{July 10, 2014} \\
+\normalsize
+\end{center}
+
+
+\subsection{Methods}\label{methods}
+
+Using all trips landed between 2009-2013 in Washington, Oregon and
+California found proportion (in lbs) of landing that constituted of each
+of 8 management groups assigned by PacFin.
+
+\begin{longtable}[c]{@{}cc@{}}
+\toprule\addlinespace
+SPID & common\_name
+\\\addlinespace
+\midrule\endhead
+CPEL & all coastal pelagic
+\\\addlinespace
+CRAB & all crab
+\\\addlinespace
+GRND & all groundfish
+\\\addlinespace
+HMSP & all highly migratory
+\\\addlinespace
+OTHR & other species (no m-group)
+\\\addlinespace
+SAMN & all salmon
+\\\addlinespace
+SHLL & all shellfish
+\\\addlinespace
+SRMP & all shrimp \& prawns
+\\\addlinespace
+\bottomrule
+\addlinespace
+\caption{Management groups}
+\end{longtable}
+
+Using this dataset, I first performed a PCA to reduce down to 5
+principal components (retaining \textgreater{} 80\% of the original
+variation) and then used \texttt{clara()}\footnote{will flesh this out}
+to search for characteristic landings profiles. \texttt{clara()}
+requires the number of existing clusters to given a priori, so I tried
+from 1-30 possible clusters. Because clustering algorithms are
+exploratory approaches, there is no ``correct'' number of clusters
+known. In order to evaluate the fit of each possible cluster solution
+(1-30) I look at the objective function and the average silhouette
+width. The objective function measures how tightly clumped the data are
+around each cluster center. The best clustering solutions are ones which
+minimize this objective function. The average silhouette is a measure of
+how well seperated each cluster is, and ranges from 0 (unseperated) to 1
+(completely seperated). Clustering solutions with an average silhouette
+width \textless{} 0.6 should not be considered.
+
+\subsection{Results}\label{results}
+
+Examining how the objective function and average silhouette width vary
+with the number of clusters given to \texttt{clara()}, 8 clusters looks
+like the minimum number of clusters which satisfies both minimizing the
+objective function and maximizing the average silhouette width.
+
+Finding that 8 clusters is the best fit is not surprising, as there are
+8 different management groups.
+
+The 8 cluster solution is futher coroborated by the fact that as we go
+above 8 clusters, only a very small number of trips are placed in the
+new clusters.
+
+\subsubsection{Examining cluster
+contents}\label{examining-cluster-contents}
+
+\end{document}

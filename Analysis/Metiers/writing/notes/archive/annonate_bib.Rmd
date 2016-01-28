@@ -1,0 +1,84 @@
+---
+title: "Annotated Bibliography"
+author: "Emma Fuller"
+date: "April 6, 2015"
+output:
+  pdf_document:
+    number_sections: yes
+bibliography: refs.bib
+---
+
+# My outline
+
+related points
+
++ volatility is bad, reducing volatility improves human well being
++ broad, strong interest in managing human-natural systems and explicitly address tradeoffs between human wellbeing and ecological integrity. 
+
+> _Risk measures provide a way to distill complex system dynamics into quantitative metrics that are meaningful for resource users and that can be used to track management performance, for example through management strategy evaluation (Smith et al. 1999; Rademeyer et al. 2008)._[@Sethi:2012wh].
+
+
++ single speices management can be ineffective by not accounting for species interactions
++ holistic approach that considers direct and indirect ineractions among multiple species might do better at protecting ecosystem services
++ EBM is an integrated approach in that it defines management strateiges for entire systems, not individual species
++ despite well developed theory, large gap exists between theory and pratice because of the difficulty of incorporating multiple objectives adn the substantial data need to characterize entire foodwebs
++ here we provide an empirical analysis determing which economic and ecological characteristics best predict human 
+
++ "Nature for people" has become increasingly popular since the 2005 MA and gained particular attention with Elinor Ostrom's Nobel Prize
+    + Many academic calls for thinking about nature and people [@Carpenter:2009jr; @Ostrom:2009cb]
+    + non-profits are shifting mission statements
+    + also exists in government mandates: NOAA must manage fisheries for the "health of fishing communities"
+    + Particular interest to relate poverty reduction and conservation efforts at international levels [@Adams:2004km].
+    + generally characterized by a desire to link some measure of "human wellbeing" to characteristics of underlying ecosystem. 
+        + human well being is poorly defined
+    + somewhat related to ecosystem-based management to more holistically include all species, including humans, into the system being studied. 
++ Few empirical studies though. Some compelling examples exist of how interlinked these systems are, and that managing a single part of it would fall short
+      + @Brashares:2011hv: relationship between household wealth and bushmeat consumption to figure out what drives bushmeat and best policy levers to do so. 
+      + @Brashares:2004ji: demonstrates an empirical link between fisheries and bushmeat consumption. Humans link natural resource systems, no ecological reason to relate these two, but an economic one to. Only looking at entire system can you start to understand how to manage it. 
++  We still lack metrics for measuring conservation's outcomes in relation to these new priorities
+    + Ecosystem services, but are simple valuation tools, not dynamic
+    + Feedbacks are still missing. Brashares-type work highlighting feedbacks rather than simple valuation like ecosystem. 
++ Lack of metrics is due, in part, to lack of empirical demonstrations of feedbacks between. 
+
+Fisheries specific
+
++ Studies continue to point to the importance of understanding the role people in fisheries systems, but we still don't do it very well or very often. 
++ specific calls to understand how marine and terrestrial systems are linked, as a way to better manage both. And these systems are linked by people: we need to better understand how people make use of these resources [@McCauley:2015iu; @Brashares:2004ji]
++ Lots of tools for managing fisheries, but understanding how people depend on the resource presently can help us be prepared for how people adapt to new regulations. 
+    + i.e. @Worm:2009dg lists lots of possible tools, but unless we know more about context hard to evaluate socio-economic ramifications.
+
+What examples exist linking measures of human well-being to ecosystems?
+
++ ecosystem-services
++ others
+  + brashares
+  
+Examples exist of increasing ecosystem-based modeling approaches to 
+
+# Reference notes
+Relevant literatures
+
++ marine based ecosystem management
++ social ecological systems - specifically management of them
++ "nature and people" vitriolic conservation debate
+
+## Motivation 
+Linking measures of human wellbeing to ecological/economic conditions is increasingly important as we attempt to manage social-ecolgical systems holistically (i.e. from a systems-perspective).
+
+### Despite demand, measures of human wellbeing which can be used to evaluate conservation outcomes are still missing. 
+
+@Mace:2014bl
+
+:   Describes the trajectory of how people are included (or not) in conservation. Calls for better tools in evaluating human-centric conservation outcomes.
+
+> _This "people and nature" thinking emphasizes the importance of cultural structures and institutions for developing sustainable and resilient interactions between human societies and the natural environment. It operates at a range of scales from global to local and has intellectual origins in resource economics, social science, and theoretical ecology [@Carpenter:2009jr; @Ostrom:2009cb]._
+
+> _But the ecosystem-based framings -- "nature for people" and "people and nature" -- require metrics that link nature to human well-being, explicitly identifying benefits needed and received by people [@Fisher:2009ch]. These metrics are very different from those of species and protected areas._
+
+## Metiers as a method
+
+@HentatiSundberg:dq
+
+:   Uses metiers to classify swedish fisheries and fishing strategies, demonstrates that these classifications change in response to management. 
+
+# References

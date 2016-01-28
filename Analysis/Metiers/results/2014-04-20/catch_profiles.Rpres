@@ -1,0 +1,52 @@
+catch_profiles
+========================================================
+author: Emma
+date: 2014-04-20
+
+```{r setup, include=FALSE}
+opts_chunk$set(cache=TRUE)
+```
+
+```{r,echo=FALSE,message=FALSE}
+require(cluster)
+require(ggplot2)
+require(dplyr)
+require(reshape2)
+require(plyr)
+require(scales)
+require(qgraph)
+```
+
+Setup data to do PCA/clustering on
+========================================================
+Load data
+
+```{r,echo=FALSE}
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-20/price_tripTable.Rdata")
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-20/lb_tripTable.Rdata")
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-20/FTL_ref.Rdata")
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-20/proportion_tripTable.Rdata")
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-20/log_tripTable.Rdata")
+# if doesn't exist, run bottom of formatFTL.R
+```
+
+Then look for outliers
+
+Outliers in 3 different measurements
+========================================================
+Boxplot by biomass (lb), log(lb), or profit ($)
+
+```{r}
+foo <- melt(lb_tripTable, id.vars="tripID")
+bar <- subset(foo, value > 0)
+boxplot(value ~ variable, data=foo)
+
+foo <- melt(lb_tripTable, id.vars="tripID")
+bar <- subset(foo, value > 0)
+boxplot(log(value) ~ variable, data=foo)
+
+foo_price <- melt(price_tripTable, id.vars="tripID")
+bar_price <- subset(foo_price, value > 0)
+boxplot(log(value) ~ variable, data=bar_price)
+```
+

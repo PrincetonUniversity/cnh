@@ -1,0 +1,144 @@
+---
+title: "Defining Fisheries"
+author: "Emma Fuller"
+date: "September 17, 2014"
+output:
+#  ioslides_presentation:
+#    highlight: espresso
+#    fig_width: 20
+#    fig_height: 15
+#    self_contained: false
+  slidy_presentation:
+    highlight: espresso
+    self_contained: false
+    theme: journal
+    fig.width: 10
+    fig.height: 8
+    css: mystyle.css
+---
+
+Introduction
+====================
+type: exclaim
+
+Based on grey literature, fishermen interviews, discussions with NMFS scientists and managers I have a general impression of the structure of the fisheries on the west coast. The big points are 
+
++ There is a giant pacific whiting (hake) fishery -- single species, uses midwater trawls
++ There is a pink shrimp fishery -- very clean, double or single rigged shrimp trawls
++ There is a large crab fishery -- single species, uses crab pots
++ There is an albacore tuna fishery -- uses trolls, not observered, thus "clean"
++ There is a salmon fishery -- uses trools, not observed, thus "clean"
++ There is a pacific halibut fishery -- very small due to catch restrictions, "clean", uses troll
++ There is a fixed gear groundfish fishery 
+  + Focuses on sablefish uses fish pots and/or long lines
++ There is a mobile gear groundfish fishery
+  + Possibly nearshore and deeper water segments
+  + Dover sole, sablefish, and thornyheads are a common target of deeper water
+  
+The more my revealed structure resembles what I know the better. The insight will come from how groundfish are split up. 
+
+
+## Latent Dirichlet Analysis
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
+library(noamtools)
+library(ggplot2)
+library(scales)
+library(reshape2)
+AIC_df <- readRDS(file="/Users/efuller/1/CNH/Analysis/Metiers/writing/presentations/Rutgers_9-2014/data/AIC_df.RDS")
+
+plot(AIC_df$ks, -1*(AIC_df$AICs),type="o",pch=19, bty="n", xlab="Number of targets", ylab = "Relative parsimony of model (negative AIC)", col=alpha("steelblue", .75), lwd=3)
+
+```
+
+## Target composition
+
+<iframe src="/Users/efuller/1/CNH/Analysis/Metiers/results/2014-09-06/topic_model_runs/astoria_lda_/index.html" width = 1250 height=750></iframe>
+
+## Are there targets that are always targetted together?
+Clustering targets by co-occurance
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
+library(cluster)
+library(vegan)
+library(scales)
+k = 1:22
+dat <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/writing/presentations/Rutgers_9-2014/data/dat.RDS")
+cluster_results <- list()
+
+# transform data into hellinger
+
+trip_trans <- decostand(dat$theta.hat, method = "hellinger")
+
+for(i in 1:max(k)){
+  cluster_results[[i]] <- clara(trip_trans, k[i], samples = 70, sampsize = 200)
+}
+
+avg_sil <- rep(NA, max(k))
+for(i in 2:max(k)){
+  avg_sil[i] <- cluster_results[[i]]$silinfo$avg.width
+}
+
+plot(avg_sil,type='o',cex=3,pch=19, xlab="number of clusters", ylab="average silhouette width", bty="n", col=alpha("steelblue",.75),lwd=3)
+text(k, avg_sil, k, col="white", cex=.95,lwd=10)
+```
+
+## Cluster composition
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
+
+# 14 looks pretty good. look at mediods for each
+
+cluster_sol <- cluster_results[[14]]$medoids
+# how many trips for each
+sol_trips <- table(cluster_results[[14]]$clustering)
+
+# par(mfrow=c(3,5))
+# for(i in 1:nrow(cluster_sol)){
+#   barplot(cluster_sol[i,],bor=F, main = paste0(sol_trips[i]," trips\n", round((sol_trips[i]/length(cluster_results[[14]]$clustering)*100),2),"% of total trips"), cex.names=.75,ylim=c(0,1))
+# }
+
+df_sol <- melt(cluster_sol)
+colnames(df_sol) <- c("cluster","target", "proportion")
+
+paint <- rep(NA, 22)
+paint[c(11,17, 18, 16,19,14,20,21,22,15)] <-"#2171b5"
+paint[8] <- "#6baed6" # c mackeral
+paint[15] <- "#3182bd" # j mackeral
+paint[13] <-"#d95f02" # albacore
+paint[4] <-"#e41a1c"  # crab
+paint[10] <-"#e7298a" # pink shrimp
+paint[2] <- "#7570b3" #ling and salmon
+paint[1] <-"#8856a7" # bottom ground fish
+paint[3] <- "#810f7c" # rockfish
+paint[5] <- "#8c96c6" # whiting-ish
+paint[12] <-"#8c96c6" #whiting, but also widow
+paint[6] <- "#e6ab02" #species of concern (rockfish)
+paint[7] <- "#7a0177" #sablefish 
+paint[9] <- "#7570b3"  # pacific cod, some rockfish, ling code, canary, sole, skates, doesn't make a huge amount of sense
+ggplot(df_sol, aes(x=target, y=proportion)) + geom_bar(stat="identity",fill=paint) + facet_wrap(~cluster)+ theme_bw() + theme(strip.background = element_blank()) 
+```
+
+## External validation: how does gear line up?
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis', fig.width=10, eval=FALSE}
+
+cluster_gear <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/writing/presentations/Rutgers_9-2014/data/cluster_gear.RDS")
+library(pander)
+panderOptions("table.split.table", Inf)
+pander(table(cluster_gear$gear, cluster_gear$cluster), style="rmarkdown")
+```
+
+# Define fisheries
+Unique combinations of gear and fish target that happen at least 10 times. 
+
+## Who's making which trips?
+
+```{r, eval=FALSE}
+library(igraph)
+
+```
+
+## Appendix: hellinger transformation
+
+## Appendidix: clustering

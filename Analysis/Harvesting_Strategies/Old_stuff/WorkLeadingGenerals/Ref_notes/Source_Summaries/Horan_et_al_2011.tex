@@ -1,0 +1,47 @@
+\documentclass[a4paper,10pt]{article}
+\let\oldmarginpar\marginpar
+\renewcommand\marginpar[1]{\-\oldmarginpar[\raggedleft\footnotesize #1]%
+{\raggedright\footnotesize #1}}
+\usepackage{charter}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{array}
+\usepackage{natbib}
+\usepackage{gensymb}
+\usepackage{epstopdf}
+\usepackage{multirow} %for multi column spanning rows or multi row spanning columns
+ \usepackage{rotating} %for rotating tables
+ \usepackage{subfig} %to have figures within figures
+\usepackage{multicol}
+ \usepackage{ulem} % Allows for underlining without weird formatting glitches. 
+ \usepackage{pifont}% Allows for use of ZipfDingbats font
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor} % Allows colored font
+\usepackage{hyperref} %allows hyperlinks in the document
+\usepackage[linecolor=black,backgroundcolor=white,bordercolor=white,textsize=small]{todonotes}
+\usepackage{wrapfig}
+\usepackage[top=0.5in, bottom=0.75in, outer=1.5in, inner=0.5in, heightrounded, marginparwidth=1in, marginparsep=0.25in]{geometry}
+\usepackage{marginnote}
+\usepackage[bitstream-charter]{mathdesign}	% using charter font for math
+\usepackage{hyperref}
+ \begin{document}
+
+\section*{\href{run:Managing ecological thresholds in coupled environm.pdf alias}{\color{Blue}Horan et al. 2011}:}
+
+\subsection*{General points}
+\begin{itemize}
+\item Has some references on bioeconomic modeling, and SESs. Likely will be similar to my plans. So should review them to compare and contrast to my approach. 
+\item Looks at multispecies model but includes managers in the model, so they're explicitly affected by feedbacks.
+\item I think it's all analytical, which I should see how it's done. 
+\item Remember reading this and really liking it. 
+\end{itemize}
+
+\subsection*{Current Status}
+Have not read it, can't remember it very well. Should read it. 
+
+\bibliographystyle{cbe}
+\bibliography{refs}
+
+\end{document}
+

@@ -1,0 +1,145 @@
+---
+title: "Re-working cach profiles"
+author: "Emma Fuller"
+date: "April 24, 2014"
+output: html_document
+---
+
+## tldr; summary
+I have identified that more species codes needed to be removed from the fish ticket data. That has been done (by updating `FTL_tripTable.R`), the new (and more correct) data are the  `2014-04-20/*_tripTable.Rdata` files. This documents my discovery process, see other `.Rmd` file for PCA analysis of new data set. 
+
+```{r,echo=FALSE,message=FALSE,cache=TRUE}
+require(cluster)
+require(ggplot2)
+require(dplyr)
+require(reshape2)
+require(plyr)
+require(scales)
+require(data.table)
+require(RColorBrewer)
+require(qgraph)
+require(scatterplot3d)
+```
+
+## Setup data to do PCA/clustering on
+Load data
+
+```{r, cache=TRUE}
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-20/log_tripTable.Rdata")
+# if doesn't exist, run bottom of formatFTL.R
+```
+
+## PCA on $log(lbs)$
+
+```{r, cache=TRUE}
+pca_loglb <- log_tripTable[,!"tripID", with=FALSE]
+pca_out_loglb <- prcomp(pca_loglb, scale=TRUE)
+summary(pca_out_loglb)
+```
+
+Requires 32 PCs to keep > 80% of the variance. Trying to get a feel for what the PCs represent
+
+```{r, cache=TRUE}
+x <- pca_out_loglb$rotation[,1]
+y <- pca_out_loglb$rotation[,2]
+z <- pca_out_loglb$rotation[,3]
+
+plot(x, y, type='p', pch=20, xlab='Comp.1', ylab='Comp.2')
+s3d = scatterplot3d(x, y, z, xlab='Comp.1', ylab='Comp.2', zlab='Comp.3', pch = 20)
+```
+
+Hard to tell, would like to identify the groundfish, salmon, tuna/pelagics, whiting, pink shrimp,  dungeness crab, and rockfish species. From [here](http://stats.stackexchange.com/questions/76906/how-can-i-interpret-what-i-get-out-of-pca) got that the absolute value of the `rotation` is how much each species contributes to the component. So looking at each component by what it explains
+
+```{r, cache=TRUE, echo=FALSE}
+# 1 = highly migratory (light blue)
+# 2 = groundfish (orange)
+# 3 = rockfish (light orange)
+# 4 = salmon (purple)
+# 5 = shellfish (grey)
+# 6 = dungeness crab (red)
+# 7 = pink shrimp (pink)
+# 8 = other shrimp (pale pink)
+# 9 = squid (yellow)
+# 10 = shark (light green)
+# 11 = coastal pelagic (blue)
+# 12 = unknown (why in here??) (black)
+# 13 = pacific halibut (dark orange)
+# 14 = pacific whiting (brown)
+# 15 = red sea urchin (green)
+# 16 = sablefish (dark orange)
+# 17 = shad (light brown)
+species_type <- c(1, 2, 5, 3, 3, 8, 3, 3, 4, 4, 5, 11, 3, 4, 3, 10, 3, 6, 2, 2, 2, 2, 2, 5, 3, 2, 3, 8, 11, 2, 2, 2, 2, 5, 2, 12, 11, 3, 3, 2, 2, 13, 4, 3, 11, 7, 2, 14, 3, 2, 5, 2, 2, 15, 16, 17, 8, 9, 2, 2, 2, 3, 3, 3, 3)
+
+species_type[species_type==1] <- "cadetblue1"
+species_type[species_type==2] <- "darkorange"
+species_type[species_type==3] <- "orange"
+species_type[species_type==4] <- "purple"
+species_type[species_type==5] <- "grey"
+species_type[species_type==6] <- "red"
+species_type[species_type==7] <- "pink"
+species_type[species_type==8] <- "lightpink"
+species_type[species_type==9] <- "yellow"
+species_type[species_type==10] <- "chartreuse2"
+species_type[species_type==11] <- "dodgerblue"
+species_type[species_type==12] <- "black"
+species_type[species_type==13] <- "chocolate3"
+species_type[species_type==14] <- "brown"
+species_type[species_type==15] <- "green"
+species_type[species_type==16] <- "darkorange3"
+species_type[species_type==17] <- "darkgoldenrod1"
+
+plot(x, y, type='p', pch=20, xlab='Comp.1', ylab='Comp.2', col=species_type)
+legend("topleft",legend=c("highly migratory", "groundfish", "rockfish","salmon","shellfish","dungeness crab","pink shrimp","other_shrimp","squid","shark","coastal pelagic","unknown","pacific halibut","pacific whiting","red sea urchin","sablefish","shad"), fill=c("cadetblue1","darkorange","orange","purple","grey","red","pink","lightpink","yellow","chartreuse2","dodgerblue","black","chocolate3","brown","green","dark orange","darkgoldenrod1"),bty="n",ncol=2,cex=.75)
+
+s3d = scatterplot3d(x, y, z, xlab='Comp.1', ylab='Comp.2', zlab='Comp.3', pch = 20, color=species_type)
+```
+
+It looks like PC1 and PC2 capture the variation in the rockfish and groundfish, but two distinctly different clusters.
+
+Realizing there are quite a few "unspecified" species still in here. In particular
+
++ `MSC2` is a miscellaneous fish
++ `MISC` is an unspecified groundfish
++ `NUSF` is an unspecified shelp rockfish from the north 
++ `NUSP` is an unspecified slope rockfish
++ `POP2` I have no idea, get "NOM. POP SEBASTES SPP." from the pacfin website key [here](http://pacfin.psmfc.org/pacfin_pub/data_rpts_pub/code_lists/sp_tree.txt)
+
+Given that these are so important, how often (and in what volumes) did these unspecified species get caught?
+```{r, cache=TRUE,echo=FALSE}
+
+unspefs <- factor(c("MSC2", "MISC","NUSF","NUSP","POP2"))
+paint <- colorRampPalette(brewer.pal(9,"Blues"))(length(unspefs))
+
+ hist(as.data.frame(pca_loglb[,unspefs[1], with=FALSE])[,1],
+       col="white",bor="white",freq=FALSE, 
+       xlab = "log(lbs)", main="distribution of log(lb) for unspecifieds ",
+       breaks=50,
+       ylim=c(0,15))
+legend("topright",legend=unspefs, fill=paint, bor=rev(paint),bty="n", title="species group:")
+
+for(i in 1:length(unspefs)){
+lines(density(as.data.frame(pca_loglb[,unspefs[i], with=FALSE])[,1]),lwd=3,col=alpha(paint[i],0.5))
+}
+
+```
+
+Clear that not really ever, but all of them (uniformly) have a massive catch out at 8-9, for example, `MSC2` has a maximum catch recorded as 295 million pounds. Seems unlikely. Let's figure out which trip that was.
+
+```{r, cache=TRUE,echo=FALSE,fig.width=12.5}
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-20/FTL_ref.Rdata")
+# find tripID corresponding to that maximum return for each of these unspecifieds
+
+for(i in 1:length(unspefs)){
+max_trip <- which(log_tripTable[,unspefs[i],with=FALSE]==max(log_tripTable[,unspefs[i],with=FALSE]))
+amounts <- 10^log_tripTable[max_trip,!"tripID",with=FALSE]
+barplot(amounts, main=paste(log_tripTable[max_trip,tripID],"\n",unspefs[i],sep=" "),las=2)
+}
+
+```
+But `MSC2` and `NUSF` look like there really isn't any there at all. I think that's because the other catch is so extremely large. So for now will drop those categories as well. 
+
+```{r, echo=FALSE,cache=TRUE}
+hist(as.data.frame(pca_loglb[, "MSC2", with=FALSE])[,1],breaks=20,ylim=c(0,30),col="grey",bor="darkgrey")
+```
+
+

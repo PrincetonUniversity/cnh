@@ -1,0 +1,76 @@
+---
+title: "Behavioral Segmentation Methods Comparison"
+author: "Emma Fuller"
+date: "October 21, 2014"
+output: pdf_document
+bibliography: refs.bib
+---
+
+# Introduction
+We have great movement data of commercial fishing vessels. Unfortunately trajectories don't automatically tell us what an individual is doing at the particular place and time. Mainly we are intested in fishing events. To find those we have to infer behavioral states from trajectories. Many methods have been developed, we are interested in determining the best approach for estimating behavior for our tracked fishing vessels. 
+
+We think it's likely that there are three states for vessels: crusing, searching and fishing. We are comparing methods to determine accuracy and ease of application. We are examining algorithmic (machine learning) approaches and statistical models. This methods include 
+
++ speed filter
++ k nearest neighbor classification (knn)
++ behavioral change point analysis (bcpa)
++ expectation maximization (em)
++ hidden markov models (hmm)
++ random forest (rf)
+
+We will starting this analysis using shrimp trawlers' trajectories for which we have observer data (thus known fishing events). We will extend to groundfish trawlers and then to fixed gear groundfish. Eventually we will apply to trollers and crabbers. These vessels are participating in state-managed fisheries and thus are not observed.
+
+In what follows I describe the data cleaning and formating required, the methods for each classification themselves, and report accuracy of each approach. 
+
+# Methods
+First we have to generally clean the raw VMS data. Then I pull out a subset of shrimp trips for which we have known fishing events (i.e. are observed). Then I apply method-specific data cleaning and formatting, and finally the methods themselves. 
+
+## Data
+The Office of Law Enforcement (OLE) maintains a database of vessel monitoring systems (VMS) data. We recieved VMS data for all commercial vessels on the US westcoast from 2009-mid 2013.[^1] This data consists of vessel identifying information, latitude, longitude, date, time, average speed,  average heading, and declaration. GPS points are taken approximately every hour, although the duration between relocations floats (some are less, others more than an hour apart). Additionally VMS is only recording within the US westcoast EEZ, so vessels that leave the EEZ can turn off their VMS mid-trip. In total our data is approximately 22 million relocations for a little over 1000 vessels. 
+
+All vessels that have commercially fished for groundfish within the previous five years are required to maintain VMS on their vessels. This leads to complete coverage of the current federal groundfish fishery, but additionally coverage of other fisheries commonly participated in by groundfish vessels. These include pink shrimp, crab, salmon and tuna, among others. 
+
+[^1]: Will eventually be through 2014
+
+## VMS Cleaning
+For all methods we need to first clean the VMS data. This means doing the following things
+
+1. Basic cleaning the dataset [`1_VMS_basic_clean.R`]
+    - Transforming data from minutes/seconds to decimal degrees, dividing minutes by 60, seconds by 3600
+    - Removing extra white space
+    - Re-formating dates and times, merging vessels doc-ids to existing VMS vessel identifiers.
+    - Output is `1_VMS_basic_clean.RDS`
+2. More advanced cleaning that requires judgement calls [`2_MaskVMS.R`]
+    - Label VMS points that are onland (see `01_Obs_VMS.R` for how to start)
+        - Use the GSHHG database[^6] to mask the VMS points [@wessel1996global]. 
+      - Label points that are within the coastline polygon as `onland`.
+      - See `vignettes/masking_distance.Rmd` for why I don't do a near-shore buffer. 
+3. Filtering out duplicates. 
+    - Almost 60% of vessels had at least one duplicated point, the median was 15 and the maximum was 3027 duplicated points (for a single vessel!). 
+    - Choosing which duplicates to keep versus discard is a non-trivial mess. 
+    - See `results/2014-10-29/3_duplicate_vignettes` for pdf of results. 
+    - Conclusion: drop all duplicated points. 
+3. Filtering "bad" points (points which have an instantaneous speed greater than some threshold speed, or inferred speed greater than some threshold). 
+    - Filtered out anything with an `Avg_Speed > 30`. This feels arbitrary. Am waiting for someone to tell me differently. 
+    - 
+4. Merging with logbook data to get departure and return dates (if possible)
+
+[^6]: http://www.ngdc.noaa.gov/mgg/shorelines/gshhs.html
+[^7]: http://www.spatialreference.org/ref/sr-org/7257/
+
+## Observed data
+To test accuracy I start with vessels that are fishing for pink shrimp and are observed.
+
+1. Find trips which are observed and landing pink shrimp by merging metier results with observer data
+1.5 Examine to make sure they are all using the same type of shrimp net (single rigged or double rigged?)
+2. Find the VMS data which correspond to these dates/times
+
+## Measuring Accuracy
+For each method I report the number of false positives and false negatives. 
+
+## Method-specific
+
+### k nearest neighbors
+K-nearest neighbors is conceptually the easiest classifying algorithm
+
+# References

@@ -1,0 +1,70 @@
+\documentclass{tufte-handout}
+
+%\geometry{showframe}% for debugging purposes -- displays the margins
+
+\usepackage{amsmath}
+
+% Set up the images/graphics package
+\usepackage{graphicx}
+\setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
+\graphicspath{{graphics/}}
+
+\title{The effects of reductions in krill biomass in the Southern Ocean on blue whales using a state-dependent foraging model\thanks{Wiedenmann et al. 2011, Ecological Modelling 222, 3366-3379}}
+\author{Emma Fuller}
+\date{8 March 2013}  % if the \date{} command is left out, the current date will be used
+
+% The following package makes prettier tables.  We're all about the bling!
+\usepackage{booktabs}
+
+% The units package provides nice, non-stacked fractions and better spacing
+% for units.
+\usepackage{units}
+
+% The fancyvrb package lets us customize the formatting of verbatim
+% environments.  We use a slightly smaller font.
+\usepackage{fancyvrb}
+\fvset{fontsize=\normalsize}
+
+% Small sections of multiple columns
+\usepackage{multicol}
+
+% Provides paragraphs of dummy text
+\usepackage{lipsum}
+
+% These commands are used to pretty-print LaTeX commands
+\newcommand{\doccmd}[1]{\texttt{\textbackslash#1}}% command name -- adds backslash automatically
+\newcommand{\docopt}[1]{\ensuremath{\langle}\textrm{\textit{#1}}\ensuremath{\rangle}}% optional command argument
+\newcommand{\docarg}[1]{\textrm{\textit{#1}}}% (required) command argument
+\newenvironment{docspec}{\begin{quote}\noindent}{\end{quote}}% command specification environment
+\newcommand{\docenv}[1]{\textsf{#1}}% environment name
+\newcommand{\docpkg}[1]{\texttt{#1}}% package name
+\newcommand{\doccls}[1]{\texttt{#1}}% document class name
+\newcommand{\docclsopt}[1]{\texttt{#1}}% document class option name
+
+\begin{document}
+
+\maketitle% this prints the handout title, author, and date
+
+\begin{abstract}
+\noindent This paper develops a dynamic state dependent foraging model to examine the impact of harvesting krill will be on blue whales population. 
+
+\end{abstract}
+
+%\printclassoptions
+
+The authors assume there are 3 patches of krill, and within each patch there can be a variable number of swarms. Assumes whales know where patches are, but not the distribution of swarms. Whales have 120 days to feed, at the end they migrate to breeding grounds and have offspring with success dependent on their blubber reserves (which are built from feeding on krill). 
+
+\section{Might be Useful}\label{sec:useful}
+\subsection{Methods}
+Establishes an environmental landscape, seeds it with whales. In order to determine optimal foraging behavior, uses method of backward integration. Where the models are simulated forwards, and then the optimal behavior is used... It's a little unclear. But it does seem useful for our own ABM models. Which this, I think, is. 
+
+\subsection{Fishing}
+The krill fishing they're worried about is both the overall reduction in abundance, but also in its spatial allocation. The idea is that it's possible that with new technology, boats could suck up entire swarms, and thus change the allocation of krill across the landscape. To examine this, they looked at two different ways of fishing. One where the fishing is distributed randomly across patches,\footnote{Possible across swarms, not sure. Also not sure if entire swarms are knocked out, or partial harvesting} the other is that entire patches\footnote{again, might just be swarms} are removed. 
+
+\newthought{I wonder} if it's possible to improve fishing in the model. Would it make a difference if the fishermen were not fishing randomly? If there was a requirement to split up the TAC for krill across patches, then how should fishermen optimally allocate effort? It might be that the management is restrictive enough, that the fishermen will do what management demands. Although imagine that could do social foraging analysis where could see where the best areas would be to fish from, and how competition for filling the TAC will be spatially.. 
+
+%\bibliographystyle{plainnat}
+
+
+
+\end{document}

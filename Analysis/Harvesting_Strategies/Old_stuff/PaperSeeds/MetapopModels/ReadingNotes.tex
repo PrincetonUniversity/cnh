@@ -1,0 +1,164 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[margin=0.75in]{geometry} 	% see geometry.pdf on how to lay out the page. There's lots.
+% \geometry{landscape} 	% rotated page geometry
+
+%%% PACKAGES
+\usepackage{booktabs} 	% for much better looking tables
+\usepackage{array} 		% for better arrays (eg matrices) in maths
+\usepackage{paralist} 	% very flexible & customisable lists (eg. enumerate/itemize, etc.)
+\usepackage{verbatim} 	% adds environment for commenting out blocks of text & for better verbatim
+\usepackage{subfigure} 	% make it possible to include more than one captioned figure/table in a single float
+\usepackage{graphics}	% Show images with \includegraphics
+\usepackage{url}		% Insert URL: \url{http:\\...}
+\usepackage{natbib}		% Improved citations
+\usepackage{ams math}	% Useful symbols, environments
+
+%%% HEADERS & FOOTERS
+\usepackage{fancyhdr} 	% This should be set AFTER setting up the page geometry
+\pagestyle{fancy} 		% options: empty , plain , fancy
+\renewcommand{\headrulewidth}{0pt} 	% customise the layout...
+\lhead{}\chead{}\rhead{}
+\lfoot{}\cfoot{\thepage}\rfoot{}
+
+%%% SECTION TITLE APPEARANCE
+\usepackage{sectsty}
+%\allsectionsfont{\sffamily\mdseries\upshape} 	% (See the fntguide.pdf for font help)
+% (This matches ConTeXt defaults)
+
+%%% ToC APPEARANCE
+\usepackage[nottoc,notlof,notlot]{tocbibind} 	% Put the bibliography in the ToC
+%\usepackage[titles]{tocloft} 				% Alter the style of the Table of Contents
+%\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
+%\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+
+%% END Article customise
+
+
+\title{Metapopulation Predator Prey Review}
+\author{Emma Fuller}
+\date{} 	% delete this line to display the current date
+
+%%% BEGIN DOCUMENT
+\begin{document}
+
+
+\maketitle
+
+\noindent The goal of this document is to hold all my reading notes related to the review of predator prey population models. 
+
+
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+Extensive work has been done on predator-prey metapopulation systems using general, often analytically tractable, models. I will take advantage of this body of work by applying the metapopulation predator-prey framework to examine fishermen (predators) and the fish (prey) they target. Specifically I am interested in understanding what types of fishing strategies may lead to crashes in fish populations or alternatively, the ability for fish populations to survive indefinitely. This connects to predator-prey metapopulation models in the following way: much of the meta-population predator prey modeling has focused on what rules (and information) predators use to make decisions about moving between patches, what type of dispersal rules prey use in moving between patches and whether they can actively avoid predators. Summarizing the structure of currently existing metapopulation models, including 
+
+\begin{itemize}
+\item whether they resolve at the level of the individual or population (i.e. individual decisions are modeled, or aggregate population level decisions are used), 
+\item what type of movement rules and information are used for both predator and prey, 
+\item how the model is analyzed,
+\item how do the patches vary, if at all (patches all same size, quality?),
+\item and how stability is defined, 
+\end{itemize}
+
+\noindent are all important to account for in trying to understand what types of systems confer stability at a metapopulation level for predator-prey pairs. I expect this to be the theoretical underpinning for my game theoretic  and agent-based modeling work and subsequent empirical parameterization and validation. Specifically the goal is to determine if there are functional forms, or characteristics of predation that tend to stabilize or destabilize the metapopulation system. Understanding under what conditions systems are likely to be sustainable or are prone to collapse is a valuable addition to management. If neither answer is forthcoming, I will continue examining these models to determine what happens when a patch (or series of patches) are closed to predators. And what types of harvesting these new systems can sustain. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Methods}
+I have already gathered a number of metapopulation predator prey models (hereafter MPP models) in my preparation for generals. I will perform a systematic search of the literature using Web of Science 
+
+It's still an open question as to what type of review I will conduct. At first glance, meta-analyses require effects to summarize, which is not my aim in this paper. Instead I imagine that this work will be a systematic review: replicable paper inclusion methods, and then review the types of models presented and their work.  Although measures of local stability (eigenvalues) could certainly be collected and compared. 
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Results}
+The general conclusions different papers draw, and notes explaining them
+
+
+%%%%%%%%%%%%%%%%
+\subsection{How to choose a functional form}
+\begin{itemize}
+\item The form of the functional response has significant effects on the population dynamics and stability. There are many functional responses available, but how to choose the appropriate function is a matter of debate \citep{Anderson2010}
+\begin{itemize}
+\item Ruxton \& Gurney 1992
+\item Slobodkin 1992 (establishing which functional forms are most appropriate for a given predator-prey system would be a clarifying step in ecology)
+\item Abrams and Ginzburg 2000 (jury is still out on how to assign functional forms to predator-prey pairs)
+\item Jensen and Ginzburg 2005
+\item Jost 2000
+\end{itemize}
+\end{itemize}
+
+
+
+%%%%%%%%%%%%%%%%
+\subsection{Types of functional responses}
+Functional responses may depend on a variety of factors. The following provide some overview of different types of functional responses.  
+
+
+
+\subsubsection{Capture rate proportional to prey density}
+This is the linear functional response based on the chemical law of mass action in which the rate of the reaction increases with the reagents (predators and prey here) \citep{Anderson2010}. Results in the paradox of enrichment and the enrichment response
+\begin{itemize}
+\item Paradox of enrichment: increasing prey carrying capacity destabilizes the dynamics and can lead to extinction of the prey population 
+\begin{itemize}
+\item Rosenweig 1971
+\end{itemize}
+\item Enrichment response: increasing prey abundance does not necessarily lead to increased abundances at higher trophic levels, and increasing primary productivity can result in uncorrelated or opposite variations between predator and prey trophic levels. 
+\end{itemize}
+
+\subsubsection{Predator-dependent response}
+This includes interference between predators. Depending on the strength of the interference the populations may oscillate or converge to stable end points. 
+\begin{itemize}
+\item Beddington 1975
+\item DeAngelis et al. 1975
+\end{itemize}
+
+\subsubsection{Ratio-dependent form}
+This functional response expresses the rate of predation as the ratio of prey to predators. The form is inherently unstable, and as primary productivity increases, higher trophic levels also increase \citep{Anderson2010}.
+
+\subsection{Factors influencing construction of a functional response}
+\subsubsection{Spatial variation}
+ Studies of demonstrated that prey or predator or ratio-dependent forms can all emerge depending on how predators and prey group \citep{Anderson2010}.
+\begin{itemize}
+\item Cosner et al. 1999
+\item \cite{Fryxelletal2007}: Grouping of predators and prey can exhibit nonlinear relationships between prey-group density and population density that reduce predation rate and stabilize a typical lotka-volterra predator-prey model. 
+\end{itemize}
+
+\subsubsection{Adaption on Ecological Time Scales}
+The ability of both predator and prey to adapt during their interactions affects the rate of predation \citep{Anderson2010}
+\begin{itemize}
+\item Abrams 2008
+\end{itemize}
+
+
+\subsubsection{Movement rule: Predator movements between prey patches}
+
+\begin{itemize}
+\item Background
+\begin{itemize}
+\item Spatial factors are important to the functional form, but the effect of predator movements between prey patches can also be important \citep{Anderson2010}. 
+\item Has been the purview of patch-foraging theories that began with the idea of ideal free distribution of animals among patches and the marginal value theorem (giving up time of predators on patches) \citep{Anderson2010}. 
+
+The idealized theory assumes that a forager maximizes its rate of energy gain by leaving a patch when the marginal rate of gain at the time of leaving equals the long-term average rate across all patches. With this strategy, animals eventually achieve an ideal free distribution that provides equal fitness to all members of a population. But the essential focus of this theory is on the predator's decision of when to leave a patch, but not on the prey's dynamics \citep{Anderson2010}. 
+\begin{itemize}
+\item Fretwell and Lucas 1970 (IFD)
+\item Charnov 1976 (Marginal Value Theorem)
+\end{itemize}
+\item Previous studies that have considered movement rules and prey population dynamics
+\begin{itemize}
+\item \cite{Abrams2007}: see notes in excel spread sheet in 'Unread' page
+\item Krivan and Sirot 2002
+\item \cite{Cressmanetal2004}
+\item Krivan and Vrkoc 2004
+\item \cite{Abramsetal2007}
+\end{itemize}
+\item Studies of predator-prey functional forms have been disjointed, as studies that examine functional responses ignore patch leaving behavior and studies that study patch leaving behavior assume functional responses, but both are important \citep{Anderson2010}.
+\end{itemize}
+\item \cite{Anderson2010} --- Ratio- and Predator-dependent functional forms for predators optimally  foraging in patches
+\end{itemize}
+\bibliographystyle{cbe}
+\bibliography{MMP}
+\end{document}

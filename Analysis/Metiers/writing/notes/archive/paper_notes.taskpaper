@@ -1,0 +1,50 @@
+Introduction:
+	Biggest questions is how to frame my analyses. It could be an example of an ecosystem production function, but it's not mechanistic and possibly not even causal. It could be a demonstration of resource diversification but I'm not clear on how to answer the "so what?". 
+
+	Motivation: we're interested in human wellbeing. How to get from wellbeing to income variability. 
+	Previous work:
+		- Trenkel et al. (2013) paper on variability in fisheries explained by gear. Useful for previous work, but also motivation. Also what the heck did they do?
+		- Kasperski & Holland
+		- Sethi
+	Understanding variability in returns:
+		- Mishra et al. 2004 (papers): has references about resource diversification for farming. also good example of study seeking to identify characteristics assocaited with diversification.
+		- van Putten et al. (2013): looks like a fantastic paper about income variability and importance of understanding this for ecosystem based management @star
+				- seems like they don't consider how constrained a vessel might be. perhaps worthwhile to show that vessels are perhaps not risk takers by choice. 
+		- Mumford et al. 2009 also possibly useful: discusses insurance mechanisms for fisheries and how that might improve sustainability. Thought it might discuss importance of revenue variability for sustainable fisheries management
+	Importance of diversity of fisheries:
+		- Field's dissertation (see highlights)
+		- Bene & Tewfik, specifically in reference to Hanna 1992
+		- Jonas' fisheries metiers and strategies papers and references
+		- Probably have to dig into Berkes 2002 about resilience in socio-ecological systems
+	Specialists and generalists:
+		- also smith & mckelvey for specialist/generalist paper
+Previous work on metiers:
+		- catch assemblage work on west coast
+		- why is my approach better? more useful?
+		- kasperski & holland?
+Analysis:
+	- redo percent rock and substrate types (make sure i'm only counting percentage as area at sea. 
+	- Figure out how to interpret result of beta regression
+		Use Gilman and Hill book and ask Jameal for more help. 
+	- Figure out what the phi precision model is about
+		See the boosted beta regression PLoS One article. I think it is a variance/overdispersion type thing. Not sure how I should decide to look for dependence on covariates. 
+	- Double check correlations among all covariates, add pairs() plot to appendix with correlations. 
+		Habitat diversity and percentage rock are highly correlated. Shoot. 
+	- Add OA/LE covariate
+		- Check with Jameal, is he going to follow up with OR/CA people?
+		- Write in methods that we determined OA/LE from state websites and personal communications. 
+	- Structural equation modeling, worthwhile?
+		Jameal would sort of like to pursue, but doesn't want me to sink too much time into it. 
+	- Run OA/LE covariate (percentage of landings OA in a port)
+		- Check in with Jameal about CDFW after 2015-05-05 for OA/LE
+	- Do variable selection, goal is to balance effect size with parsimony. 
+		Should read the dynamic ecology blog post about model selection. Jameal reocmmends Ben Bolker's book adn Burnham and Andreson. Also the boosted regression beta regression PLoS One paper that mentions ML concerns
+	- Given that I control for habitat covariates, look at how each port is doing in terms of revenue diversity. Vulnerability assessment
+	Cross t-s and dot i-s:
+		Things that should be done while paper is out to review with co-authors
+		- Be able to justify 100 km distance. One way to do this is look how many trips have a maximum distance below 100 km. i.e. most trips are well within 60 km, so 100 km is conservative, for example. 
+		- be able to justify using revenue for port-level metrics and landed weight for metiers
+			Should find some citations for Jonas' work about landed weight for metiers at least. Also should re-do the analysis and find same qualitative results
+Discussion:
+	- OA/LE need to think about why it's not a great predictor (doesn't provide much explanatory power becuase low variation and doesn't mean exactly what we're interested in) and what we'd need to actually get at the question. But we don't have access to that
+	- 

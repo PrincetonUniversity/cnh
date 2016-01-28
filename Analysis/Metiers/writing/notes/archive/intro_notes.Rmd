@@ -1,0 +1,44 @@
+---
+title: "introduction_notes"
+author: "Emma Fuller"
+date: "April 28, 2015"
+output: html_document
+---
+
+ (1) the purpose, occurrence, benefits and costs associated with resource diversification across systems; 
+ 
+ + the purpose of diversification is to deal with uncertainty 
+ + benefit of diversity can be constant returns at an aggregate level, despite unpredictable fluctuations of component parts.
+ + costs are efficiency
+ 
+ (2) the occurence and consequences of resource diversification in fisheries; 
+ 
+ + fishermen principly diversify across species 
+ + work has documented spatial and temporal trends in diversity across west coast and alaska
+ + more remote areas less diverse, diversity declining over time. 
+ + diversity in these systems is associated with reduced exposure to risk, in the form of revenue variability
+ 
+ (3) speculation about potential causes of resource diversification in fisheries and other systems; 
+ 
+ + previous work speculates that diversity helps reduce variation in fisheries returns 
+ + and that limited entry management may restrict fishermen's diversity and expose them to increase revenue variability
+ 
+ (4) a prospectus on what this paper is about.
+ 
+ + this paper seeks to identify landscape covariates why underly patterns and trends in fisheries diversity. 
+ 
+ 
+ Ecosystem services notes
+ 
+ + previous work on ecosystem services uses landscape covariates to project or infer ecosystem services that people benefit for unknowningly [@Seppelt:2011hq]. Or project ecosystem services they could enjoy if the landscape was managed differently (check @Seppelt:2011hq).
+ + this contrasts with our work, which examines an existing measure of human wellbeing and determines how it varies as a function of the environment. 
+ + this human-wellbeing centric approach helps to center focus on likely landscape, management and market variables that could mediate this relationship. 
+ 
+or maybe
+
++ here we identify diversity as an end-point (kind of) and identify landscape characteristics that likely mediate this endpoint.
++ this type of analysis is the required first step in building ecosystem production functions for use in ecosystem service evaluation. 
+
+or maybe
+
+here we build an ecological production function for income varibility for fishermen. 

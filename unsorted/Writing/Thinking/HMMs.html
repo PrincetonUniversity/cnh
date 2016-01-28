@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=9" >
+
+<title>HMMs</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+
+
+
+
+</head>
+
+<body>
+<h1>HMMs</h1>
+
+<p>I&#39;m pretty sure some variant of a hidden-Markov model is appropriate for my data, so the questions are </p>
+
+<ol>
+<li>How do they work?</li>
+<li>Which variant to use?</li>
+<li>What package/library to use in which language (R, Matlab, Python)?</li>
+</ol>
+
+<h2>How do they work</h2>
+
+<h3>Markov processes</h3>
+
+<p>See <a href="http://statisticalrecipes.blogspot.com/search/label/Markov%20chains">here</a> and <a href="http://stats.stackexchange.com/questions/165/how-would-you-explain-markov-chain-monte-carlo-mcmc-to-a-layperson">here</a> for a good introduction to a Markov process, and <a href="http://statisticalrecipes.blogspot.com/search/label/Markov%20chains#uds-search-results">here</a> for a discussion of stationary distributions. Although I still don&#39;t understand the math for calculating the stationary distribution. And finally an example using the <code>RHmm</code> package <a href="https://gist.github.com/keithshep/438217">here</a>.</p>
+
+<h3>Notes on <a href="http://dx.doi.org/10.1109/5.18626">Rabiner (1989)</a></h3>
+
+<ul>
+<li>Processes generate signals, signal model translate back from the signal to the process. </li>
+<li>There are two types of signal models: deterministic and stochastic. An HMM is an example of a stochastic signal model</li>
+</ul>
+
+<h4>Discrete Markov Processes</h4>
+
+<p>Reviews the theory of discrete Markov chains and shows how the concept of hidden states, where the observation is a probabilistic function of the state, can be used. Illustrates with two examples (coin-tossing and ball-in-urns system).</p>
+
+<h4>Three fundamental probelms of HMMs</h4>
+
+<ol>
+<li>Finding the probability of the observed sequence of events given a particular HMM model</li>
+<li>Determination of the best sequence of model states</li>
+<li>Fitting model parameters</li>
+</ol>
+
+<h4>Examples of HMMs</h4>
+
+<p>Discuss the various types but also the model features such as the form of the observation density function, the state duration density, and the optimization criterion for chooosing optimal HMM parameter values. </p>
+
+<h4>Issues in implementing HMMs</h4>
+
+<p>Includes topics of scaling, initial parameter estimates, model size, model form, missing data, and multiple observation sequences. </p>
+
+</body>
+
+</html>
+

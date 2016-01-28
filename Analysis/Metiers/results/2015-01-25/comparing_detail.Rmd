@@ -1,0 +1,44 @@
+---
+title: "Comparing types of diversity"
+author: "Emma Fuller"
+date: "January 25, 2015"
+output: html_document
+---
+**need to spend some more time with how effective connectance is calculated**
+
+
+See `comparing_diversities.Rmd` for methods, this is trying to understand the similarities and differences between using the Simpsons index calculated by averaging a port's vessels and using the mean of a port's yearly effective connectance participation plot.
+
+Interested in understanding why the vessel-level diversity plateaus but effective connectance generates differences (ports to the left of the red line below) and those in which efefctive connectance is about the same, but there's a large variance in vessel-level (between yellow lines below).
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+library(scales)
+port_metrics <- read.csv("/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-18/port_metrics.csv")
+port_metrics$X <- NULL
+
+with(port_metrics, scatter.smooth(CZ_95, vessel_level,pch=19,col=alpha("lightgrey",.75),cex=2,bty="n",lwd=3))
+with(port_metrics, text(CZ_95, vessel_level, tolower(pcid), cex=.5))
+abline(v=9.8, col="tomato",lwd=3, lty=2)
+abline(v=2.5, col="goldenrod",lwd=3, lty=2)
+abline(v=4.7, col="goldenrod",lwd=3, lty=2)
+```
+
+### High `CZ`, intermediate vessel level
+```{r,echo=FALSE, warning=FALSE,message=FALSE}
+high_CZ <- subset(port_metrics, CZ_all > 10)
+tickets <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-09/code/3_exploreBuildwebs/tickets.RDS")
+source("/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-25/functions/defineParticipationNetwork.R")
+library(igraph);library(reshape2); library(RColorBrewer)
+orf = define_participationPlot(port="ORF",graph=TRUE)
+mro = define_participationPlot(port="MRO",graph=TRUE)
+avl = define_participationPlot(port="AVL",graph=TRUE)
+sp = define_participationPlot(port="SP",graph=TRUE)
+oxn = define_participationPlot(port="OXN",graph=TRUE)
+sb = define_participationPlot(port="SB",graph=TRUE)
+osd = define_participationPlot(port="OSD",graph=TRUE)
+pcc = define_participationPlot(port="PCC",graph=TRUE)
+osl = define_participationPlot(port="OSL",graph=TRUE, restrict=FALSE)
+
+by_year <- read.csv("/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-18/by_year_port_metrics.csv")
+
+````

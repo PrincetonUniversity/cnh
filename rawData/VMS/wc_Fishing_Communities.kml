@@ -1,0 +1,2456 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>wc_Fishing_Communities.kmz</name>
+	<Style id="NormalSheet1Map1">
+		<IconStyle>
+			<Icon>
+				<href>http://www.earthpoint.us/Dots/GoogleEarth/paddle/blu-circle.png</href>
+			</Icon>
+		</IconStyle>
+		<BalloonStyle>
+			<text>$[description]</text>
+		</BalloonStyle>
+		<LineStyle>
+			<color>ffff00ff</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>00ff00ff</color>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Style id="sn_ltblu-circle">
+		<IconStyle>
+			<Icon>
+				<href>http://www.earthpoint.us/Dots/GoogleEarth/paddle/ltblu-circle.png</href>
+			</Icon>
+		</IconStyle>
+		<BalloonStyle>
+			<text>$[description]</text>
+		</BalloonStyle>
+		<LineStyle>
+			<color>ffff00ff</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>00ff00ff</color>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Style id="HighlightSheet1Map2">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://www.earthpoint.us/Dots/GoogleEarth/paddle/ltblu-circle.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<scale>1.1</scale>
+		</LabelStyle>
+		<BalloonStyle>
+			<text>$[description]</text>
+		</BalloonStyle>
+		<LineStyle>
+			<color>ffff00ff</color>
+			<width>3</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>70ff00ff</color>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="Sheet1Map2">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#NormalSheet1Map2</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#HighlightSheet1Map2</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sh_ltblu-circle0">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://www.earthpoint.us/Dots/GoogleEarth/paddle/ltblu-circle.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<scale>1.1</scale>
+		</LabelStyle>
+		<BalloonStyle>
+			<text>$[description]</text>
+		</BalloonStyle>
+		<LineStyle>
+			<color>ffff00ff</color>
+			<width>3</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>70ff00ff</color>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Style id="sh_ltblu-circle">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://www.earthpoint.us/Dots/GoogleEarth/paddle/ltblu-circle.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<scale>1.1</scale>
+		</LabelStyle>
+		<BalloonStyle>
+			<text>$[description]</text>
+		</BalloonStyle>
+		<LineStyle>
+			<color>ffff00ff</color>
+			<width>3</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>70ff00ff</color>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Style id="NormalSheet1Map2">
+		<IconStyle>
+			<Icon>
+				<href>http://www.earthpoint.us/Dots/GoogleEarth/paddle/ltblu-circle.png</href>
+			</Icon>
+		</IconStyle>
+		<BalloonStyle>
+			<text>$[description]</text>
+		</BalloonStyle>
+		<LineStyle>
+			<color>ffff00ff</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>00ff00ff</color>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Style id="sn_ltblu-circle0">
+		<IconStyle>
+			<Icon>
+				<href>http://www.earthpoint.us/Dots/GoogleEarth/paddle/ltblu-circle.png</href>
+			</Icon>
+		</IconStyle>
+		<BalloonStyle>
+			<text>$[description]</text>
+		</BalloonStyle>
+		<LineStyle>
+			<color>ffff00ff</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>00ff00ff</color>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="Sheet1Map1">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#NormalSheet1Map1</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#HighlightSheet1Map1</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_ltblu-circle">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_ltblu-circle</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_ltblu-circle</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_ltblu-circle0">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_ltblu-circle0</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_ltblu-circle0</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="HighlightSheet1Map1">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://www.earthpoint.us/Dots/GoogleEarth/paddle/blu-circle.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<scale>1.1</scale>
+		</LabelStyle>
+		<BalloonStyle>
+			<text>$[description]</text>
+		</BalloonStyle>
+		<LineStyle>
+			<color>ffff00ff</color>
+			<width>3</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>70ff00ff</color>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Folder>
+		<name>NWFSC Fishing Communities</name>
+		<description><![CDATA[This folder contains the locations of fishing communities identified by the <a href="http://www.nwfsc.noaa.gov/research/divisions/cbd/humandim.cfm">NMFS NWFSC Human Dimensions Program</a href> as west coast fishing communities.  Many, but not all, of these communities are also identified as ports in the <a href="http://pacfin.psmfc.org/">PacFIN</a href> database maintained by the Pacific States Marine Fisheries Commission.
+<br><ul>
+<li>Dark blue icons are both NWFSC Fishing Communities and PacFIN ports</li>
+<li>Light blue icons are NWFSC Fishing Communities but not PacFIN ports</li>
+</ul>]]></description>
+		<Placemark>
+			<name>Aberdeen</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Aberdeen_WA.pdf">Aberdeen</a href><br>County: Grays Harbor<br>Pacfin PCID: GRH]]></description>
+			<LookAt>
+				<longitude>-123.81813812</longitude>
+				<latitude>46.974937439</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.81813812,46.974937439,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Albion</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Albion_CA.pdf">Albion</a href><br>County: Mendocino<br>Pacfin PCID: ALB]]></description>
+			<LookAt>
+				<longitude>-123.77059174</longitude>
+				<latitude>39.223415375</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.77059174,39.223415375,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Anacortes</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Anacortes_WA.pdf">Anacortes</a href><br>County: Skagit<br>Pacfin PCID: ANA]]></description>
+			<LookAt>
+				<longitude>-122.61488342</longitude>
+				<latitude>48.512470245</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.61488342,48.512470245,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Astoria</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Astoria_OR.pdf">Astoria</a href><br>County: Clatsop<br>Pacfin PCID: AST]]></description>
+			<LookAt>
+				<longitude>-123.83391571</longitude>
+				<latitude>46.187568665</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.83391571,46.187568665,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Atascadero</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Atascadero_CA.pdf">Atascadero</a href><br>County: San Luis Obispo<br>Pacfin PCID: OSL]]></description>
+			<LookAt>
+				<longitude>-120.6707255</longitude>
+				<latitude>35.4894169</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-120.6707255,35.4894169,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Avila</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Avila_Beach_CA.pdf">Avila</a href><br>County: San Luis Obispo<br>Pacfin PCID: AVL]]></description>
+			<LookAt>
+				<longitude>-120.7318418</longitude>
+				<latitude>35.1799752</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-120.7318418,35.1799752,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Bandon</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Bandon_OR.pdf">Bandon</a href><br>County: Coos<br>Pacfin PCID: BDN]]></description>
+			<LookAt>
+				<longitude>-124.41056061</longitude>
+				<latitude>43.118907929</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.41056061,43.118907929,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Bay Center</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/BayCenter_WA.pdf">Bay Center</a href><br>County: Pacific<br>Pacfin PCID: WLB]]></description>
+			<LookAt>
+				<longitude>-123.9548872</longitude>
+				<latitude>46.631487</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.9548872,46.631487,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Beaver</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Beaver_OR.pdf">Beaver</a href><br>County: Tillamook<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-123.8265055</longitude>
+				<latitude>45.2767726</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.8265055,45.27677260000001,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Bellingham</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Bellingham_WA.pdf">Bellingham</a href><br>County: Whatcom<br>Pacfin PCID: BLL]]></description>
+			<LookAt>
+				<longitude>-122.47274017</longitude>
+				<latitude>48.76121521</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.47274017,48.76121521,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Blaine</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Blaine_WA.pdf">Blaine</a href><br>County: Whatcom<br>Pacfin PCID: BLN]]></description>
+			<LookAt>
+				<longitude>-122.7487793</longitude>
+				<latitude>48.993602753</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.7487793,48.99360275300001,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Bodega Bay</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Bodega_Bay_CA.pdf">Bodega Bay</a href><br>County: Sonoma<br>Pacfin PCID: BDG]]></description>
+			<LookAt>
+				<longitude>-123.03089905</longitude>
+				<latitude>38.322715759</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.03089905,38.322715759,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Bothell</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Bothell_WA.pdf">Bothell</a href><br>County: King<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-122.2054035</longitude>
+				<latitude>47.7623204</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.2054035,47.7623204,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Brookings</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Brookings_OR.pdf">Brookings</a href><br>County: Curry<br>Pacfin PCID: BRK]]></description>
+			<LookAt>
+				<longitude>-124.28652191</longitude>
+				<latitude>42.05229187</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.28652191,42.05229187,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Cathlamet</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Cathlamet_WA.pdf">Cathlamet</a href><br>County: Wahkiakum<br>Pacfin PCID: OCR]]></description>
+			<LookAt>
+				<longitude>-123.3831834</longitude>
+				<latitude>46.2031656</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.3831834,46.2031656,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Charleston (Coos Bay)</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Charleston_OR.pdf">Charleston (Coos Bay)</a href><br>County: Coos<br>Pacfin PCID: COS]]></description>
+			<LookAt>
+				<longitude>-124.3301167</longitude>
+				<latitude>43.340111</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.3301167,43.340111,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Chinook</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Chinook_WA.pdf">Chinook</a href><br>County: Pacific<br>Pacfin PCID: LWC]]></description>
+			<LookAt>
+				<longitude>-123.9454273</longitude>
+				<latitude>46.2728802</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.9454273,46.2728802,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Clatskanie</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Clatskanie_OR.pdf">Clatskanie</a href><br>County: Columbia<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-123.2067863</longitude>
+				<latitude>46.1012219</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.2067863,46.10122190000001,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Cloverdale</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Cloverdale_OR.pdf">Cloverdale</a href><br>County: Tillamook<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-123.8920603</longitude>
+				<latitude>45.2059389</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.8920603,45.2059389,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Coos Bay (Charleston)</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/CoosBay_OR.pdf">Coos Bay (Charleston)</a href><br>County: Coos<br>Pacfin PCID: COS]]></description>
+			<LookAt>
+				<longitude>-124.219841</longitude>
+				<latitude>43.367572784</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.219841,43.367572784,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Corte Madera</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/CorteMadera_CA.pdf">Corte Madera</a href><br>County: Marin<br>Pacfin PCID: OSM]]></description>
+			<LookAt>
+				<longitude>-122.5274755</longitude>
+				<latitude>37.9254806</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.5274755,37.9254806,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Costa Mesa</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Costa_Mesa_CA.pdf">Costa Mesa</a href><br>County: Orange<br>Pacfin PCID: OLA]]></description>
+			<LookAt>
+				<longitude>-117.9186689</longitude>
+				<latitude>33.6411316</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-117.9186689,33.6411316,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Crescent City</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Crescent_City_CA.pdf">Crescent City</a href><br>County: Del Norte<br>Pacfin PCID: CRS]]></description>
+			<LookAt>
+				<longitude>-124.2048645</longitude>
+				<latitude>41.755592346</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.2048645,41.755592346,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Culver City</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Culver_City_CA.pdf">Culver City</a href><br>County: Los Angeles<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-118.3964665</longitude>
+				<latitude>34.0211224</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-118.3964665,34.0211224,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Dana Point</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Dana_Point_CA.pdf">Dana Point</a href><br>County: Orange<br>Pacfin PCID: DNA]]></description>
+			<LookAt>
+				<longitude>-117.70914459</longitude>
+				<latitude>33.462017059</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-117.70914459,33.462017059,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Depoe Bay</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Depoe_Bay_OR.pdf">Depoe Bay</a href><br>County: Lincoln<br>Pacfin PCID: DPO]]></description>
+			<LookAt>
+				<longitude>-124.06079865</longitude>
+				<latitude>44.811904907</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.06079865,44.811904907,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Dillon Beach</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Dillon_Beach_CA.pdf">Dillon Beach</a href><br>County: Marin<br>Pacfin PCID: OSM]]></description>
+			<LookAt>
+				<longitude>-122.9652768</longitude>
+				<latitude>38.2507515</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.9652768,38.2507515,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Edmonds</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Edmonds_WA.pdf">Edmonds</a href><br>County: Snohomish<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-122.3773552</longitude>
+				<latitude>47.8106521</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.3773552,47.8106521,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>El Granada</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/El_Granada_CA.pdf">El Granada</a href><br>County: San Mateo<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-122.4694214</longitude>
+				<latitude>37.5027185</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.4694214,37.5027185,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>El Sobrante</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/El_Sobrante_CA.pdf">El Sobrante</a href><br>County: Contra Costa<br>Pacfin PCID: OSF]]></description>
+			<LookAt>
+				<longitude>-122.2952474</longitude>
+				<latitude>37.9771452</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.2952474,37.9771452,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Eureka</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Eureka_CA.pdf">Eureka</a href><br>County: Humboldt<br>Pacfin PCID: ERK]]></description>
+			<LookAt>
+				<longitude>-124.16533661</longitude>
+				<latitude>40.801567078</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.16533661,40.801567078,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Everett</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Everett_WA.pdf">Everett</a href><br>County: Snohomish<br>Pacfin PCID: EVR]]></description>
+			<LookAt>
+				<longitude>-122.20454407</longitude>
+				<latitude>47.978435516</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.20454407,47.978435516,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Ferndale</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Ferndale_WA.pdf">Ferndale</a href><br>County: Whatcom<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-122.5910056</longitude>
+				<latitude>48.8464992</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.5910056,48.8464992,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Fields Landing</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Fields_Landing_CA.pdf">Fields Landing</a href><br>County: Humboldt<br>Pacfin PCID: FLN]]></description>
+			<LookAt>
+				<longitude>-124.21733093</longitude>
+				<latitude>40.724258423</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.21733093,40.724258423,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Florence</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Florence_OR.pdf">Florence</a href><br>County: Lane<br>Pacfin PCID: FLR]]></description>
+			<LookAt>
+				<longitude>-124.10271454</longitude>
+				<latitude>43.982276916</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.10271454,43.982276916,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Fort Bragg</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Fort_Bragg_CA.pdf">Fort Bragg</a href><br>County: Mendocino<br>Pacfin PCID: BRG]]></description>
+			<LookAt>
+				<longitude>-123.80757141</longitude>
+				<latitude>39.445350647</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.80757141,39.445350647,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Fox Island</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Fox_Island_WA.pdf">Fox Island</a href><br>County: Pierce<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-122.6290176</longitude>
+				<latitude>47.2514862</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#msn_ltblu-circle0</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.6290176,47.2514862,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Friday Harbor</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Friday_Harbor_WA.pdf">Friday Harbor</a href><br>County: San Juan<br>Pacfin PCID: FRI]]></description>
+			<LookAt>
+				<longitude>-123.01121521</longitude>
+				<latitude>48.533618927</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.01121521,48.53361892699999,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Garibaldi (Tillamook)</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Garibaldi_OR.pdf">Garibaldi (Tillamook)</a href><br>County: Tillamook<br>Pacfin PCID: TLL]]></description>
+			<LookAt>
+				<longitude>-123.9109643</longitude>
+				<latitude>45.5598266</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.9109643,45.5598266,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Gig Harbor</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Gig_Harbor_WA.pdf">Gig Harbor</a href><br>County: Pierce<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-122.59068298</longitude>
+				<latitude>47.329833984</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.59068298,47.329833984,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Gold Beach</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Gold_Beach_OR.pdf">Gold Beach</a href><br>County: Curry<br>Pacfin PCID: GLD]]></description>
+			<LookAt>
+				<longitude>-124.42460632</longitude>
+				<latitude>42.406894684</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.42460632,42.406894684,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Grayland Beach</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Grayland_WA.pdf">Grayland Beach</a href><br>County: Grays Harbor<br>Pacfin PCID: OWC]]></description>
+			<LookAt>
+				<longitude>-124.08969</longitude>
+				<latitude>46.8303029</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.08969,46.8303029,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Half Moon Bay (Princeton)</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/HalfMoonBay_CA.pdf">Half Moon Bay (Princeton)</a href><br>County: San Mateo<br>Pacfin PCID: PRN]]></description>
+			<LookAt>
+				<longitude>-122.42997742</longitude>
+				<latitude>37.463363648</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.42997742,37.463363648,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Hammond</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Hammond_OR.pdf">Hammond</a href><br>County: Clatsop<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-123.9515357</longitude>
+				<latitude>46.2001036</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.9515357,46.2001036,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Harbor</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Harbor_OR.pdf">Harbor</a href><br>County: Curry<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-124.2675917</longitude>
+				<latitude>42.0531665</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.2675917,42.0531665,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Ilwaco</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Ilwaco_WA.pdf">Ilwaco</a href><br>County: Pacific<br>Pacfin PCID: LWC]]></description>
+			<LookAt>
+				<longitude>-124.04610443</longitude>
+				<latitude>46.308494568</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.04610443,46.308494568,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Kneeland</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Kneeland_CA.pdf">Kneeland</a href><br>County: Humboldt<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-123.9947779</longitude>
+				<latitude>40.7612425</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.9947779,40.7612425,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>La Conner</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/La_Conner_WA.pdf">La Conner</a href><br>County: Skagit<br>Pacfin PCID: LAC]]></description>
+			<LookAt>
+				<longitude>-122.49814606</longitude>
+				<latitude>48.391853332</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.49814606,48.391853332,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>La Push</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/La_Push_WA.pdf">La Push</a href><br>County: Clallam<br>Pacfin PCID: LAP]]></description>
+			<LookAt>
+				<longitude>-124.63871002</longitude>
+				<latitude>47.90970993</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.63871002,47.90970993,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Lakewood</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Lakewood_WA.pdf">Lakewood</a href><br>County: Pierce<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-122.518458</longitude>
+				<latitude>47.1717649</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#msn_ltblu-circle</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.518458,47.1717649,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Logsden</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Logsden_OR.pdf">Logsden</a href><br>County: Lincoln<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-123.7942778</longitude>
+				<latitude>44.7431729</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.7942778,44.7431729,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Long Beach</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/LongBeach_WA.pdf">Long Beach</a href><br>County: Pacific<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-124.05699158</longitude>
+				<latitude>46.351760864</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.05699158,46.351760864,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Long Beach</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/long_beach_ca.pdf">Long Beach</a href><br>County: Los Angeles<br>Pacfin PCID: LGB]]></description>
+			<LookAt>
+				<longitude>-118.19081116</longitude>
+				<latitude>33.767051697</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-118.19081116,33.767051697,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Lopez Island</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/LopezIsland_WA.pdf">Lopez Island</a href><br>County: San Juan<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-122.8929551</longitude>
+				<latitude>48.4787113</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.8929551,48.4787113,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Los Angeles</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Los_Angeles_CA.pdf">Los Angeles</a href><br>County: Los Angeles<br>Pacfin PCID: OLA]]></description>
+			<LookAt>
+				<longitude>-118.2436849</longitude>
+				<latitude>34.0522342</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-118.2436849,34.0522342,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Los Osos</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Los_Osos_CA.pdf">Los Osos</a href><br>County: San Luis Obispo<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-120.8324006</longitude>
+				<latitude>35.3110858</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-120.8324006,35.3110858,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Marina</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Marina_CA.pdf">Marina</a href><br>County: Monterey<br>Pacfin PCID: OCM]]></description>
+			<LookAt>
+				<longitude>-121.802173</longitude>
+				<latitude>36.6844029</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-121.802173,36.6844029,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Mckinleyville</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/McKinleyville_CA.pdf">Mckinleyville</a href><br>County: Humboldt<br>Pacfin PCID: OHB]]></description>
+			<LookAt>
+				<longitude>-124.1006205</longitude>
+				<latitude>40.9465152</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.1006205,40.9465152,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Monterey</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Monterey_CA.pdf">Monterey</a href><br>County: Monterey<br>Pacfin PCID: MNT]]></description>
+			<LookAt>
+				<longitude>-121.89748383</longitude>
+				<latitude>36.6002388</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-121.89748383,36.6002388,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Morro Bay</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Morro_Bay_CA.pdf">Morro Bay</a href><br>County: San Luis Obispo<br>Pacfin PCID: MRO]]></description>
+			<LookAt>
+				<longitude>-120.85548401</longitude>
+				<latitude>35.372989655</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-120.85548401,35.372989655,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Moss Landing</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Moss_Landing_CA.pdf">Moss Landing</a href><br>County: Monterey<br>Pacfin PCID: MOS]]></description>
+			<LookAt>
+				<longitude>-121.78900147</longitude>
+				<latitude>36.804172516</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-121.78900147,36.804172516,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Mount Vernon</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/MountVernon_WA.pdf">Mount Vernon</a href><br>County: Skagit<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-122.3340474</longitude>
+				<latitude>48.421216</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.3340474,48.42121600000001,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Mounument</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Monument_OR.pdf">Mounument</a href><br>County: Grant<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-119.4211007</longitude>
+				<latitude>44.819314</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-119.4211007,44.819314,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Naselle</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Naselle_WA.pdf">Naselle</a href><br>County: Pacific<br>Pacfin PCID: WLB]]></description>
+			<LookAt>
+				<longitude>-123.8107056</longitude>
+				<latitude>46.3653817</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.8107056,46.3653817,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Neah Bay</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Neah_Bay_WA.pdf">Neah Bay</a href><br>County: Clallam<br>Pacfin PCID: NEA]]></description>
+			<LookAt>
+				<longitude>-124.62800598</longitude>
+				<latitude>48.367774963</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.62800598,48.367774963,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Newport</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Newport_OR.pdf">Newport</a href><br>County: Lincoln<br>Pacfin PCID: NEW]]></description>
+			<LookAt>
+				<longitude>-124.05540466</longitude>
+				<latitude>44.636291504</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.05540466,44.636291504,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>North Bend</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/NorthBend_OR.pdf">North Bend</a href><br>County: Coos<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-124.2242803</longitude>
+				<latitude>43.4065012</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.2242803,43.4065012,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Novato</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Novato_CA.pdf">Novato</a href><br>County: Marin<br>Pacfin PCID: OSM]]></description>
+			<LookAt>
+				<longitude>-122.5697032</longitude>
+				<latitude>38.1074199</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.5697032,38.1074199,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Olympia</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Olympia_WA.pdf">Olympia</a href><br>County: Thurston<br>Pacfin PCID: OLY]]></description>
+			<LookAt>
+				<longitude>-122.8909378</longitude>
+				<latitude>47.040534973</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.8909378,47.04053497300001,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Oxnard</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Oxnard_CA.pdf">Oxnard</a href><br>County: Ventura<br>Pacfin PCID: OXN]]></description>
+			<LookAt>
+				<longitude>-119.17900848</longitude>
+				<latitude>34.197669983</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-119.17900848,34.197669983,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Pacific City</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Pacific_City_OR.pdf">Pacific City</a href><br>County: Tillamook<br>Pacfin PCID: PCC]]></description>
+			<LookAt>
+				<longitude>-123.96030426</longitude>
+				<latitude>45.199611664</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.96030426,45.199611664,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Pebble Beach</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Pebble_Beach_CA.pdf">Pebble Beach</a href><br>County: Monterey<br>Pacfin PCID: OCM]]></description>
+			<LookAt>
+				<longitude>-121.9466223</longitude>
+				<latitude>36.5663496</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-121.9466223,36.5663496,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Point Arena</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Point_Arena_CA.pdf">Point Arena</a href><br>County: Mendocino<br>Pacfin PCID: ARE]]></description>
+			<LookAt>
+				<longitude>-123.6930726</longitude>
+				<latitude>38.908798</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.6930726,38.908798,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Port Angeles</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/PortAngeles_WA.pdf">Port Angeles</a href><br>County: Clallam<br>Pacfin PCID: PAG]]></description>
+			<LookAt>
+				<longitude>-123.43292236</longitude>
+				<latitude>48.11795044</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.43292236,48.11795044,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Port Hueneme</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/PortHueneme_CA.pdf">Port Hueneme</a href><br>County: Ventura<br>Pacfin PCID: HNM]]></description>
+			<LookAt>
+				<longitude>-119.19697571</longitude>
+				<latitude>34.147727966</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-119.19697571,34.147727966,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Port Orford</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/PortOrford_OR.pdf">Port Orford</a href><br>County: Curry<br>Pacfin PCID: ORF]]></description>
+			<LookAt>
+				<longitude>-124.49936676</longitude>
+				<latitude>42.745315552</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.49936676,42.745315552,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Port Townsend</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Port_Townsend_WA.pdf">Port Townsend</a href><br>County: Jefferson<br>Pacfin PCID: TNS]]></description>
+			<LookAt>
+				<longitude>-122.76300049</longitude>
+				<latitude>48.116592407</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.76300049,48.11659240699999,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Princetion (Half Moon Bay)</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Princeton_CA.pdf">Princetion (Half Moon Bay)</a href><br>County: San Mateo<br>Pacfin PCID: PRN]]></description>
+			<LookAt>
+				<longitude>-122.4869222</longitude>
+				<latitude>37.5049409</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.4869222,37.5049409,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Raymond</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Raymond_WA.pdf">Raymond</a href><br>County: Pacific<br>Pacfin PCID: WLB]]></description>
+			<LookAt>
+				<longitude>-123.7329385</longitude>
+				<latitude>46.6864887</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.7329385,46.6864887,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Reedsport</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Reedsport_OR.pdf">Reedsport</a href><br>County: Douglas<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-124.09996796</longitude>
+				<latitude>43.702064514</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.09996796,43.702064514,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Rockaway Beach</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Rockaway_Beach_OR.pdf">Rockaway Beach</a href><br>County: Tillamook<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-123.9429114</longitude>
+				<latitude>45.613438</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.9429114,45.613438,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Roseburg</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Roseburg_OR.pdf">Roseburg</a href><br>County: Douglas<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-123.3417381</longitude>
+				<latitude>43.216505</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.3417381,43.216505,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>San Diego</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/SanDiego_CA.pdf">San Diego</a href><br>County: San Diego<br>Pacfin PCID: SD]]></description>
+			<LookAt>
+				<longitude>-117.15872955</longitude>
+				<latitude>32.715244293</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-117.15872955,32.715244293,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>San Francisco</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/SanFrancisco_CA.pdf">San Francisco</a href><br>County: San Francisco<br>Pacfin PCID: SF]]></description>
+			<LookAt>
+				<longitude>-122.42132568</longitude>
+				<latitude>37.774650574</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.42132568,37.774650574,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>San Jose</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/San_Jose_CA.pdf">San Jose</a href><br>County: Santa Clara<br>Pacfin PCID: OSF]]></description>
+			<LookAt>
+				<longitude>-121.8949555</longitude>
+				<latitude>37.3393857</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-121.8949555,37.3393857,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Santa Ana</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Santa_Ana_CA.pdf">Santa Ana</a href><br>County: Orange<br>Pacfin PCID: OLA]]></description>
+			<LookAt>
+				<longitude>-117.8678338</longitude>
+				<latitude>33.7455731</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-117.8678338,33.7455731,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Santa Barbara</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Santa_Barbara_CA.pdf">Santa Barbara</a href><br>County: Santa Barbara<br>Pacfin PCID: SB]]></description>
+			<LookAt>
+				<longitude>-119.70566559</longitude>
+				<latitude>34.423301697</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-119.70566559,34.423301697,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Santa Cruz</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Santa_Cruz_CA.pdf">Santa Cruz</a href><br>County: Santa Cruz<br>Pacfin PCID: CRZ]]></description>
+			<LookAt>
+				<longitude>-122.03335571</longitude>
+				<latitude>36.973899841</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.03335571,36.973899841,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Santa Rosa</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Santa_Rosa_CA.pdf">Santa Rosa</a href><br>County: Sonoma<br>Pacfin PCID: OSM]]></description>
+			<LookAt>
+				<longitude>-122.7144314</longitude>
+				<latitude>38.4404675</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.7144314,38.4404675,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Sausalito</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Sausalito_CA.pdf">Sausalito</a href><br>County: Marin<br>Pacfin PCID: SLT]]></description>
+			<LookAt>
+				<longitude>-122.48815918</longitude>
+				<latitude>37.857368469</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.48815918,37.857368469,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Seaside</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Seaside_CA.pdf">Seaside</a href><br>County: Monterey<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-121.85422516</longitude>
+				<latitude>36.611061096</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-121.85422516,36.611061096,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Seaside-Gearhart</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Seaside_OR.pdf">Seaside-Gearhart</a href><br>County: Clatsop<br>Pacfin PCID: GSS]]></description>
+			<LookAt>
+				<longitude>-123.92505646</longitude>
+				<latitude>45.992919922</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.92505646,45.992919922,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Seattle</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Seattle_WA.pdf">Seattle</a href><br>County: King<br>Pacfin PCID: SEA]]></description>
+			<LookAt>
+				<longitude>-122.33439636</longitude>
+				<latitude>47.605712891</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.33439636,47.605712891,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Seaview</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Seaview_WA.pdf">Seaview</a href><br>County: Pacific<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-124.0546003</longitude>
+				<latitude>46.3345443</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.0546003,46.3345443,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Sebastapol</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Sebastapol_CA.pdf">Sebastapol</a href><br>County: Sonoma<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-122.8238806</longitude>
+				<latitude>38.4021359</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.8238806,38.4021359,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Sedro-Woolley</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Sedro_Woolley_WA.pdf">Sedro-Woolley</a href><br>County: Skagit<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-122.23611</longitude>
+				<latitude>48.50389</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.23611,48.50389,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Sequim</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Sequim_WA.pdf">Sequim</a href><br>County: Clallam<br>Pacfin PCID: SEQ]]></description>
+			<LookAt>
+				<longitude>-123.10453033</longitude>
+				<latitude>48.079280853</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.10453033,48.079280853,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Shelton</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Shelton_WA.pdf">Shelton</a href><br>County: Mason<br>Pacfin PCID: SHL]]></description>
+			<LookAt>
+				<longitude>-123.09950256</longitude>
+				<latitude>47.215019226</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.09950256,47.215019226,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Siletz Bay</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Siletz_OR.pdf">Siletz Bay</a href><br>County: Lincoln<br>Pacfin PCID: SLZ]]></description>
+			<LookAt>
+				<longitude>-123.92292786</longitude>
+				<latitude>44.72145462</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.92292786,44.72145462,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Silvana</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Silvana_WA.pdf">Silvana</a href><br>County: Snohomish<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-122.2537589</longitude>
+				<latitude>48.2023214</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.2537589,48.2023214,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Sisters</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Sisters_OR.pdf">Sisters</a href><br>County: Deschutes<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-121.5492118</longitude>
+				<latitude>44.2909491</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-121.5492118,44.2909491,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>South Beach</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/South_Beach_OR.pdf">South Beach</a href><br>County: Lincoln<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-124.0487285</longitude>
+				<latitude>44.6126174</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.0487285,44.6126174,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>South Bend</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/SouthBend_WA.pdf">South Bend</a href><br>County: Pacific<br>Pacfin PCID: WLB]]></description>
+			<LookAt>
+				<longitude>-123.8046063</longitude>
+				<latitude>46.6631549</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.8046063,46.6631549,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Sunset Beach</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Sunset_Beach_CA.pdf">Sunset Beach</a href><br>County: Orange<br>Pacfin PCID: OLA]]></description>
+			<LookAt>
+				<longitude>-118.0689517</longitude>
+				<latitude>33.7164069</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-118.0689517,33.7164069,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Tacoma</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Tacoma_WA.pdf">Tacoma</a href><br>County: Pierce<br>Pacfin PCID: TAC]]></description>
+			<LookAt>
+				<longitude>-122.44667053</longitude>
+				<latitude>47.252422333</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.44667053,47.252422333,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Tarzana</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Tarzana_CA.pdf">Tarzana</a href><br>County: Los Angeles<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-118.553974</longitude>
+				<latitude>34.1733385</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-118.553974,34.1733385,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Tillamook</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Tillamook_OR.pdf">Tillamook</a href><br>County: Tillamook<br>Pacfin PCID: TLL]]></description>
+			<LookAt>
+				<longitude>-123.84683991</longitude>
+				<latitude>45.455760956</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.84683991,45.45576095599999,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Tokeland</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Tokeland_WA.pdf">Tokeland</a href><br>County: Pacific<br>Pacfin PCID: WLB]]></description>
+			<LookAt>
+				<longitude>-123.9818347</longitude>
+				<latitude>46.7064856</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.9818347,46.70648559999999,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Toledo</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Toledo_OR.pdf">Toledo</a href><br>County: Lincoln<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-123.9384478</longitude>
+				<latitude>44.621507</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.9384478,44.621507,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Torrance</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Torrance_CA.pdf">Torrance</a href><br>County: Los Angeles<br>Pacfin PCID: OLA]]></description>
+			<LookAt>
+				<longitude>-118.3406288</longitude>
+				<latitude>33.8358492</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-118.3406288,33.8358492,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Trinidad</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Trinidad_CA.pdf">Trinidad</a href><br>County: Humboldt<br>Pacfin PCID: TRN]]></description>
+			<LookAt>
+				<longitude>-124.14572907</longitude>
+				<latitude>41.05891037</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.14572907,41.05891037,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Ukiah</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Ukiah_CA.pdf">Ukiah</a href><br>County: Mendocino<br>Pacfin PCID: OMD]]></description>
+			<LookAt>
+				<longitude>-123.2077831</longitude>
+				<latitude>39.1501709</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.2077831,39.1501709,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Valley Ford</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Valley_Ford_CA.pdf">Valley Ford</a href><br>County: Sonoma<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-122.9241635</longitude>
+				<latitude>38.3179721</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.9241635,38.3179721,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Ventura</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/California/Ventura_CA.pdf">Ventura</a href><br>County: Ventura<br>Pacfin PCID: VEN]]></description>
+			<LookAt>
+				<longitude>-119.29489899</longitude>
+				<latitude>34.278362274</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-119.29489899,34.278362274,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Warrenton</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/Warrenton_OR.pdf">Warrenton</a href><br>County: Clatsop<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-123.9237557</longitude>
+				<latitude>46.1651049</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-123.9237557,46.1651049,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Westport</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Westport_WA.pdf">Westport</a href><br>County: Grays Harbor<br>Pacfin PCID: WPT]]></description>
+			<LookAt>
+				<longitude>-124.10675049</longitude>
+				<latitude>46.889587402</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.10675049,46.889587402,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Winchester Bay</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Oregon/WinchesterBay_OR.pdf">Winchester Bay</a href><br>County: Douglas<br>Pacfin PCID: WIN]]></description>
+			<LookAt>
+				<longitude>-124.17779541</longitude>
+				<latitude>43.676685333</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map1</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-124.17779541,43.676685333,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Woodinville</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<a href="http://www.nwfsc.noaa.gov/research/divisions/sd/communityprofiles/Washington/Woodinville_WA.pdf">Woodinville</a href><br>County: King<br>Pacfin PCID: N/A]]></description>
+			<LookAt>
+				<longitude>-122.1634582</longitude>
+				<latitude>47.7542651</latitude>
+				<altitude>0</altitude>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<range>1000</range>
+			</LookAt>
+			<styleUrl>#Sheet1Map2</styleUrl>
+			<ExtendedData>
+			</ExtendedData>
+			<Point>
+				<coordinates>-122.1634582,47.7542651,0</coordinates>
+			</Point>
+		</Placemark>
+	</Folder>
+</Document>
+</kml>

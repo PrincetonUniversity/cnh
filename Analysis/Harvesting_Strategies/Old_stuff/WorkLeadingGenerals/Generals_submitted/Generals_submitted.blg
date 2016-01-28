@@ -1,0 +1,62 @@
+This is BibTeX, Version 0.99d (TeX Live 2012)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: Generals_submitted.aux
+The style file: cbe.bst
+Database file #1: unread.bib
+Warning--entry type for "GroundfishTNC" isn't style-file defined
+--line 853 of file unread.bib
+Warning--entry type for "ecatch" isn't style-file defined
+--line 870 of file unread.bib
+Warning--empty author in CommercialDigest:2012
+Warning--empty institution in CommercialDigest:2012
+Warning--empty year in GroundfishTNC
+Warning--empty year in ecatch
+Warning--empty title in Dawetal:2010
+Warning--empty note in Dawetal:2010
+Warning--can't use both author and editor fields in DennoLewis:2009
+Warning--empty chapter and pages in DennoLewis:2009
+Warning--empty year in DurrenbergePalsson:nd
+Warning--can't use both author and editor fields in Lawetal:2000
+Warning--empty chapter and pages in Lawetal:2000
+You've used 150 entries,
+            2016 wiz_defined-function locations,
+            1459 strings with 36620 characters,
+and the built_in function-call counts, 63314 in all, are:
+= -- 5902
+> -- 2989
+< -- 94
++ -- 1088
+- -- 1032
+* -- 6155
+:= -- 10921
+add.period$ -- 444
+call.type$ -- 150
+change.case$ -- 1262
+chr.to.int$ -- 148
+cite$ -- 161
+duplicate$ -- 2152
+empty$ -- 4101
+format.name$ -- 1275
+if$ -- 12111
+int.to.chr$ -- 3
+int.to.str$ -- 0
+missing$ -- 150
+newline$ -- 747
+num.names$ -- 447
+pop$ -- 946
+preamble$ -- 1
+purify$ -- 1267
+quote$ -- 0
+skip$ -- 1498
+stack$ -- 0
+substring$ -- 4623
+swap$ -- 502
+text.length$ -- 9
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 890
+warning$ -- 11
+while$ -- 441
+width$ -- 0
+write$ -- 1794
+(There were 13 warnings)

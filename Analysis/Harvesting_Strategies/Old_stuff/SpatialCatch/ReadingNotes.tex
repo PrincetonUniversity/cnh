@@ -1,0 +1,77 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[margin=1in]{geometry} 	% see geometry.pdf on how to lay out the page. There's lots.
+% \geometry{landscape} 	% rotated page geometry
+
+%%% PACKAGES
+\usepackage{booktabs} 	% for much better looking tables
+\usepackage{array} 		% for better arrays (eg matrices) in maths
+\usepackage{paralist} 	% very flexible & customisable lists (eg. enumerate/itemize, etc.)
+\usepackage{verbatim} 	% adds environment for commenting out blocks of text & for better verbatim
+\usepackage{subfigure} 	% make it possible to include more than one captioned figure/table in a single float
+\usepackage{graphics}	% Show images with \includegraphics
+\usepackage{url}		% Insert URL: \url{http:\\...}
+\usepackage{natbib}		% Improved citations
+\usepackage{amsmath}	% Useful symbols, environments
+
+%%% HEADERS & FOOTERS
+\usepackage{fancyhdr} 	% This should be set AFTER setting up the page geometry
+\pagestyle{fancy} 		% options: empty , plain , fancy
+\renewcommand{\headrulewidth}{0pt} 	% customise the layout...
+\lhead{}\chead{}\rhead{}
+\lfoot{}\cfoot{\thepage}\rfoot{}
+
+%%% SECTION TITLE APPEARANCE
+\usepackage{sectsty}
+%\allsectionsfont{\sffamily\mdseries\upshape} 	% (See the fntguide.pdf for font help)
+% (This matches ConTeXt defaults)
+
+%%% ToC APPEARANCE
+\usepackage[nottoc,notlof,notlot]{tocbibind} 	% Put the bibliography in the ToC
+%\usepackage[titles]{tocloft} 				% Alter the style of the Table of Contents
+%\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
+%\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+
+%% END Article customise
+
+
+\title{Modeling Harvesting Behavior Empirically -- A Review}
+\author{Emma Fuller}
+\date{} 	% delete this line to display the current date
+
+%%% BEGIN DOCUMENT
+\begin{document}
+
+
+\maketitle
+\noindent The goal of this paper is to be a review of empirical models that include human harvesting behavior. Together with the work on models that incorporate dynamic changes in harvesting, it will be a review of the way that human harvesting strategy is treated in fishing studies.
+
+\tableofcontents
+
+
+\section{Introduction}
+\marginpar{\tiny Need to determine that RUMs are the majority of spatial modeling}
+Fishing allocation across space (i.e. location) is typically modeled by random utility models (RUMs). These models are a type of economic model that are commonly used when individuals have a set of discrete choices to make. Fishermen, for example, can choose locations to fish during some unit of time (day, week, season). To model how fishermen make a decision of which location to visit, economic models often use RUMs. Studies that use RUMs are empirical, they use data to parameterize the RUM. Almost all of them are case-studies. My goal is to survey these RUM papers and answer the following
+
+\begin{itemize}
+\item What are the motivating questions of these studies?
+\item Where is the location of the fleet in question?
+\item What are the variables included? 
+\item What variables are found to be predictive?
+\item How many variables are proxy variables? And which ones are proxy versus actual measures?
+\end{itemize}
+
+\noindent Random utility models are the most commonly used models (seemingly) when fishermen location choice is modeled. I am also interested in location choice by fishermen, as I want to understand how different allocations of harvesting effort across space will affect the meta-population stability of a fish population. 
+
+\subsection{Difference than existing reviews}
+There have been a number of recent reviews of how human harvesting behavior is captured in fisheries studies \citep{vanPuttenetal2011}\footnote{Other reviews include \cite{Fultonetal2011, HayniePfeiffer2012} but I haven't read them for this purpose yet.}. This review differs in that \cite{vanPuttenetal2011} briefly cover random-utility models in the location-choice section of their review, however does not summarize the variables found important and how they vary across study types (aside from identifying profit maximzation as a commonly cited driver). Another point that remains undiscussed is whether profit maximization as assumed a priori or was found after a range of variables were included. 
+
+Thus this present review of location-choice empirical modeling will attempt to synthesize what variables are found to be significant predictor variables of location choice and how those vary with the study location (same as nationality?), target species, gear-type, and management regime. 
+
+This review differs from \cite{Fultonetal2011} in that \cite{Fultonetal2011} focuses on highlighting that human behavior has been under appreciated in fisheries models, and that uncertainty is typically allocated into the ecology and the human dynamics are not frequently considered. \cite{Fultonetal2011} doesn't detail 
+
+\section{Methods}
+Here I conduct a systematic review of the existing empirical literature modeling the spatial allocation of fishing. I search Web of Science using the following search terms {\bf [MISSING]} and {\bf [MISSING]}. I also used \cite{Fultonetal2011} and \cite{vanPuttenetal2011} as starting points and reviewed the cited articles on fishing location and fishermen decision making. From these candidate studies I have included only those that contain empirical data on harvesting practices and that have tested predictor variables for predicting fishermen location choice. 
+
+\bibliographystyle{cbe}
+\bibliography{adaptiveharvesting}
+\end{document}

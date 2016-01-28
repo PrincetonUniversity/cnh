@@ -1,0 +1,23 @@
+\contentsline {chapter}{\numberline {1}Literature Review}{2}{chapter.1}
+\contentsline {section}{\numberline {1.1}Harvesting strategies in the fishing literature}{2}{section.1.1}
+\contentsline {section}{\numberline {1.2}Foraging strategies in the ecological literature}{5}{section.1.2}
+\contentsline {section}{\numberline {1.3}Social Ecological Systems}{7}{section.1.3}
+\contentsline {subsection}{\numberline {1.3.1}Marine Protected Areas as a Case Study}{8}{subsection.1.3.1}
+\contentsline {chapter}{\numberline {2}Proposal}{10}{chapter.2}
+\contentsline {section}{\numberline {2.1}How do the complex spatial dynamics of fish and fisherman affect the performance of traditional fisheries management?}{11}{section.2.1}
+\contentsline {subsection}{\numberline {2.1.1}Introduction}{11}{subsection.2.1.1}
+\contentsline {subsection}{\numberline {2.1.2}Proposed Methods}{12}{subsection.2.1.2}
+\contentsline {subsection}{\numberline {2.1.3}Expected Results}{15}{subsection.2.1.3}
+\contentsline {section}{\numberline {2.2}Does adaptive behavior in fishermen affect the efficacy of an MPA?}{15}{section.2.2}
+\contentsline {subsection}{\numberline {2.2.1}Introduction}{15}{subsection.2.2.1}
+\contentsline {subsection}{\numberline {2.2.2}Proposed Methods -- Theoretical}{16}{subsection.2.2.2}
+\contentsline {subsection}{\numberline {2.2.3}Proposed Methods -- Empirical}{17}{subsection.2.2.3}
+\contentsline {subsection}{\numberline {2.2.4}Expected Results}{18}{subsection.2.2.4}
+\contentsline {section}{\numberline {2.3}Does the composition of the fleet affect how strategy should change in response to a MPA?}{18}{section.2.3}
+\contentsline {subsection}{\numberline {2.3.1}Introduction}{18}{subsection.2.3.1}
+\contentsline {subsection}{\numberline {2.3.2}Methods -- Empirical}{19}{subsection.2.3.2}
+\contentsline {subsection}{\numberline {2.3.3}Expected Results}{20}{subsection.2.3.3}
+\contentsline {subsection}{\numberline {2.3.4}Introduction}{20}{subsection.2.3.4}
+\contentsline {subsection}{\numberline {2.3.5}Methods}{21}{subsection.2.3.5}
+\contentsline {subsection}{\numberline {2.3.6}Expected Results}{21}{subsection.2.3.6}
+\contentsline {chapter}{\numberline {3}Conclusion}{22}{chapter.3}

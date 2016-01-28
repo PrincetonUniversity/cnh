@@ -1,0 +1,13 @@
+# the problem of fishing spots - how to define them?
+Using approach from @Branchetal2005. From @Branchetal2005: 
+
+> We define fishing opportunities to be small areas over which the skipper of a vessel frequently trawls, i.e., groups of trawls that are consistently placed over the same geographic area. These trawls should have a tight cluster of start positions and a tight cluster of end positions. Trawls that are in opposite directions can still belong to the same fishing opportunity if they cover the same ground (i.e., the start and end positions are switched). However, trawls starting in the same position, but conducted in opposite directions, would belong to different fishing opportunities. Some fishing opportunities could therefore be long and thin (for long trawls), and others could be small and round (e.g., short trawls or “circular” trawls that involve a midway 180° turn)....fishing opportunities are similar to what might be called fishing grounds. However, we con-sider fishing grounds to be larger regions that are fished by many vessels, whereas fishing opportunities represent vessel-specific methods of catching fish within these fishing grounds. Thus, for each fishing opportunity, a skipper will have previous knowledge gained through fishing (or from other skippers) about likely catch rates, species mix, optimal fishing months, appropriate gear, and the probable costs of fishing.... . In this paper, we therefore define fishing opportunities to be vessel specific so that they can be related directly to fishermen behavior...We consider it likely that some fishing opportunities will be frequented by multiple vessels.
+
+Have implmeented @Branchetal2005's method here on one trawling vessel from California (south of 40 degrees lat). This is because the re-orientation needs to be either N-S or E-W, and it's assumed that most trawls happen N-S along the California shelf (it's long and narrow). 
+
+I chose the vessel that had the most observed trips (that was a trawler and was south of 40 degrees) so I would have plenty of data to work with. Unfortunately this vessel ended up mostly fishing outside of San Francisco Bay, and so being largely E-W. Thus I'm not confident about these clusters and need to develop some way to test the main way the trawls are oriented in order to flexibly transform them. 
+
+This is an example of the output of the fishing opportunity analysis, and should be used with the convex polygon estimation from the `adehabitatHR` package so I can create polygons of fishing spots. 
+
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1.png) 
+

@@ -1,0 +1,32 @@
+---
+title: "Human connectivity in fisheries"
+author: "emma"
+date: "September 18, 2014"
+output: html_document
+---
+
+In order to predict entry and exist decisions, you need to know not the costs and benefits of the present fishery, but what the outside options are. Research predicting entry and exist decisions often focus on how skilled a fishermen is in their present fishery. Rather than how many outside opportunities may exist. In my experience on the west coast, there appears to be a gradient in fisheries that are high skill to low skill. The high skill fisheries (nearshore groundfish in particular) are difficult to switch into. This could be because of fisheries knowledge (both of the species, the area, and how to use the gear), permitting barriers or economic barriers where the required gear is too pricy. 
+
+In this work, I'm checking if connectivity to other fisheries predicts the likelihood that you'll ...
+
+Specialists versus generalists. who does better? Smith & McKelvey 1986 
+
++ Moving past specialists and generalists to consider human food webs: a commercial fishing case study
+  + Previous work has recognized that most fisheries science models think of fishermen as specialists: participating in only one fishery ever. But in reality there is a spectrum ending at a generalist, which participates in multiple fisheries thorughotu a year. Smith & McKelvey 1986. 
+  + Expect that specialists focus on the long term, prefer stability and consistency. Expect specialists to do better in their fishery, be more efficient. 
+  + Expect that generalists focus on keeping total variable costs to a minimum persepctive is short term. Expect generalists to be not as skilled in any particular fishery, but do well because they switch from fishery to fishery. 
+
+
+Questions for data
+
++ Who are the specialists? Who are the generalists? What are their profits and variabilty?
+
+Often difficult to predict entry-exit decisions in target fisheries due to changes in alternate fisheries. But what if you can look across all fisheries?
+  
++ How well does average price per pound previous week predict entry decisions in subsequent weeks?
+  + Would expect fisheries that are frequented by generalists would pick up and slow down faster that those fished mostly by specialists.  The lag between response in fleet size to price could change dynamics of fishery. 
+  + How variable are prices for different species? Should do a box plot?
+  
+Which combinations of fisheries participated in could provide additional evidence that the sub-structure I've picked out is non-random. So if very profitable bottom-trawlers only do a subset of thsoe gear-cluster pairs, rather than randomly over all of them. 
+
+Would expect crab to be generalist, since it's easy to enter. Expect groundfish nearshore trawl to be hardest because of skill. Expect whiting to be hard because of organizational barriers (cooperatives, etc.). Expect long-lining and fish pots to be easier...? single species focused? less to learn? expect shirmp to be easy. expect tuna and salmon to be easy. (especially tuna with no barriers to entry really). 

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Links Version="1.0" Anchor="RTF">
+    <CommentsAndFootnotes>
+        <Comment IsFootnote="No" Collapsed="No" ID="09FA2285-7A87-4F14-A8C9-69A869AA656B">
+            <Range>106,19</Range>
+            <Color>0.992 0.929 0.525</Color>
+            <RTF><![CDATA[{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf370
+{\fonttbl\f0\fnil\fcharset0 Verdana;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs20 \cf0 RUM models, need to run through my case studies to be sure. }]]></RTF>
+        </Comment>
+        <Comment IsFootnote="No" Collapsed="No" ID="9C0C7D88-93C0-4FAE-851B-FCA7DEC53A80">
+            <Range>207,12</Range>
+            <Color>0.992 0.929 0.525</Color>
+            <RTF><![CDATA[{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf370
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;}
+{\colortbl;\red255\green255\blue255;}
+\deftab720
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural
+
+\f0\fs24 \cf0 \expnd0\expndtw0\kerning0
+Should look up articles that cite it, think they're all empirical. Do look at what a dynamical model would be, but don't look at how you can get multiple stable states or compare to a typical shaefer model. {\field{\*\fldinst{HYPERLINK "http://scholar.google.com/scholar?start=0&q=functional&hl=en&as_sdt=5,31&sciodt=0,31&cites=16745861252262147384&scipsc=1"}}{\fldrslt \expnd0\expndtw0\kerning0
+This is a search}} through all papers on google scholar that cite \{Carpenter 1994\} and have the word "functional" in it. Should check to make sure no one else has done a theoretical treatment. \
+\
+Also see \{Yodzis 1994\} and \{Lorenzen 2006\}. Two papers that came up on web of science about fisheries and functional responses. }]]></RTF>
+        </Comment>
+        <Comment IsFootnote="No" Collapsed="No" ID="90EB4A0F-5CD9-49C3-B7BA-778FE9E227C8">
+            <Range>453,15</Range>
+            <Color>0.992 0.929 0.525</Color>
+            <RTF><![CDATA[{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf370
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;}
+{\colortbl;\red255\green255\blue255;}
+\deftab720
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural
+
+\f0\fs24 \cf0 \expnd0\expndtw0\kerning0
+But don't relate this back to the way fishermen are fishing. I think this has potential to explain. }]]></RTF>
+        </Comment>
+    </CommentsAndFootnotes>
+</Links>

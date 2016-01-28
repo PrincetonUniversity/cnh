@@ -1,0 +1,287 @@
+---
+title: "Metiers"
+author: "Emma Fuller"
+date: "May 6, 2014"
+output: html_document
+---
+
+Just using FTL data (`grid` and `grgroup`) to do a clustering analysis
+
+```{r,echo=FALSE, message=FALSE, warning=FALSE}
+
+require(dplyr)
+require(cluster)
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-05-06/log_tripTable_2014-05-06.Rdata")
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-28/new_plan/output_data/clust_log.Rdata")
+
+# clustering solutions, if already exists don't re-run
+file_find <- "/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-05-08/1_multi_gear/data/cluster_dat.Rdata"
+
+if(file.exists(file_find)){
+  load(file_find)
+}else{ # generate clustering data
+  effort_data <- log_tripTable[[2]]
+  effort_df <- tbl_df(effort_data)
+  effort_group <- group_by(effort_df, tripID)
+  effort_codes<- summarise(effort_group,total_grgroup= paste(grgroup,collapse=""), total_grid = paste(grid,collapse=""))
+  effort_codes$total_code <- paste(effort_codes$total_grgroup, effort_codes$total_grid,sep="_")
+  effort_codes$total_code <- factor(effort_codes$total_code)
+  
+  # now check, same number of trips as trips with a unique gear code
+  length(clust_log$clustering)==nrow(effort_codes)
+  
+  # make dataframe to cluster over
+  cluster_dat <- data.frame(catch_profile = letters[clust_log$clustering], gear = effort_codes$total_code, tripID = effort_codes$tripID)
+  
+  #save input data
+  save(cluster_dat, file="/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-05-08/1_multi_gear/data/cluster_dat.Rdata")
+}
+
+file_load <- "/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-05-08/1_multi_gear/data/clust_out.Rdata"
+  
+  
+# cluster info
+max.clusts <- 30
+samples = 100
+sampsize = 1000
+clust.out <- vector("list",length=max.clusts)
+
+set.seed(2)
+for(i in 1:max.clusts){
+  clust.out[[i]] <- clara(cluster_dat[,1:2], i, stand=TRUE, samples = samples, sampsize=sampsize, keep.data = FALSE, pamLike=TRUE, rngR = TRUE)
+  print(i)
+  }
+
+save(clust.out, file="/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-05-08/1_multi_gear/data/clust_out.Rdata")
+
+objectives <- vector(length = max.clusts)
+for (i in 1:max.clusts) { objectives[i] <- clust.out[[i]]$objective }
+
+asw <- vector(length = max.clusts)
+for (i in 2:max.clusts) { asw[i] <- clust.out[[i]]$silinfo$avg.width  }
+max_asw <- max(asw)
+nodes <- which(asw==max(asw))
+par(mfrow=c(1,2))
+plot(objectives,type="o",pch=19,main="objective",xlab="Number of Clusters")
+plot(asw,type="o",pch=19,main="asw",xlab="Number of Clusters")
+
+
+
+plot(diff(asw),type='o')
+points(22,asw[22],pch=19,col="red")
+
+```
+Before trying more nodes, what are these metiers made out of? 
+
+
+```{r}
+metier <- clust.out[[22]]$clustering
+
+metier_sol <- cluster_dat
+metier_sol$metier <- metier
+
+barplot(table(metier_sol$gear,metier_sol$metier))
+```
+
+Looks like there are too many gear types. I need to drop out the multi-species gear. Looking at the gear types, there are gear types that account for 1-5 trips. Those rare ones are going to make it difficult to find clusters. 
+
+```{r}
+hist(table(metier_sol$gear)[table(metier_sol$gear)<1500],breaks=40,col="grey",bor="darkgrey",main="hist of num trips by gear",xlab="num trips")
+```
+
+## Remove multi-gear trips
+First approach is to remove multi-gear trips
+
+```{r}
+effort_data <- log_tripTable[[2]]
+effort_df <- tbl_df(effort_data)
+
+# construct list of trips to remove
+to_remove <- names(which(table(effort_group$tripID)>1))
+# remove trips that match
+remove_multi <- subset(effort_df,(!tripID %in% to_remove))
+# remove miscellaneous trips
+remove_multi <- subset(remove_multi,grgroup!="MSC")
+
+# merge with catch profile
+  # make catchprofile, tripID reference table
+  ref <- log_tripTable[[2]][-which(duplicated(log_tripTable[[2]]$tripID)),]
+  ref <- select(ref,tripID)
+  ref$catch_profile <- clust_log$clustering
+
+  # make gearID ref table
+  gear_ref <- select(remove_multi,tripID, grgroup, grid)
+  gear_ref$gear_code <- paste(gear_ref$grgroup,gear_ref$grid,sep="_")
+  gear_ref$grgroup <- NULL
+  gear_ref$grid <- NULL
+
+  clust_dat <- merge(gear_ref, ref, by="tripID")
+  clust_dat$catch_profile <- factor(letters[clust_dat$catch_profile])
+  clust_dat$gear_code <- factor(clust_dat$gear_code)
+
+# just cluster on grid and catch profile
+if{file.exists(file_load)}{load(file_load)}else{
+  # cluster info
+max.clusts <- 30
+samples = 100
+sampsize = 1000
+clust.out <- vector("list",length=max.clusts)
+
+set.seed(2)
+for(i in 1:max.clusts){
+  clust.out[[i]] <- clara(clust_dat[,2:3], i, stand=TRUE, samples = samples, sampsize=sampsize, keep.data = FALSE, pamLike=TRUE, rngR = TRUE)
+  print(i)
+  }
+ 
+objectives <- vector(length = max.clusts)
+for (i in 1:max.clusts) { objectives[i] <- clust.out[[i]]$objective }
+
+asw <- vector(length = max.clusts)
+for (i in 2:max.clusts) { asw[i] <- clust.out[[i]]$silinfo$avg.width  }
+max_asw <- max(asw)
+nodes <- which(asw==max(asw))
+plot(objectives,type="o")
+plot(asw,type="o")
+plot(diff(asw),type='o')
+points(22,asw[22],pch=19,col="red")
+
+metier_cluster <- list(objective = objectives, asw = asw, num_catchProfile = 24, sampsize=sampsize, samples=samples, cluster_sol = 22, clustering = clust.out[[22]])
+
+save(metier_cluster,file="/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-05-08/metier_cluster.RData")
+}
+```
+
+Looking at what are in these 22 metiers
+
+```{r}
+metier <-metier_cluster$clustering
+
+metier_sol <- clust_dat
+metier_sol$metier <- metier
+
+gear_ref <- select(remove_multi,tripID, grgroup, grid)
+
+metier_all <- merge(metier_sol, gear_ref, by="tripID")
+
+paint <- colorRampPalette(brewer.pal(8,"Dark2"))(length(unique(metier_all$grgroup)))
+
+barplot(table(metier_all$grgroup,metier_all$metier),col=paint,bor=paint,legend=TRUE,args.legend=list(bty="n",border=FALSE))
+
+paint <- colorRampPalette(brewer.pal(8,"Dark2"))(length(unique(metier_all$catch_profile)))
+paint <- colorRampPalette(c("red","blue"))(length(unique(metier_all$catch_profile)))
+barplot(table(metier_all$catch_profile, metier_all$metier),col=paint, legend=TRUE,bor=paint,args.legend = list(ncol=4, bty="n",border=FALSE))
+```
+
+Adding in species abundances and gear types
+
+```{r}
+load("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-05-06/lb_tripTable_2014-05-06.Rdata")
+
+total_info <- merge(metier_all,lb_tripTable[[1]],by="tripID")
+
+# for each metier, plot top 10 species and gear types
+par(mfrow=c(1,2))
+foo <- subset(total_info, metier==1)
+species_foo <- foo[,7:ncol(foo)]
+# find 0 rows, what's the distribution of species?
+boxplot(species_foo[-which(colSums(species_foo)==0)])
+
+# what's up with the sardine contingent?
+
+sardines <- species_foo[which(species_foo$PSDN>0),]
+sardines <- sardines[,-which(colSums(sardines)==0)]
+boxplot(sardines)
+# notice that there are no Dungeness crab here. So why do they show up? I think this is a problem in the catch profile. 
+
+# look at the metier without sardines
+
+no_sardines <- species_foo[-which(species_foo$PSDN>0),]
+no_sardines <- no_sardines[,-which(colSums(no_sardines)==0)]
+boxplot(no_sardines,ylim=c(0,10000),las=2)
+# there's still a lot of stuff in here. What are the distributions of mean abundance
+
+hist(colMeans(no_sardines),breaks=100000,xlim=c(0,1)) 
+# lots of tiny means. 
+barplot(colMeans(no_sardines)[-which(colMeans(no_sardines)<0.4)])
+
+# look at NANC and SABL. Are they showing up in the same trip as DCRB? or it's also a mistake?
+
+nanc_sabl <- species_foo[which(species_foo$NANC > 0 | species_foo$SABL > 0),]
+boxplot(nanc_sabl[,-which(colSums(nanc_sabl)==0)],las=2)
+barplot(colSums(nanc_sabl)[-which(colSums(nanc_sabl)==0)],las=2)
+# unfortunately those catches are not zero. Let's look at the trips that catch both crab and sablefish/nanc
+
+multi_crb <- subset(nanc_sabl, DCRB > 0)
+# uh, turns out there is one freaking trip like this. 
+
+# going back to original dataset. Find all trips that have both DCRB and SABL or DCRB and NANC
+
+check_sabl <- subset(species_foo, DCRB > 0 & SABL >0) # there is one. 
+check_nanc <- subset(species_foo, DCRB > 0 & NANC >0) # there are no rows. 
+
+# re-visit that sablefish catch, what gear was it using?
+multi <- subset(total_info, DCRB > 0 & SABL > 0)
+# turns out there a bunch of trips that get both. let's look at which metier they tend to fall into
+
+paint <- colorRampPalette(brewer.pal(8,"Dark2"))(length(unique(multi$catch_profile)))
+barplot(table(multi$catch_profile,multi$metier),legend=TRUE,ylim=c(0,30),args.legend = list(bty="n",ncol=8),col=paint)
+# this shows that dugeness crab + sablefish got put in a bunch of different catch profiles, which in turn were apportioned across different metiers. i.e. 1,2 and 9 all got one particular time, but 19, 20 and 21 got another. But regardless, this is not a common to have both crab and sablefish. 
+
+# look at the gear
+paint <- colorRampPalette(brewer.pal(8,"Dark2"))(length(unique(multi$gear_code)))
+
+barplot(table(multi$gear_code, multi$metier)[-which(rowSums(table(multi$gear_code,multi$metier))==0),],col=paint,legend=TRUE,border=paint,args.legend = list(bty="n",border=FALSE,ncol=2))
+
+# so this happened once using a crab pot. It happend frequently when trawling with a selective flat-fish trawl (FTS), sometimes with a midwater trawl (MDT) and occastionally with a roller trawl (RLT). 
+
+# in conclusion, it seems like it's correct to label that one crab-pot occurance with the rest of the crab. ... Although it did catch a whole lot of sablefish
+barplot(colSums(check_sabl[-which(check_sabl==0)]),bor=FALSE,col="indianred")
+
+# looking back into FTL data to see what's going on with that trip
+FTL <- read.csv("/Volumes/NOAA_Data/CNH/Data/Catch/FTL_2009-2013_2014-03-21.csv")
+
+# find tripID
+total_info$tripID[66175]
+
+that_one_trip <- subset(FTL, VEID==1700000 & YEAR==2011 & MONTH==5 & DAY==31)
+# he did catch a bunch of crab, along with some sablefish. Doesn't look like he's endorsed for sablefish though. 
+```
+
+So I feel okay with the one guy who caught sablefish in a crab pot, it was a real thing. And the rest of the occurances seem more based on the fact that they're trawling and will pick up some dungeness crab. Ok. But the midwater species: mackeral, sardines and anchovies, why are those there?
+
+
+```{r}
+# trying more nodes. 
+
+more_max <- 60
+
+clust.out <- vector("list",length=(more_max - max.clusts))
+
+set.seed(2)
+for(i in (max.clusts+1):more_max){
+  clust.out[[i]] <- clara(cluster_dat, i, stand=TRUE, samples = samples, sampsize=sampsize, keep.data = FALSE, pamLike=TRUE, rngR = TRUE)
+  print(i)
+  }
+
+objectives_more <- vector(length = max.clusts)
+for (i in (max.clusts+1):more_max) { objectives_more[i] <- clust.out[[i]]$objective }
+
+asw_more <- vector(length = max.clusts)
+for (i in (max.clusts+1):more_max) { asw_more[i] <- clust.out[[i]]$silinfo$avg.width  }
+max_asw_more <- max(asw_more)
+nodes_more <- which(asw_more==max(asw_more))
+
+total_obj <- c(objectives, objectives_more[(max.clusts+1):more_max])
+total_asw <- c(asw, asw_more[(max.clusts+1):more_max])
+
+metier_cluster <- list(objective = total_obj, asw = total_asw, num_catchProfile = 24, sampsize=sampsize, samples=samples)
+
+save(metier_cluster,file="/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-05-08/metier_cluster.RData")
+
+}
+par(mfrow=c(1,2))
+plot(metier_cluster$objective,type='o', pch=19, main="objective",bty="n",cex=0.5,xlab="Number of Clusters",ylab="Objective Function")
+plot(metier_cluster$asw,type='o',main="asw",bty="n",pch=19,cex=0.5,xlab="Number of Clusters", ylab="Average Silhouette Width")
+```
+
+After clustering just on gear type from the fish ticket data, I don't see any convergence here. The average silhouette width just keeps going up, and the values are all really low. I think I probably need to add another predictor variable, or possibly drop those vessels that have multiple gear types. 

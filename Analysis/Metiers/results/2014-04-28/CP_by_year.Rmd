@@ -1,0 +1,424 @@
+---
+title: "CP by year"
+author: "Emma Fuller"
+date: "April 28, 2014"
+output: html_document
+---
+
+# Doing clusters by year
+Clustering across all years was ok, the 13 cluster solution looks pretty good. But there are some problems. First, there's no pacific whiting cluster. A priori, we expect there to be at least one cluster representing pacific whiting as it's the largest fishery by volume on the west coast. The other is that it's difficult to justify 13 (the maximum average sillohuette width) over 14, and there's a seemingly-anomolous break at 2 clusters. For these reasons I'd like to look by year. With ITQs going in in 2011, there may be substantial differences between years. 
+
+### Year 1: 2009
+#### PCA - log(lbs)
+
+```{r,cache=TRUE,echo=FALSE,message=FALSE}
+require(cluster)
+require(ggplot2)
+require(plyr)
+
+# find year by splitting up tripID again, taking first element
+  FTL <- read.csv("/Volumes/NOAA_Data/CNH/Data/Catch/FTL_2009-2013_2014-03-21.csv",as.is=TRUE)
+  trips09 <- subset(FTL, YEAR==2009)
+
+# re-generate the log_lbs dataset but only on 2009 data
+  source("/Volumes/NOAA_Data/CNH/Analysis/Metiers/results/2014-04-24/FTL_tripTable.R")
+  log_tripTable09 <- FTL_tripTable(trips09, "log", times=200)
+  lb_tripTable09 <- FTL_tripTable(trips09, "lbs",times=200)
+
+  # check to make sure identical
+  #any(lb_tripTable09[,"tripID"]!=log_tripTable09[,"tripID"]) # FALSE, we're good
+
+#PCA 
+  pca_loglb09 <- log_tripTable09[,!"tripID", with=FALSE]
+  pca_out_loglb09 <- prcomp(pca_loglb09, scale=TRUE)
+  summary(pca_out_loglb09)
+```
+
+Only need 18 to capture > 80% of variance. 
+
+#### Clustering
+```{r, cache=TRUE,echo=FALSE, message=FALSE}
+dat09 <- pca_out_loglb09$x[,1:18]
+max.clusts <- 60
+clust.dat <- vector("list",length = max.clusts)
+
+set.seed(2)
+for(i in 1:max.clusts){
+  clust.dat[[i]] <- clara(dat09, i, stand=TRUE, samples = 30, sampsize=max.clusts+1, keep.data = FALSE, pamLike=TRUE, rngR = TRUE)
+  }
+
+objectives <- vector(length = max.clusts)
+for (i in 1:max.clusts) { objectives[i] <- clust.dat[[i]]$objective }
+
+asw <- vector(length = max.clusts)
+for (i in 2:max.clusts) { asw[i] <- clust.dat[[i]]$silinfo$avg.width  }
+
+par(mfrow=c(1,2))
+plot(objectives, type="o",pch=19, cex=0.35,bty="n", main="Objective function")
+plot(asw, type="o", pch=19, cex=0.35, bty="n", main="Silhouette Width")
+```
+ 
+This peak for `asw` is higher than previously across all years (`max(asw)` versus ~.6), the cluster solution with the maximum asw is `r which(asw==max(asw))`. Examining that catch composition
+
+```{r, cache=TRUE,echo=FALSE,fig.width=10,warning=FALSE, fig.height=8}
+cp16 <- lb_tripTable09
+cp16 <- cp16[,cp16 := clust.dat[[16]]$clustering]
+
+# what are the mean catches of each species, in order of abundance?
+melt_cp16 <- melt(cp16[,!"cp16",with=FALSE])
+setkey(melt_cp16, "tripID")
+melt_cp16_1 <- melt(cp16[,c("tripID", "cp16"), with=FALSE])
+setnames(melt_cp16_1,names(melt_cp16_1),c("tripID","clustID","cluster16"))
+melt_cp16_1 <- melt_cp16_1[,!"clustID",with=FALSE]
+setkey(melt_cp16_1, "tripID")
+melt_cp16 <- melt_cp16[melt_cp16_1]
+mean_abund <- melt_cp16[,mean(value),by="variable,cluster16"]
+
+ranked_abund <- ddply(mean_abund, .(cluster16), transform, rank = rank(-V1, ties.method = "first"))
+top10 <- subset(ranked_abund, rank < 11)
+
+# now remove any top 10 that are =0, only there to fill out 10 slots
+top10 <- subset(top10, V1>0)
+
+ggplot(top10, aes(x=variable,y=V1)) + geom_bar(stat="identity")+ facet_wrap(~cluster16, scales="free") + theme(axis.text.x=element_text(angle=-90))
+```
+
+This looks quite good. Interested to know the differences between cluster 6, 10, and 15. Both are pacific whiting, but 6 and 5 are much more mixed than the other. It might be an issue of volume. Cluster 10 is huge mean catches, 6 is small catches, 15 are medium catches. Interesting to see if those are different gears, or different types of vessels (shore-side, versus catcher/processer, etc.). Also some clear single species trips come out. This is quite good. Let's look at 2010. 
+
+### Year 2: 2010
+#### PCA - log(lbs)
+
+```{r,cache=TRUE,echo=FALSE,message=FALSE}
+# find year by splitting up tripID again, taking first element
+trips10 <- subset(FTL, YEAR==2010)
+
+# re-generate the log_lbs dataset but only on 2009 data
+log_tripTable10 <- FTL_tripTable(trips10, "log", times=200)
+lb_tripTable10 <- FTL_tripTable(trips10, "lbs",times=200)
+
+# check to make sure identical
+#any(lb_tripTable10[,"tripID"]!=log_tripTable10[,"tripID"]) # FALSE, we're good
+
+#PCA 
+pca_loglb10 <- log_tripTable10[,!"tripID", with=FALSE]
+pca_out_loglb10 <- prcomp(pca_loglb10, scale=TRUE)
+summary(pca_out_loglb10)
+```
+
+Only need 17 to capture > 80% of variance. 
+
+#### Clustering
+```{r, cache=TRUE,echo=FALSE, message=FALSE}
+dat10 <- pca_out_loglb10$x[,1:17]
+max.clusts <- 60
+clust.dat <- vector("list",length = max.clusts)
+
+set.seed(2)
+for(i in 1:max.clusts){
+  clust.dat[[i]] <- clara(dat10, i, stand=TRUE, samples = 30, sampsize=max.clusts+1, keep.data = FALSE, pamLike=TRUE, rngR = TRUE)
+}
+
+objectives <- vector(length = max.clusts)
+for (i in 1:max.clusts) { objectives[i] <- clust.dat[[i]]$objective }
+
+asw <- vector(length = max.clusts)
+for (i in 2:max.clusts) { asw[i] <- clust.dat[[i]]$silinfo$avg.width  }
+
+par(mfrow=c(1,2))
+plot(objectives, type="o",pch=19, cex=0.35,bty="n", main="Objective function")
+plot(asw, type="o", pch=19, cex=0.35, bty="n", main="Silhouette Width")
+```
+
+This peak for `asw` is about the same than across all years (`r max(asw)` versus ~.6), the cluster solution with the maximum asw is `r which(asw==max(asw))`. Examining that catch composition
+
+```{r, cache=TRUE,echo=FALSE,fig.width=10,warning=FALSE, fig.height=8}
+cp18 <- lb_tripTable10
+cp18 <- cp18[,cp18 := clust.dat[[18]]$clustering]
+
+# what are the mean catches of each species, in order of abundance?
+melt_cp18 <- melt(cp18[,!"cp18",with=FALSE])
+setkey(melt_cp18, "tripID")
+melt_cp18_1 <- melt(cp18[,c("tripID", "cp18"), with=FALSE])
+setnames(melt_cp18_1,names(melt_cp18_1),c("tripID","clustID","cluster16"))
+melt_cp18_1 <- melt_cp18_1[,!"clustID",with=FALSE]
+setkey(melt_cp18_1, "tripID")
+melt_cp18 <- melt_cp18[melt_cp18_1]
+mean_abund <- melt_cp18[,mean(value),by="variable,cluster16"]
+
+ranked_abund <- ddply(mean_abund, .(cluster16), transform, rank = rank(-V1, ties.method = "first"))
+top10 <- subset(ranked_abund, rank < 11)
+
+# now remove any top 10 that are =0, only there to fill out 10 slots
+top10 <- subset(top10, V1>0)
+
+ggplot(top10, aes(x=variable,y=V1)) + geom_bar(stat="identity")+ facet_wrap(~cluster16, scales="free") + theme(axis.text.x=element_text(angle=-90))
+```
+
+This is much less clear. For example, cluster 1 has dungeness crab with sablefish, pacific whiting, etc. which seems bizarre. Also clusters 10 and 11 seem quite similar. Pink shrimp still shows up as a single-species catch profile. I wonder if there's a significant change in 2010 due to the imminent IFQ implementation. Were quota allocated historically, did people have a reason to try to fish as much groundfish as is possible? Let's try 2011, will things settle down?]
+
+### Year 3: 2011
+#### PCA - log(lbs)
+
+```{r,cache=TRUE,echo=FALSE,message=FALSE}
+# find year by splitting up tripID again, taking first element
+trips11 <- subset(FTL, YEAR==2011)
+
+# re-generate the log_lbs dataset but only on 2009 data
+log_tripTable11 <- FTL_tripTable(trips11, "log", times=200)
+lb_tripTable11 <- FTL_tripTable(trips11, "lbs",times=200)
+
+# check to make sure identical
+#any(lb_tripTable11[,"tripID"]!=log_tripTable11[,"tripID"]) # FALSE, we're good
+
+#PCA 
+pca_loglb11 <- log_tripTable11[,!"tripID", with=FALSE]
+pca_out_loglb11 <- prcomp(pca_loglb11, scale=TRUE)
+summary(pca_out_loglb11)
+```
+
+Only need 17 to capture > 80% of variance. 
+
+#### Clustering
+```{r, cache=TRUE,echo=FALSE, message=FALSE}
+dat11 <- pca_out_loglb11$x[,1:17]
+max.clusts <- 60
+clust.dat <- vector("list",length = max.clusts)
+
+set.seed(2)
+for(i in 1:max.clusts){
+  clust.dat11[[i]] <- clara(dat11, i, stand=TRUE, samples = 30, sampsize=max.clusts+1, keep.data = FALSE, pamLike=TRUE, rngR = TRUE)
+}
+
+objectives11 <- vector(length = max.clusts)
+for (i in 1:max.clusts) { objectives11[i] <- clust.dat11[[i]]$objective }
+
+asw11 <- vector(length = max.clusts)
+for (i in 2:max.clusts) { asw11[i] <- clust.dat11[[i]]$silinfo$avg.width  }
+
+par(mfrow=c(1,2))
+plot(objectives11, type="o",pch=19, cex=0.35,bty="n", main="Objective function")
+plot(asw11, type="o", pch=19, cex=0.35, bty="n", main="Silhouette Width")
+```
+
+This peak for `asw` is about the same than across all years (`r max(asw)` versus ~.6), the cluster solution with the maximum asw is `r which(asw==max(asw))`. Examining that catch composition
+
+```{r, cache=TRUE,echo=FALSE,fig.width=10,warning=FALSE, fig.height=8}
+cp20 <- lb_tripTable11
+cp20 <- cp20[,cp20 := clust.dat11[[20]]$clustering]
+
+# what are the mean catches of each species, in order of abundance?
+melt_cp20 <- melt(cp20[,!"cp20",with=FALSE])
+setkey(melt_cp20, "tripID")
+melt_cp20_1 <- melt(cp20[,c("tripID", "cp20"), with=FALSE])
+setnames(melt_cp20_1,names(melt_cp20_1),c("tripID","clustID","cluster16"))
+melt_cp20_1 <- melt_cp20_1[,!"clustID",with=FALSE]
+setkey(melt_cp20_1, "tripID")
+melt_cp20 <- melt_cp20[melt_cp20_1]
+mean_abund <- melt_cp20[,mean(value),by="variable,cluster16"]
+
+ranked_abund <- ddply(mean_abund, .(cluster16), transform, rank = rank(-V1, ties.method = "first"))
+top10 <- subset(ranked_abund, rank < 11)
+
+# now remove any top 10 that are =0, only there to fill out 10 slots
+top10 <- subset(top10, V1>0)
+
+ggplot(top10, aes(x=variable,y=V1)) + geom_bar(stat="identity")+ facet_wrap(~cluster16, scales="free") + theme(axis.text.x=element_text(angle=-90))
+```
+
+
+This continues to be weird, granted ghost shrimp, red sea urchin, cockles all are still retained. But there's a bigger proportion of trips being assigned dungeness crab and whiting together in cluster 1, we are back to 3 different levels of whiting catch, and pink shirmp has it's own catch profile (17). We've also lost a salmon catch profile, it's getting lumped in with a bunch of different catch profiles. Let's try 2012. 
+
+### Year 4: 2012
+#### PCA - log(lbs)
+
+```{r,cache=TRUE,echo=FALSE,message=FALSE}
+# find year by splitting up tripID again, taking first element
+trips12 <- subset(FTL, YEAR==2012)
+
+# re-generate the log_lbs dataset but only on 2009 data
+log_tripTable12 <- FTL_tripTable(trips12, "log", times=200)
+lb_tripTable12 <- FTL_tripTable(trips12, "lbs",times=200)
+
+# check to make sure identical
+#any(lb_tripTable12[,"tripID"]!=log_tripTable12[,"tripID"]) # FALSE, we're good
+
+#PCA 
+pca_loglb12 <- log_tripTable12[,!"tripID", with=FALSE]
+pca_out_loglb12 <- prcomp(pca_loglb12, scale=TRUE)
+summary(pca_out_loglb12)
+```
+
+Only need 17 to capture > 80% of variance. 
+
+#### Clustering
+```{r, cache=TRUE,echo=FALSE, message=FALSE}
+dat12 <- pca_out_loglb12$x[,1:17]
+max.clusts <- 60
+clust.dat12 <- vector("list",length = max.clusts)
+
+set.seed(2)
+for(i in 1:max.clusts){
+  clust.dat12[[i]] <- clara(dat12, i, stand=TRUE, samples = 30, sampsize=max.clusts+1, keep.data = FALSE, pamLike=TRUE, rngR = TRUE)
+}
+
+objectives12 <- vector(length = max.clusts)
+for (i in 1:max.clusts) { objectives12[i] <- clust.dat12[[i]]$objective }
+
+asw12 <- vector(length = max.clusts)
+for (i in 2:max.clusts) { asw12[i] <- clust.dat12[[i]]$silinfo$avg.width  }
+
+par(mfrow=c(1,2))
+plot(objectives12, type="o",pch=19, cex=0.35,bty="n", main="Objective function")
+plot(asw12, type="o", pch=19, cex=0.35, bty="n", main="Silhouette Width")
+```
+
+This is reminiscent of the full dataset where the silhouette width had a huge peak at 2 clusters (`r max(asw)`). Let's look at that, then the second max (`r max(asw[3:length(asw)])`, which is `r which(asw==max(asw[3:length(asw)]))` clusters.
+
+```{r, cache=TRUE,echo=FALSE,fig.width=10,warning=FALSE, fig.height=8}
+cp2 <- lb_tripTable12
+cp2 <- cp2[,cp2 := clust.dat[[2]]$clustering]
+
+# what are the mean catches of each species, in order of abundance?
+melt_cp2 <- melt(cp2[,!"cp2",with=FALSE])
+setkey(melt_cp2, "tripID")
+melt_cp2_1 <- melt(cp2[,c("tripID", "cp2"), with=FALSE])
+setnames(melt_cp2_1,names(melt_cp2_1),c("tripID","clustID","cluster16"))
+melt_cp2_1 <- melt_cp2_1[,!"clustID",with=FALSE]
+setkey(melt_cp2_1, "tripID")
+melt_cp2 <- melt_cp2[melt_cp2_1]
+mean_abund <- melt_cp2[,mean(value),by="variable,cluster16"]
+
+ranked_abund <- ddply(mean_abund, .(cluster16), transform, rank = rank(-V1, ties.method = "first"))
+top10 <- subset(ranked_abund, rank < 11)
+
+# now remove any top 10 that are =0, only there to fill out 10 slots
+top10 <- subset(top10, V1>0)
+
+ggplot(top10, aes(x=variable,y=V1)) + geom_bar(stat="identity")+ facet_wrap(~cluster16, scales="free") + theme(axis.text.x=element_text(angle=-90))
+```
+
+Well that answers that, red sea urchin (for whatever reason), in 2012 is truely it's own fishery. This really suggests to me that red sea urchin trips should be removed before the cluster, but more on that later. First let's look at the `r which(asw==max(asw[3:length(asw)]))` cluster solution.
+
+```{r, cache=TRUE,echo=FALSE,fig.width=10,warning=FALSE, fig.height=8}
+cp24 <- lb_tripTable12
+cp24 <- cp24[,cp24 := clust.dat[[24]]$clustering]
+cp24 <- cp24[,!"cp2",with=FALSE]
+
+# what are the mean catches of each species, in order of abundance?
+melt_cp24 <- melt(cp24[,!"cp24",with=FALSE])
+setkey(melt_cp24, "tripID")
+melt_cp24_1 <- melt(cp24[,c("tripID", "cp24"), with=FALSE])
+setnames(melt_cp24_1,names(melt_cp24_1),c("tripID","clustID","cluster16"))
+melt_cp24_1 <- melt_cp24_1[,!"clustID",with=FALSE]
+setkey(melt_cp24_1, "tripID")
+melt_cp24 <- melt_cp24[melt_cp24_1]
+mean_abund <- melt_cp24[,mean(value),by="variable,cluster16"]
+
+ranked_abund <- ddply(mean_abund, .(cluster16), transform, rank = rank(-V1, ties.method = "first"))
+top10 <- subset(ranked_abund, rank < 11)
+
+# now remove any top 10 that are =0, only there to fill out 10 slots
+top10 <- subset(top10, V1>0)
+
+ggplot(top10, aes(x=variable,y=V1)) + geom_bar(stat="identity")+ facet_wrap(~cluster16, scales="free") + theme(axis.text.x=element_text(angle=-90))
+```
+
+This looks ok. But wonder if I remove red sea urchin catches whether that will improve the clustering. Consistently, for each year, red sea urchin clusters are on their own without any other species. If red-sea-urchin fishermen participated in only those fisheries, would feel justified in excluding them. I still think there's some weirdness going on with the groundfish in 2010, 2011, but removing red sea urchin may help clarify. 
+
+## Removing red sea urchin trips?
+I'd like it best if people who participated in the red sea urchin fishery participated in no other fishery. To see that, go through each clustering solution for each year and make a time series for those individuals in the red sea urchin fishery, do they stay in that metier across all 4 years exclusively?
+
+```{r, cache=TRUE}
+# cluster solution for 2009 is 16, 2010 there is no red sea urchin catch profile! but it is 18, 2011 it's 20, in 2012 it's 2 clusters, 
+total_trips <- rep(NA,length=nrow(FTL))
+urchin_trips <- data.frame(y2009=total_trips, y2010=total_trips, y2011=total_trips,y2012=total_trips)
+  # allocating maximum number of rows possible
+
+# take all four year clustering solutions
+  # 2009 - 16 clusters
+    set.seed(2)
+    cp09_16 <- clara(dat09, 16, stand=TRUE, samples = 30, sampsize=max.clusts+1, keep.data = FALSE, pamLike=TRUE, rngR = TRUE)
+    
+    y09_cp16 <- lb_tripTable09[,"tripID",with=FALSE]
+    y09_cp16 <- y09_cp16[,cp16 := cp09_16$clustering]
+
+  # 2010 - 18
+    set.seed(2)
+    cp10_18 <-clara(dat10, 18, stand=TRUE, samples = 30, sampsize=max.clusts+1, keep.data = FALSE, pamLike=TRUE, rngR = TRUE)
+    y10_cp18 <- lb_tripTable10
+    y10_cp18 <- y10_cp18[,cp18 := cp10_18$clustering]
+
+    # which catch profile has the most sea urchin in it
+        any(names(y10_cp18)=="RURC") # there's no urchin in the fishery in 2010! Will ignore 2010 for the moment
+
+  # 2011 - 20
+    set.seed(2)
+    cp11_20 <- clara(dat11, 20, stand=TRUE, samples = 30, sampsize=max.clusts+1, keep.data = FALSE, pamLike=TRUE, rngR = TRUE)
+    y11_cp20 <- lb_tripTable11[,"tripID",with=FALSE]
+    y11_cp20 <- y11_cp20[,cp20 := cp11_20$clustering]
+
+  # 2012 - 2
+    set.seed(2)
+    cp12_2 <- clara(dat12, 2, stand=TRUE, samples = 30, sampsize=max.clusts+1, keep.data=FALSE, pamLike=TRUE, rngR=TRUE)
+    y12_cp2 <- lb_tripTable12[,"tripID",with=FALSE]
+    y12_cp2 <- y12_cp2[,cp2 :=cp12_2$clustering]
+
+# for each year in 2009, 2011, 2012, the red-sea-urchins are 2009=2, 2011=11, 2012=2
+
+  urchin_09 <- subset(y09_cp16,cp16==2,select="tripID")
+  urchin_11 <- subset(y11_cp20,cp20==11, select="tripID")
+  urchin_12 <- subset(y12_cp2,cp2==2,select="tripID")
+
+# tripIDs associated with urchins
+  urchin_IDS <- c(urchin_09[,"tripID",with=FALSE],urchin_11[,"tripID",with=FALSE],urchin_12[,"tripID",with=FALSE])
+
+  uIDs <- unlist(urchin_IDS)
+  vessel_IDs <- vector("logical",length=length(uIDs))
+  for(i in 1:length(uIDs)){
+    vessel_IDs[i] <- unlist(strsplit(uIDs[i],"_"))[2]
+  }
+  barplot(table(vessel_IDs))
+    # most vessels go out only a few times in 5 years. 
+
+  vIDs <- unique(vessel_IDs)
+
+  # what else were they catching?
+    urchin_vessels <- subset(FTL, VEID %in% vIDs, select=c("SPID","VEID","GRID","LANDED_WT"))
+
+ship_spid <-table(urchin_vessels$VEID, urchin_vessels$SPID)
+  barplot(ship_spid[,"RURC"])
+  # this should give same as barplot(table(vessel_IDs)), but doesn't. I think reason is the FTL trips have not been filtered to remove trips with unspecified columns. Let's try that
+
+  unspecified <- unique(FTL$SPID)[grep("^U",unique(FTL$SPID))]
+  other <- unique(FTL$SPID)[grep("^O", unique(FTL$SPID))]
+  other <- other[-which(other=="OLVE" | other=="OLV1" | other=="OTCR" | other=="OWFS")]
+  more <- c("MSC2", "MISC", "NUSF", "NUSP", "POP2")
+  to_remove <- c(unspecified, other,more)
+
+filter_ship <- ship_spid[,!(colnames(ship_spid) %in% to_remove)]
+
+```
+They are clearly catching more than just sea urchins. Shoot. But since I'm missing sea urchins from a chunk of the data, should remove it from all years so I don't have bias when doing the entire data set. But now realizing that it may be me that stripped them out. And in fact am sure, beause there are `r length(which(FTL$SPID=="RURC"&FTL$YEAR==2010))` entries for red sea urchin in 2011. But looking at the distribution of catches
+
+```{r,cache=TRUE}
+par(mfrow=c(2,2))
+hist(FTL$LANDED_WT[which(FTL$SPID=="RURC" & FTL$YEAR==2009)],col="grey",bor="darkgrey",xlab="Landed Weight",main="Landed Weight of Red Sea Urchin in 2009")
+text(2500,110,paste("n = ",length(FTL$LANDED_WT[which(FTL$SPID=="RURC" & FTL$YEAR==2009)]),sep=""))
+hist(FTL$LANDED_WT[which(FTL$SPID=="RURC" & FTL$YEAR==2010)],col="grey",bor="darkgrey",xlab="Landed Weight",main="Landed Weight of Red Sea Urchin in 2010")
+text(2000,45,paste("n = ",length(FTL$LANDED_WT[which(FTL$SPID=="RURC" & FTL$YEAR==2010)]),sep=""))
+hist(FTL$LANDED_WT[which(FTL$SPID=="RURC" & FTL$YEAR==2011)],col="grey",bor="darkgrey",xlab="Landed Weight",main="Landed Weight of Red Sea Urchin in 2011")
+text(2500,180,paste("n = ",length(FTL$LANDED_WT[which(FTL$SPID=="RURC" & FTL$YEAR==2011)]),sep=""))
+hist(FTL$LANDED_WT[which(FTL$SPID=="RURC" & FTL$YEAR==2012)],col="grey",bor="darkgrey",xlab="Landed Weight",main="Landed Weight of Red Sea Urchin in 2012")
+text(3000,140,paste("n = ",length(FTL$LANDED_WT[which(FTL$SPID=="RURC" & FTL$YEAR==2012)]),sep=""))
+
+```
+
+So what it is, is that the distrubiton of catch weights look about the same, but the number of trips goes way down in 2010, cut basically in half.  This makes me think that I shouldn't filter out rare species. 
+
+On another note, realized that if `round_lndwt` in the `FTL` dataframe is actuallly more correct, I could be clustering on weights that are inaccurate. Which species get rounding weights that are not equal to zero?
+
+```{r}
+rnd_wt <- subset(FTL,FACTOR!=1,select=c("SPID","LANDED_WT","FACTOR","ROUND_LNDWT"))
+species_rnd <- unique(rnd_wt$SPID)
+table(rnd_wt$SPID, rnd_wt$FACTOR)
+```

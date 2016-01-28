@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Links Version="1.0" Anchor="RTF">
+    <CommentsAndFootnotes>
+        <Comment IsFootnote="No" Collapsed="No" ID="9A59A683-49F7-462B-B557-FDAD166528B3">
+            <Range>898,123</Range>
+            <Color>0.992 0.929 0.525</Color>
+            <RTF><![CDATA[{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf370
+{\fonttbl\f0\fnil\fcharset0 Verdana;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs20 \cf0 Made this up. What has been done?}]]></RTF>
+        </Comment>
+        <Comment IsFootnote="No" Collapsed="No" ID="AA9A37A5-024F-4761-A98B-800BB9314B9A">
+            <Range>1269,13</Range>
+            <Color>0.992 0.929 0.525</Color>
+            <RTF><![CDATA[{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf370
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;}
+{\colortbl;\red255\green255\blue255;}
+\deftab720
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural
+
+\f0\fs24 \cf0 \expnd0\expndtw0\kerning0
+as in Julia Baum paper that's a huge EBM that looks at how climate change will affect the food web but includes harvesting as a very simple 15% constant effort type harvesting \'97 can\'92t find it. maybe misremembering?}]]></RTF>
+        </Comment>
+        <Comment IsFootnote="No" Collapsed="No" ID="2D8C45D6-832A-45D4-8A4F-A51BCFD8EDF5">
+            <Range>1367,14</Range>
+            <Color>0.992 0.929 0.525</Color>
+            <RTF><![CDATA[{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf370
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;}
+{\colortbl;\red255\green255\blue255;}
+\deftab720
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural
+
+\f0\fs24 \cf0 \expnd0\expndtw0\kerning0
+Clark & Mangel looking at how people should share information over space, but not considering how this distribution of harvesting affects the fish}]]></RTF>
+        </Comment>
+    </CommentsAndFootnotes>
+</Links>

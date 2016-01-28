@@ -1,0 +1,90 @@
+\documentclass[a4paper,10pt]{report}
+\let\oldmarginpar\marginpar
+\renewcommand\marginpar[1]{\-\oldmarginpar[\raggedleft\footnotesize #1]%
+{\raggedright\footnotesize #1}}
+\usepackage{charter}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{array}
+\usepackage[bitstream-charter]{mathdesign}	% using charter font for math
+\usepackage{natbib}
+\usepackage{gensymb}
+\usepackage{epstopdf}
+\usepackage{multirow} %for multi column spanning rows or multi row spanning columns
+ \usepackage{rotating} %for rotating tables
+ \usepackage{subfig} %to have figures within figures
+\usepackage{multicol}
+ \usepackage{ulem} % Allows for underlining without weird formatting glitches. 
+ \usepackage{pifont}% Allows for use of ZipfDingbats font
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor} % Allows colored font
+\usepackage{hyperref} %allows hyperlinks in the document
+\usepackage[linecolor=black,backgroundcolor=white,bordercolor=white,textsize=small]{todonotes}
+\usepackage{wrapfig}
+\usepackage[top=0.5in, bottom=0.75in, outer=1.5in, inner=0.5in, heightrounded, marginparwidth=1in, marginparsep=0.25in]{geometry}
+\usepackage{marginnote}
+\usepackage{hyperref}
+ \begin{document}
+
+\section*{Short-term choice behavior in a mixed fishery: investigating m\'{e}tier selection in the Danish gill net fishery- \cite{Andersenetal:2012}}
+
+\subsection*{Notes}
+\begin{itemize}
+\item Uses a random utility model (RUM) combined with a survey questionnaire ego exam the selection of m\'{e}tiers (a combination of fishing area and target species) in the Danish North Sea gill net fishery. Key decision variables were identified from the survey questionnaire and relevant proxies for the decision function were identified based on available landings and effort information. 
+\item Commercial fishers mainly made decisions based on seasonal availability of target species and within-year changes in monthly catch ration, but they were also response to information on the whole fishery, fish prices, and distance travelled to fishing grounds. Differences in responses were observed depending on geographic differences in home harbor, which suggests that we need to understand alternative fishing strategies among individual gillnetters.\marginnote{\footnotesize Why? Why does this variation matter?}
+\item Makes argument that fishermen behavior should be included more frequently citing \cite{Wilen:1979, Branchetal:2006} and that management has focused on biological processes but ignoring fishers response to changes in resource availability, market conditions and management regulations citing \cite{Hilborn:2007, SalasGaertner:2004, HilbornWalters:1992}. 
+
+But again, no reason why those behaviors are important. Only that they're ignored. 
+\item Makes distinction between long-term changes (year-to-year) in total fishing effort (capacity) which are often matched by decisions to enter, stay or exit a fishery; or short term changes from a monthly to a trip-by-trip level, including decisions on where, when, and what to fish \citep{Hilborn:1985, SalasGaertner:2004}. 
+
+These are sources to follow to make sure this is the distinction they too draw.
+\item Mentions previous work making predictive models for  short term and long term behavior in fisheries reviewed in \cite{SalasGaertner:2004, Branchetal:2006, Hilborn:2007}. \marginnote{\footnotesize This may be key: predictive models. This is a distinction between what I want to do. What to be predictive, but mechanistic, is this what others studies have done?}
+\item Mentions previous papers that have used RUMs to investigate short-term fisher behavior where a fisher is confronted with a finite set of alternatives (such as choice of fishing ground, target species, or gear). 
+\begin{itemize}
+\item discrete choice random utility models are a flexible and functional approach: \cite{Wilenetal:2002}
+\item have been applied to fisher choice of location: \cite{Wilenetal:2002,CampbellHand:1999,Huttonetal:2004}
+\item choice of gear: \cite{BockstaelOpaluch:1983,EggertTveteras:2004}
+\item choice of target species: \cite{PradhanLeung:2004, CurtisMcConnell:2004, Vermardetal:2008}
+\item only a few studies have investigated the combined choices of fishing ground, gear, and/or target species: \cite{HollandSutinen:2000,Marchaletal:2009}
+\end{itemize}
+\item The combination of target species, fishing location and gear determines catch in mixed fisheries and the exploitation pattern for a stock comes from these choice parameters. 
+\item Commercial fishing is an economic activity, and it is traditionally assumed that fishers act rationally in terms of maximizing their profit/utility \citep{vanPuttenetal:2011}. 
+\item In most fisheries, short-term behavioral decisions are made in an environment with uncertainty, where the fisher does not know how all the stocks are distributed and where the greatest utility/profit is obtained \citep{MangelClark:1983}. 
+\item Fishers obtain knowledge of the profitability of the resources by using whatever information is available, catch success of other fishers, expected costs, available technology, past fishing success and patterns, tradition, availability of stocks, and management regulations, when attempting to maximize their expected utility \citep{HilbornWalters:1992, SalasGaertner:2004}. 
+\item the importance of specific decision parameters varies among fisheries, and appropriate formulation of fisher expectations of maximizing utility and the associated uncertainty is critical when evaluating or testing behavior hypotheses for individual fishers \citep{Smith:2000}.
+\item What is common for most quantitative behavioral analyses of commercial fishers is that the formulation of a decision function is either constructed on theoretical economic theory or knowledge in the literature, and few studies have asked fishers directly how they construct and evaluate their expectations, e.g. via interviews \citep{HollandSutinen:2000, Salasetal:2004, Abernethyetal:2007}. 
+\item Another main issue in modeling fisher behavior is the tmany of the main actors influencing fisher behavior are usually not available in traditional catch-and-effort databases; instead, proxies need to be formulated from available fisheries data to reflect the key decision variables \citep{Smith:2000}. 
+\item This study combines qualitative data from large socio-economic survey and quantitative catch and effort data to provide insight into met\'{e}ir choices on a trip-by-trip scale. Compare behavioral approach via surveys, and the rankings fishermen give for decision functions to what a RUM would predict based on catch and effort data. 
+\item Results from the survey show that fishermen make their decisions mainly on
+\begin{itemize}
+\item Own experience from recent trips
+\item season/time of year
+\item regulations
+\item fish prices
+\item weather (wind and currents)
+\item distance to fishing ground
+\item information from other fishers
+\item fuel cost.
+\end{itemize} 
+Interesting to note that information from other fishers is so low, as is fuel cost. 
+\item The fishery data that was used is based on catch and effort drawn from official logbooks, sales slips, and vessel register data. 
+\item Fishing activity in mixed fisheries on a trip basis can be characterized by the gear used, alternative rigging specifications (e.g. mesh size), fishing ground, and/or target species \citep{PelletierFerraris:2000}
+\item To incorporate qualitative survey data into RUM, made a proxy for each as follows
+\begin{itemize}
+\item {\bf Information from other fishers:} recent catch success of other fishers (catch weight or monetary value) has often been used as a proxy for expected profitability. Various types of catch expectation model have been applied, ranging from simple approaches, such as summing the total value or estimating the average value for the fleet \citep{BockstaelOpaluch:1983,Vermardetal:2008} to more sophisticated production function models, in which individual vessel characteristics are taken into account \citep{HollandSutinen:2000}. 
+
+In this paper they assume that a fisher obtains recent catch information from other fishers, expressed as average revenue per unit effort (RPUE) of the landings from the previous month for the Danish North Sea gillnet fleet. And assume perfect knowledge transfer across the fleet. 
+
+An alternate way to collect information of other fishers' exploration patterns is to use the spatial distribution of vessel density. With the introduction of electronic equipment (GPS-linked to locality notification of other vessels), fishers can easily locate other vessels. 
+\item {\bf Risk:} Uncertainty was not explicitly highlighted in the survey questionnaire, but because fishers are exposed to various levels of uncertainty, they can either behave as risk-seekers that explore areas with high uncertainty, expecting extra-high payoffs, or be risk-averse, preferring to minimize risk by searching for alternatives with a more stable payoff \citep{EggertTveteras:2004,MistiaenStrand:2000}
+\end{itemize}
+\end{itemize}
+
+\subsection*{Sources to follow up on}
+
+\bibliographystyle{cbe}
+\bibliography{refs_new}
+
+\end{document}
+

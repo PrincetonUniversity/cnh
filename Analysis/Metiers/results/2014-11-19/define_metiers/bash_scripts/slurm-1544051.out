@@ -1,0 +1,22 @@
+Loading required package: lattice
+This is vegan 2.0-10
+Loading required package: methods
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:plyr’:
+
+    arrange, desc, failwith, id, mutate, summarise, summarize
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+format trips correctly
+calculating chord
+build network - find communities
+/var/spool/slurmd/job1544051/slurm_script: line 13:  7866 Killed                  Rscript find_metiers.R POT 2010

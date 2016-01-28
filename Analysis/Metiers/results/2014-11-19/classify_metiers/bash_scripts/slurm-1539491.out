@@ -1,0 +1,24 @@
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:plyr’:
+
+    arrange, desc, failwith, id, mutate, summarise, summarize
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Loading required package: lattice
+This is vegan 2.0-10
+subset to training and test data
+make trip table
+find indexes that are training and test data
+find metiers for test set
+calculate distance from all points
+find nearest neighbor
+predict group membership

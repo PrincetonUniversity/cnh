@@ -1,0 +1,52 @@
+This is BibTeX, Version 0.99d (TeX Live 2012)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: References_unread.aux
+The style file: cbe.bst
+Database file #1: unread.bib
+Database file #2: read.bib
+Warning--empty year in Ladeetal:2013
+Warning--empty year in Leibbrandtetal:ND
+Warning--empty year in McGinnisOstrom:nd
+Warning--empty chapter and pages in Nelsonetal:2005
+You've used 163 entries,
+            2016 wiz_defined-function locations,
+            1531 strings with 41280 characters,
+and the built_in function-call counts, 70630 in all, are:
+= -- 6523
+> -- 3595
+< -- 83
++ -- 1309
+- -- 1254
+* -- 6971
+:= -- 12262
+add.period$ -- 488
+call.type$ -- 163
+change.case$ -- 1440
+chr.to.int$ -- 162
+cite$ -- 167
+duplicate$ -- 2330
+empty$ -- 4424
+format.name$ -- 1507
+if$ -- 13412
+int.to.chr$ -- 2
+int.to.str$ -- 0
+missing$ -- 165
+newline$ -- 817
+num.names$ -- 489
+pop$ -- 1088
+preamble$ -- 1
+purify$ -- 1442
+quote$ -- 0
+skip$ -- 1608
+stack$ -- 0
+substring$ -- 4962
+swap$ -- 541
+text.length$ -- 9
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 972
+warning$ -- 4
+while$ -- 482
+width$ -- 0
+write$ -- 1958
+(There were 4 warnings)

@@ -1,0 +1,72 @@
+---
+title: "methods"
+author: "Emma Fuller"
+date: "November 10, 2014"
+output: pdf_document
+---
+`1_cleaningData`:`make_filtered_ftl.R`
+
++ merge nominal and species market categories
++ find mean annual revenue of each vessel, remove vessels which have an annual revenue $< 5000$ USD. I uses `landed_wt` rather than `round_weight`. Also drop vessels with unknown veids: `0`, `****`, and `UNKNOWN`
++ Drops about a third of the vessels, left with a total of 3,990 (from 5,982) vessels but only about a tenth of hte trips, left with 458,317 trips (from 501,386). 
++ make a trip table in which trips are rows, species are columns. 
++ filter out rare species (fewer than 100 trips, less than 100lbs median catch), dropped 59 species and 88 trips
+
+`2_defineMetiers`
+
++ Have to use della to run the classifications. Procedure is as follows
++ scp `filtered_ftl.RDS` to `tigress`
+```
+cd /Users/efuller/1/CNH/Analysis/Metiers/results/2014-11-10/1_cleaningData
+scp filtered_ftl.RDS efuller@della:/tigress/efuller/binary_classification
+```
+
+`find_metiers.R`
+
++ Remove any trips which use more than one type of gear
++ source `helper_funs.R` which has the classification scripts in it
++ writes out resulting `.csv` file to the current working directory
+
+`helper_funs.R`: define base metiers
+
++ run by gear_group and year (2010, 2012)
++ build trip matrix (rows = trips, columns = species)
++ reduce it to presence/absence
++ calculate Jaccard index of similarity (`vegdist(trip_mat, binary = TRUE, 'jaccard')`)
++ build undirected, weighted network with edge weights equal to jaccard index of similarity
++ run infomap to find communities
++ return communities. and paste to `grgroup`, these are metiers
+
+## Notes
+
+### Switch to Jaccard index on binary data
+
++ James advocated it so that it would erase differences in fishermen skill, geographic differences that result in different abundances of fish. Will be interesting what it does to things like whiting, which will have a lot of other species present but at extremely low volumes.
++ The ARI now is good for all trips except `TWL`, for those it is consistently awful. And I thought this might be the case, since this will make hake hard to distinguish (huge presence of hake reduced down to 0-1 and equivalent to other bycatch species).
++ Think that I could stand to adjust the distance metric, but not sure that binary is the right way. Alternate approach would be to maybe do the Hellinger transformation or chord transformation.. Chord distance seems like a good choice, it is a quantitative, assymetric distance coefficient. Can get it by `vare.dist <- vegdist(decostand(varespec, "norm"), "euclidean")` using the `vegan` package. 
+
+## Results
+tldr; binary doesn't work, $ARI$ is messed up and conflates whiting and dover-trawling. 
+
+### ARI
+The $ARI$ for agreement between 2010 and 2012 is fine for all years except for trawl. 
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+ARI <- readRDS("3_analyzeMetiers/adjustRandIndex.RDS")
+library(pander)
+pander(ARI)
+```
+Not sure with 2011, looks like I don't have 2010's predicted 2011. So need to run that, but other two years are not promising. 
+
+### Cluster composition
+There are between 89 and 112 metiers each year. 
+
+Some of the big ones do show up: crab pots (`POT_1`), red urchin diving (`MSC_1`), salmon troll (`TLS_1`), sablefish longline (`HKL_2`), albacore troll (`TRL_2`), pink shrimp trawl (`TWS_1`).. but it messes up whiting by putting together dover and whiting trips (`TWL_1`).
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,results='asis'}
+metiers <- readRDS("3_analyzeMetiers/metier_descrp.RDS")
+# pander(gf, split.tables = Inf, style = "multiline")
+names(metiers) <- c("Metier"," Species"," Gear", "CA", "OR", "WA", "# trips"," multispecies", "# vessels")
+pander(metiers,split.tables=Inf, style="multiline")
+```
+

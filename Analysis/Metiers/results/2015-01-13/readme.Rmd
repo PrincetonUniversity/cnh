@@ -1,0 +1,58 @@
+---
+title: "Metiers"
+author: "Emma Fuller"
+date: "January 13, 2015"
+output: pdf_document
+bibliography: refs.bib
+---
+
+# Introduction
+
++ Resource diversification is important for farmers, due to varagries of disease, weather (natural drivers) and social drivers (consumer/market demand) that can create vulnerability. [^1]
++ The diversity of fisheries in which which an individual can participate (hereafter "fisheries diversity") reduces variation in revenues [@kasperski2013income].Understanding what constrains or encourages diversity of fisheries is important to fishermen, managers, and policy-makers. 
++ Previous work has found a declining trend in diversity in US westcoast fisheries [@kasperski2013income]
++ Previous work has suggested that location of port affects fisheries diversity. Suggest that accessible fisheries limit diversity of fisheries in which a fishing community can participate. Unsurprising at a macro level, but less expected at a finer scale (port to port) 
++ Fisheries may be unavailable ecologically, economically (processors/markets), or due to management
++ We first test whether the port of landing sets the upper bound of possible diversity at an individual level. 
++ Then we test whether the number of processors, geophysical environment, or management explains trends in diversity at the port level.
++ Finally we discuss policy implications: namely how processor availability and biodiversity conservation may improve fisheries diversity, and thus reduce fishermen's exposure to risk. 
+
+[^1]: General intro: Bashares (bushmeat), Kasperski (ref on farming?), aboriginal societies that are strongly tied to land/sea, obvious. Go to test-beds for strong social-ecological coupling. Even today in contemporary, westernized societies, it's increasingly obvious that strong coupling to ecological systems to social ones. This is a really general problem (groups living in remote places -- without access to markets/industry) and places that are in the most densly populated and moderinized part of the world. Given that there is this coupling, how is this coupling constructed, and if this coupling has implications for poeple, how is it structured and strenghted by ecological and social forces. the question is how do we manage such linked systems to benefit both the ecological and human sub-components. Jared Diamond: you can strike it rich ecologically and escape collapse (Nature paper -- peer reviewed paper to cite). 
+
+
+# Results
+**[EXAMPLE PLOT: not real data]**
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+dist_depth = seq(.1,5, by = .1)
+diversity = seq(0,4,by=.1)
+diversity = sample(diversity, size=length(dist_depth),replace=TRUE)
+diversity <- sort(diversity, decreasing=F)
+
+par(mfrow=c(1,3))
+ecology_df <- data.frame(dist_depth = dist_depth, diversity = diversity)
+plot(jitter(ecology_df$dist_depth, factor=40), jitter(ecology_df$diversity,factor=20),xlab="distance to 100m depth",ylab="diversity of vessel",bty="n",lwd=3,col="steelblue", main = "Ecology")
+
+plot(jitter(ecology_df$dist_depth, factor=40), jitter(ecology_df$diversity,factor=40),xlab="processor diversity",ylab="diversity of vessel",bty="n",lwd=3,col="indianred", main = "Markets")
+
+
+plot(jitter(ecology_df$dist_depth, factor=40), jitter(ecology_df$diversity,factor=40),xlab="number open-access fisheries",ylab="diversity of vessel",bty="n",lwd=3,col="goldenrod1", main = "Management")
+
+```
+
+### Emma's Notes (ignore)
+We find that the mean annual diversity of fisheries participation is correlated with the average of the effective connectance of the port weighted. 
+
++ each port has own average simpsons versus average diversity for vessel. regression will be through mean/median to test for significance in slope. if i loose 10% of less of vessels, make a plot seperately
++ network metrics
++ 3x3 panel plot with network metrics and ecology/market/management metrics (4x4) with technological. How many gears to paritcipate in all fisheries?
+    + distance to deep water (technology)
+    + diversity of habitat types surrounding a port should predict diversity of fish species. mean depth within some distance to coast, variance in depth for some distance to coast. distance to shelf break? need to think about this. 
+    + distance to shelf break (look for agreed upon measure). also average rugosity along shortest path. (look at essential fish habitat for shelf layer. also Oregon NOAA site)
+
+Your diversity is set by where you fish, a way out is by landing at multiple ports
+
++ port network, some places are more connected than others. 
++ inter-annual port diversity variation (maybe)
+
+# References

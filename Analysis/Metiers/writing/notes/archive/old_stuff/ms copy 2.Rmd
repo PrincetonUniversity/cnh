@@ -1,0 +1,144 @@
+---
+title: "Putting people into ecosystem-based management"
+author: "Emma Fuller"
+date: "December 20, 2014"
+output: pdf_document
+bibliography: refs.bib
+---
+
+<!--## Introduction-->
+Currently connections between ecosystem services and human well-being are poorly documented [@Tallis:2006fb]
+
++ Focus in @Tallis:2006fb is on how to better incorporate feedbacks into models. Mapping connectivity in participation networks allows a data-based way of building in the possible feedbacks that should occur.   
++ Policy has been running ahead of the development of the knowledge and scientific tools to support its implementation. As a consequence, the scientists had to “catch up” with the policy, and spent a great deal of effort in developing the tools, which were usually implemented immediately [@Smith:2007is].
+    + Participation networks a useful tool for ecosystem based management?
+    
+    
+> Should look at Katie K. Arkema and Jameal's work also, along with everything open in Sente. 
+> Should review ecological network stuff, including the paper Hein suggested. Can say, mapping a fisheries system like this opens the door for all that work to be applied.
+
+In this paper we demonstrate data-driven social-ecological modeling by operationalizing fisheries and their connectivity. Ecosystem based management is focused on managing entire systems, including humans.  For example, fisheries that are not ecologically linked may be tightly linked by the people who harvest both. Thus a change in one system may affect other fisheries, in ways socially/economically, but not ecologically, predicatable. By defining fisheries operationally and looking at connectivity across fisheries can 
+
++ show connectivity between fisheries
++ calculate new metrics that may correspond to vulnerability/difficult/ease of management
+  + motifs, highly linked fisheries
+
+Here we use a metier analysis to define fisheries. We describe how this method improves upon previous work, highlight advantages of this approach, and suggest avenues for further research. This approach lets us seemlessly integrate data on participation in both state and federal fisheries, to operationally define fisheries on the US west coast, and demonstrate how human consumers link food webs. 
+
+# Data and Methods
+
+## Catch Data
+This work uses fish ticket data from the US Westcoast commercial fisheries from 2009-2013, a total of 455,469 trips and 3,569 vessels. PacFin records species by "market category". For most easily identifiable and highly marketable species this is equivalent to species name. However for a number of rockfish that are difficult to distinguish, their market category is some flavor of "unspecified rockfish". We keep the raw market categories in this analysis with the argument that the resolution of the market and the targeting behavior of fishermen are equivalent. 
+
+Catch by species was totaled for each trip. We drop species from consideration that are caught in fewer than 100 trips over 5 years and with a median catch off less than 100 lbs. This drops 121 trips (less than half of one percent of total trips) and 60 market categories (i.e. species). A list of these species, along with median catch and number of trips found in is in the Appendix. We also drop any trips with the `grgroup` of `DRG` (dredge) as there are fewer than 5 trips overall for this gear type and any trips that recorded more than one gear type per trip. 
+
+## Fisheries definition
+Fisheries are commonly defined as
+
+> A unit determined by an authority or other entity that isengaged in raising and/or harvesting fish. Typically, the unit is defined in terms of some or all of the following: people involved, species or type of fish, area of water or seabed, method of fishing, class of boats and purpose of the activities ([FA0](http://www.fao.org/fi/glossary/), @fletcher2005flexible).
+
+Previous work using fisheries as a unit of analysis make use of gear, area and type of fish to define fisheries [@kasperski2013income], or existing management jurisdictions [@sethi2014alaskan]. Federally managed groundfish fisheries require vessels to submit logbooks which include permits. However for the state-managed fisheries we frequently only have fish tickets. This means our primary source of information about the fishery comes from the composition of catch. In order to make use of the data we needed a way to classify to which fishery a trip belonged by composition of catch. To address these issues we used a metier analysis approach to define fisheries (gear-species target combinations) [@deporte2012regional]. Thus in the following analysis we are considering a metier equivalent to a fishery.  
+
+Metier-like analyes have been performed in the Northeast US, classifying fishing data to define "operational fisheries" of New England [@lucey2013operational]. While promising as a way to classify fisheries for use in ecosystem-based management, these methods introduced spatial and temporal structure prior to defining fisheries. In our analysis such structure emerges from the data, and we are able to recover the commonly recognized major fisheries and their seasonality, along with more spatially and temporally restricted fisheries. These methods have the additional benefit of only requiring the catch composition of trips, making it possible to integrate data from both state and federal management databases.
+
+### Metier analysis 
+A metier is defined as a gear-species target combination [@deporte2012regional]. We first define species targets and then assign these targets to gear to make the final metier designation. 
+
+To find species target data we classify target species assemblages by first subsetting to all 2010 trips and searching for characteristic catch assemblages. To find these assemblages we first split trips by gear type (using PacFin `grgroups` designation) and calcluate a pairwise Hellinger distance for each trip within a gear/year subset [@legendre2012numerical]. This metric has the advantage of avoiding the double-zero problem common in species count data. The Hellinger ($H$) distance is defined as
+
+$$ H = \sqrt{\sum^p_{j=1}\left[ \sqrt{\frac{y_{1j}}{y_{1+}}} - \sqrt{\frac{y_{2j}}{y_{2+}}}  \right]^2} $$
+
+where $y_{ij}$ is the biomass of species $j$ in trip $i$ and $p$ is the total number of speices. This index ranges between $0$ and $\sqrt{2}$, with $0$ meaning the sites have the same composition and $\sqrt{2}$ meaning they share no species.
+
+We transform the disimilarity index to be a measure of similarity
+
+$$ \text{Similarity}= 1 - H $$
+
+and build an undirected, weighted network in which nodes are trips, and edge widths are the similarity in species composition between trips. With this network we use the _infoMap_ algorithm to find communities (clusters or subgraphs) within the network [@rosvall2008maps; @rosvall2009map].[^3] 
+
+_InfoMap_ is an information theoretic approach, which uses the probability flow of a random walker on a network as a proxy for the information flows in a real system. The objective of _infoMap_ is to compress the description of the probability flow, and in doing so partitions the network into modules. _InfoMap_ works by computing the fraction of time a node is visted by a random walker using a deterministically greedy search algorithm. Merges between modules that give the largest decrease in description length are made until further merging leads to increases of description length. Results are refined with a simulated annealing approach, starting at several different temperatures, with the run selected as the one that gives the shortest description of the network. 
+
+We found that other commonly used clustering algorithms (i.e. k-means, hierarchical clustering) did poorly with this data. Many clustering algorithms do best when clusters are spherical in n-dimensional space, and/or require the number of clusters decided _a priori_. In this data we have fisheries participation may vary by an order of magnitude (100s of trips to 100,000s of trips), and we wanted to avoid having to decide subjectively on the number of clusters.
+
+After dropping any modules that have fewer than 5 trips, we use a `knn` classifier to assign all other trips of each gear subset to those possible metiers.[^2] The nearest neighbor to each trip was found using the Hellinger distance (transformed into a similarity) and all analyses were performed using `R` aside from the `infoMap` clustering which was performed using the original `C++` code.[^3]
+
+[^3]: D. Edler and M. Rosvall, The MapEquation software package, available online at http://www.mapequation.org
+
+[^2]: In 2011 ITQs went in to a subset of the fisheries, namely the trawl groundfish fisheries. This change in management may change the assemblage of species caught together. To check for sensitivity based on year chosen as training year, we trained the `knn` classifier on both pre- (2010) and post- (2012) catch share implementation. We found no significant difference in how trips were assigned to metiers. But see the appendix for futher details. 
+
+
+
+## Results
+
+## Metier analysis
+There were between 102 and 112 metiers represented each year, and a total of 114 metiers total. These metiers, along with the most commonly caught species, number of vessels, and number of trips made, as well as their spatial distribution, are listed in the Appendix. The table is structured to record the metier, the major species, major gear types used, the percentage of trips falling in California (CA), Oregon (OR), and Washington (WA), the number of trips, and the number of vessels. The table is ordered from metiers with most trips to fewest. Major species are defined in one of two ways: 
+
+1. More than 50% of the trips have a majority of this species by weight
+2. No species is the majority in more than 50% of the trips, the species listed are the majority in at least 19% of the trips
+
+If there is no species present as a majority catch in more than 50% of the trips it's considered a multispecies fishery, this is noted in the table. 
+
+Familiar structure emerges from these metiers, which is reassuring. In particular commonly recognized fisheries are all present: dungeness crab pot fishery (`POT_1`), red sea urchin diving fishery (`MSC _1`), albacore trolling (`TLS_2`), salmon trolling (`TLS_1`), sablefish fixed gear (longline `HKL_1`, pot `POT_4`), pacific whiting midwater trawl (`TWL_3`), pink shrimp (`TWS_1`), among others. 
+
+We also observe spatial and temporal structure. Shrimp, Albacore, Salmon, and Crab are all effectively seasonal fisheries controlled both by season openings (i.e. Dungeness crab) and when species move into accessible waters (i.e. Albacore). Such temporal fluctuations are apparent when the number of trips landed is plotted over time
+
+```{r, eval=FALSE}
+time series
+```
+
+Additionally we see spatial structure, with many rockfish fisheries restricted to only a handful of ports, and many fisheries being entirely absent in Oregon and Washington. 
+
+```{r, eval=FALSE}
+map with pie charts? can't do all fisheries, but maybe by whether a rockfish fishery or not?
+```
+
+**Metiers are better than previous definitions of fisheries.** Previous operational definitions of fisheries are defined by the species responsible for the majority of a trip's catch volume and/or revenue. We find that our clustered results for a fishery are essentially identical ($ARI>0.9$ for either definition of revenue or profit), but instead of close to 500 different possible combinations of gear and species (i.e. fisheries), we reduce down to 112. And spatial and temporal patterns are emergent.
+
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE,fig.width=7,fig.height=7}
+percents <- readRDS("../code/new_things/percents.RDS")
+library(vegan); library(RColorBrewer)
+dca <- decorana(percents)
+tabasco(decostand(percents,"log"), dca,col=c("white",rev(colorRampPalette(brewer.pal(9,"Blues"))(10))),cexRow=.1,cexCol=.5, add.expr=list(abline(v=7,col="grey"), text(x = 15, y = 375, "tls_1\nsalmon troll",cex=.5)))
+```
+
+
+`note: this is provisinal withoutpot fisheries because they haven't finished running`
+
+` need to better explain this.` 
+
+**With relevant definitions of fisheries in hand, we can visualize the system holistically.**
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE,fig.width=7}
+web <- readRDS("../code/new_things/web.RDS")
+library(bipartite)
+spid <- read.csv("/Users/efuller/1/CNH/Analysis/Metiers/data/spid.csv",stringsAsFactors=F)
+plotweb(web[,names(sort(colSums(web),decreasing=T)[1:10])],arrow="down",bor.col.low="white",bor.col.interaction = "grey80",labsize=.6,col.low=)
+```
+
+`#still need participation networks`
+
+
+**And we can go further. Can analyze these networks ecologically**
+```{r, eval=FALSE}
+motif analysis using simulated networks
+suggestion of refuge fisheries using centrality  measures
+suggest vulnerability of fishers if a fishery is removed
+suggest vulnerabilty of fish with multiple fisheries operating
+```
+
+Overall, metiers and networks made from them provide a way to visualize how humans move between different fisheries connecting ecologically disparate species. We can start to extend ecosystem based management to humans. 
+
+
+  
+
+
+
+
+1. Refuge fisheries: fisheries that almost everyone participates in, central importance for port communities, particularly important to manage well, or a way to identify vulnerability of fishing communities to management change. 
+2. Management cascades: before and after ITQs, vessels spend more time groundfishing, ramifications for other vessels which do not participate in groundfish? [check literature to see what people tend to find]
+    - proportion of revenue for groundfish fishermen [defined as fishermen who spend a bunch of time groundfishing -- should look at distribution of vessels which participate in groundfish to see if there's a clear cut between those that dabble...]
+3. (un)stable motifs ala @
+
+
+# References

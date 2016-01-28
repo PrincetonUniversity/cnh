@@ -1,0 +1,209 @@
+---
+title: "Comparing measures of diversity"
+author: "Emma Fuller"
+date: "January 18, 2015"
+output: html_document
+---
+
+Previous work has found that revenue diversity is associated with less revenue variability for commercial fishermen on the US west coast. We are interested in what conditions enable or constrain vessels from participating in multiple fisheries. In particular, we are interested in what port-level characteristics are associated with diversity of revenue. We make the assumption that a vessel's diversity is related in some way to the fisheries system in which they participate. To do this, we need to relate a vessel's individual fisheries diversity to a port. 
+
+Here I'm comparing how port-level measures of diversity compare to vessel-level measures. First I need to figure out the right way to calculate port-level diversity. And then I'll compare that to vessel-derived port diversity and network-diversity. 
+
+### Port level diversity
+Port level diversity is calculated by taking all the trips landed at that port, and calculating the Simpsons Diversity Index based on revenue. The first question is whether it matters if I aggregate all trips across 5 years and calculate diversity versus calculating a yearly diversity and averaging across. 
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+# subset by port all trips, calculate by revenue, how diversity of revenues. 
+
+tickets <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-09/code/3_exploreBuildwebs/tickets.RDS")
+
+# calculate diversity by port based on metiers landed over 5 years
+#----
+library(reshape2);library(vegan); library(plyr)
+simpson_ports <- function(x){
+  revenues <- ddply(x, .(metier), summarize, rev = sum(adj_revenue))
+  cast_revenues <- as.numeric(t(revenues)[2,])
+  return(diversity(cast_revenues,index = "simpson"))
+}
+
+port_simpsons <- ddply(tickets, .(pcid), simpson_ports)
+#----
+
+# calculate diversity by port based on average diversity over 5 years
+port_yr_simpsons <- ddply(tickets, .(pcid, year), simpson_ports)
+port_mean_simpsons <- ddply(port_yr_simpsons, .(pcid), summarize, mean_simp = mean(V1))
+
+# compare to overall diversity
+merged_port <- merge(port_mean_simpsons, port_simpsons)
+
+with(merged_port, plot(mean_simp, V1,pch=19, col="goldenrod",cex=1,ylab="overall simpsons",xlab="mean simpsons")) 
+abline(a = 0,b=1, col="grey",lwd=10)
+with(merged_port, points(mean_simp, V1,pch=19, col="goldenrod",ylab="overall simpsons",xlab="mean simpsons", cex=2)) 
+with(merged_port,text(x = mean_simp, y = V1, tolower(pcid), cex=.75, col="black"))
+
+rm(merged_port, port_simpsons) # remove stuff don't need so i don't mix things up
+```
+
+Here `overall simpsons` is calculating a single diversity measure for a single vessel based on trips across all years and `mean simpsons` is calculating a yearly diversity measure and averaging across years. Each point is a port. Taking the average each year will be conservative. This makes sense, as you could participate in fisheries $A$, $B$ in the first year and $C$ and $D$ in the second. In the `mean simpsons` calculation, those would be equivalent, but the `overall simpsons` would be higher. 
+
+I think that smaller ports are more likely to have a higher overall simpsons than a mean, since a few vessels landing or not can change dramatically the number of fisheries present. 
+
+**Conclusion**: I'll use `mean simpsons` because it's more conservative. 
+
+### Comparing mean port-level diversity: as derived from aggregate trips or aggregate vessels
+Here I'm calculating and comparing how diversity calculated from an aggregate of vessel measures compares to one which does not consider vessel identity. The vessel level diversity is calculated for each port by finding all vessels which derive at least 50% of their revenue from that port (so vessels can only belong to one port -- unless perfectly split), and taking the average of their mean diversity index. 
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+# find vessels that land majority in a given port, then calculate diversity of each of those vessels for each year, then take average
+
+# each vessels majority should be calculated by year. and that years diversity should be accorded to majority port if it exists. This is because I would like this to be able to be expanded to any length time-series. 
+
+# find which port is the maximum at which a vessel lands. record pcid. 
+  max_port <- function(x){
+  # function takes vessel ID and returns the pcid for which maximum revenue were landed. 
+  melt_rev <- melt(x, id.vars = c("pcid","metier"), measure.vars = "adj_revenue")
+  cast_rev <- dcast(melt_rev, pcid ~ metier,fun.aggregate = sum)
+  
+  row.names(cast_rev) <- cast_rev$pcid
+  cast_rev$pcid <- NULL
+  prop_rev <- rowSums(cast_rev)/sum(rowSums(cast_rev))
+  if(any(prop_rev>=.5)==FALSE){ # if no majority, return NA
+    return(NA)
+  }else{
+    maxes <- prop_rev[which.max(prop_rev)]
+  }
+  return(names(maxes))
+}
+  library(plyr); library(reshape2)
+  port_ids <- ddply(tickets, .(drvid,year), max_port)
+  colnames(port_ids)[3] <- "max_port"
+
+# for each port that has a majority, subset those vessels and calculate diversity per year, and take average. 
+yrdf <- readRDS("/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-13/yrdf.RDS")
+
+port_vessel_diversity = data.frame(pcid = rep(unique(port_ids$max_port),each=5))
+port_vessel_diversity$year <- rep(2009:2013, length.out=nrow(port_vessel_diversity))
+port_vessel_diversity <- port_vessel_diversity[-which(is.na(port_vessel_diversity$pcid)),]
+port_vessel_diversity$vessel_simp = NA
+
+for(i in 1:nrow(port_vessel_diversity)){
+  vessels <- port_ids$drvid[which(port_ids$max_port==port_vessel_diversity$pcid[i] & port_ids$year == port_vessel_diversity$year[i])]
+  simpsons <- subset(yrdf[[1]], drvid %in% vessels & year == port_vessel_diversity$year[i])$simpsons
+  port_vessel_diversity$vessel_simp[i] <- mean(simpsons)
+}
+
+# take mean of ports by year
+port_vessel_means <- ddply(port_vessel_diversity, .(pcid), summarize, vessel_level = mean(vessel_simp, na.rm=T))
+
+# merge that with mean diversity of ports by trips
+merged_ports <- merge(port_vessel_means, port_mean_simpsons, by = "pcid", all.x = TRUE, all.y=TRUE)
+with(merged_ports, plot(mean_simp, vessel_level,pch=19))
+abline(lm(vessel_level~mean_simp,merged_ports),lwd=5, col="dodgerblue") # is positive
+abline(a=0, b=1,col="lightgrey", lwd=5) 
+legend("topleft",legend=c("one-to-one line", "linear regression"),col=c("lightgrey","dodgerblue"),lwd=5, bty="n")
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+library(pander)
+panderOptions("table.split.table",Inf)
+pander(summary(lm(vessel_level~mean_simp,merged_ports))) # is significant
+```
+
+There is a postive relationship between port-level diversity and vessel level diversity. 
+
+In general the port-level measure of diversity is higher than the vessel-level. This makes sense, because many specialists landing in different fisheries would increase the port-level diversity but still be low at the vessel level. The few fisheries where the port-level diversity is higher than the vessel-level might be ones that have a lot of mobile vessels landing. It is certainly the least diverse ports in which vessel-diversity is higher. It's important to remember that roughly 8% of vessels have no majority port (i.e. spreading fairly evenly across ports). Thus they could be landing in a different set of fisheries than the "locals". 
+
+So these measures might be used to infer different things about the port. The vessel-level measure is the present reality for fishermen, but the port-level is the potential diversity that is possible. 
+
+### Conclusions
+When relating port-level characteristics, what I should use is the vessel level diversity. This is because what I'm interested in is the present amount of diversity, not the potential diversity of the port. But the potential diversity of the port should be considered if I'm going to think about how management might address any low-diversity ports. As in, is there "latent diversity" present? Or do you need to bring new fisheries in?
+
+### Comparing port-level, vessel-level and network metrics
+Next I construct the participation networks for each port, each year. For each year I calculate the effective connectance, and take average across those yearly effective connectance values. I construct the participation networks with 95, 99 and no restriction on fisheries. 
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+source("/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-29/functions/defineParticipationNetwork.R")
+library(igraph); library(reshape2); library(vegan); library(RColorBrewer); library(NetIndices)
+
+particp_nets <- data.frame(pcid = port_vessel_diversity$pcid, year = port_vessel_diversity$year)
+particp_nets$r95_CZ = NA 
+particp_nets$r99_CZ = NA
+particp_nets$CZ = NA
+
+# unrestricted CZ
+for(i in 1:nrow(particp_nets)){
+    g <- define_participationPlot(
+      port=port_vessel_diversity$pcid[i], 
+      year_choose = port_vessel_diversity$year[i], restrict=FALSE)
+    if(is.na(g)){next} # if only one vessel, will generate a character warning
+    if(length(E(g))==0){
+      particp_nets$CZ[i] <- EffInd(get.adjacency(g, sparse=F))$CZ 
+    }else{
+      particp_nets$CZ[i] <- EffInd(get.adjacency(g, sparse=F,attr="weight"))$CZ 
+    }
+  }
+
+# 95 restricted CZ
+for(i in 1:nrow(particp_nets)){
+  if(is.nan(port_vessel_diversity$vessel_simp[i])){
+    particp_nets$r95_CZ[i] = NA
+  }else{
+    g <- define_participationPlot(
+      port=port_vessel_diversity$pcid[i], 
+      year_choose = port_vessel_diversity$year[i], restrict=TRUE, restrict.level = .95)
+    if(is.na(g)[1]){next} # if only one vessel, will generate a character warning
+    if(length(E(g))==0){
+      particp_nets$r95_CZ[i] <- EffInd(get.adjacency(g, sparse=F))$CZ 
+    }else{
+      particp_nets$r95_CZ[i] <- EffInd(get.adjacency(g, sparse=F,attr="weight"))$CZ 
+    } 
+    }
+  }
+
+# 99 restricted CZ
+for(i in 1:nrow(particp_nets)){
+  if(is.nan(port_vessel_diversity$vessel_simp[i])){
+    particp_nets$r99_CZ[i] = NA
+  }else{
+    g <- define_participationPlot(
+      port=port_vessel_diversity$pcid[i], 
+      year_choose = port_vessel_diversity$year[i], restrict=TRUE, restrict.level = .99)
+    if(is.na(g)[1]){next} # if only one vessel, will generate a character warning
+    if(length(E(g))==0){
+      particp_nets$r99_CZ[i] <- EffInd(get.adjacency(g, sparse=F))$CZ 
+    }else{
+      particp_nets$r99_CZ[i] <- EffInd(get.adjacency(g, sparse=F,attr="weight"))$CZ 
+    }
+    }
+  }
+
+# take means of ports
+network_means <- ddply(particp_nets, .(pcid), summarize, CZ_all = mean(CZ, na.rm=T), CZ_95 = mean(r95_CZ,na.rm=T), CZ_99 = mean(r99_CZ, na.rm=T))
+
+
+merged_ports <- merge(merged_ports, network_means, by = "pcid")
+pairs(~mean_simp + vessel_level + CZ_all + CZ_95 + CZ_99, merged_ports, pch=19)
+```
+
+From these `pairs()` plots, I see the following
+
++ the effective connectance (`CZ` varients) are highly correlated with one another. We would expect that. There are fewer points in the `CZ_95` and `CZ_99`, because more ports don't have a measure for a year because all fisheries have been dropped. 
++ The relationship between `CZ_all` and `vessel_level` has a number of ports for which the vessel metric is higher than the `CZ`. Interested to know which ports those are. 
++ Similar relationship between `CZ` and `mean_simp`. What's going on there?
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+with(merged_ports, plot(CZ_all, vessel_level, col="white"))
+with(merged_ports, text(CZ_all, vessel_level, pcid, col="black",cex=.5))
+```
+
++ SB here really exemplifies what `CZ` might add. At an individual vessel level, vessels only partipate in a few fisheries. But all those fisheries are interconnected. So the `CZ` score is much higher. This would like be a port where `mean_simp` was more aligned with `CZ`. And indeed when you compare CZ and `vessel_simp` you see a plataeu along the `vessel_simp` axis. Although there is also the reciprocal with some ports with the same `vessel_simp` getting a range of `CZ` values. 
+
+
+```{r}
+write.csv(merged_ports, "port_metrics.csv")
+# put together yearly dataset
+yearly <- merge(particp_nets, port_yr_simpsons, by = c("pcid","year"))
+yearly <- merge(yearly, port_vessel_diversity, by = c("pcid","year"))
+colnames(yearly)[which(colnames(yearly)=="V1")] = "mean_simp"
+write.csv(yearly, "/Users/efuller/1/CNH/Analysis/Metiers/results/2015-01-18/by_year_port_metrics.csv")
+```
