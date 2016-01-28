@@ -1,91 +1,61 @@
-
-##### CONNECT OBSERVER DATA TO VMS DATA
-#! goal: add another column to the VMS dataframes (for each vessel)
-#! with an index for what was caught when
-
+library(dplyr)
+library(tidyr)
 # load data ----
-# write user to load files, can be "james" or "emma"
-if(user=="james"){
-  
-  #! delete existing files
-  system("rm -f ./VMS/CSV/*.csv")
-  #! load observer data
-  data_obs <- read.csv(file="./Observer/Observer_data.csv", header=TRUE, sep=",")
-  #! Names of all files (organized by vessel)
-  names = dir('./VMS/RDS/')
-  
-}else{
-  
   #! delete existing files
   system("rm -f /Users/efuller/1/CNH/processedData/spatial/vms/intermediate/05_make_obs_to_vms/*.csv")
   # load observer data
   data_obs <- read.csv(
-    "/Users/efuller/1/CNH/rawData/Observers/WCGOPobs/Samhouri_OBFTfinal_Allfisheries_ProcessedwFunction_2009-2012_110613.csv",stringsAsFactors = FALSE)
-  # names of vessel tracks
-  names = dir("/Users/efuller/1/CNH/processedData/spatial/vms/intermediate/04_link_mets_vms/")
-  names = names[-grep("no_vms_landings",names)]
-  # should have 399 vessels
-  if(length(names)!=399)warning("missing vessel tracks: length(names)!=399 is ",length(names)!=399)
+    "/Users/efuller/Desktop/CNH/rawData/Observers/WCGOPobs/Samhouri_OBFTfinal_Allfisheries_ProcessedwFunction_2009-2012_110613.csv",stringsAsFactors = FALSE)
+  colnames(data_obs) <- tolower(colnames(data_obs))
+  data_obs <- data_obs[,-grep("spgrftob1",colnames(data_obs))[1]]
+
+  # choose time window
+  window = 24 # 0, 24, 36, 72, 168
   
-}
+  # names of vessel tracks
+  path = paste0("/Users/efuller/Desktop/CNH/processedData/spatial/vms/intermediate/04_link_mets_vms/tw_",window,"hr/")
+  names = dir(path)
+
+  if(any(grepl("no_vms_landings", names))){
+    names = names[-grep("no_vms_landings",names)]
+    }
 
 # set up data objects ----
-#! Create empty array to be filled with haul times
-#HAUL = matrix(0,0,2)
-
-# load spatial transform package
-library(rgdal)
-
 # change observer cg.num to character to match classes
-data_obs$CG_NUM <- as.character(data_obs$CG_NUM)
+data_obs$cg_num <- as.character(data_obs$cg_num)
+data_obs$d_date <- as.POSIXct(data_obs$d_date, format = "%")
 
 #! load vessel data
-#ANY_MATCH = rep(NA,length(names))
 for (i in 1:length(names)){
   ### Load up
-  print(i / length(names))
   infile = names[i]
-  if(user == "james") data_vms <- readRDS(paste("./VMS/RDS/",infile,sep = ""))
-  if(user == "emma") data_vms <- readRDS(paste0("/Users/efuller/1/CNH/processedData/spatial/vms/intermediate/04_link_mets_vms/",infile))
+  data_vms <- readRDS(paste0(path,infile))
   
-  #! New dataframe for fishing and observer reference
-  fishing  = matrix(0,dim(data_vms)[1])
-  observed = matrix(0,dim(data_vms)[1])
-  
-  #! Set vms time to correct time zone
+  # create vectors of known behavior
+  data_vms$fishing <- NA
+  data_vms$observed <- NA
+
+  #! Ensure vms time to correct time zone
   data_vms$date.time <- as.POSIXct(data_vms$date.time,tz="Etc/GMT-8")
   
-  #! For each vessel, check the presense of any match
-  ANY_MATCH <- length(which(unique(as.character(data_obs$CG_NUM)) %in% unique(data_vms$doc.num)))
+  #! find vms - obs matches
+  ID = which(data_obs$cg_num %in% unique(data_vms$doc.num))
   
-  #! Change projection
-  # make a spatial object
-  coordinates(data_vms) <- ~longitude + latitude
-  proj4string(data_vms) <- CRS("+proj=aea +lat_1=35.13863306500551 +lat_2=46.39606296952133 +lon_0=-127.6171875")
-  
-  # re-project to lat/lon decimal degrees
-  data_vms <- spTransform(data_vms, CRS("+init=epsg:4269 +proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0"))
-  
-  # change back into data.frame
-  data_vms <- as.data.frame(data_vms)
-  
-  if (ANY_MATCH[1] != 0){
+  if (length(ID)>0){
 
-    #! find vms - obs matches
-    ID = which(data_obs$CG_NUM %in% unique(data_vms$doc.num))
-    
     # subset observer dataframe (all recorded fishing events [start and stop times])
     # In v_obs look for set_time and up_time, this is the timing of a fishing event
     # search in data_vms any lon lat points that fall in this interval
     # note: v_obs is in decimal time (change to mins secs)
     
     #! Streamline this by getting rid of duplicates
-    v_obs <- data_obs[ID,] # vessel that has been observed
-    v_obs <- unique(v_obs[,c("HAUL_ID","SET_YEAR","SET_MONTH","SET_DAY","SET_TIME",
-                             "UP_YEAR","UP_MONTH","UP_DAY","UP_TIME",
-                             "D_DATE","R_DATE","FISH_TICKETS")])
- 
-    for (j in 1:dim(v_obs)[1]){
+    v_obs <- data_obs %>%
+      filter(cg_num == unique(data_vms$doc.num)) %>%
+      dplyr::select(haul_id, set_year, set_month, set_day, set_time, up_year,
+                    up_month, up_day, up_time, d_date, r_date, fish_tickets) %>%
+      distinct()
+    
+    for (j in 1:nrow(v_obs)){
       ### Fishing event
       SET <- v_obs[j,]
       
@@ -139,7 +109,7 @@ for (i in 1:length(names)){
   #data_vms = cbind(data_vms,observed)
   save_vms <- data.frame(data_vms$longitude,data_vms$latitude,data_vms$date.time,data_vms$dist_coast,data_vms$only_trips,
                     data_vms$metier.2010,fishing,observed,data_vms$trip_id1,data_vms$trip_id2,data_vms$trip_id3,data_vms$trip_id4,
-                    data_vms$trip_id5,data_vms$trip_id6)
+                    data_vms$trip_id5,data_vms$trip_id6, stringsAsFactors = FALSE)
   
   ### Save as new file
   len_name = nchar(infile)
@@ -149,18 +119,14 @@ for (i in 1:length(names)){
   
   }else{
 
-  ### fished and observed lists to vms dataframe
-  #data_vms = cbind(data_vms,fishing)
-  #data_vms = cbind(data_vms,observed) 
-  save_vms <- data.frame(data_vms$longitude,data_vms$latitude,data_vms$date.time,data_vms$dist_coast,data_vms$only_trips,
-                           data_vms$metier.2010,fishing,observed,data_vms$trip_id1,data_vms$trip_id2,data_vms$trip_id3,data_vms$trip_id4,
-                           data_vms$trip_id5,data_vms$trip_id6)
-    
+  save_vms <- dplyr::select(data_vms, longitude, latitude, date.time, 
+                            dist_coast, only_trips, metier.2010, fishing, 
+                            observed, contains("trip_id"))
+
   ### Save as new file
-  len_name = nchar(infile)
-  name = substr(infile,1,len_name-4)
-  if(user == "james") write.csv(save_vms,file=paste("./VMS/CSV/",name,".csv",sep = ""),row.names = FALSE)
-  if(user == "emma") write.csv(save_vms, file = paste0("/Users/efuller/1/CNH/processedData/spatial/vms/intermediate/05_make_obs_to_vms/",name,".csv"), row.names = FALSE)
+  file_name <- gsub(".RDS",".csv",names[i])
+  save_path <- paste0("/Users/efuller/Desktop/CNH/processedData/spatial/vms/intermediate/05_make_obs_to_vms/tw_",window,"hr/")
+  write.csv(save_vms, file = paste0(save_path,file_name), row.names = FALSE)
   }
   
 }
