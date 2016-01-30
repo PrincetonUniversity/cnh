@@ -7,7 +7,7 @@ library(scales)
 library(reshape2)
 
 # set working directory to CNH
-setwd("/Users/jameal.samhouri/Documents/CNH_local_only")
+setwd("~/Documents/CNH_to_github/cnh/processedData/catch/1_cleaningData")
 
 # read in processed fish ticket data. it's the raw data with a few added columns, revenue in 2009 USD adjusted for inflation. 
 #tickets  <- readRDS("processedData/catch/1_cleaningData/tickets.RDS")
@@ -25,31 +25,31 @@ names(tickets)
 
 # adjust years so that annual revenues are based on Nov 1 - Oct 31, to account for crab season spanning Dec-Jan
 
-class(tickets$tdate)
-tickets$tdate <- as.POSIXlt(tickets$tdate,format = "%d-%b-%y")
-
-# now convert each date to the day of year
-tickets$tdate_julian <- as.numeric(format(tickets$tdate, "%j"))
-
-######################################################
-######################################################
-
-# plot # vessels vs. # metiers participated in for each year
-
-######################################################
-######################################################
-setwd("~/Documents/CNH_to_github/cnh/Analysis/ses_network")
-source("theme_acs.R")
-
-# start by producing a data frame with vessel - year - number of metiers participated in
-df <- tickets %>%
-  dplyr::select(drvid, year, metier.2010) %>%
-  distinct() %>% # give me unique rows
-  arrange(drvid, year) %>%
-  group_by(drvid, year) %>%
-  summarise(n.metiers = length(unique(metier.2010)))
-
-
+  class(tickets$tdate)
+  tickets$tdate <- as.POSIXlt(tickets$tdate,format = "%d-%b-%y")
+  
+  # now convert each date to the day of year
+  tickets$tdate_julian <- as.numeric(format(tickets$tdate, "%j"))
+  
+  ######################################################
+  ######################################################
+  
+  # plot # vessels vs. # metiers participated in for each year
+  
+  ######################################################
+  ######################################################
+  setwd("~/Documents/CNH_to_github/cnh/Analysis/ses_network")
+  source("theme_acs.R")
+  
+  # start by producing a data frame with vessel - year - number of metiers participated in
+  df <- tickets %>%
+    dplyr::select(drvid, year, metier.2010) %>%
+    distinct() %>% # give me unique rows
+    arrange(drvid, year) %>%
+    group_by(drvid, year) %>%
+    summarise(n.metiers = length(unique(metier.2010)))
+  
+  
 # make histogram
 ggplot(df, aes(x = n.metiers)) +
   geom_histogram(stat = "bin") +
