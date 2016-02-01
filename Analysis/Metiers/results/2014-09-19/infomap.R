@@ -4,7 +4,7 @@ library(igraph)
 library(vegan)
 library(reshape2)
 
-ftl <- read.csv("/Users/efuller/1/CNH/Data/Catch/FTL_2009-2013_w-o-c_samhouri.csv", stringsAsFactors=F)
+ftl <- read.csv("/Users/efuller/Desktop/CNH/rawData/catch/FTL_2009-2013_w-o-c_samhouri.csv", stringsAsFactors=F)
 
 # let's subset to Astoria tickets from 2012
 astoria_trips <- subset(ftl, pcid%in% c("AST", "NEW") & grid =="CPT",select=c("spid", "ftid","landed_wt", "grid", "veid"))
