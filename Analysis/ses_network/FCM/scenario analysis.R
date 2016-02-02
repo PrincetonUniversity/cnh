@@ -94,16 +94,115 @@ dimnames(ts_ar) <- list(c(seq(1:ts_length)),my.headers)
   
   df1 <- data.frame(emat) #make into data frame
   df1 <- subset(df1,df1[,1]!="NA") #subset NAs
+  
   em_c <- as.numeric(df1[nrow(df1),]) ##Save Equilibrate Value (i.e. last of df)
   em_c <- as.data.frame(cbind(my.headers,em_c))
   em_c[,2] <- as.numeric(as.character(em_c[,2]))
   colnames(em_c) <- c("Metier","Steady state relative abundance")
+  setwd("~/Documents/CNH_to_github/cnh/Analysis/ses_network/FCM")
+  write.csv(em_c,"Steady state relative abundance for coastwide network based on trips.csv", row.names=FALSE)
+  
   ar[1,]<- as.numeric(df1[nrow(df1),])
+  
 
 ### STOPPED HERE ON 1/29/16. NEXT STEP IS TO SIMULATE A CRAB CLOSURE AND ASK HOW PARTICIPATION (TRIPS) IS EXPECTED TO CHANGE RELATIVE TO THE STEADY STATE. 
-### ALSO, DOES THE STEADY STATE EVEN MAKE SENSE???? URCHIN HAS LOWEST RELATIVE ABUNDANCE, SQUID AND SALMON GREATEST, RANGE IS QUITE SMALL 0.36-0.49
   
+### ALSO, DOES THE STEADY STATE EVEN MAKE SENSE???? URCHIN HAS LOWEST RELATIVE ABUNDANCE, SQUID AND SALMON GREATEST, RANGE IS QUITE SMALL 0.36-0.49.
+  ### I THINK THE STEADY STATE IS AN INTERMEDIATE OUTPUT THAT IS USEFL FOR GAUGING THE EFFECTS OF PRESS PERTURBATIONS BUT NOT USEFUL UNTO ITSELF (1/30/16)
   
+  #CRAB REDUCTION
+  ####################################################################################################
+  ######## Get a matrix of the effects of crab reduction. note change in tmpmat coding, inserts value each iteration
+  ####################################################################################################
+  
+  em_crabd <- c()
+  
+  converge_crabd <-matrix(0,ncol = 2,nrow=1) #check the convergence 
+  colnames(converge_crabd) <- c("diffvec","nits")
+  
+  ts_length <- 1001
+  ts_ar_crabd <- matrix(nrow=ts_length,ncol=n.metiers) #make empty array
+  dimnames(ts_ar_crabd) <- list(c(seq(1:ts_length)),my.headers)
+  
+#    for(r in 1:dim(all.dat_sp)[3]){  
+  
+  adj.m_crabd = all.dat_sp #[,,r] #pull out a single matrix 
+  #diag(adj.m) = rep(-1,adj.m,length(diag(adj.m))) #insert density dependence
+  diag(adj.m_crabd) = rep(0,adj.m_crabd,length(diag(adj.m_crabd))) #insert no density dependence
+  
+  max.it_crabd <- 1000 #set maximum iterations
+  
+  emat_crabd <- matrix(nrow=(max.it_crabd+1),ncol = ncol(adj.m_crabd)) #make an empty matrix with species as columns
+  emat_crabd[1,] <- rep(1,ncol(adj.m_crabd)) #define the adjacency matrix (i.e. the perturbation): 1 is no perturb. need to think about strength 
+  emat_crabd[1,5] <- -1 #add the crab (POT_1) perturbation 
+  
+  # start all metiers with the same relative abundance
+  ### OR BETTER TO START AT STEADY STATE ABUNDANCES? ###
+  ts_ar_crabd[1,] <- rep(1,ncol(adj.m_crabd))
+  
+  #vector for estimating differences as matrix converges
+  diffvec_crabd <- rep(99, ncol(adj.m_crabd)) 
+  
+  #set the tolerance for when convergence is defined
+  tol_crabd <- rep(10^-5,ncol(adj.m_crabd))
+  
+      for(i in 1:max.it_crabd){
+      tmpmat1 <- emat_crabd[i,]
+      tmpmat1[5] <- -1 #reduce crab (POT_1) 
+      tmpmat2 <- tmpmat1 %*% adj.m #make a temporary matrix to multiply the adjacency vector with the individual respondent's matrix
+      emat_crabd[i+1,] <- 1/(1+exp(-tmpmat2)) #scale 0 to 1 with logit transform
+      ts_ar_crabd[i+1,] <- 1/(1+exp(-tmpmat2)) 
+      
+      if(i!=1){
+        diffvec_crabd <- abs(emat_crabd[i,]-emat_crabd[i-1,]) #subtract current row from prev row
+        if(max(diffvec_crabd) > min(tol_crabd) & i<max.it_crabd){ #if statement to stop when the tolerance is met
+          print(paste("i=",i))
+          print(paste("max(diffvec)=", max(diffvec_crabd)))
+        }
+      }
+      if(max(diffvec_crabd) <= min(tol_crabd) | i==max.it_crabd){
+        print(paste("Finished! max(diffvec)=", max(diffvec_crabd)))
+        converge_crabd[1] <- max(diffvec_crabd)
+        converge_crabd[2] <- i
+        break
+        #i=max.it
+      }
+    }  
+    
+    df1_crabd <- data.frame(emat_crabd) #make into data frame
+    df1_crabd <- subset(df1_crabd,df1_crabd[,1]!="NA") #subset NAs
+    em_crabd <- ((as.numeric(df1_crabd[nrow(df1_crabd),])-ar[1,])/ ar[1,])*100 ##Save Equilibrium Value (i.e. last of df) relative to steady state contained in ar[1,]
+    em_crabd <- as.data.frame(cbind(my.headers,em_crabd))
+    em_crabd[,2] <- as.numeric(as.character(em_crabd[,2]))
+    colnames(em_crabd) <- c("Metier","Decrease crab (POT_1) relative abundance")
+    setwd("~/Documents/CNH_to_github/cnh/Analysis/ses_network/FCM")
+    write.csv(em_crabd,"Decrease crab (POT_1) relative change for coastwide network based on trips.csv", row.names=FALSE)
+    
+    
+    ar[2,]<- ((as.numeric(df1_crabd[nrow(df1_crabd),])-ar[1,])/ ar[1,])*100 
+  
+    write.csv(ar,"Steady state relative abundance and decrease crab (POT_1) relative change for coastwide network based on trips.csv", row.names=TRUE)
+
+    
+##########################################
+##########################################
+    
+# correlation between interaction strengths and relative change
+
+cor(all.dat_sp[,5],ar[2,], method="spearman",use="pairwise.complete.obs")
+plot(all.dat_sp[,5],ar[2,])
+    
+# strong negative correlation, indicating that the more negatively correlated trips were between a metier and POT_1, the more positive the expected effect of a crab closure. makes sense - BOOM
+
+##########################################
+##########################################
+    
+    
+    
+##########################################
+##########################################
+##########################################
+##########################################
   
 # cdf <- data.frame(converge)
 # cdf$nits <-as.numeric(as.character(cdf$nits))
