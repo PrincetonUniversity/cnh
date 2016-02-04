@@ -128,11 +128,11 @@ with(subset(vessel_stats, ifq_flag=="itq stay on" & alaska == 0 & c.halibut == 0
 t.test(vessel_stats$eff.shannon_2010[which(vessel_stats$ifq_flag=="itq stay on")], vessel_stats$eff.shannon_2010[which(vessel_stats$ifq_flag=="general fleet")])
 
 # port model
-port_df <- readRDS("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/data_output/port_diversity_network_metrics.RDS")
+port_df <- readRDS("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/04_data_output/port_stats.RDS")
 
 # look before and after in ports
 t.test(port_df$ic_pre,port_df$ic_post)
-with(subset(port_df, ifq==1), t.test(ic_pre, ic_post))
+#with(subset(port_df, ifq==1), t.test(ic_pre, ic_post))
 
 lm_port1 <- lm(ic_delta ~ ic_pre, subset(port_df, ifq_flag!="itq entrant: general landings"))
 lm_port <- lm(ic_delta ~  ic_pre + ifq_flag, subset(port_df, ifq_flag!="itq entrant: general landings"))
@@ -184,7 +184,7 @@ ifq_effect <- as.data.frame(cbind(coef.lm2.sim[,2:4], coef.lm_port.sim[,2]))
 colnames(ifq_effect) <- c("a","b","c","d")
 ifq_effect <- gather(ifq_effect)
 
-ggplot(ifq_effect, aes(x=key, y = value)) + geom_boxplot(outlier.size = 0, fill = "grey") + geom_hline(yinterecept = 0) + xlab("level") + ylab(expression(paste(Delta,"diversity")) ) + xlab("coefficient value") 
+ggplot(ifq_effect, aes(x=key, y = value)) + geom_boxplot(outlier.size = 0, fill = "grey") + geom_hline(yintercept  = 0) + xlab("level") + ylab(expression(paste(Delta,"diversity")) ) + xlab("coefficient value") 
 
 save_plot("/Volumes/LA-PRIVATE/CNH/Analysis/Metiers/bin/figures/fig_4.pdf", effect.size)
 

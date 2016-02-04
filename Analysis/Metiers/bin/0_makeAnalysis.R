@@ -65,6 +65,8 @@ library(dplyr)
   # compare diversity for vessels landing in catch shares
   with(subset(vessel_stats, alaska==0 & both.periods == 1 & c.halibut==0 & ifq_flag=="itq stay on"), t.test(eff.shannon_2010, eff.shannon_2010 + delta.eff.shannon_2010))
   
+  with(subset(vessel_stats, alaska==0 & both.periods == 1 & c.halibut==0 & ifq_flag=="general fleet"), t.test(eff.shannon_2010, eff.shannon_2010 + delta.eff.shannon_2010))
+  
   # get metier statistics
   dat %>% dplyr::select(metier.2010) %>% distinct %>% summarize(n())
   

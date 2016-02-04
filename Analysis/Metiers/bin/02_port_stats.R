@@ -21,8 +21,10 @@ calc_port_df <- function(){
   # remove ports that are NA
   port_list <- port_list[-which(is.na(port_list))]
   
-  ic <- as.data.frame(unlist(lapply(port_list, function(x)sum(E(x)$weight)/vcount(x))))
+  # changed to link density since it already exists, very similar to mine
+  ic <- as.data.frame(unlist(lapply(port_list, function(x)length(E(x)$weight)/vcount(x))))
   ic$pcid <- rownames(ic)
+  
   
   port_post <- list()
   
