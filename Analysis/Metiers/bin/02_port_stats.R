@@ -94,11 +94,11 @@ calc_port_df <- function(){
   
 # put all together ----
   port_stats <- port_df %>%
-    full_join(n.ves) %>%
-    full_join(rev.ves) %>%
-    full_join(lbs.ves) %>%
-    full_join(trips.ves) %>%
-    full_join(ports)
+    left_join(n.ves) %>%
+    left_join(rev.ves) %>%
+    left_join(lbs.ves) %>%
+    left_join(trips.ves) %>%
+    left_join(ports)
   
 # look for how ports are affected by catch shares ----
   twl_prior = vessel_landings %>%
@@ -140,7 +140,7 @@ calc_port_df <- function(){
   twl_partip <- dplyr::select(twl_partip, pcid, ifq_flag)
 
   port_df <- port_stats %>%
-    full_join(twl_partip) 
+    left_join(twl_partip) 
   
   saveRDS(port_df,
           file="/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/04_data_output/port_stats.RDS")
