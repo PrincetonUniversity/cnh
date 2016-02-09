@@ -39,5 +39,9 @@
 `05_make_obs_to_vms.R`
 
 + goes through each trajectory in `04_link_mets_vms\` and finds if any trips are observed. If they are, then finds the intervals of time when the boat had set gear. For all VMS points between the down and up, is labeled.
++ There are a number of fixed-gear trips that either have set times before they say they’ve departed port or up times that are after they’ve returned. These get saved in `processedData/both/obs_data/mismatch_time.csv`
++ Also when looking for intervals of time letting vms be +/- 1 hour larger than observed interval. Just because I thought it might be difficult to find the short duration fishing and that’s a reasonable error window to have as an observer.
++ Generate a file that summarizes the matched observed trips, the port, the sector, the vessel ID and the hours fished. These are saved `processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_total_tw0hr.csv` where 0 is the time window. 
+
 
 `obs_seg_James/`: segmentation from James
