@@ -23,10 +23,10 @@ library(tidyr)
   
   # names of vessel tracks
   path = paste0("processedData/spatial/vms/intermediate/04_link_mets_vms/tw_",window,"hr/")
-  names = dir(path)
+  file_names = dir(path)
   
   # drop any no_vms_landings names
-  if(any(grepl("no_vms_landings", names))){
+  if(any(grepl("no_vms_landings", file_names))){
     names = names[-grep("no_vms_landings",names)]
     }
 
@@ -103,9 +103,10 @@ library(tidyr)
   total_trip_dat <- data.frame()
 #! load vessel data ----
   
-for (i in 1:length(names)){
+for (i in 1:length(file_names)){
+
   ### Load up
-  infile = names[i]
+  infile = file_names[i]
   vms <- readRDS(paste0(path,infile))
   
   # create vectors of known behavior
@@ -130,7 +131,7 @@ for (i in 1:length(names)){
     #! Streamline this by getting rid of duplicates
     v_obs <- obs %>%
       filter(cg_num == unique(vms$doc.num)) %>%
-      dplyr::select(haul_id, set_year, set_month, set_day, set_time, up_year,
+      dplyr::select(tripid, haul_id, set_year, set_month, set_day, set_time, up_year,
                     up_month, up_day, up_time, d_date, r_date, fish_tickets, pcid,
                     sector) %>%
       distinct()
@@ -173,7 +174,7 @@ for (i in 1:length(names)){
       vms$sector[o_id] <- v_obs$sector[j]
       
       # add to table
-      trip_list <- data.frame(vessel.ID =gsub(".RDS","",names[i]),
+      trip_list <- data.frame(vessel.ID =gsub(".RDS","",file_names[i]),
                      fish_ticket = v_obs$fish_tickets[j],
                      sector = v_obs$sector[j], 
                      pcid = v_obs$pcid[j],
@@ -191,21 +192,29 @@ for (i in 1:length(names)){
   # Save as new file
   len_name = nchar(infile)
   name = substr(infile,1,len_name-4)
-  write.csv(vms, file = paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/",window,"hr/",name,".csv"), row.names = FALSE)
+  write.csv(vms, file = paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/tw_",window,"hr/",name,".csv"), row.names = FALSE)
   
   }else{
 
   ### Save as new file
-  file_name <- gsub(".RDS",".csv",names[i])
+  file_name <- gsub(".RDS",".csv",file_names[i])
   save_path <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/tw_",window,"hr/")
   write.csv(vms, file = paste0(save_path,file_name), row.names = FALSE)
   }
   
 }
 
+# total_trip_dat has a row for each fishing event because going through
+# each haul. So want to summarize across each fish_ticket
+  
+total_trip_dat <- total_trip_dat %>%
+  group_by(vessel.ID, fish_ticket, sector, pcid, d_date, r_date) %>%
+  summarize(hrs_fishing = sum(hrs_fishing))
 
-
-
+# save the trip_total_dat
+write.csv(total_trip_dat, 
+          paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_total_tw",
+                 window,"hr.csv"))
 
 
 
