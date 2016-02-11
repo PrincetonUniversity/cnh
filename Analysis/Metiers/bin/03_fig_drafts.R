@@ -1,6 +1,6 @@
 # making figures
 rm(list=ls())
-
+library(ggplot2);library(ggthemes);library(cowplot)
 # load data ----
 tickets <- readRDS("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/04_data_output/vessel_landings_data.RDS")
 vessel_stats <- readRDS("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/04_data_output/vessel_stats.RDS")
@@ -15,19 +15,17 @@ ports <- read.csv("/Users/efuller/Desktop/CNH/processedData/spatial/ports/all_po
 ports <- rename(ports, pcid = Pcid)
 
 # plot
-library(ggplot2)  
-library(cowplot)
 
-coastwide <- ggplot(vessel_stats[which(vessel_stats$alaska==0 & !is.na(vessel_stats$type)),], aes(x = type)) + geom_bar() + ylab("number of vessels")  + theme_pander()
+coastwide <- ggplot(vessel_stats[which(vessel_stats$alaska==0 & !is.na(vessel_stats$type)),], aes(x = type)) + geom_bar() + ylab("number of vessels")  + theme_pander() + theme(panel.grid = element_blank())
 
-by_zone <- ggplot(vessel_stats[which(vessel_stats$alaska==0 & !is.na(vessel_stats$type) & !is.na(vessel_stats$zone)),], aes(x = type)) + geom_bar() + facet_wrap(~zone, ncol = 1, scales = "free_y") + ylab('number of vessels')  + theme_pander()
+by_zone <- ggplot(vessel_stats[which(vessel_stats$alaska==0 & !is.na(vessel_stats$type) & !is.na(vessel_stats$zone)),], aes(x = type)) + geom_bar() + facet_wrap(~zone, ncol = 1, scales = "free_y") + ylab('number of vessels')  + theme_pander() + theme(panel.grid = element_blank())
 
-div_hist <- ggplot(subset(vessel_stats[which(!is.na(vessel_stats$zone) & vessel_stats$alaska==0),], vessel_stats$eff.shannon_2010>1), aes(x = eff.shannon_2010)) + geom_histogram(aes(y = ..count..)) + facet_wrap(~zone, ncol = 1,scales = "free_y") + xlab("effective shannon diversity of revenue") + ylab('number of vessels') + theme_pander()
+div_hist <- ggplot(subset(vessel_stats[which(!is.na(vessel_stats$zone) & vessel_stats$alaska==0),], vessel_stats$eff.shannon_2010>1), aes(x = eff.shannon_2010)) + geom_histogram(aes(y = ..count..)) + facet_wrap(~zone, ncol = 1,scales = "free_y") + xlab("effective shannon diversity of revenue") + ylab('number of vessels') + theme_pander() + theme(panel.grid = element_blank())
 
-all_plot <- plot_grid(coastwide, by_zone, div_hist, labels = c("A","B","C"), ncol = 3, rel_widths = c(1,1,1.75))
+all_plot <- plot_grid(coastwide, by_zone, div_hist, labels = c("A","B","C"), ncol = 3, rel_widths = c(1,1.2,1.4))
 
-save_plot("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_2.pdf", 
-          all_plot,base_height = 8, base_width = 12)
+ggplot2::ggsave( "/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_2.png", 
+          all_plot,width = 11.4, height = 7, units = "cm" ,scale=2.5, dpi = 300)
 
 # figure 3 ----
 # make port networks and measure degree, betwenness
