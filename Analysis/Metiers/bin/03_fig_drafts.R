@@ -24,7 +24,7 @@ div_hist <- ggplot(subset(vessel_stats[which(!is.na(vessel_stats$zone) & vessel_
 
 all_plot <- plot_grid(coastwide, by_zone, div_hist, labels = c("A","B","C"), ncol = 3, rel_widths = c(1,1.2,1.4))
 
-ggplot2::ggsave( "/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_2.png", 
+ggplot2::ggsave( "/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_2.pdf", 
           all_plot,width = 11.4, height = 7, units = "cm" ,scale=2.5, dpi = 300)
 
 # figure 3 ----
@@ -50,42 +50,43 @@ gp <- function(g_s){
   plot(g, edge.width = E(g)$weight*3, layout = layout.fruchterman.reingold, vertex.size = log(V(g)$size)*4, vertex.label.color = "grey30", vertex.label.cex = .75, vertex.label.family="sans", vertex.frame.color = NA, edge.curved=TRUE, edge.arrow.size = .25, edge.color = "black")
 }
 
-port_list <- list()
-for(i in 1:)
 
 sb <- define_participationPlot(year=2009:2010, port = "SB", tickets = tickets)
 erk <- define_participationPlot(year=2009:2010, port = "ERK", tickets = tickets)
 oak <- define_participationPlot(year=2009:2010, port = "OAK", tickets = tickets)
 
-pdf("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_3a.pdf",width = 8, height = 8)
-  par(bg="transparent")
+png("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_3a.png",
+    width = 4, height = 4, res = 300, units = "in")
+  par(bg="transparent",oma=rep(0,4),mai=rep(0,4))
   g=delete.vertices(sb,which(V(sb)$size<3))
-  plot(g, edge.width = E(g)$weight*1, 
-       layout = layout.circle, vertex.size = log(V(g)$size)*2, 
+  plot(g, edge.width = E(g)$weight*5, 
+       layout = layout.circle, vertex.size = log(V(g)$size)*5, 
        vertex.label.color = "black", vertex.label.cex = .5, 
-       vertex.label.family="sans", vertex.frame.color = NA, 
-       edge.curved=TRUE, edge.arrow.size = .05, edge.color = "black")
+       vertex.label.family="sans", vertex.frame.color = NA, vertex.label="",
+       edge.curved=TRUE, edge.arrow.size = .05, edge.color = alpha("black",.25))
 dev.off()
 
-pdf("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_3b.pdf",width = 8, height = 8)
-  par(bg="transparent")
+png("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_3b.png",
+    width = 4, height = 4, res = 300, units = "in")
+  par(bg="transparent",oma=rep(0,4),mai=rep(0,4))
   g = delete.vertices(erk, which(V(erk)$size<3))
-  plot(g, edge.width = E(g)$weight*1, 
-       layout = layout.circle, vertex.size = log(V(g)$size)*2, 
+  plot(g, edge.width = E(g)$weight*5, 
+       layout = layout.circle, vertex.size = log(V(g)$size)*5, 
        vertex.label.color = "black", vertex.label.cex = .5, 
-       vertex.label.family="sans", vertex.frame.color = NA, 
-       edge.curved=TRUE, edge.arrow.size = .05, edge.color = "black")
+       vertex.label.family="sans", vertex.frame.color = NA, vertex.label="",
+       edge.curved=TRUE, edge.arrow.size = .05, edge.color = alpha("black",.25))
   dev.off()
   
   
-  pdf("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_3d.pdf",width = 8, height = 8)
-  par(bg="transparent")
+  png("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_3d.png",
+      width = 4, height = 4, res= 300, units = "in")
+  par(bg="transparent",oma=rep(0,4),mai=rep(0,4))
   g = delete.vertices(oak, which(V(oak)$size<3))
-  plot(g, edge.width = E(g)$weight*1, 
-       layout = layout.circle, vertex.size = log(V(g)$size)*2, 
+  plot(g, edge.width = E(g)$weight*3, 
+       layout = layout.circle, vertex.size = log(V(g)$size)*10, 
        vertex.label.color = "black", vertex.label.cex = .5, 
-       vertex.label.family="sans", vertex.frame.color = NA, 
-       edge.curved=TRUE, edge.arrow.size = .05, edge.color = "black")
+       vertex.label.family="sans", vertex.frame.color = NA,vertex.label="",
+       edge.curved=TRUE, edge.arrow.size = .05, edge.color = alpha("black",.25))
   dev.off()
   
 
@@ -123,15 +124,20 @@ lm2 <- lm(delta.eff.shannon_2010 ~  eff.shannon_2010 + ifq_flag,
               max_ci = quantile(coefficient, .975), 
               min_ci = quantile(coefficient,0.025))
   
-  levels(ifq_effect$ifq_flag) = c("general fleet"," catch share\nparticipant", 
-                                  "limited entry\nexit")
+  ifq_effect$ifq_flag = factor(ifq_effect$ifq_flag,labels = 
+                                 c("general\nparticipants",
+                                   "limited entry\nexit",
+                                   "catch share\nparticipant"), ordered = TRUE)
 
 # plot
 ggplot(ifq_effect, aes(x = ifq_flag, y = mean)) + geom_point(size =7) + 
   ylim(c(0,1.2)) + 
   geom_errorbar(aes(ymin = min_ci, ymax = max_ci), width = 0) + 
-  theme_pander() + geom_hline(yintercept=0) + geom_vline(xintercept=.5) +
-  xlab(expression)
+  theme_pander() + ylab(expression(paste(Delta,"H"))) + 
+  xlab("") + theme(panel.grid=element_blank()) + ylim(c(0,1.3))
+
+ggplot2::ggsave("Analysis/Metiers/bin/05_figures/fig5.pdf",width=4, height = 4, 
+                units="in",scale=1)
 
 # port model
 fp = "/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/04_data_output/port_stats.RDS"
