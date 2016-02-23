@@ -153,3 +153,6 @@ plot(g3, edge.width = E(g)$weight*10,
      vertex.label.color='black', vertex.label.cex = 1, edge.curved = TRUE, 
      layout = layout.grid, vertex.size = 20)
 dev.off()
+
+write.csv(g2_mat, "Analysis/ses_network/figures/jacquard_subset.csv")
+write.csv(m1.trips.ignore, "Analysis/ses_network/figures/trip_cor.csv")
