@@ -19,7 +19,7 @@ all.dat_sp <- temp.new2
 n.scenarios <- 2
 n.metiers <- length(my.headers)
 ar <- array(dim = c(n.scenarios,n.metiers)) 
-dimnames(ar) <- list(c("control","decrease_POT1"),my.headers)
+dimnames(ar) <- list(c("control","eliminate_POT1"),my.headers)
 
 #Hard Code Funciton ideas if time
 ##Add counter to record which matrix didn't equilibrate?
@@ -134,7 +134,7 @@ dimnames(ts_ar) <- list(c(seq(1:ts_length)),my.headers)
   
   emat_crabd <- matrix(nrow=(max.it_crabd+1),ncol = ncol(adj.m_crabd)) #make an empty matrix with species as columns
   emat_crabd[1,] <- rep(1,ncol(adj.m_crabd)) #define the adjacency matrix (i.e. the perturbation): 1 is no perturb. need to think about strength 
-  emat_crabd[1,5] <- -1 #add the crab (POT_1) perturbation 
+  emat_crabd[1,5] <- 0 #add the crab (POT_1) perturbation 
   
   # start all metiers with the same relative abundance
   ### OR BETTER TO START AT STEADY STATE ABUNDANCES? ###
@@ -148,7 +148,7 @@ dimnames(ts_ar) <- list(c(seq(1:ts_length)),my.headers)
   
       for(i in 1:max.it_crabd){
       tmpmat1 <- emat_crabd[i,]
-      tmpmat1[5] <- -1 #reduce crab (POT_1) 
+      tmpmat1[5] <- 0 #eliminate crab (POT_1) 
       tmpmat2 <- tmpmat1 %*% adj.m #make a temporary matrix to multiply the adjacency vector with the individual respondent's matrix
       emat_crabd[i+1,] <- 1/(1+exp(-tmpmat2)) #scale 0 to 1 with logit transform
       ts_ar_crabd[i+1,] <- 1/(1+exp(-tmpmat2)) 
@@ -174,14 +174,14 @@ dimnames(ts_ar) <- list(c(seq(1:ts_length)),my.headers)
     em_crabd <- ((as.numeric(df1_crabd[nrow(df1_crabd),])-ar[1,])/ ar[1,])*100 ##Save Equilibrium Value (i.e. last of df) relative to steady state contained in ar[1,]
     em_crabd <- as.data.frame(cbind(my.headers,em_crabd))
     em_crabd[,2] <- as.numeric(as.character(em_crabd[,2]))
-    colnames(em_crabd) <- c("Metier","Decrease crab (POT_1) relative abundance")
+    colnames(em_crabd) <- c("Metier","Eliminate crab (POT_1) relative abundance")
     setwd("~/Documents/CNH_to_github/cnh/Analysis/ses_network/FCM")
-    write.csv(em_crabd,"Decrease crab (POT_1) relative change for coastwide network based on trips.csv", row.names=FALSE)
+    write.csv(em_crabd,"Eliminate crab (POT_1) relative change for coastwide network based on trips.csv", row.names=FALSE)
     
     
     ar[2,]<- ((as.numeric(df1_crabd[nrow(df1_crabd),])-ar[1,])/ ar[1,])*100 
   
-    write.csv(ar,"Steady state relative abundance and decrease crab (POT_1) relative change for coastwide network based on trips.csv", row.names=TRUE)
+    write.csv(ar,"Steady state relative abundance and eliminate crab (POT_1) relative change for coastwide network based on trips.csv", row.names=TRUE)
 
     
 ##########################################
