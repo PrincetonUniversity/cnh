@@ -245,8 +245,26 @@ length(which(is.na(m1.rev)))
 
 # create a 2nd df where we ignore correlations where number of vessels that participate in pair of metiers is <cutoff
 cutoff <- 10 # minimum number of vessels for performing correlation test
+
+# find number of vessels that ever participated in pairs of metiers across all years
+count_participation <- matrix(ncol=ncol(m1.rev), nrow = nrow(m1.rev))
+colnames(count_participation) <- colnames(m1.rev)
+rownames(count_participation) <- rownames(m1.rev)
+
+for(i in 1:nrow(count_participation)){
+  for(j in 1:ncol(count_participation)){
+    m1 <- rownames(count_participation)[i]
+    m2 <- colnames(count_participation)[j]
+    sub_tix <- tickets %>%
+      filter(metier.2010 %in% c(m1, m2)) %>%
+      dplyr::select(drvid, metier.2010) %>%
+      distinct() 
+    count_participation[i,j] <- length(which(table(sub_tix$drvid)==2))
+  }
+}
+
 m1.rev.ignore <- m1.rev
-m1.rev.ignore[which(count_mat_adj_year < cutoff)] <- NA
+m1.rev.ignore[which(count_participation < cutoff)] <- NA
 length(which(is.na(m1.rev.ignore)))
 
 # make corr matrix into a lower diagonal matrix only
@@ -278,7 +296,7 @@ length(which(is.na(m1.lbs)))
 # create a 2nd df where we ignore correlations where number of vessels that participate in pair of metiers is <cutoff
 cutoff <- 10 # minimum number of vessels for performing correlation test
 m1.lbs.ignore <- m1.lbs
-m1.lbs.ignore[which(count_mat_adj_year < cutoff)] <- NA
+m1.lbs.ignore[which(count_participation  < cutoff)] <- NA
 length(which(is.na(m1.lbs.ignore)))
 
 # make corr matrix into a lower diagonal matrix only
@@ -310,7 +328,7 @@ length(which(is.na(m1.trips)))
 # create a 2nd df where we ignore correlations where number of vessels that participate in pair of metiers is <cutoff
 cutoff <- 10 # minimum number of vessels for performing correlation test
 m1.trips.ignore <- m1.trips
-m1.trips.ignore[which(count_mat_adj_year < cutoff)] <- NA
+m1.trips.ignore[which(count_participation  < cutoff)] <- NA
 length(which(is.na(m1.trips.ignore)))
 
 # matrix for FCM analysis
