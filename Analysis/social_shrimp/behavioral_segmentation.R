@@ -11,6 +11,7 @@ library(rgdal)
   # choose time window
   window = 24
   
+  # get shrimp vessel IDs
 fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_total_tw",
              window,"hr.csv")
   trip_tot_dat <- read.csv(fp) %>%
@@ -25,8 +26,10 @@ fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_tot
   vms_files <- do.call(rbind, vms_files)
   
   vms_files <- vms_files %>%
-    filter(!(is.na(observed))) # 
+    mutate(sector = as.character(sector)) %>%
+    filter(!(is.na(observed)),sector == "Pink Shrimp")
   
+
 # generate movement statistics ----
   
   # need to make an ID that is only_trips + doc.num to get unique trips 
@@ -52,13 +55,17 @@ fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_tot
     prob_trips <- unique(vms_files$trip_id1)[which(count_bursts>1)]
   
     states <- map_data('state',region=c("Washington","Oregon"))
-    ggplot(subset(as.data.frame(vms_files), trip_id1==prob_trips[2]), 
+    ggplot(subset(as.data.frame(vms_files), trip_id1==prob_trips[6]), 
            aes(x = longitude, y = latitude, group = burst_id)) + 
-      xlim(c(-125,-123)) + ylim(c(45.8,49)) +
+      #xlim(c(-125,-123)) + ylim(c(45.8,49)) +
       geom_path(aes(color=burst_id)) + coord_equal() + 
       geom_polygon(data = states, aes(x = long, y= lat,group=group)) +
       theme_minimal() 
     
+    
+  # drop trips that have fewer than 50 relocs
+    n.locs <- table(vms_files$burst_id)
+    vms_files <- subset(vms_files, burst_id %in% names(n.locs)[which(n.locs>100)])
   # make spatial
   coordinates(vms_files) <- ~longitude+latitude
   proj4string(vms_files) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
@@ -86,12 +93,41 @@ fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_tot
   
   dat$id <- as.character(dat$id)
   
+  # add dynBGB
+  # library(move)
+  # ssub<- move(data[,xname], data[,yname],data[,timename],
+  #             proj=CRS(projstring),
+  #             animal=data[,idname])
+  # move_dat <- move(x = coordinates(vms_proj)[,1],y = coordinates(vms_proj)[,2],
+  #                 proj = proj4string(vms_proj), time = vms_proj$date.time, 
+  #                 animal=vms_proj$burst_id)
+  # 
+  # library(snow)
+  # ssub<- spTransform(move_dat, CRSobj=CRS('+proj=longlat +datum=WGS84 +no_defs'))
+  # spdata<-spTransform(ssub,center=T)
+  # cl <- makeSOCKcluster(rep("localhost", 3))
+  # 
+  # # give data to cluster
+  # clusterExport(cl,'spdata',envir=environment())
+  # 
+  # # calcate movement statistic, split move stack to consider each trajectory seperately
+  # dBGBvar <- lapply(split(spdata) , dynBGBvariance, margin=5, windowSize=3,
+  #                   locErr=5,cluster=cl)
+  # stopCluster(cl)
+  
+  
   # add observed and fishing data to dat
   full_dat <- left_join(dat, dplyr::select(as.data.frame(vms_files), burst_id, 
                                       date.time, fishing, observed, dist_coast),
                    by = c("id" = "burst_id","date"="date.time"))
   
 # make sure training data is clean ----
+  
+  # need to have trips that have at least 6 relocs
+  n.locs <- table(dat$burst)
+  n_big <- names(n.locs)[which(n.locs>50)]
+  
+  
   # are there gaps in trips > 2 hours?
   length(which(dat$dt>4*60*60))
   ggplot(dat, aes(x = dt)) + geom_histogram() + 
@@ -175,9 +211,7 @@ fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_tot
                                            date.time, fishing, observed, dist_coast),
                         by = c("id" = "burst_id","date"="date.time"))
   
-  # need to have trips that have at least 6 relocs
-  n.locs <- table(fld$id)
-  n_big <- names(n.locs)[which(n.locs>6)]
+
   
   complete_dat <- fld %>%
     filter(id %in% n_big) %>%
@@ -237,8 +271,11 @@ fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_tot
   library(rfUtilities)
   tuning <- rf.modelSel(xdata = training_dat_norm[train_i,], ydata = y[train_i])
   
+  mtrys <- tuneRF(x = training_dat_norm[train_i, tuning$selvars], 
+                  y = y[train_i])
+  
   rf1 <- randomForest(x = training_dat_norm[train_i, tuning$selvars], 
-                      y = y[train_i],mtry = 2)
+                      y = y[train_i],mtry = 5)
   
 # predict out to withheld data
   
@@ -246,7 +283,7 @@ fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_tot
  colnames(pred_rf1) <- paste0("p",colnames(pred_rf1))
  pred_rf1 <- as.data.frame(pred_rf1)
  pred_rf1$true <- y[test_i]
- pred_rf1$pred <- ifelse(pred_rf1$p1>.15, 1, 0)
+ pred_rf1$pred <- ifelse(pred_rf1$p1>.6, 1, 0)
  
  table(pred_rf1$true, pred_rf1$pred,deparse.level = 2)
  
@@ -257,11 +294,11 @@ fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_tot
  
  # subset 1 single trip, speed and turning angles
  t1 <- subset(complete_dat, id == testids[20])
- plot(t1$date, t1$speed_kmph,type='h',col = t1$fishing+1)
- plot(t1$date, t1$spd_nrom, type='h',col=t1$fishing+1)
- plot(t1$date, t1$dist_coast,type='h',col = t1$fishing+1)
- plot(t1$speed_kmph, t1$dist_coast,type='p',col = t1$fishing+1)
- plot(t1$date, t1$dist,type='h',col = t1$fishing+1)
+ plot(x=t1$date, y=t1$speed_kmph,type='h',col = t1$fishing+1)
+ plot(x=t1$date, y=t1$spd_nrom, type='h',col=t1$fishing+1)
+ plot(x=t1$date, y=t1$dist_coast,type='h',col = t1$fishing+1)
+ plot(x=t1$speed_kmph, y=t1$dist_coast,type='p',col = t1$fishing+1)
+ plot(x=t1$date, y=t1$dist,type='h',col = t1$fishing+1)
  
  plot(t1$x, t1$y, col = t1$fishing+1, cex = .5,pch=19,asp=1)
  lines(t1$x, t1$y, col='grey',lwd=.5)
