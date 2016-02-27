@@ -38,7 +38,7 @@ names(tickets)
   
   ######################################################
   ######################################################
-  setwd("~/Documents/CNH_to_github/cnh/Analysis/ses_network")
+  setwd("~/Documents/CNH_to_github/cnh/Analysis/ses_network/output")
   source("theme_acs.R")
   
   # start by producing a data frame with vessel - year - number of metiers participated in
@@ -177,6 +177,18 @@ df.cor.trips.adj_year <- df.cor.adj_year %>%
   spread(metier.2010, trips)  # reshape data frame
 
 ##########################################
+# DETERMINE MEAN PROPORTION OF TRIPS FOR EACH OF THE TOP10 METIERS
+##########################################
+
+num.trips.by.metier <- colSums(df.cor.trips.adj_year[,-c(1:4)],na.rm=TRUE)
+total.trips <- sum(num.trips.by.metier)
+mean.prop.trips <- num.trips.by.metier/total.trips
+
+num.trips.out <- data.frame(num.trips.by.metier,mean.prop.trips)
+write.csv(num.trips.out,"Total number of trips and mean proportion of trips for top 10 metiers 2009-2013.csv")
+
+
+##########################################
 ##########################################
 # make pairs plot for metiers by revenue, 
 # pounds, trips, and proportion of these 
@@ -246,6 +258,8 @@ length(which(is.na(m1.rev)))
 # create a 2nd df where we ignore correlations where number of vessels that participate in pair of metiers is <cutoff
 cutoff <- 10 # minimum number of vessels for performing correlation test
 
+# Emma's code to record individual vessels rather than vessel-years, produce count_participation that is used to filter out metiers with >=10 vessels
+
 # find number of vessels that ever participated in pairs of metiers across all years
 count_participation <- matrix(ncol=ncol(m1.rev), nrow = nrow(m1.rev))
 colnames(count_participation) <- colnames(m1.rev)
@@ -255,7 +269,7 @@ for(i in 1:nrow(count_participation)){
   for(j in 1:ncol(count_participation)){
     m1 <- rownames(count_participation)[i]
     m2 <- colnames(count_participation)[j]
-    sub_tix <- tickets %>%
+    sub_tix <- tickets %>% # this is where we subset to individual vessels rather than vessel-years
       filter(metier.2010 %in% c(m1, m2)) %>%
       dplyr::select(drvid, metier.2010) %>%
       distinct() 
@@ -289,7 +303,7 @@ ggsave("Correlation matrix based on revenues, adjusted years.pdf")
 
 # POUNDS #
 
-# create a df of rank correlation values for revenues
+# create a df of rank correlation values for pounds
 m1.lbs <- cor(df.cor.lbs.adj_year[,5:dim(df.cor.lbs.adj_year)[2]], method="spearman",use="pairwise.complete.obs")
 length(which(is.na(m1.lbs)))
 

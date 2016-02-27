@@ -5,7 +5,7 @@
 # include row and column names
 # simulations will focus on effects of rows on columns
 
-setwd("~/Documents/CNH_to_github/cnh/Analysis/ses_network")
+setwd("~/Documents/CNH_to_github/cnh/Analysis/ses_network/output")
 
 temp <- read.csv("Correlations between metiers based on trips (symmetric matrix), adjusted years.csv", header=TRUE)
 # may need to ensure that the matrix is the appropriate dimensions. blank was a dummy matrix we read in for this purpose: [1:nrow(blank),] 

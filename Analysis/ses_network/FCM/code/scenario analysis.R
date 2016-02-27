@@ -5,7 +5,10 @@ library(reshape)
 library(fpc)
 library(vegan)
 
-setwd("~/Documents/CNH_to_github/cnh/Analysis/ses_network/FCM")
+setwd("/Users/jameal.samhouri/Documents/CNH_to_github/cnh/Analysis/ses_network/output")
+num.prop.trips <- read.csv("Total number of trips and mean proportion of trips for top 10 metiers 2009-2013.csv", header=TRUE)
+
+setwd("~/Documents/CNH_to_github/cnh/Analysis/ses_network/FCM/code")
 
 source('theme_acs.R')
 source('multiplot.R')
@@ -52,14 +55,30 @@ dimnames(ts_ar) <- list(c(seq(1:ts_length)),my.headers)
   adj.m = all.dat_sp #[,,r] #pull out a single matrix 
   #diag(adj.m) = rep(-1,adj.m,length(diag(adj.m))) #insert density dependence
   diag(adj.m) = rep(0,adj.m,length(diag(adj.m))) #insert no density dependence
+  adj.m [is.na(adj.m)==TRUE] <- 0 # convert NAs to zeroes
   
   max.it <- 1000 #set maximum iterations
   
   emat <- matrix(nrow=(max.it+1),ncol = ncol(adj.m)) #make an empty matrix with species as columns
-  emat[1,] <- rep(1,ncol(adj.m)) #define the adjacency matrix (i.e. the perturbation): 1 is no perturb. need to think about strength 
   
   # start all metiers with the same relative abundance
-  ts_ar[1,] <- rep(1,ncol(adj.m))
+  #emat[1,] <- rep(1,ncol(adj.m)) #define the adjacency matrix (i.e. the perturbation): 1 is no perturb. need to think about strength 
+  #ts_ar[1,] <- rep(1,ncol(adj.m))
+  
+  ########################
+  ########################
+  ########################
+  # start all metiers with relative abundance based on proportion of trips they account for on average 2009-2013. 
+  emat[1,] <- num.prop.trips$mean.prop.trips
+  ts_ar[1,] <- num.prop.trips$mean.prop.trips
+  #emat[1,] <- 1/(1+exp(-num.prop.trips$mean.prop.trips))
+  #ts_ar[1,] <-1/(1+exp(-num.prop.trips$mean.prop.trips))
+  # start all metiers with relative abundance based on number of trips they account for on average 2009-2013. 
+  # emat[1,] <- num.prop.trips$num.trips.by.metier
+  # ts_ar[1,] <- num.prop.trips$num.trips.by.metier
+  ########################
+  ########################
+  ########################
   
   #vector for estimating differences as matrix converges
   diffvec <- rep(99, ncol(adj.m)) 
@@ -72,6 +91,8 @@ dimnames(ts_ar) <- list(c(seq(1:ts_length)),my.headers)
     tmpmat <- emat[i,] %*% adj.m 
     
     #scale 0 to 1 with logit transform
+    #plot(seq(-1,1,0.01),1/(1+exp(-seq(-1,1,0.01))))
+    #plot(seq(-10,10,0.01),1/(1+exp(-seq(-10,10,0.01))))
     emat[i+1,] <- 1/(1+exp(-tmpmat)) 
     
     ts_ar[i+1,] <- 1/(1+exp(-tmpmat)) 
@@ -99,10 +120,11 @@ dimnames(ts_ar) <- list(c(seq(1:ts_length)),my.headers)
   em_c <- as.data.frame(cbind(my.headers,em_c))
   em_c[,2] <- as.numeric(as.character(em_c[,2]))
   colnames(em_c) <- c("Metier","Steady state relative abundance")
-  setwd("~/Documents/CNH_to_github/cnh/Analysis/ses_network/FCM")
+  setwd("~/Documents/CNH_to_github/cnh/Analysis/ses_network/FCM/output")
   write.csv(em_c,"Steady state relative abundance for coastwide network based on trips.csv", row.names=FALSE)
   
   ar[1,]<- as.numeric(df1[nrow(df1),])
+  which(ar[1,]==min(ar[1,])) # POT_1 is least abundant
   
 
 ### STOPPED HERE ON 1/29/16. NEXT STEP IS TO SIMULATE A CRAB CLOSURE AND ASK HOW PARTICIPATION (TRIPS) IS EXPECTED TO CHANGE RELATIVE TO THE STEADY STATE. 
@@ -110,9 +132,32 @@ dimnames(ts_ar) <- list(c(seq(1:ts_length)),my.headers)
 ### ALSO, DOES THE STEADY STATE EVEN MAKE SENSE???? URCHIN HAS LOWEST RELATIVE ABUNDANCE, SQUID AND SALMON GREATEST, RANGE IS QUITE SMALL 0.36-0.49.
   ### I THINK THE STEADY STATE IS AN INTERMEDIATE OUTPUT THAT IS USEFL FOR GAUGING THE EFFECTS OF PRESS PERTURBATIONS BUT NOT USEFUL UNTO ITSELF (1/30/16)
   
-  #CRAB REDUCTION
+  colnames(df1) <- my.headers
+  df1$time <- seq(1,nrow(df1),1)
+  df_ts <- melt(df1,,id.vars="time")
+  ggplot(df_ts,aes(x=time,y=value,colour=variable))+
+    geom_line()+
+    geom_point(size=2)+
+    xlim(0,nrow(df1))+
+    xlab("Time")+ylab("Relative Abundance")+
+    ggtitle("Steady state analysis for top10 metiers \nbased on correlations among trips")+
+    theme_bw() +
+    theme(
+      text=element_text(size=14),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      panel.background = element_rect(fill = NA,colour = "black",size=2)#,
+      #legend.title = element_blank()
+    )
+  
+  # png(filename = "TS_HerringDecrease_EG.png",width = 800, height = 500)
+  # em_hts
+  # dev.off()
+  # 
+  
+  #CRAB ELIMINATION
   ####################################################################################################
-  ######## Get a matrix of the effects of crab reduction. note change in tmpmat coding, inserts value each iteration
+  ######## Get a matrix of the effects of crab elimination. subset to 9 node network. note change in tmpmat coding, inserts value each iteration
   ####################################################################################################
   
   em_crabd <- c()
@@ -121,20 +166,21 @@ dimnames(ts_ar) <- list(c(seq(1:ts_length)),my.headers)
   colnames(converge_crabd) <- c("diffvec","nits")
   
   ts_length <- 1001
-  ts_ar_crabd <- matrix(nrow=ts_length,ncol=n.metiers) #make empty array
-  dimnames(ts_ar_crabd) <- list(c(seq(1:ts_length)),my.headers)
+  ts_ar_crabd <- matrix(nrow=ts_length,ncol=n.metiers-1) #make empty array
+  dimnames(ts_ar_crabd) <- list(c(seq(1:ts_length)),my.headers[-5])
   
 #    for(r in 1:dim(all.dat_sp)[3]){  
   
-  adj.m_crabd = all.dat_sp #[,,r] #pull out a single matrix 
+  adj.m_crabd = all.dat_sp[-5,-5] #[,,r] #pull out a single matrix 
   #diag(adj.m) = rep(-1,adj.m,length(diag(adj.m))) #insert density dependence
   diag(adj.m_crabd) = rep(0,adj.m_crabd,length(diag(adj.m_crabd))) #insert no density dependence
+  adj.m_crabd [is.na(adj.m_crabd)==TRUE] <- 0 # convert NAs to zeroes
   
   max.it_crabd <- 1000 #set maximum iterations
   
   emat_crabd <- matrix(nrow=(max.it_crabd+1),ncol = ncol(adj.m_crabd)) #make an empty matrix with species as columns
   emat_crabd[1,] <- rep(1,ncol(adj.m_crabd)) #define the adjacency matrix (i.e. the perturbation): 1 is no perturb. need to think about strength 
-  emat_crabd[1,5] <- 0 #add the crab (POT_1) perturbation 
+  #emat_crabd[1,5] <- 0 #add the crab (POT_1) perturbation 
   
   # start all metiers with the same relative abundance
   ### OR BETTER TO START AT STEADY STATE ABUNDANCES? ###
@@ -148,8 +194,8 @@ dimnames(ts_ar) <- list(c(seq(1:ts_length)),my.headers)
   
       for(i in 1:max.it_crabd){
       tmpmat1 <- emat_crabd[i,]
-      tmpmat1[5] <- 0 #eliminate crab (POT_1) 
-      tmpmat2 <- tmpmat1 %*% adj.m #make a temporary matrix to multiply the adjacency vector with the individual respondent's matrix
+      #tmpmat1[5] <- 0 #eliminate crab (POT_1) 
+      tmpmat2 <- tmpmat1 %*% adj.m_crabd #make a temporary matrix to multiply the adjacency vector with the individual respondent's matrix
       emat_crabd[i+1,] <- 1/(1+exp(-tmpmat2)) #scale 0 to 1 with logit transform
       ts_ar_crabd[i+1,] <- 1/(1+exp(-tmpmat2)) 
       
@@ -171,17 +217,27 @@ dimnames(ts_ar) <- list(c(seq(1:ts_length)),my.headers)
     
     df1_crabd <- data.frame(emat_crabd) #make into data frame
     df1_crabd <- subset(df1_crabd,df1_crabd[,1]!="NA") #subset NAs
-    em_crabd <- ((as.numeric(df1_crabd[nrow(df1_crabd),])-ar[1,])/ ar[1,])*100 ##Save Equilibrium Value (i.e. last of df) relative to steady state contained in ar[1,]
-    em_crabd <- as.data.frame(cbind(my.headers,em_crabd))
+    
+    em_crabd_raw <- as.numeric(df1_crabd[nrow(df1_crabd),]) ##Save Raw Equilibrium Value (i.e. last of df)
+    em_crabd_raw <- as.data.frame(cbind(my.headers[-5],em_crabd_raw))
+    em_crabd_raw[,2] <- as.numeric(as.character(em_crabd_raw[,2]))
+    colnames(em_crabd_raw) <- c("Metier","Eliminate crab (POT_1) steady state abundance")
+    
+    em_crabd <- ((as.numeric(df1_crabd[nrow(df1_crabd),])-ar[1,-5])/ ar[1,-5])*100 ##Save Equilibrium Value (i.e. last of df) relative to steady state contained in ar[1,]
+    em_crabd <- as.data.frame(cbind(my.headers[-5],em_crabd))
     em_crabd[,2] <- as.numeric(as.character(em_crabd[,2]))
-    colnames(em_crabd) <- c("Metier","Eliminate crab (POT_1) relative abundance")
-    setwd("~/Documents/CNH_to_github/cnh/Analysis/ses_network/FCM")
-    write.csv(em_crabd,"Eliminate crab (POT_1) relative change for coastwide network based on trips.csv", row.names=FALSE)
+    colnames(em_crabd) <- c("Metier","Eliminate crab (POT_1) abundance relative to steady state with crab")
     
+    df1_crabd.tmp <- unlist(c(df1_crabd[nrow(df1_crabd),1:4],"NA",df1_crabd[nrow(df1_crabd),5:9]))
+    # df1_crabd.tmp <- as.data.frame(cbind(my.headers,df1_crabd.tmp))
+    # df1_crabd.tmp[,2] <- as.numeric(as.character(df1_crabd.tmp[,2]))
+    # colnames(df1_crabd.tmp) <- c("Metier","Eliminate crab (POT_1) steady state abundance")
+    ar[2,]<- ((as.numeric(df1_crabd.tmp)-ar[1,])/ ar[1,])*100
     
-    ar[2,]<- ((as.numeric(df1_crabd[nrow(df1_crabd),])-ar[1,])/ ar[1,])*100 
-  
-    write.csv(ar,"Steady state relative abundance and eliminate crab (POT_1) relative change for coastwide network based on trips.csv", row.names=TRUE)
+    setwd("~/Documents/CNH_to_github/cnh/Analysis/ses_network/FCM/output")
+    write.csv(em_crabd_raw,"Eliminate crab (POT_1) steady state abundance for coastwide network based on trips.csv", row.names=FALSE)
+    write.csv(em_crabd,"Eliminate crab (POT_1) change relative to steady state with crab for coastwide network based on trips.csv", row.names=FALSE)
+    write.csv(ar,"Steady state abundance and eliminate crab (POT_1) change relative to steady state with crab for coastwide network based on trips.csv", row.names=TRUE)
 
     
 ##########################################
@@ -191,6 +247,21 @@ dimnames(ts_ar) <- list(c(seq(1:ts_length)),my.headers)
 
 cor(all.dat_sp[,5],ar[2,], method="spearman",use="pairwise.complete.obs")
 plot(all.dat_sp[,5],ar[2,])
+
+df.cor.crabd <- data.frame(my.headers,all.dat_sp[,5],as.numeric(unlist(c(em_crabd[1:4,2],"NA",em_crabd[5:9,2]))))
+colnames(df.cor.crabd) <- c("Metier", "Interaction.strength", "Rel.change.with.no.crab")
+
+ggplot(df.cor.crabd, aes(x=Interaction.strength, y=Rel.change.with.no.crab)) +
+  geom_point(size=3)+
+  theme_bw() +
+  theme(
+    text=element_text(size=14),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.background = element_rect(fill = NA,colour = "black",size=2)#,
+    #legend.title = element_blank()
+  )
+ggsave("Association between metier interaction strengths (coastwide network based on trips) and eliminate crab (POT_1) change relative to steady state with crab.pdf")
     
 # strong negative correlation, indicating that the more negatively correlated trips were between a metier and POT_1, the more positive the expected effect of a crab closure. makes sense - BOOM
 
