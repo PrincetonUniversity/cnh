@@ -19,7 +19,7 @@ library(tidyr)
   
 # load VMS data
   # choose time window
-  window = 0 # 0, 24, 36, 72, 168
+  window = 24 # 0, 24, 36, 72, 168
   
   # names of vessel tracks
   path = paste0("processedData/spatial/vms/intermediate/04_link_mets_vms/tw_",window,"hr/")
@@ -158,8 +158,8 @@ for (i in 1:length(file_names)){
     # keep track of trips
     for (j in 1:nrow(v_obs)){
       # Find vms between in and out times
-      f_id <- which(vms$date.time >= set_datetime[j] - 60*60 & 
-                      vms$date.time <= up_datetime[j] + 60*60)
+      f_id <- which(vms$date.time >= set_datetime[j] & 
+                      vms$date.time <= up_datetime[j])
       
       # add to fishing
       vms$fishing[f_id] = as.character(v_obs$fish_tickets[j])

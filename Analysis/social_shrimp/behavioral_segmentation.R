@@ -22,14 +22,46 @@ fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_tot
 # load VMS and subset to observed points ----
   fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/tw_",
                window,"hr/",trip_tot_dat$vessel.ID,".csv")
-  vms_files <- lapply(fp, read.csv)
-  vms_files <- do.call(rbind, vms_files)
   
-  vms_files <- vms_files %>%
-    mutate(sector = as.character(sector)) %>%
-    filter(!(is.na(observed)),sector == "Pink Shrimp")
+  dat_list <- lapply(fp, read.csv)
+  dat_long <- do.call(rbind, dat_list)
+  vms_files <-  dat_long%>%
+    dplyr::select(-contains("lbs"), -contains("rev"), -contains("trip_id"), 
+                  trip_id1, -onland, -time, -distance, only_trips) %>%
+    mutate(sector = as.character(sector), 
+           date.time = as.POSIXct(date.time, format="%Y-%m-%d %H:%M:%S", 
+                                  tz = "Etc/GMT-8"),
+           burst.id = paste(only_trips, doc.num, sep="_")) %>%
+    filter(!(is.na(observed)),sector == "Pink Shrimp", only_trips!=0) %>%
+    arrange(vessel.name, date.time) %>%
+    # represent fast/slow fishing/searching
+    mutate(adj_fishing = ifelse(avg.speed<5 & !is.na(fishing), 4,
+                         ifelse(avg.speed<5 & is.na(fishing), 3,
+                         ifelse(avg.speed>5 & !is.na(fishing), 2, 1)))) %>%
+    group_by(vessel.name, burst.id) %>%
+    # calculate differences between time steps, x and y dimensions
+    mutate(dt = c(NA,diff(date.time)), 
+           dx = c(NA,diff(longitude)), 
+           dy = c(NA, diff(latitude))) %>%
+    # drop burst ids that contain a difference of more than 4 hours
+    filter(!(burst.id %in% unique(burst.id[which(dt>2*60)])),
+    # drop any of these weird points that have no movement and exactly one hour later
+           !(dt == 60 & dx == 0 & dy ==0), dt !=180) %>%
+    
+    
+    
+    
+    
+# clean the data -----
+  # drop any that have not moved at all and have exactly 60 seconds difference
+  # drop any trips which have a gap more than 4 hours
+  # drop any trips that have exactly 3 minutes difference
+  # resample to approximately an hour
   
-
+  drp_ids <- which(full_dat$dx==0 & full_dat$dy==0 & full_dat$dt==60)
+  drp_ids <- which(filtered_dat$dt<=180)
+  
+  
 # generate movement statistics ----
   
   # need to make an ID that is only_trips + doc.num to get unique trips 
@@ -53,15 +85,6 @@ fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_tot
     count_bursts = sapply(all_ids, n_burst)
     which(count_bursts>1)
     prob_trips <- unique(vms_files$trip_id1)[which(count_bursts>1)]
-  
-    states <- map_data('state',region=c("Washington","Oregon"))
-    ggplot(subset(as.data.frame(vms_files), trip_id1==prob_trips[6]), 
-           aes(x = longitude, y = latitude, group = burst_id)) + 
-      #xlim(c(-125,-123)) + ylim(c(45.8,49)) +
-      geom_path(aes(color=burst_id)) + coord_equal() + 
-      geom_polygon(data = states, aes(x = long, y= lat,group=group)) +
-      theme_minimal() 
-    
     
   # drop trips that have fewer than 50 relocs
     n.locs <- table(vms_files$burst_id)
@@ -93,29 +116,6 @@ fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_tot
   
   dat$id <- as.character(dat$id)
   
-  # add dynBGB
-  # library(move)
-  # ssub<- move(data[,xname], data[,yname],data[,timename],
-  #             proj=CRS(projstring),
-  #             animal=data[,idname])
-  # move_dat <- move(x = coordinates(vms_proj)[,1],y = coordinates(vms_proj)[,2],
-  #                 proj = proj4string(vms_proj), time = vms_proj$date.time, 
-  #                 animal=vms_proj$burst_id)
-  # 
-  # library(snow)
-  # ssub<- spTransform(move_dat, CRSobj=CRS('+proj=longlat +datum=WGS84 +no_defs'))
-  # spdata<-spTransform(ssub,center=T)
-  # cl <- makeSOCKcluster(rep("localhost", 3))
-  # 
-  # # give data to cluster
-  # clusterExport(cl,'spdata',envir=environment())
-  # 
-  # # calcate movement statistic, split move stack to consider each trajectory seperately
-  # dBGBvar <- lapply(split(spdata) , dynBGBvariance, margin=5, windowSize=3,
-  #                   locErr=5,cluster=cl)
-  # stopCluster(cl)
-  
-  
   # add observed and fishing data to dat
   full_dat <- left_join(dat, dplyr::select(as.data.frame(vms_files), burst_id, 
                                       date.time, fishing, observed, dist_coast),
@@ -140,14 +140,6 @@ fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_tot
   
   head(miss_trips)
   head(which(dat$dt>4*60*60))
-  
-  library(broom)
-  wc_g <- tidy(WC, region = "id")
-  ggplot(subset(full_dat, id == miss_trips[8]), aes(x, y, group = id)) + 
-    geom_path(aes(color=dt/3600), size = .5)  + 
-    coord_equal() + theme_minimal() + 
-    geom_polygon(data = wc_g, aes(x = long, y = lat, group = group)) + 
-    ylim(c(4500000, 5000000))
   
   # going to drop these trips with > 4 hours diff
   full_dat <- subset(full_dat, !(id %in% miss_trips))
@@ -208,7 +200,7 @@ fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_tot
   # are at end of trajectory
   
   fld <- left_join(fld, dplyr::select(as.data.frame(vms_files), burst_id, 
-                                           date.time, fishing, observed, dist_coast),
+                                           date.time, fishing, observed, dist_coast, avg.speed),
                         by = c("id" = "burst_id","date"="date.time"))
   
 
@@ -216,7 +208,7 @@ fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_tot
   complete_dat <- fld %>%
     filter(id %in% n_big) %>%
     dplyr::select(rel.angle, abs.angle, R2n, dist, speed_kmph, fishing, id,
-                  x, y, date, dist_coast) %>%
+                  x, y, date, dist_coast, avg.speed) %>%
     mutate(fishing = as.numeric(fishing)) %>% # add new feature
     group_by(id) %>%
     mutate(mean_speed = mean(speed_kmph,na.rm=T), 
@@ -245,18 +237,23 @@ fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_tot
   complete_dat <- speed_deltas("abs.angle", complete_dat)
   
   complete_dat$fishing <- as.numeric(!(is.na(complete_dat$fishing)))
+  # add third state
+  complete_dat$adj_fishing <- complete_dat$fishing
+  complete_dat$adj_fishing[which(complete_dat$avg.speed<5 & complete_dat$fishing!=1)] <- 2
+  complete_dat$adj_fishing[which(complete_dat$avg.speed<5 & complete_dat$fishing==1)] <- 3
+  
   
   complete_dat <- complete_dat[complete.cases(complete_dat),]
   
 # split up and prepare for RF
-  training_dat <- dplyr::select(as.data.frame(complete_dat), -fishing, -id, -x, -y, -date)
+  training_dat <- dplyr::select(as.data.frame(complete_dat), -fishing, -adj_fishing, -id, -x, -y, -date)
   
   # normalize
   training_dat_norm <- apply(training_dat,2,function(x) (x - min(x))/diff(range(x)))
 
   
   # make response variable
-  y = factor(complete_dat$fishing)
+  y = factor(complete_dat$adj_fishing)
   
 # subset to 60/40 and run RF - subset by whole trips though
   all_ids <- unique(complete_dat$id)
@@ -269,12 +266,12 @@ fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_tot
 
   library(randomForest)
   library(rfUtilities)
-  tuning <- rf.modelSel(xdata = training_dat_norm[train_i,], ydata = y[train_i])
+  tuning <- rf.modelSel(xdata = training_dat[train_i,], ydata = y[train_i])
   
-  mtrys <- tuneRF(x = training_dat_norm[train_i, tuning$selvars], 
+  mtrys <- tuneRF(x = training_dat[train_i, tuning$selvars], 
                   y = y[train_i])
   
-  rf1 <- randomForest(x = training_dat_norm[train_i, tuning$selvars], 
+  rf1 <- randomForest(x = training_dat[train_i, tuning$selvars], 
                       y = y[train_i],mtry = 5)
   
 # predict out to withheld data
