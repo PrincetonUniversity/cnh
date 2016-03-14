@@ -1,95 +1,60 @@
 # load training data and train RF
 library(dplyr)
-library(ggplot2)
-library(broom)
 library(adehabitatLT)
 library(maps)
 library(sp)
 library(rgdal)
 
-# look in trip_tot_dat to find vessel IDs that have observed shrimp trips ----
-  # choose time window
-  window = 24
+# load vms data
+# window = 24, fishery = "Pink Shrimp"
+load_vms <- function(window, fishery){
+  # using trip_tot_dat dataframe to find VMS files with observed pink shrimp
+  # using window to choose the matching time window to metier data
   
-  # get shrimp vessel IDs
-fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_total_tw",
-             window,"hr.csv")
-  trip_tot_dat <- read.csv(fp) %>%
-    filter(sector=="Pink Shrimp") %>%
+  # load trip_tot_dat to find vms with <fishery> ids
+  fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_total_tw",
+               window,"hr.csv")
+  trip_tot_dat <- read.csv(fp, stringsAsFactors = FALSE) %>%
+    filter(sector==fishery) %>%
     dplyr::select(vessel.ID) %>%
     distinct()
-
-# load VMS and subset to observed points ----
+  
+  # load VMS and subset to observed points ----
   fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/tw_",
                window,"hr/",trip_tot_dat$vessel.ID,".csv")
   
-  dat_list <- lapply(fp, read.csv)
+  dat_list <- lapply(fp, function(x) read.csv(x, stringsAsFactors = FALSE))
   dat_long <- do.call(rbind, dat_list)
-  vms_files <-  dat_long%>%
+  vms_files <-  dat_long %>%
+    filter(!(is.na(fishing)),only_trips!=0) %>%
     dplyr::select(-contains("lbs"), -contains("rev"), -contains("trip_id"), 
-                  trip_id1, -onland, -time, -distance, only_trips) %>%
-    mutate(sector = as.character(sector), 
-           date.time = as.POSIXct(date.time, format="%Y-%m-%d %H:%M:%S", 
-                                  tz = "Etc/GMT-8"),
-           burst.id = paste(only_trips, doc.num, sep="_")) %>%
-    filter(!(is.na(observed)),sector == "Pink Shrimp", only_trips!=0) %>%
-    arrange(vessel.name, date.time) %>%
-    # represent fast/slow fishing/searching
-    mutate(adj_fishing = ifelse(avg.speed<5 & !is.na(fishing), 4,
-                         ifelse(avg.speed<5 & is.na(fishing), 3,
-                         ifelse(avg.speed>5 & !is.na(fishing), 2, 1)))) %>%
-    group_by(vessel.name, burst.id) %>%
-    # calculate differences between time steps, x and y dimensions
-    mutate(dt = c(NA,diff(date.time)), 
-           dx = c(NA,diff(longitude)), 
-           dy = c(NA, diff(latitude))) %>%
-    # drop burst ids that contain a difference of more than 4 hours
-    filter(!(burst.id %in% unique(burst.id[which(dt>2*60)])),
-    # drop any of these weird points that have no movement and exactly one hour later
-           !(dt == 60 & dx == 0 & dy ==0), dt !=180) %>%
+                  trip_id1, -onland, -time, -distance, only_trips,-optional, 
+                  -n.trips,-declarations, -agg_id, -vessel.name, 
+                  -alt.vessel.name, -tdate,-ship.number, - only_trips) %>%
+    mutate(date.time = as.POSIXct(date.time, format="%Y-%m-%d %H:%M:%S", 
+                                  tz = "Etc/GMT-8"), 
+           metier.2010 = as.character(metier.2010),
+           trip_id1 = as.character(trip_id1)) %>%
+    arrange(doc.num, date.time)
     
+    # will generate warnings, is ok. it's the fishing vector. 
+    # only really care if 0 or not. not (of any flavor) means fishing
     
-    
-    
-    
-# clean the data -----
-  # drop any that have not moved at all and have exactly 60 seconds difference
-  # drop any trips which have a gap more than 4 hours
-  # drop any trips that have exactly 3 minutes difference
-  # resample to approximately an hour
-  
-  drp_ids <- which(full_dat$dx==0 & full_dat$dy==0 & full_dat$dt==60)
-  drp_ids <- which(filtered_dat$dt<=180)
-  
-  
+}
+
+
 # generate movement statistics ----
   
   # need to make an ID that is only_trips + doc.num to get unique trips 
   # other groupings may aggregate multiple trips. 
   # shouldn't happen because observed, but does look like it's happening 
-  vms_files$date.time <- as.POSIXct(vms_files$date.time, tz = "Etc/GMT-8")
   vms_files$trip_id1 <- as.character(vms_files$trip_id1)
-  vms_files <- vms_files[order(vms_files$doc.num, vms_files$date.time),]
-  # to make burst ids need to drop 0s
-  vms_files <- subset(vms_files, only_trips!=0)
-  vms_files$burst_id <- paste(vms_files$only_trips, vms_files$doc.num, sep="_")
-  
-  # test to make sure all trips correspond to one burst_id
-    all_ids <- 1:length(unique(vms_files$trip_id1))
-    n_burst = function(x){
-      return(length(unique(
-        subset(vms_files,
-               trip_id1==unique(vms_files$trip_id1)[x])$burst_id)))
-    }
 
-    count_bursts = sapply(all_ids, n_burst)
-    which(count_bursts>1)
-    prob_trips <- unique(vms_files$trip_id1)[which(count_bursts>1)]
-    
   # drop trips that have fewer than 50 relocs
-    n.locs <- table(vms_files$burst_id)
-    vms_files <- subset(vms_files, burst_id %in% names(n.locs)[which(n.locs>100)])
+    # n.locs <- table(vms_files$burst.id)
+    # vms_files <- subset(vms_files, burst_id %in% names(n.locs)[which(n.locs>100)])
   # make spatial
+  vms_files <- as.data.frame(vms_files)
   coordinates(vms_files) <- ~longitude+latitude
   proj4string(vms_files) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
   
@@ -105,46 +70,32 @@ fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_tot
   +lat_2=45.838330604411105 +lon_0=-125.068359375"
   vms_proj <- spTransform(vms_files, new_proj)
   
+  # jitter lat/lon
+  vms_proj$adj_long <- jitter(coordinates(vms_proj)[,1],amount = 500)
+  vms_proj$adj_lat <- jitter(coordinates(vms_proj)[,2], amount = 500)
+  
   # add coastline for ref
   load("processedData/spatial/2_coastline.Rdata")
   proj4string(WC) <- proj4string(vms_files)
   WC <- spTransform(WC, proj4string(vms_proj))
   
-  dat_lt <- as.ltraj(coordinates(vms_proj), date = vms_proj$date.time, 
-                     id = vms_proj$burst_id)
+  dat_lt <- as.ltraj(xy = vms_proj@data[,c("adj_long","adj_lat")], date = vms_proj$date.time, 
+                     id = vms_proj$burst.id)
   dat <- ld(dat_lt)
   
   dat$id <- as.character(dat$id)
   
   # add observed and fishing data to dat
-  full_dat <- left_join(dat, dplyr::select(as.data.frame(vms_files), burst_id, 
-                                      date.time, fishing, observed, dist_coast),
-                   by = c("id" = "burst_id","date"="date.time"))
+  full_dat <- left_join(dat, dplyr::select(as.data.frame(vms_files), burst.id, 
+                                      date.time, fishing, dist_coast, 
+                                      avg.speed, avg.direction),
+                   by = c("id" = "burst.id","date"="date.time"))
   
 # make sure training data is clean ----
   
   # need to have trips that have at least 6 relocs
   n.locs <- table(dat$burst)
-  n_big <- names(n.locs)[which(n.locs>50)]
-  
-  
-  # are there gaps in trips > 2 hours?
-  length(which(dat$dt>4*60*60))
-  ggplot(dat, aes(x = dt)) + geom_histogram() + 
-    theme_minimal() + scale_x_log10() + scale_y_sqrt()
-  
-  # subset to those trips
-  miss_trips <- unique(dat$id[which(dat$dt> 4*60*60)])
-  # about a 15% have this
-  length(miss_trips)/length(unique(dat$id))
-  
-  head(miss_trips)
-  head(which(dat$dt>4*60*60))
-  
-  # going to drop these trips with > 4 hours diff
-  full_dat <- subset(full_dat, !(id %in% miss_trips))
-  ggplot(full_dat, aes(x = dt/3600)) + geom_histogram() + 
-    theme_minimal() + scale_x_log10() + scale_y_sqrt()
+  n_big <- names(n.locs)[which(n.locs>10)]
   
   # look at speeds
   full_dat$speed_kmph = (full_dat$dist/1000)/(full_dat$dt/3600)
@@ -156,23 +107,20 @@ fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_tot
   # about 5% of trips have this
   length(fast_trips)/length(unique(full_dat$id)) 
   
-  t1 <- subset(full_dat, id == fast_trips[1])
-  ggplot(t1, aes(x, y, group = id)) + 
-    geom_path(aes(color=speed_kmph), size = .5)  + 
-    coord_equal() + theme_minimal() + 
-    geom_polygon(data = wc_g, aes(x = long, y = lat, group = group))
-  
   # inspecting this one, looks like a very small dt where boat doesn't move for a second
   drp_ids <- which(full_dat$dx==0 & full_dat$dy==0 & full_dat$dt==60)
   
   # drop these
+  if(length(drp_ids)>0){
   filtered_dat <- full_dat[-drp_ids,]
-  
+  }else{
+    filtered_dat <- full_dat
+  }
   # drop also anything with dt == 180
   drp_ids <- which(filtered_dat$dt<=180)
-  filtered_dat <- filtered_dat[-drp_ids,]
-  
-  
+  if(length(drp_ids)>0){
+    filtered_dat <- filtered_dat[-drp_ids,]
+  }
   # redo ld
   filter_ld <- as.ltraj(xy=filtered_dat[,c("x","y")], date = filtered_dat$date,
                         id = filtered_dat$id)
@@ -190,31 +138,72 @@ fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_tot
   # about <1% of trips have this, 1. good with me
   length(fast_trips)/length(unique(fld$id)) 
   
-  # t1 <- subset(fld, id == fast_trips[1])
-  # ggplot(t1, aes(x, y, group = id)) + 
-  #   geom_path(aes(color=speed_kmph), size = .5)  + 
-  #   coord_equal() + theme_minimal() + 
-  #   geom_polygon(data = wc_g, aes(x = long, y = lat, group = group))
-  
   # what are the NAs for dt and dist?
   # are at end of trajectory
   
-  fld <- left_join(fld, dplyr::select(as.data.frame(vms_files), burst_id, 
-                                           date.time, fishing, observed, dist_coast, avg.speed),
-                        by = c("id" = "burst_id","date"="date.time"))
+  fld <- left_join(fld, dplyr::select(as.data.frame(vms_files), burst.id, 
+                                           date.time, fishing, dist_coast, 
+                                      avg.speed, avg.direction),
+                        by = c("id" = "burst.id","date"="date.time")) %>%
+    mutate(id = as.character(id))
   
-
+  # calculate displacement for 3 points (not hours!). assigned to forward time point
+  displacement_window <- function(window.size, outdata2 = outdata){
+    # make a list for values in each time window
+    coordinates(outdata2)<- ~x+y
+    win.size = 60*60*window.size
+    time_dat <- data.frame(start = outdata2$date)
+    time_dat$end <- outdata2$date + win.size
+    
+    time_list <- list()
+    
+    # have colvars to retain
+    colvars = c("x","y")
+    for(i in 1:(nrow(outdata2@data)-1)){
+      # find data in possible time interval
+      time_list[[i]] <- coordinates(outdata2)[which(outdata2@data$date >= time_dat$start[i] & 
+                                                      outdata2@data$date<= time_dat$end[i]),colvars,drop=FALSE]
+      # if nothing is returned, return NA and go to next iteration
+      if(nrow(time_list[[i]])<=1) {
+        time_list[[i]] <- NA
+      } else {
+        # take first and last coordinates
+        time_list[[i]] <- spDistsN1(time_list[[i]][1,,drop=FALSE],
+                                    time_list[[i]][nrow(time_list[[i]]),,drop=FALSE]) 
+      }
+    }
+    
+    return(unlist(time_list))
+    
+  }
   
-  complete_dat <- fld %>%
+  fld_list <- split(fld, fld$id)
+  # drop small ones
+  fld_list <- fld_list[-which(sapply(fld_list, nrow)<10)]
+  
+  wdispl <- lapply(fld_list, function(x) c(NA,displacement_window(window.size = 3, outdata2 = x)))
+  wdispl6 <- lapply(fld_list, function(x) c(NA,displacement_window(window.size = 6, outdata2 = x)))
+  wdispl2 <- lapply(fld_list, function(x) c(NA,displacement_window(window.size = 2, outdata2 = x)))
+  
+  disps <- mapply(cbind, wdispl, wdispl6, SIMPLIFY = F)
+  disps <- mapply(cbind, disps, wdispl2, SIMPLIFY = F)
+  foobar <- mapply(cbind, fld_list, disps, SIMPLIFY = F)
+  for(i in 1:length(foobar)){
+    colnames(foobar[[i]]) <- c(colnames(fld),"displacement3","displacement6", "displacement2")
+  }
+  foobar <- do.call(rbind,foobar)
+    
+  complete_dat <- foobar %>%
     filter(id %in% n_big) %>%
     dplyr::select(rel.angle, abs.angle, R2n, dist, speed_kmph, fishing, id,
-                  x, y, date, dist_coast, avg.speed) %>%
-    mutate(fishing = as.numeric(fishing)) %>% # add new feature
+                  x, y, date, dist_coast, avg.speed, displacement3, 
+                  displacement6, displacement2) %>%
     group_by(id) %>%
     mutate(mean_speed = mean(speed_kmph,na.rm=T), 
            spd_norm_mean = speed_kmph-mean_speed, 
            median_speed = median(speed_kmph, na.rm = T),
-           spd_norm_median = speed_kmph - median_speed)
+           spd_norm_median = speed_kmph - median_speed,
+           persistence_velocity = cos(abs.angle)*speed_kmph)
   
   speed_deltas <- function(speed_col, df){
     df <- as.data.frame(df)
@@ -236,56 +225,102 @@ fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_tot
   complete_dat <- speed_deltas("rel.angle", complete_dat)
   complete_dat <- speed_deltas("abs.angle", complete_dat)
   
-  complete_dat$fishing <- as.numeric(!(is.na(complete_dat$fishing)))
-  # add third state
-  complete_dat$adj_fishing <- complete_dat$fishing
-  complete_dat$adj_fishing[which(complete_dat$avg.speed<5 & complete_dat$fishing!=1)] <- 2
-  complete_dat$adj_fishing[which(complete_dat$avg.speed<5 & complete_dat$fishing==1)] <- 3
-  
-  
   complete_dat <- complete_dat[complete.cases(complete_dat),]
   
+  # all but two trips have uncertain points. drop y = 3 points
+  complete_filter <- subset(complete_dat, fishing!=3)
+  
 # split up and prepare for RF
-  training_dat <- dplyr::select(as.data.frame(complete_dat), -fishing, -adj_fishing, -id, -x, -y, -date)
+  training_dat <- dplyr::select(as.data.frame(complete_filter), -fishing, -id, -date)
   
   # normalize
   training_dat_norm <- apply(training_dat,2,function(x) (x - min(x))/diff(range(x)))
-
   
   # make response variable
-  y = factor(complete_dat$adj_fishing)
+  y = factor(complete_filter$fishing)
+  
   
 # subset to 60/40 and run RF - subset by whole trips though
-  all_ids <- unique(complete_dat$id)
+  all_ids <- unique(complete_filter$id)
   train_n = floor(length(all_ids)*.6)
   trainingids <- sample(all_ids, size = train_n)
   testids <- all_ids[-which(all_ids %in% trainingids)]
   
-  train_i <- which(complete_dat$id %in% trainingids)
-  test_i <- which(complete_dat$id %in% testids)
+  train_i <- which(complete_filter$id %in% trainingids)
+  test_i <- which(complete_filter$id %in% testids)
 
   library(randomForest)
   library(rfUtilities)
-  tuning <- rf.modelSel(xdata = training_dat[train_i,], ydata = y[train_i])
+  tuning <- rf.modelSel(xdata = training_dat_norm[train_i,], ydata = y[train_i])
   
-  mtrys <- tuneRF(x = training_dat[train_i, tuning$selvars], 
+  mtrys <- tuneRF(x = training_dat_norm[train_i, tuning$selvars], 
                   y = y[train_i])
   
-  rf1 <- randomForest(x = training_dat[train_i, tuning$selvars], 
-                      y = y[train_i],mtry = 5)
-  
+  rf1 <- randomForest(x = training_dat_norm[train_i, tuning$selvars], 
+                      y = y[train_i],mtry = 8)
 # predict out to withheld data
   
- pred_rf1 <-   predict(rf1, training_dat[test_i,tuning$selvars], type = "prob")
+ pred_rf1 <-   predict(rf1, training_dat_norm[test_i,tuning$selvars], type = "prob")
  colnames(pred_rf1) <- paste0("p",colnames(pred_rf1))
  pred_rf1 <- as.data.frame(pred_rf1)
  pred_rf1$true <- y[test_i]
- pred_rf1$pred <- ifelse(pred_rf1$p1>.6, 1, 0)
+ pred_rf1$pred <- ifelse(pred_rf1$p1>.7, 1, 0)
  
  table(pred_rf1$true, pred_rf1$pred,deparse.level = 2)
  
- complete_dat$predicted <- NA
- complete_dat$predicted[test_i] <- pred_rf1$p1
+ complete_filter$predicted <- NA
+ complete_filter$predicted[test_i] <- pred_rf1$pred
+ 
+ # plot time series
+ ids <- unique(complete_filter$id[test_i])
+  
+  i = 7
+  par(mfrow=c(2,1),mai=rep(0,4))
+  with(subset(complete_filter, id==ids[i]),
+       plot(x, y, asp=1,typ='o',cex=.5,col=as.factor(fishing), bty="n",axes=F))
+  plot(WC,add=T,col='wheat')
+  with(subset(complete_filter, id==ids[i]),
+       plot(x, y, asp=1,typ='o',cex=.5,col=as.factor(predicted), bty="n",axes=F))
+  plot(WC,add=T,col='wheat')
+  
+  par(mfrow=c(1,1))
+  with(subset(complete_filter, id==ids[i]),
+       plot(date, fishing*2,typ='o',
+            cex=.5, bty="n",axes=T))
+  with(subset(complete_filter, id==ids[i]),
+       lines(date, predicted*1, asp=1,typ='o',cex=.5,
+             col=as.factor(predicted!=fishing), pch=19))
+
+ with(complete_dat[test_i,], plot(x, y,asp=1,cex=.15, col = pred_rf1$pred+1))
+ with(complete_dat[test_i,][which(pred_rf1$pred!=pred_rf1$true & pred_rf1$pred==0),], points(x, y,asp=1,cex=.5, col = "steelblue"))
+ with(complete_dat[test_i,][which(pred_rf1$pred!=pred_rf1$true & pred_rf1$pred!=0),], points(x, y,asp=1,cex=.5, col = "green"))
+ 
+ 
+ ggplot(complete_dat, aes(x=speed_kmph)) + geom_histogram(aes(fill=as.factor(fishing)))
+ ggplot(complete_dat, aes(x=speed_kmph)) + geom_density(aes(fill=as.factor(fishing)),alpha=.75)
+ 
+ ggplot(complete_dat[test_i,], aes(x=speed_kmph)) + geom_histogram(aes(fill=as.factor(fishing)))
+ ggplot(complete_dat[test_i,], aes(x=speed_kmph)) + geom_density(aes(fill=as.factor(fishing)))
+ 
+ ggplot(complete_dat[test_i,][which(pred_rf1$pred!=pred_rf1$true),], 
+        aes(x=speed_kmph)) + geom_histogram(aes(fill=as.factor(fishing)))
+ ggplot(complete_dat[test_i,][which(pred_rf1$pred!=pred_rf1$true),], 
+        aes(x=speed_kmph)) + geom_density(aes(fill=as.factor(fishing)))
+ 
+ ggplot(complete_dat[test_i,][which(pred_rf1$pred==pred_rf1$true),], 
+        aes(x=speed_kmph)) + geom_histogram(aes(fill=as.factor(fishing)))
+ ggplot(complete_dat[test_i,][which(pred_rf1$pred==pred_rf1$true),], 
+        aes(x=speed_kmph)) + geom_density(aes(fill=as.factor(fishing)),alpha=.8)
+ 
+ ggplot(complete_dat[test_i,][which(pred_rf1$pred==pred_rf1$true),], aes(x=avg.speed)) + geom_histogram(aes(fill=as.factor(fishing)))
+ ggplot(complete_dat[test_i,][which(pred_rf1$pred!=pred_rf1$true),], aes(x=avg.speed)) + geom_histogram(aes(fill=as.factor(fishing)))
+ ggplot(complete_dat[test_i,][which(pred_rf1$pred==pred_rf1$true),], aes(x=dist_coast)) + geom_density(aes(fill=as.factor(fishing)),alpha=.8)
+ ggplot(complete_dat[test_i,][which(pred_rf1$pred!=pred_rf1$true),], aes(x=dist_coast)) + geom_density(aes(fill=as.factor(fishing)),alpha=.8)
+ 
+ ggplot(complete_dat[test_i,][which(pred_rf1$pred==pred_rf1$true),], aes(x=persistence_velocity)) + geom_histogram(aes(fill=as.factor(fishing)))
+ ggplot(complete_dat[test_i,][which(pred_rf1$pred==pred_rf1$true),], aes(x=persistence_velocity)) + geom_density(aes(fill=as.factor(fishing)),adjust=2)
+ 
+ ggplot(training_dat_norm[test_i,][which(pred_rf1$pred==pred_rf1$true),], aes(x=persistence_velocity)) + geom_density(aes(fill=as.factor(fishing)),adjust=2)
  # looking critically at features: do they seperate, what does a time series of
  # these things look like?
  
@@ -296,6 +331,7 @@ fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_tot
  plot(x=t1$date, y=t1$dist_coast,type='h',col = t1$fishing+1)
  plot(x=t1$speed_kmph, y=t1$dist_coast,type='p',col = t1$fishing+1)
  plot(x=t1$date, y=t1$dist,type='h',col = t1$fishing+1)
+
  
  plot(t1$x, t1$y, col = t1$fishing+1, cex = .5,pch=19,asp=1)
  lines(t1$x, t1$y, col='grey',lwd=.5)
@@ -306,6 +342,3 @@ fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_tot
  
  plot(t1$date, t1$fishing*2,type='h')
  points(t1$date, t1$predicted, col='blue',type='h')
- 
-# additional feature ideas ---
-# displacement of 3, 4, 5, 6, hours. Can't go much higher because will drop trips. 

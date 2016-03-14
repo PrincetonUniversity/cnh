@@ -111,6 +111,7 @@ for (i in 1:length(file_names)){
   
   # create vectors of known behavior
   vms$fishing <- NA
+  vms$haul_id <- NA
   vms$observed <- NA
   vms$sector <- NA # keep this for curiousity
   vms$pcid <- NA # keep this for curiousity
@@ -163,6 +164,8 @@ for (i in 1:length(file_names)){
       
       # add to fishing
       vms$fishing[f_id] = as.character(v_obs$fish_tickets[j])
+      # add haul id
+      vms$haul_id[f_id] <- as.character(v_obs$haul_id[j])
       
       # Was trip observerd
       o_id <- which(vms$date.time >= d_dates[j] & 

@@ -9,6 +9,7 @@ fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/tw_",
              window,"hr/",fls)
 vms <- lapply(fp, read.csv)
 
+
 # debug ncols not same
 nc <- sapply(vms, ncol)
 # 268 is missing rev_dist, why I have no idea. But add it for now

@@ -36,6 +36,9 @@ chl_trips <- vessel_landings %>%
 
 table(chl_trips$month, chl_trips$ifq_landing)
 
+# monthly averages ----
+chl_trips %>% group_by(month) %>% summarize(mean_landed_wt = mean(landed_wt))
+
 
 nrow(chl_trips)/nrow(subset(trips, year > 2011 & grgroup == "TWL" & alaska == 0 & metier.2010 == "TWL_2"))
 
@@ -52,3 +55,14 @@ chl_trips %>% mutate(season = ifelse( month > 3 & month < 6, "closed","open"),
 ggplot(aes(x=adj_revenue)) +  geom_density(aes(fill=season, color=season), alpha = .5) + 
   theme_pander()
 
+# figured it out ---- 
+# vessels are landing under 100 lb trip limit for GF. 
+# http://www.westcoast.fisheries.noaa.gov/publications/fishery_management/groundfish/public_notices/trip_limits_and_rca_boundaries_01012016.pdf
+
+chl_trips %>% group_by(ifq_landing, month) %>% summarize(median_landed_wt = median(landed_wt)) %>% mutate(month = as.factor(month)) %>% ggplot(aes(x=month,y = median_landed_wt)) + geom_bar(stat = 'identity', aes(fill=ifq_landing)) + geom_hline(yintercept=100)
+
+# although mean puts it over
+
+chl_trips %>% group_by(ifq_landing, month) %>% summarize(mean_landed_wt = mean(landed_wt)) %>% mutate(month = as.factor(month)) %>% ggplot(aes(x=month,y = mean_landed_wt)) + geom_bar(stat = 'identity', aes(fill=ifq_landing)) + geom_hline(yintercept=100)
+
+chl_trips %>% group_by(ifq_landing, month) %>% summarize(max_landed_wt = max(landed_wt)) %>% mutate(month = as.factor(month)) %>% ggplot(aes(x=month,y = max_landed_wt)) + geom_bar(stat = 'identity', aes(fill=ifq_landing)) + geom_hline(yintercept=100)

@@ -96,14 +96,13 @@ png("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_3b.png",
 # individual model
 lm1 <- lm(delta.eff.shannon_2010 ~ eff.shannon_2010, 
           subset(vessel_stats, alaska == 0 & 
-                   both.periods==1 & c.halibut==0 & 
+                   both.periods==1  & 
                    ifq_flag != "itq entrant"))
 
 lm2 <- lm(delta.eff.shannon_2010 ~  eff.shannon_2010 + ifq_flag, 
           subset(vessel_stats, alaska == 0 & 
                    both.periods==1 & 
-                   ifq_flag != "itq entrant: general fleet" & 
-                   c.halibut == 0))
+                   ifq_flag != "itq entrant: general fleet"))
 
 # sim to get effects 
   library(arm)

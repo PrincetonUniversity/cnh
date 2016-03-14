@@ -7,6 +7,7 @@ library(adehabitatLT)
 library(maps)
 library(sp)
 library(rgdal)
+library(scales)
 
 # look in trip_tot_dat to find vessel IDs that have observed shrimp trips ----
 # choose time window
@@ -30,10 +31,7 @@ vms_files$date.time <- as.character(vms_files$date.time)
 vms_files$date.time <- as.POSIXct(vms_files$date.time, 
                                 format = "%Y-%m-%d %H:%M:%S", 
                                 tz = "Etc/GMT-8")
-vms_files <- vms_files %>%
-  mutate(sector = as.character(sector), 
-         vessel.name = as.character(vessel.name)) %>%
-  filter(!(is.na(observed)),sector == "Pink Shrimp") 
+vms_files <- vms_files %>%  mutate(vessel.name = as.character(vessel.name))
 
 # make movies ----
 
@@ -44,24 +42,34 @@ make_pdfs <- function(vessel_name){
   ves <- gsub("[.]","_", ves)
   fn = paste0("Analysis/social_shrimp/obs_movies/", ves, ".pdf")
   pdf(file=fn)
-  sub_dat <- subset(vms_files, vessel.name==vessel_name)
+  vms_files$metier.2010 <- as.character(vms_files$metier.2010)
+  sub_dat <- subset(vms_files, vessel.name==vessel_name & metier.2010=="TWS_1"
+                    & !is.na(fishing))
   sub_dat$date.time <- as.POSIXct(as.character(sub_dat$date.time), 
                                   format = "%Y-%m-%d %H:%M:%S", 
                                   tz = "Etc/GMT-8")
   sub_dat <- sub_dat[order(sub_dat$date.time),]
+  sub_dat$paint <- "red"
+  sub_dat$paint[which(sub_dat$fishing=="0")] <- "grey"
+  sub_dat$paint[which(is.na(sub_dat$fishing))] <- "black"
+  sub_dat$cex <- .2
+  sub_dat$cex[which(sub_dat$avg.speed<5 & sub_dat$fishing=="0")] <- .5
   xlim = range(sub_dat$longitude)
   ylim = range(sub_dat$latitude)
   for(i in 10:nrow(sub_dat)){
-    subs <- sub_dat[(i-9):i,]
-    alphas = seq(.1,1,.1)
+    rowz = ifelse(nrow(sub_dat)<10, nrow(sub_dat),9)
+    subs <- sub_dat[(i-rowz):i,]
+    subs$alphas = seq(.1,1, length.out = nrow(subs))
     with(subs, plot(longitude, latitude, asp = 1, xlim = xlim, ylim = ylim,
                       type='l',pch=19, cex=.2, 
                       col = alpha('grey',.25),
                     main = subs$date.time[i]))
-    with(subs, points(longitude, latitude, asp = 1, xlim = xlim, ylim = ylim,
-                    pch=19, cex=.25, 
-                    col = alpha(as.numeric(!is.na(fishing))+1,
-                    alpha=alphas)))
+    with(subs, points(longitude, latitude, asp = 1,
+                    pch=19, cex=subs$cex, 
+                    col = alpha(paint,
+                    alpha=subs$alphas)))
+    # with(subs, points(c(set_long[10],up_long[10]), c(set_lat[10], up_lat[10]), 
+    #                   cex=.75, pch = 3, col='steelblue'))
     map('state',add=T)
   }
   dev.off()
@@ -88,7 +96,8 @@ make_together_pdf<- function(vms_files){
   vms_files$adj_time <- as.POSIXct(vms_files$adj_time, 
                                    format = "%Y-%m-%d %H:%M:%S", tz = "Etc/GMT-8")
   vms_all <- vms_files %>% 
-    dplyr::select(vessel.name, latitude, longitude, adj_time, fishing) %>%
+    dplyr::select(vessel.name, latitude, longitude, adj_time, fishing, 
+                  set_long, set_lat, up_long, up_lat) %>%
     distinct(vessel.name, adj_time)
   
   time_list <- split(vms_all, vms_all$adj_time)
@@ -119,12 +128,15 @@ make_together_pdf<- function(vms_files){
       }else{
         with(sub_vs, lines(longitude, latitude, asp = 1, xlim = xlim, ylim = ylim,
                         cex=.2, col = alpha('grey',.25)))
+        
       }
       
       with(sub_vs, points(longitude, latitude, asp = 1, xlim = xlim, ylim = ylim,
                         pch=19, cex=.25, 
                         col = alpha(as.numeric(!is.na(fishing))+1,
                                     alpha=sub_vs$alphas)))
+      with(sub_vs, points(c(set_long,up_long), c(set_lat, up_lat), 
+                          cex=.75, pch = 3, col='steelblue'))
     }
     map('state',add=T)
     contour(h,asp=1, levels = 0.85, drawlabels = FALSE,
@@ -133,3 +145,4 @@ make_together_pdf<- function(vms_files){
   dev.off()
 }
 make_together_pdf(vms_files)
+

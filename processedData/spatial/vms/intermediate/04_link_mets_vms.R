@@ -15,7 +15,7 @@ link_vms.tickets <- function(window_size){
   obs <- read.csv("/Users/efuller/Desktop/CNH/rawData/Observers/WCGOPobs/Samhouri_OBFTfinal_Allfisheries_ProcessedwFunction_2009-2012_110613.csv",stringsAsFactors = FALSE)
   
   dubs_tix <- obs %>%
-    select(DRVID, D_DATE, TRIPID, sector, FISHERY, FISH_TICKETS) %>%
+    dplyr::select(DRVID, D_DATE, TRIPID, sector, FISHERY, FISH_TICKETS) %>%
     distinct() %>%
     mutate(dubs = ifelse(grepl(";", FISH_TICKETS), 1, 0)) %>%
     filter(dubs == 1) %>%
@@ -52,22 +52,7 @@ link_vms.tickets <- function(window_size){
 # what's the maximum number of catches landed by a single vessel in a day? ----
   # load catch
   catch <- readRDS("/Users/efuller/Desktop/CNH/processedData/catch/1_cleaningData/tickets.RDS")
-  #vms <- readRDS("/Users/efuller/Desktop/CNH/processedData/spatial/vms/intermediate/04_matchMetier/VMS_catch.RDS")
   
-#   all_boats <- catch[-grep("ZZZ",catch$drvid),] %>% # drop pesky ZZZ vboats
-#     select(drvid, trip_id, tdate) %>%
-#     distinct() %>%
-#     group_by(drvid, tdate) %>%
-#     summarize(n.landings = length(unique(trip_id)))
-#   
-#   sort(table(all_boats$n.landings))
-#   
-#   any(vms$doc.num == all_boats$drvid[which.max(all_boats$n.landings)]) # max isn't there
-#   
-#   any(vms$doc.num %in% unique(all_boats$drvid[which(all_boats$n.landings==7)])) # 7 isn't there
-#   
-#   any(vms$doc.num %in% unique(all_boats$drvid[which(all_boats$n.landings==6)])) # but 6 is. shoot.   
-#   
 # finding discrete trips ----
 # ok to generalize, boats get distance to coast measured, any point that's > 1.5 km from coastline is a trip
 load("/Users/efuller/Desktop/CNH/processedData/spatial/2_coastline.Rdata")
@@ -109,8 +94,8 @@ find_trips <- function(vessel_track, coastline = wc_proj,
     vessel_track@data$dist_coast[i] <- gDistance(vessel_track[i,], coastline)
   }
   
-  # any points that are > 1.5 km from the coast are "out" on a trip
-  vessel_track@data$trip <- ifelse(vessel_track@data$dist_coast/1000>1.5, 1, 0)
+  # any points that are > .5 km from the coast are "out" on a trip
+  vessel_track@data$trip <- ifelse(vessel_track@data$dist_coast/1000>.5, 1, 0)
   vessel_track <- vessel_track[order(vessel_track@data$date.time),]
   # if vessel starts in the middle of a trip, discard it because will reverse algorithm
   if(vessel_track@data$trip[1]==1){
@@ -159,7 +144,7 @@ assign_landings <- function(time_window, v2 = ves){
            trip_id4 = as.character(ifelse(length(unique(trip_id))>3, unique(trip_id)[4], NA)),
            trip_id5 = as.character(ifelse(length(unique(trip_id))>4, unique(trip_id)[5], NA)),
            trip_id6 = as.character(ifelse(length(unique(trip_id))>5, unique(trip_id)[6], NA))) %>%
-    select(-trip_id) %>%
+    dplyr::select(-trip_id) %>%
     distinct()
   
   # reorder
@@ -185,7 +170,7 @@ trips_wo_vms <- NA
 
 for(j in 1:nrow(c2_bydate)){
   # find all trips
-  trips <- as.character(select(as.data.frame(c2_bydate[j,]), contains("trip_id")))
+  trips <- as.character(dplyr::select(as.data.frame(c2_bydate[j,]), contains("trip_id")))
   
   if(all(trips=="NA")){
     cat("corrupted catch dates")
@@ -208,6 +193,13 @@ for(j in 1:nrow(c2_bydate)){
       return_time <- max(v2_track$date.time[which(v2_track$only_trips==prior_trips[q])])
       prior_trips[q] <- ifelse(return_time > c2_bydate$tdate.end[j], NA, prior_trips[q])
     }
+    
+    # check that those trips don't belong to another landing ticket
+    for(q in 1:length(prior_trips)){
+      assigned_previous <- any(!is.na(v2_track$trip_id1[which(v2_track$only_trips %in% prior_trips[q])]))
+      prior_trips[q] <- ifelse(assigned_previous, NA, prior_trips[q])
+    }
+    
     # possible that you could loose all trips, if all are NOT NA, then can use those trips, else look earlier
     if(!(all(is.na(prior_trips)))) {
       if(any(is.na(prior_trips))){
@@ -249,7 +241,7 @@ met_agg <- met_track %>%
   group_by(trip_id1) %>%
   mutate(agg_id = unique(only_trips)[1]) %>%
   ungroup() %>%
-  select(only_trips, agg_id, - trip_id1) %>%
+  dplyr::select(only_trips, agg_id, - trip_id1) %>%
   arrange(agg_id) %>%
   right_join(met_track)
 
@@ -321,19 +313,6 @@ if(length(trips_landed)==0){
   
   met_all <- left_join(met_agg, cpue)
 }
-
-
-# for fun, look at metiers and plot by color
-# diagnos <- met_agg %>%
-#   dplyr::select(agg_id, metier.2010) %>%
-#   distinct() %>%
-#   filter(!is.na(agg_id)) %>%
-#   left_join(cpue)
-# 
-# diagnos$paint <- ifelse(diagnos$metier.2010=="POT_1","indianred",
-#                         ifelse(diagnos$metier.2010=="TLS_1", "dodgerblue",
-#                                ifelse(diagnos$metier.2010=="TLS_2","purple",
-#                                       ifelse(diagnos$metier.2010=="HKL_1","orange", "black"))))
 
 saveRDS(met_all, paste0("/Users/efuller/Desktop/CNH/processedData/spatial/vms/intermediate/04_link_mets_vms/tw_",window_size,"hr/",unique(v2_track$doc.num),".RDS"))
 
