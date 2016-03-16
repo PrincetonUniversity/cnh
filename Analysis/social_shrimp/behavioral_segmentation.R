@@ -7,7 +7,7 @@ library(rgdal)
 
 # load vms data
 # window = 24, fishery = "Pink Shrimp"
-load_vms <- function(window, fishery){
+load_vms <- function(window, fishery, downscale = TRUE){
   # using trip_tot_dat dataframe to find VMS files with observed pink shrimp
   # using window to choose the matching time window to metier data
   
@@ -30,30 +30,38 @@ load_vms <- function(window, fishery){
     dplyr::select(-contains("lbs"), -contains("rev"), -contains("trip_id"), 
                   trip_id1, -onland, -time, -distance, only_trips,-optional, 
                   -n.trips,-declarations, -agg_id, -vessel.name, 
-                  -alt.vessel.name, -tdate,-ship.number, - only_trips) %>%
+                  -alt.vessel.name, -tdate,-ship.number) %>%
     mutate(date.time = as.POSIXct(date.time, format="%Y-%m-%d %H:%M:%S", 
                                   tz = "Etc/GMT-8"), 
            metier.2010 = as.character(metier.2010),
-           trip_id1 = as.character(trip_id1)) %>%
+           trip_id1 = as.character(trip_id1),
+           burst.id = paste(only_trips, doc.num,sep="_")) %>%
     arrange(doc.num, date.time)
     
-    # will generate warnings, is ok. it's the fishing vector. 
-    # only really care if 0 or not. not (of any flavor) means fishing
-    
+  # downsample hourly to make samples representative
+  hrly_samps <- vms_files %>%
+    mutate(date = as.Date(date.time, tz="Etc/GMT-8"), hour = format(date.time, "%H", tz = "Etc/GMT-8")) %>%
+    group_by(doc.num, date, hour) %>%
+    mutate(adj_date.time = unique(date.time)[1]) %>%
+    mutate(keep = ifelse(adj_date.time==date.time, 1, 0)) %>%
+    filter(keep == 1) %>%
+    dplyr::select(-adj_date.time, -keep)
+  
+  if(downscale){
+    return(hrly_samps)
+  }else{
+    return(vms_files)
+  }
 }
 
+vms_files <- load_vms(window = 24, fishery = "Pink Shrimp", downscale = TRUE)
 
 # generate movement statistics ----
   
   # need to make an ID that is only_trips + doc.num to get unique trips 
   # other groupings may aggregate multiple trips. 
   # shouldn't happen because observed, but does look like it's happening 
-  vms_files$trip_id1 <- as.character(vms_files$trip_id1)
 
-  # drop trips that have fewer than 50 relocs
-    # n.locs <- table(vms_files$burst.id)
-    # vms_files <- subset(vms_files, burst_id %in% names(n.locs)[which(n.locs>100)])
-  # make spatial
   vms_files <- as.data.frame(vms_files)
   coordinates(vms_files) <- ~longitude+latitude
   proj4string(vms_files) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
@@ -95,10 +103,11 @@ load_vms <- function(window, fishery){
   
   # need to have trips that have at least 6 relocs
   n.locs <- table(dat$burst)
-  n_big <- names(n.locs)[which(n.locs>10)]
+  n_big <- names(n.locs)[which(n.locs>3)]
   
   # look at speeds
   full_dat$speed_kmph = (full_dat$dist/1000)/(full_dat$dt/3600)
+  library(ggplot2)
   ggplot(full_dat, aes(x = speed_kmph)) + geom_histogram() +
     theme_minimal() + scale_x_sqrt() + scale_y_sqrt()
   
@@ -126,9 +135,14 @@ load_vms <- function(window, fishery){
                         id = filtered_dat$id)
   
   fld <- ld(filter_ld)
+  fld$burst <- as.character(fld$burst)
   # check dt again
-  length(which(fld$dt>4*60*60)) # 0, good
-
+  too_long <- which(fld$dt>4*60*60)
+  if(length(too_long)>0){
+    trips <- unique(fld$burst[too_long])
+    fld <- fld[-which(fld$burst %in% trips),]
+  }
+  
   # recalc speeds
   fld$speed_kmph <- (fld$dist/1000)/(fld$dt/3600)
   ggplot(fld, aes(x = speed_kmph)) + geom_histogram() +
@@ -179,7 +193,7 @@ load_vms <- function(window, fishery){
   
   fld_list <- split(fld, fld$id)
   # drop small ones
-  fld_list <- fld_list[-which(sapply(fld_list, nrow)<10)]
+  fld_list <- fld_list[-which(sapply(fld_list, nrow)<3)]
   
   wdispl <- lapply(fld_list, function(x) c(NA,displacement_window(window.size = 3, outdata2 = x)))
   wdispl6 <- lapply(fld_list, function(x) c(NA,displacement_window(window.size = 6, outdata2 = x)))
@@ -257,14 +271,14 @@ load_vms <- function(window, fishery){
                   y = y[train_i])
   
   rf1 <- randomForest(x = training_dat_norm[train_i, tuning$selvars], 
-                      y = y[train_i],mtry = 8)
+                      y = y[train_i],mtry = 4)
 # predict out to withheld data
   
  pred_rf1 <-   predict(rf1, training_dat_norm[test_i,tuning$selvars], type = "prob")
  colnames(pred_rf1) <- paste0("p",colnames(pred_rf1))
  pred_rf1 <- as.data.frame(pred_rf1)
  pred_rf1$true <- y[test_i]
- pred_rf1$pred <- ifelse(pred_rf1$p1>.7, 1, 0)
+ pred_rf1$pred <- ifelse(pred_rf1$p1>.8, 1, 0)
  
  table(pred_rf1$true, pred_rf1$pred,deparse.level = 2)
  
