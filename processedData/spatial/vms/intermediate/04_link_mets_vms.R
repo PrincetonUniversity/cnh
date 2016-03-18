@@ -94,9 +94,10 @@ find_trips <- function(vessel_track, coastline = wc_proj,
     vessel_track@data$dist_coast[i] <- gDistance(vessel_track[i,], coastline)
   }
   
-  # any points that are > .5 km from the coast are "out" on a trip
-  vessel_track@data$trip <- ifelse(vessel_track@data$dist_coast/1000>.5, 1, 0)
+  # any points that are > 1.5 km from the coast are "out" on a trip
+  vessel_track@data$trip <- ifelse(vessel_track@data$dist_coast/1000>1.5, 1, 0)
   vessel_track <- vessel_track[order(vessel_track@data$date.time),]
+  # if there's a gap > 6 hours in middle of trip
   # if vessel starts in the middle of a trip, discard it because will reverse algorithm
   if(vessel_track@data$trip[1]==1){
     # find first zero
@@ -104,16 +105,26 @@ find_trips <- function(vessel_track, coastline = wc_proj,
     # make first trips into 0s, even though on water, won't consider. 
     vessel_track@data$trip[1:first.zero] <- 0
   }
+  
+  time_diffs <- diff(vessel_track@data$date.time)
+  # if diff > 3 hours, new trip
+  vessel_track@data$time_diff <- c(NA, time_diffs)
+  gap_marker <- which(vessel_track@data$time_diff>60*3 & vessel_track@data$trip==1)
+  if(length(gap_marker)>0){
+    # so point before needs to be inserted as 0. will eventually drop these duplicate points. 
+    new_rows <- vessel_track[gap_marker,]
+    new_rows$trip <- 0
+    foo <- rbind(vessel_track, new_rows)
+    foo <- foo[order(foo$date.time, foo$trip),]
+    vessel_track <- foo
+  }
   vessel_track@data$trip_num <- c(0,cumsum(abs(diff(vessel_track@data$trip))))
   vessel_track@data$only_trips <- ifelse(vessel_track@data$trip_num %% 2 == 0, 0, vessel_track@data$trip_num)
+  # drop duplicates i inserted
+  vessel_track <- vessel_track[-which(duplicated(vessel_track@data[,c("dist_coast","time_diff")])),]
   # remove the other two indicators
   vessel_track@data$trip <- NULL
   vessel_track@data$trip_num <- NULL
-  
-  # remove any trips that are only 2 time points in duration - not sure
-  #trip_table <- table(subset(vessel_track@data,only_trips>0)$only_trips)
-  #short_trips <- names(trip_table)[which(trip_table<=2)]
-  # vessel_track@data$only_trips[which(vessel_track@data$only_trips %in% short_trips)] <- 0
   
   # returns distance from coast and unique ID for trip
   return(vessel_track)
