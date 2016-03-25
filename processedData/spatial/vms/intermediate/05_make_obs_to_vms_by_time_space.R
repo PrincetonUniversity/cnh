@@ -19,7 +19,7 @@ load_clean_obs <- function(WC){
                   set_date, up_date, sector, haul_id, d_date, r_date, cg_num,
                   tripid, pcid) %>%
     distinct() %>%
-    filter(sector=="Pink Shrimp")
+    filter(sector %in% c("Pink Shrimp","Limited Entry Trawl", "Catch Shares"))
   
   obs_set <- obs_locs
   obs_up <- obs_locs
@@ -123,81 +123,84 @@ for (i in 1:length(file_names)){
     # keep track of trips
     for (j in 1:length(all_trips)){
       trip_dips <- v_obs %>% filter(tripid == all_trips[j])
-
-      # make separate df for sets and ups, because both my have NAs and 
-      # will drop. Thus these dfs will not be identical. 
-      sets <- trip_dips[complete.cases(trip_dips[,c("set_long","set_lat")]),]
-      coordinates(sets) <- ~set_long+set_lat
-      ups <- trip_dips[complete.cases(trip_dips[,c("up_long","up_lat")]),]
-      coordinates(ups) <- ~up_long+up_lat
-      
-      proj4string(sets) <- proj4string(vms)
-      proj4string(ups) <- proj4string(vms)
-      
-      # find trip corresponding in vms trip
-      f_id <- which(vms$date.time >= unique(trip_dips$d_date) & 
-                      vms$date.time <= unique(trip_dips$r_date))
-      if(length(f_id)==0){
+      if(nrow(trip_dips[complete.cases(trip_dips),])==0){
         next
       }else{
-        # calculate pairwise distances
-        set_dists <- lapply(split(vms[f_id,], vms$date.time[f_id]), 
-                            function(x) spDistsN1(sets, x,longlat = TRUE))
-        set_dists <- as.data.frame(do.call(rbind, set_dists))
-        colnames(set_dists) <- paste0("dist",1:ncol(set_dists))
+        # make separate df for sets and ups, because both my have NAs and 
+        # will drop. Thus these dfs will not be identical. 
+        sets <- trip_dips[complete.cases(trip_dips[,c("set_long","set_lat")]),]
+        coordinates(sets) <- ~set_long+set_lat
+        ups <- trip_dips[complete.cases(trip_dips[,c("up_long","up_lat")]),]
+        coordinates(ups) <- ~up_long+up_lat
         
-        up_dists <- lapply(split(vms[f_id,], vms$date.time[f_id]),
-                           function(x) spDistsN1(ups,x, longlat = TRUE))
-        up_dists <- as.data.frame(do.call(rbind, up_dists))
-        colnames(up_dists) <- paste0("dist",1:ncol(up_dists))
+        proj4string(sets) <- proj4string(vms)
+        proj4string(ups) <- proj4string(vms)
         
-        set_dists$time <- as.POSIXct(rownames(set_dists), tz="Etc/GMT-8")
-        up_dists$time <- as.POSIXct(rownames(up_dists), tz="Etc/GMT-8")
-        
-        min_set <- apply(dplyr::select(set_dists, -time), 1, min)
-        min_up <- apply(dplyr::select(up_dists, -time), 1, min)
-        
-        # for each pairwise distance calculate distance in time from set/haul
-        # whichever is closest. If in interval distance = 0
-        time_idx <- vector() 
-        # initalize to track for each point whether in interval
-        for(f in f_id){
-          # find differences between each VMS point and set/up times
-          time_set <- as.numeric(difftime(
-            vms$date.time[f],trip_dips$set_date, units="mins"))
-          time_up <- as.numeric(difftime(
-            vms$date.time[f],trip_dips$up_date, units="mins"))
-        time_diffs <- cbind(time_set, time_up)
-        
-        # find those that are between
-          time_dist <- which(time_diffs[,1]>0 & time_diffs[,2]<0)
-        time_idx[f] <- ifelse(length(time_dist)>0, 1, 0) 
+        # find trip corresponding in vms trip
+        f_id <- which(vms$date.time >= unique(trip_dips$d_date) & 
+                        vms$date.time <= unique(trip_dips$r_date))
+        if(length(f_id)==0){
+          next
+        }else{
+          # calculate pairwise distances
+          set_dists <- lapply(split(vms[f_id,], vms$date.time[f_id]), 
+                              function(x) spDistsN1(sets, x,longlat = TRUE))
+          set_dists <- as.data.frame(do.call(rbind, set_dists))
+          colnames(set_dists) <- paste0("dist",1:ncol(set_dists))
+          
+          up_dists <- lapply(split(vms[f_id,], vms$date.time[f_id]),
+                             function(x) spDistsN1(ups,x, longlat = TRUE))
+          up_dists <- as.data.frame(do.call(rbind, up_dists))
+          colnames(up_dists) <- paste0("dist",1:ncol(up_dists))
+          
+          set_dists$time <- as.POSIXct(rownames(set_dists), tz="Etc/GMT-8")
+          up_dists$time <- as.POSIXct(rownames(up_dists), tz="Etc/GMT-8")
+          
+          min_set <- apply(dplyr::select(set_dists, -time), 1, min)
+          min_up <- apply(dplyr::select(up_dists, -time), 1, min)
+          
+          # for each pairwise distance calculate distance in time from set/haul
+          # whichever is closest. If in interval distance = 0
+          time_idx <- vector() 
+          # initalize to track for each point whether in interval
+          for(f in f_id){
+            # find differences between each VMS point and set/up times
+            time_set <- as.numeric(difftime(
+              vms$date.time[f],trip_dips$set_date, units="mins"))
+            time_up <- as.numeric(difftime(
+              vms$date.time[f],trip_dips$up_date, units="mins"))
+            time_diffs <- cbind(time_set, time_up)
+            
+            # find those that are between
+            time_dist <- which(time_diffs[,1]>0 & time_diffs[,2]<0)
+            time_idx[f] <- ifelse(length(time_dist)>0, 1, 0) 
+          }
+          
+          time_idx <- time_idx[-which(is.na(time_idx))]
+          
+          dist_idx <- ifelse(min_set < 5 | min_up < 5, 
+                             1, 0)
+          
+          idx <- cbind(time_idx, dist_idx)
+          rownames(idx) <- NULL
+          fishing_idx <- rep(0, nrow(idx))
+          fishing_idx[which(rowSums(idx)==2)] <- 1 # certain fishing
+          fishing_idx[which(rowSums(idx)==1)] <- 3 # uncertain fishing
+          
+          vms$fishing[f_id] <- fishing_idx
+          vms$fish_tickets[f_id] <- unique(trip_dips$fish_tickets)
+          
+          trip_list <- data.frame(vessel.ID =gsub(".RDS","",file_names[i]),
+                                  fish_ticket = unique(trip_dips$fish_tickets),
+                                  sector = unique(trip_dips$sector), 
+                                  pcid = unique(trip_dips$pcid),
+                                  d_date = unique(trip_dips$d_date),
+                                  r_date = unique(trip_dips$r_date),
+                                  hrs_fishing_certain = length(which(fishing_idx==1)),
+                                  hrs_fishing_total = length(which(fishing_idx>0)),
+                                  stringsAsFactors = FALSE)
+          trip_dat <- rbind(trip_dat, trip_list) 
         }
-        
-        time_idx <- time_idx[-which(is.na(time_idx))]
-        
-        dist_idx <- ifelse(min_set < 5 | min_up < 5, 
-                              1, 0)
-        
-        idx <- cbind(time_idx, dist_idx)
-        rownames(idx) <- NULL
-        fishing_idx <- rep(0, nrow(idx))
-        fishing_idx[which(rowSums(idx)==2)] <- 1 # certain fishing
-        fishing_idx[which(rowSums(idx)==1)] <- 3 # uncertain fishing
-        
-        vms$fishing[f_id] <- fishing_idx
-        vms$fish_tickets[f_id] <- unique(trip_dips$fish_tickets)
-
-        trip_list <- data.frame(vessel.ID =gsub(".RDS","",file_names[i]),
-                                fish_ticket = unique(trip_dips$fish_tickets),
-                                sector = unique(trip_dips$sector), 
-                                pcid = unique(trip_dips$pcid),
-                                d_date = unique(trip_dips$d_date),
-                                r_date = unique(trip_dips$r_date),
-                                hrs_fishing_certain = length(which(fishing_idx==1)),
-                                hrs_fishing_total = length(which(fishing_idx>0)),
-                                stringsAsFactors = FALSE)
-        trip_dat <- rbind(trip_dat, trip_list) 
       }
     }
     

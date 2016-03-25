@@ -15,7 +15,7 @@ load_vms <- function(window, fishery, downscale = TRUE){
   fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/trip_total_tw",
                window,"hr.csv")
   trip_tot_dat <- read.csv(fp, stringsAsFactors = FALSE) %>%
-    filter(sector==fishery) %>%
+    filter(sector %in% fishery) %>%
     dplyr::select(vessel.ID) %>%
     distinct()
   
@@ -59,7 +59,7 @@ load_vms <- function(window, fishery, downscale = TRUE){
 }
 
 vms_files <- load_vms(window = 24, fishery = "Pink Shrimp", downscale = TRUE)
-
+vms_gf <- load_vms(window=24, fishery = c())
 # filter observed data ----
 
 # split into list and work by trip
