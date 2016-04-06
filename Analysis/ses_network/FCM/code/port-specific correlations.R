@@ -92,6 +92,23 @@ group_by(pcid) %>%
   mutate(n.fisheries = length(unique(metier.2010)), 
             has_crab = ifelse(any(metier.2010=="POT_1"), "yes","no")) 
 
+top90byrevenuebyport <- tickets %>%
+  dplyr::select(pcid, drvid, metier.2010, adj_revenue,landed_wt)%>%
+  group_by(pcid, metier.2010) %>%
+  summarize(revenue = sum(adj_revenue, na.rm = T), 
+            pounds = sum(landed_wt, na.rm=TRUE),
+            n_boats = length(unique(drvid))) %>%
+  filter(n_boats >= 3) %>%
+  arrange(desc(revenue)) %>%
+  group_by(pcid) %>%
+  mutate(cum.percent.rev = 100*cumsum(as.numeric(revenue))/sum(as.numeric(revenue)), 
+         cum.percent.pounds = 100*cumsum(as.numeric(pounds))/sum(as.numeric(pounds)),
+         has_crab = ifelse(any(metier.2010=="POT_1"), "yes","no"), num_metier = 1:n(),
+         keep_metier = ifelse(num_metier==1 & cum.percent.rev > 90, 1, 
+                              ifelse(num_metier > 1 & cum.percent.rev < 90, 1, 
+                                     ifelse(num_metier == 1 & cum.percent.rev < 90, 1, 0)))) %>%
+  filter(keep_metier == 1) %>%
+  dplyr::select(-num_metier, -keep_metier)
 
 View(top90byrevenuebyport)
 View(subset(top90byrevenuebyport,pcid=="ARE"))
