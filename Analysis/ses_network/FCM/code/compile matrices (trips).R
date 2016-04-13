@@ -5,11 +5,13 @@
 # include row and column names
 # simulations will focus on effects of rows on columns
 
-setwd("~/Documents/CNH_to_github/cnh/Analysis/ses_network/output")
+setwd("~/Documents/CNH_to_github/cnh/Analysis/ses_network/FCM/input")
 
 temp <- read.csv("Correlations between metiers based on trips (symmetric matrix), adjusted years.csv", header=TRUE)
+
 # may need to ensure that the matrix is the appropriate dimensions. blank was a dummy matrix we read in for this purpose: [1:nrow(blank),] 
-temp.new <- temp[,-1]
+num <- 10 # num species/metiers in analysis
+temp.new <- temp[1:num,-1]
 
 temp.new[1:3,1:3]
 

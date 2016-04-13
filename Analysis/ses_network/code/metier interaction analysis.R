@@ -38,7 +38,7 @@ names(tickets)
   
   ######################################################
   ######################################################
-  setwd("~/Documents/CNH_to_github/cnh/Analysis/ses_network/output")
+  setwd("~/Documents/CNH_to_github/cnh/Analysis/ses_network/code")
   source("theme_acs.R")
   
   # start by producing a data frame with vessel - year - number of metiers participated in
@@ -56,6 +56,7 @@ ggplot(df, aes(x = n.metiers)) +
   facet_wrap(~year,ncol=1,scales="free_y") +
   theme_acs()
 
+setwd("~/Documents/CNH_to_github/cnh/Analysis/ses_network/figures")
 ggsave("histogram of n.vessels vs. n.metiers participated in for each year.pdf")
 
 # do most vessels participate in <3 metiers each year? YES, but an equal number participate in 2 vs 3+ metiers each year
@@ -92,6 +93,7 @@ top10 <- tickets %>%
 
 top10
 
+setwd("~/Documents/CNH_to_github/cnh/Analysis/ses_network/output data")
 write.csv(top10,"Top 10 metiers by revenue and yields 2009-2013.csv", row.names=FALSE)
 
 ### UNADJUSTED YEARS ###
