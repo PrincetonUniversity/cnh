@@ -249,6 +249,249 @@ system.time(all_boots <- parLapply(cl, 1:nrow(boots), function(x) trip_bootstrap
 stopCluster(cl)
   
  
+saveRDS(all_boots, "Analysis/social_shrimp/boots_SN/all_boots100.RDS")
+all_boots <- readRDS("Analysis/social_shrimp/boots_SN/all_boots100.RDS")
 
+# looking at vessel level sociality: different than random? ----
+boots_together <- as.data.frame(do.call(rbind, all_boots))
+colnames(boots_together) <- paste0("strap",1:ncol(boots_together))
+boots_together$trip_id1 <- boots$trip_id1
+boots_together <- left_join(boots, boots_together, by = "trip_id1") %>%
+  right_join(fishing_occupation) %>%
+  ungroup()
+for(i in 1:nrow(boots_together)){
+  diff_vec <- boots_together$percent_occupied[i] - 
+                    as.numeric(as.data.frame(dplyr::select(boots_together, contains("strap"))[i,],drop=TRUE))
+  boots_together$delta_social[i] <- median(diff_vec)
+  if(length(unique(diff_vec))==1){boots_together$pvalue[i] <- 0}else{
+    boots_together$pvalue[i] <- t.test(diff_vec)$p.value
+  }
+}
+boots_together <- dplyr::select(boots_together, -starts_with('strap'))
 
+# fishing_occupation drops trips where there was no predicted fishing points
 
+  ggplot(boots_together, aes(x = delta_social)) + geom_histogram() + theme_minimal()
+
+  boots_together %>% 
+  left_join(median_lat, by="doc.num") %>%
+  ggplot(aes(x=reorder(factor(doc.num), delta_social, mean), y = delta_social,
+             fill=median_lat)) + 
+  geom_boxplot() + 
+  ylab("difference in social from random") +
+  xlab("vessel ID") + theme_minimal() + scale_fill_continuous(low="indianred",high="steelblue")
+  
+# load catch to start comparing revenue, lbs, and effort to sociability ----
+  catch <- readRDS("processedData/catch/1_cleaningData/tickets.RDS")
+  trip_stats <- catch %>%
+    filter(metier.2010 == "TWS_1") %>%
+    group_by(drvid, metier.2010, pcid, trip_id, year,grid) %>%
+    summarize(revenue = sum(adj_revenue, na.rm = T), lbs = sum(landed_wt, na.rm = T)) %>%
+    right_join(boots_together, by = c("trip_id"="trip_id1"))
+  
+  ggplot(trip_stats, aes(x = delta_social, y = lbs)) + geom_point() + facet_wrap(~year, ncol=1)
+  ggplot(trip_stats, aes(x = delta_social, y = revenue)) + geom_point() + facet_wrap(~year, ncol=1)
+  
+  library(arm)
+  # revenue
+  lm1 <- lm(sqrt(revenue) ~ delta_social, trip_stats)
+  lm2 <- lm(sqrt(revenue) ~ delta_social + drvid, trip_stats)
+  lm3 <- lm(sqrt(revenue) ~ delta_social + year, trip_stats)
+  lm4 <- lm(sqrt(revenue) ~ delta_social + year + drvid, trip_stats)
+  lm5 <- lm(sqrt(revenue) ~ year + drvid, trip_stats)
+  lm6 <- lm(sqrt(revenue) ~ year + drvid + delta_social + grid, trip_stats)
+  
+  
+  AIC(lm1)-AIC(lm2) # > 0, 2 is better
+  AIC(lm2)-AIC(lm3) # < 0, 2 is better
+  AIC(lm4)-AIC(lm2) # < 0, 4 is better
+  AIC(lm4)-AIC(lm5) # < 0, 4 is better
+  AIC(lm6)-AIC(lm4) # < 0, 6 is better
+  
+  # best model is year, vessel ID and how social the trip was, plus type of rig
+  
+  # look at lbs
+  lm1 <- lm(lbs ~ delta_social, trip_stats)
+  lm2 <- lm(lbs ~ delta_social + drvid, trip_stats)
+  lm3 <- lm(lbs ~ delta_social + year, trip_stats)
+  lm4 <- lm(lbs ~ delta_social + year + drvid, trip_stats)
+  lm5 <- lm(lbs ~ year + drvid, trip_stats)
+  lm6 <- lm(lbs ~ delta_social + year + drvid + grid, trip_stats)
+  
+  AIC(lm1)-AIC(lm2) # > 0, 2 is better
+  AIC(lm2)-AIC(lm3) # < 0, 2 is better
+  AIC(lm4)-AIC(lm2) # < 0, 4 is better
+  AIC(lm4)-AIC(lm5) # < 0, 4 is better
+  AIC(lm6)-AIC(lm4) # < 0, 6 is better
+  
+  # use VMS to look at effort 
+  trip_effort <- shrimps %>%
+    group_by(trip_id1) %>% 
+    summarize(median_fishing_lat = median(latitude[which(predicted_fishing==1)]),
+              duration_hrs = as.numeric(difftime(tail(date.time,1), 
+                                                 head(date.time,1), units = 'hours')),
+              percent_fishing = sum(predicted_fishing)/length(date.time)) %>%
+    right_join(trip_stats, by =c('trip_id1'="trip_id")) %>%
+    ungroup() %>%
+    mutate(bin_fishing_lat = cut(trip_effort$median_fishing_lat,seq(40,48,1)),
+           sig_social = ifelse(pvalue < 0.05 & delta_social > 0, "sig_social",
+                               ifelse(pvalue<0.05 & delta_social , "sig_anti", 
+                                      "random")))
+    
+  
+  ggplot(trip_effort, aes(x = delta_social, y = duration_hrs)) + geom_point()
+  ggplot(trip_effort, aes(x = bin_fishing_lat, y = delta_social)) + 
+    geom_boxplot() + theme_minimal()
+  # similar pattern to revenue/lbs with latitude
+  
+  ggplot(trip_effort, aes(x = bin_fishing_lat, y = lbs)) + geom_boxplot() +
+    theme_minimal()
+  ggplot(trip_effort, aes(x = bin_fishing_lat, y = revenue)) + geom_boxplot() +
+    theme_minimal()
+  
+  ggplot(trip_effort, aes(x = lbs, y = revenue, color = delta_social)) + geom_point()
+  
+  # look at lbs/revenue as function of how long trip was
+  
+  ggplot(subset(trip_effort, duration_hrs > 50), aes(x = delta_social, y = lbs/duration_hrs)) + 
+    geom_point() + facet_wrap(~year, ncol=1, scale='free_y')
+  ggplot(subset(trip_effort, duration_hrs > 50), aes(x = delta_social, y = revenue/duration_hrs)) + 
+    geom_point(aes(col=median_fishing_lat)) + facet_wrap(~year, ncol=1, scale='free_y') + scale_color_continuous(low="indianred",high="steelblue")
+  
+  # just look at duration period
+  ggplot(subset(trip_effort, duration_hrs > 50), aes( x =delta_social, y = duration_hrs)) +
+    geom_point(aes(col=median_fishing_lat)) + scale_color_continuous(low="indianred",high="steelblue")
+  
+  
+  # revenue
+  lm1 <- lm(sqrt(revenue) ~ delta_social, subset(trip_effort, duration_hrs >50))
+  lm2 <- lm(sqrt(revenue) ~ delta_social + drvid, subset(trip_effort, duration_hrs >50))
+  lm3 <- lm(sqrt(revenue) ~ delta_social + year, subset(trip_effort, duration_hrs >50))
+  lm4 <- lm(sqrt(revenue) ~ delta_social + year + drvid, subset(trip_effort, duration_hrs >50))
+  lm5 <- lm(sqrt(revenue) ~ year + drvid, subset(trip_effort, duration_hrs >50))
+  
+  AIC(lm1)-AIC(lm2) # > 0, 2 is better
+  AIC(lm2)-AIC(lm3) # < 0, 2 is better
+  AIC(lm4)-AIC(lm2) # < 0, 4 is better
+  AIC(lm4)-AIC(lm5) # < 0, 4 is better
+  
+  # what about adding median_lat
+  
+  lm6 <- lm(sqrt(revenue) ~ bin_fishing_lat, subset(trip_effort, duration_hrs>50))
+  lm7 <- lm(sqrt(revenue) ~ bin_fishing_lat + year, subset(trip_effort, duration_hrs>50))
+  lm8 <- lm(sqrt(revenue) ~ bin_fishing_lat + year + delta_social, subset(trip_effort, duration_hrs>50))
+  lm9 <- lm(sqrt(revenue) ~ bin_fishing_lat + year + drvid + delta_social, subset(trip_effort, duration_hrs>50))
+  lm10 <- lm(sqrt(revenue) ~ bin_fishing_lat + year + drvid + delta_social + delta_social*bin_fishing_lat, subset(trip_effort, duration_hrs>50))
+  
+  AIC(lm6)-AIC(lm4) # > 0, 4 is better
+  AIC(lm7)-AIC(lm4) # > 0, 4 is better
+  AIC(lm8)-AIC(lm4) # > 0, 4 is better
+  AIC(lm9)-AIC(lm4) # < 0, 9 is better
+  AIC(lm9)-AIC(lm10) # > 0, 10 is better
+  
+  
+  vessel_averages <- trip_effort %>% filter(duration_hrs>50) %>% group_by(doc.num) %>%
+    summarize(average_social = median(delta_social), average_revenue = median(revenue), 
+              sd_social = sd(delta_social), sd_revenue = sd(revenue),
+              average_lbs = median(lbs), sd_lbs=sd(lbs), 
+              revenue_hr = median(revenue/duration_hrs), lbs_hr = median(lbs/duration_hrs), 
+              sd_revenue_hr = sd(revenue/duration_hrs), sd_lbs_hr = sd(lbs/duration_hrs),
+              median_lat = median(median_fishing_lat), 
+              average_percent_occupied = median(percent_occupied), 
+              sd_percent_occupied = sd(percent_occupied))
+  
+    ggplot(vessel_averages, aes(x = average_social, y = average_revenue, color = median_lat)) + 
+      geom_point() +  geom_errorbar(aes(ymin = average_revenue - sd_revenue, 
+                                        ymax = average_revenue+sd_revenue), 
+                                    alpha = .25) + 
+      geom_errorbarh(aes(xmin = average_social -sd_social,
+                         xmax = average_social + sd_social), alpha = .25) + 
+    theme_minimal() + scale_color_continuous(high="steelblue", low='indianred')
+    cor.test(vessel_averages$average_social, vessel_averages$average_revenue, method = "spearman")
+  
+  ggplot(vessel_averages, aes(x = average_social, y = average_lbs, color=median_lat)) + 
+    geom_point() + geom_errorbar(aes(ymin = average_lbs - sd_lbs, 
+                                     ymax = average_lbs+sd_lbs), alpha = .25) + 
+    geom_errorbarh(aes(xmin = average_social -sd_social, 
+                       xmax = average_social + sd_social), alpha = .25) + 
+    theme_minimal()  + scale_color_continuous(high="steelblue", low='indianred')
+  cor.test(vessel_averages$average_social, vessel_averages$average_lbs, method = "spearman")
+  
+  ggplot(vessel_averages, aes(x = average_social, y = revenue_hr, color = median_lat)) + 
+    geom_point() + geom_errorbar(aes(ymin = revenue_hr - sd_revenue_hr, 
+                                     ymax = revenue_hr+sd_revenue_hr), alpha = .25) + 
+    geom_errorbarh(aes(xmin = average_social -sd_social, 
+                       xmax = average_social + sd_social), alpha = .25) + 
+    theme_minimal() + scale_color_continuous(high="steelblue", low='indianred')
+    cor.test(vessel_averages$average_social, vessel_averages$revenue_hr, method = "spearman")
+    
+    ggplot(vessel_averages, aes(x = average_social, y = lbs_hr, color=median_lat)) + 
+      geom_point() + geom_errorbar(aes(ymin = lbs_hr - sd_lbs_hr, 
+                                       ymax = lbs_hr + sd_lbs_hr), alpha = .25) + 
+      geom_errorbarh(aes(xmin = average_social -sd_social, 
+                         xmax = average_social + sd_social), alpha = .25) + 
+      theme_minimal() + scale_color_continuous(high="steelblue", low='indianred')
+    cor.test(vessel_averages$average_social, vessel_averages$lbs_hr, method = "spearman")
+    
+    # interestingly, boats that looked like fish in busy places are not that much more social then you'd expect
+    ggplot(vessel_averages, aes(x = average_social, y = average_percent_occupied, color = median_lat)) + 
+      geom_point() +  geom_errorbar(aes(ymin = average_percent_occupied - sd_percent_occupied, 
+                                        ymax = average_percent_occupied + sd_percent_occupied), 
+                                    alpha = .25) + 
+      geom_errorbarh(aes(xmin = average_social -sd_social,
+                         xmax = average_social + sd_social), alpha = .25) + 
+      theme_minimal() + scale_color_continuous(high="steelblue", low='indianred')
+    cor.test(vessel_averages$average_social, vessel_averages$average_revenue, method = "spearman")
+    
+    # interestingly, boats that looked like fish in busy places are not that much more social then you'd expect
+    ggplot(vessel_averages, aes(x = average_percent_occupied, y = average_revenue, color = median_lat)) + 
+      geom_point() +  geom_errorbarh(aes(xmin = average_percent_occupied - sd_percent_occupied, 
+                                        xmax = average_percent_occupied + sd_percent_occupied), 
+                                    alpha = .25) + 
+      geom_errorbar(aes(ymin = average_revenue - sd_revenue, 
+                        ymax = average_revenue+sd_revenue), 
+                    alpha = .25) +
+      theme_minimal() + scale_color_continuous(high="steelblue", low='indianred')
+    cor.test(vessel_averages$average_social, vessel_averages$average_revenue, method = "spearman")
+    
+    # assigning homeports
+   major_ports <-  trip_effort %>% group_by(doc.num, pcid) %>%
+      summarize(revenue = sum(revenue), lbs = sum(lbs)) %>%
+      group_by(doc.num) %>%
+      mutate(percent_rev = revenue/sum(revenue),
+             percent_lbs = lbs/sum(lbs),
+             major_port_revenue = pcid[which.max(revenue)]) %>% # lbs/revenue the same
+     left_join(vessel_averages)
+   
+   ggplot(major_ports, aes(x = major_port_revenue, y = average_social)) + geom_boxplot()
+
+   # load social vulnerability
+   sv <- read.csv("/Users/efuller/Downloads/social_vulnerability.csv",stringsAsFactors = FALSE)
+   colnames(sv) <- c("pcid","description","geoID2","geoname","fishing_dependence","social_vulnerability")
+   sv <- sv %>%
+     group_by(pcid, geoname) %>%
+     summarize(fishing_dependence = mean(fishing_dependence), 
+               social_vulnerability = mean(social_vulnerability))
+   
+   major_ports <- left_join(major_ports, sv, by = c("major_port_revenue"="pcid"))
+   
+   major_ports %>% group_by(doc.num) %>%
+     summarize(average_social = unique(average_social), 
+               average_percent_occupied = unique(average_percent_occupied),
+               social_vulnerability = weighted.mean(social_vulnerability, percent_rev),
+               fishing_dependence = weighted.mean(fishing_dependence, percent_lbs),
+               median_lat = unique(median_lat)) %>%
+   ggplot(aes(x = social_vulnerability, 
+              y = average_social, color = median_lat)) + geom_point(size=3) +
+     scale_color_continuous(low="indianred",high='steelblue') + theme_minimal()
+   
+   major_ports %>% group_by(doc.num) %>%
+     summarize(average_social = unique(average_social), 
+               average_percent_occupied = unique(average_percent_occupied),
+               social_vulnerability = weighted.mean(social_vulnerability, percent_rev),
+               fishing_dependence = weighted.mean(fishing_dependence, percent_lbs),
+               median_lat = unique(median_lat)) %>%
+     ggplot(aes(x = fishing_dependence, 
+                y = average_social, color = median_lat)) + geom_point(size=3) +
+     scale_color_continuous(low="indianred",high='steelblue') + theme_minimal()
+   

@@ -36,7 +36,7 @@ calc_port_df <- function(){
   # remove ports that aren't in port_post
   port_post <- port_post[-which(is.na(port_post))]
   
-  ic_post <- as.data.frame( unlist(lapply(port_post, function(x)sum(E(x)$weight)/vcount(x))))
+  ic_post <- as.data.frame( unlist(lapply(port_post, function(x)length(E(x))/vcount(x))))
   ic_post$pcid <- rownames(ic_post)
   colnames(ic_post) <- c("ic_post","pcid")
   
@@ -149,5 +149,5 @@ calc_port_df <- function(){
   saveRDS(port_post,
           file="/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/04_data_output/port_post2011_networks.RDS")
   
-  return(port_stats)
+  return(port_df)
 }

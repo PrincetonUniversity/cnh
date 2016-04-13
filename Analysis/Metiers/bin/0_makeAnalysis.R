@@ -15,7 +15,7 @@ library(dplyr)
 # create port level data set ----
   
   source("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/02_port_stats.R")
-  port_stats <- calc_port_df()
+    port_stats <- calc_port_df()
 
 # descriptive stats ----
   # number of vessels and trips
