@@ -2,7 +2,7 @@ rm(list=ls())
 require(plyr); require(dplyr); require(zoo)
 load("tickets.Rdata")
 
-# laod vessel lenghts
+# load vessel lenghts
 
 CG <- read.csv("/Volumes/NOAA_Data/CNH/Data/Catch/cg_2009-2013_2014-03-21.csv",stringsAsFactors=F)
 colnames(CG) <- tolower(colnames(CG))

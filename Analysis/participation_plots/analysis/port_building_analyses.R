@@ -344,30 +344,32 @@ coast_long <- coast_between %>%
 
 ggplot(subset(coast_long, net_stat == "node_strength"), 
        aes(coast_long, x = reorder(metier, value), y = value)) +
-  geom_point() + xlab("fishery") 
-ggsave("Analysis/participation_plots/analysis/nodestrength_coast.pdf")
+  geom_point(size=5) + xlab("fishery")  + ylab("node strength")
+ggsave("Analysis/participation_plots/analysis/nodestrength_coast.pdf",
+       height = 7, width = 6)
 
 ggplot(subset(coast_long, net_stat == "btwn"), 
        aes(coast_long, x = reorder(metier, value), y = value)) +
-  geom_point() + xlab("fishery") 
-ggsave("Analysis/participation_plots/analysis/btwn_coast.pdf")
+  geom_point(size=5) + xlab("fishery") + ylab("betweenness")
+ggsave("Analysis/participation_plots/analysis/btwn_coast.pdf",
+       height = 7, width = 6)
 
 # modularity ----
 # just doing top ten ports
 possible_shapes <- c("circle","square","csquare",
-                     "rectangle","crectangle","vrectangle")
+                     "rectangle","crectangle","vrectangle","pie")
 sub_ports <- port_list[which(names(port_list) %in% topten_ports$pcid[1:10])]
 
 pdf("Analysis/participation_plots/analysis/modules.pdf", width = 4, height = 8)
 par(mfrow=c(5,2),mai=rep(0,4))
 for(i in 1:length(sub_ports)){
-g = port_list[[i]]
+g = sub_ports[[i]]
 wc <- cluster_walktrap(g)
 V(g)$shape <- possible_shapes[membership(wc)]
-plot(g, edge.width = E(g)$weight*.1, 
-     vertex.size = log(V(g)$size)*5, 
-     vertex.label.color = "black", vertex.label.cex = .5, 
-     vertex.label.family="sans", vertex.frame.color = NA, vertex.label="",
-     edge.curved=FALSE, edge.arrow.size = .05, edge.color = alpha("black",.25))
+plot(g, edge.width = E(g)$weight*.15, 
+     vertex.size = log(V(g)$size)*8, vertex.frame.color='grey90',
+     vertex.label.color = "black", vertex.label.cex = .25, 
+     vertex.label.family="sans", vertex.frame.color = NA, vertex.label=V(g)$common_name,
+     edge.curved=FALSE, edge.color = alpha("black",.5))
 }
 dev.off()
