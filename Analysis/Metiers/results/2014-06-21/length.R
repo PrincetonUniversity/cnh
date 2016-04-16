@@ -1,63 +1,56 @@
 rm(list=ls())
-require(plyr); require(dplyr); require(zoo)
+require(dplyr); require(zoo)
 load("tickets.Rdata")
 
 # load vessel lenghts
 
-CG <- read.csv("/Volumes/NOAA_Data/CNH/Data/Catch/cg_2009-2013_2014-03-21.csv",stringsAsFactors=F)
-colnames(CG) <- tolower(colnames(CG))
+CG1 <- read.csv("rawData/Catch/vessel_registration/CG_2013_woc_141210_three.csv",stringsAsFactors=F, skip = 2)
+CG2 <- read.csv("rawData/Catch/vessel_registration/CG_2009-2012_woc_141210_three.csv",stringsAsFactors = F, skip = 2)
+cg <- rbind(CG1,CG2); rm(CG1, CG2)
 
 # just the info I need: veid, length
 
-len <- select(CG, vid, len)
-len <- len[order(len$vid),]
-len <- len[!duplicated(len),]
+len <- dplyr::select(cg, vessel_id, length) %>% distinct()
 
 ########### Exploring CG length data, not required for replication ######################### 
           # some vessel ids are duplicated, which means they have different values for length
-          dup_id <- which(duplicated(len$vid) | duplicated(len$vid, fromLast=TRUE) == TRUE)
+          dup_id <- which(duplicated(len$vessel_id) | duplicated(len$vessel_id, fromLast=TRUE) == TRUE)
           dup_len <- len[dup_id,]
           
           # are all vessels getting bigger?
-          change_len <- ddply(dup_len, .(vid), summarise, num_mes = mean(diff(len)))
-          
+          change_len <- dup_len %>% group_by(vessel_id) %>% summarize(num_mes = mean(diff(length)))
+
           # some surprises, for example a boat that drops by 300 feet
-          subset(CG, vid==as.character(change_len[which(change_len$num_mes==-300),]))[15:18,1:9]
+          subset(cg, vessel_id==as.character(change_len[which(change_len$num_mes==300),]))
           
           # another grows by 63
-          subset(CG, vid==as.character(change_len[which(change_len$num_mes==63),]))[8:12,1:9]
+          subset(cg, vessel_id %in% change_len$vessel_id[which(change_len$num_mes==-63)])
 ########################################################################################
 
 # according to NOAA people, I think that sometimes the vessel actually changes, but other times errors are caught and applied moving forwards. So I'll take the most recent length report for each vessel possible. There are 42 vessels with changing length. For them I need to find the 2013 entry. Is there a 2013 entry for all 42 vessels?
 
 # make date
-pubdate <- paste(CG$pubyr, CG$pubmo, sep=" ")
+pubdate <- paste(cg$pubyr, cg$pubmo, sep=" ")
 date <- as.yearmon(pubdate, '%Y %b')
-CG$date <- date
-
-most_recent <- ddply(CG, .(vid), summarize, recent = max(date))
-colnames(most_recent)[2] <- "date"
+cg$date <- date
 
 # CG lengths
-CG_len <- select(CG, vid, date, len)
-lengths <- merge(most_recent, CG_len, by = c("vid","date"))
+lengths <- cg %>% group_by(vessel_id) %>% filter(pubyr == max(pubyr)) %>%
+  dplyr::select(vessel_id, date, length)
 
 # now do state vessel registration
 
-sv <- read.csv("/Volumes/NOAA_Data/CNH/Data/Catch/sv_2009-2013_2014-03-21.csv",stringsAsFactors=F)
-colnames(sv) <- tolower(colnames(sv))
+sv <- read.csv("rawData/Catch/vessel_registration/SV_2009-2013_woc_141210_two.csv",stringsAsFactors=F, skip = 2)
+colnames(sv)[1] <- "year"
 # just select things I need
 
-svlen <- select(sv, svid, len)
-svlen <- svlen[order(svlen$svid),]
-svlen <- svlen[!duplicated(svlen),]
-
+svlen <- dplyr::select(sv, svid, length) %>% distinct()
 
 # do have duplicate records for length, so will take most recent
 any(duplicated(svlen$svid)) # TRUE = replicates
 
 # remove NAs from length
-sv <- sv[!is.na(sv$len),]
+sv <- sv[!is.na(sv$length),]
 
 svmost_recent <- ddply(sv, .(svid), summarize, year = max(year))
 
