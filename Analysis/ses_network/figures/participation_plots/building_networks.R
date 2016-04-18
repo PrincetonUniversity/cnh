@@ -1,4 +1,6 @@
+setwd("~/Documents/CNH_to_github/cnh")
 source("Analysis/ses_network/figures/participation_plots/network_functions.R")
+setwd("~/Documents/CNH_to_github/cnh")
 tickets <- readRDS("processedData/catch/1_cleaningData/tickets.RDS")
 library(dplyr)
 
