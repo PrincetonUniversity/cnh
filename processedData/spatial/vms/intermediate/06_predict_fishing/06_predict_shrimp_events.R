@@ -8,7 +8,6 @@ library(sp)
 library(rgdal)
 
 load_vms <- function(window, downscale = TRUE){
-  # using trip_tot_dat dataframe to find VMS files with observed pink shrimp
   # using window to choose the matching time window to metier data
  
   fp <- paste0("processedData/spatial/vms/intermediate/05_make_obs_to_vms/tw_",
@@ -264,7 +263,7 @@ vms_all <- do.call(rbind, vms_list)
 
 # split into location data and features and true ----
 loc_vars <- c("doc.num", "date.time", "metier.2010","obs_dup","longitude",
-              "latitude","fish_tickets","trip_id1","burst.id")
+              "latitude","fish_tickets","trip_id1","burst.id","dist_coast")
 loc_data <- vms_all[,loc_vars]
 
 feature_vars <- colnames(vms_all)[-which(colnames(vms_all) %in% c(loc_vars,"fishing"))]

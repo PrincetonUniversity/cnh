@@ -34,6 +34,7 @@ port_df <- readRDS("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/04_data_outp
 source("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/02_define_participationPlot.R")
 
 port_df <- port_df[order(port_df$ic_pre, decreasing = TRUE),]
+port_df <- port_df[-grep('other',port_df$name),]
 
 pdf("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_3c.pdf",width = 8, height = 2)
   par(bg="transparent", cex = .75,cex=1.2)
@@ -147,6 +148,8 @@ lm_port1 <- lm(ic_delta ~ ic_pre,
 lm_port <- lm(ic_delta ~  ic_pre + ifq_flag, 
               subset(port_df, ifq_flag!="itq entrant: general landings"))
 
+lm3 <- lm(ic_delta ~ lat, subset(port_df, ifq_flag!="itq entrant: general landings"))
+
 # sim to get effects 
 lm_port.sim <- sim(lm_port,n=10000)
 coef.lm_port.sim <- coef(lm_port.sim)
@@ -156,7 +159,7 @@ colnames(port_effect) <- c("intercept","ic_pre","LE_exit","general_fleet")
 
 port_effect <- port_effect %>%
   dplyr::select(-ic_pre) %>%
-  mutate(stay_on = stay_on + intercept, LE_exit = LE_exit + intercept) %>%
+  mutate(general_fleet = general_fleet + intercept, LE_exit = LE_exit + intercept) %>%
   gather() %>%
   dplyr::rename(ifq_flag = key,coefficient = value) %>%
   group_by(ifq_flag) %>%
@@ -164,11 +167,17 @@ port_effect <- port_effect %>%
             max_ci = quantile(coefficient, .975), 
             min_ci = quantile(coefficient,0.025))
 
-levels(ifq_effect$ifq_flag) = c("general fleet"," catch share\nparticipant", 
+levels(port_effect$ifq_flag) = c("general fleet","catch share\nparticipant", 
                                 "limited entry\nexit")
 
 # gather and plot
+ggplot(port_effect, aes(x = levels(ifq_flag), y = mean)) + geom_point(size =7) + 
+  geom_errorbar(aes(ymin = min_ci, ymax = max_ci), width = 0) + 
+  theme_pander() + ylab(expression(paste(Delta,"C"))) + 
+  xlab("") + theme(panel.grid=element_blank()) + geom_hline(yintercept=0)
 
+ggplot2::ggsave("Analysis/Metiers/bin/05_figures/fig5_port.pdf",width=4, height = 4, 
+                units="in",scale=1)
 
 
 # supplementary figures ----

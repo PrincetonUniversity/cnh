@@ -34,10 +34,10 @@ define_participationPlot <- function(year_choose, port=NA, restrict=FALSE, ticke
   n.gear = length(grep("net",descrp$Metier))
   paint = colorRampPalette(brewer.pal(9, "Blues"))(n.gear)
   descrp$paint[grep("net",descrp$Metier)] <- paint
-  if(is.na(port)){
+  if(any(is.na(port))){
     yr_tickets <- tickets[which(tickets$year %in% year_choose),]}
-  if(!is.na(port)){
-    yr_tickets <- tickets[which(tickets$year %in% year_choose & tickets$pcid==port),]
+  if(any(!is.na(port))){
+    yr_tickets <- tickets[which(tickets$year %in% year_choose & tickets$pcid %in% port),]
   }
   m_by_v <- melt(yr_tickets, id.vars = c("metier.2010","drvid"), measure.vars = "trip_id")
   m_by_v <- unique(m_by_v)
