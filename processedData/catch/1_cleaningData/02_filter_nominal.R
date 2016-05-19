@@ -1,10 +1,11 @@
-filter_rare <- function(data){
+filter_nominal <- function(data){
   library(dplyr)
-  # details: drop nominal distinction in market categories, drop dredge gear
+  # details: drop nominal distinction in market categories (makes it so that each row has a single species, pretending that all catches are clean)
+  # legacy, no longer active part of the code, to drop dredge gear
   
 # merge nominal and species market categories ----
   # load species ids
-  spid <- read.csv("/Users/efuller/Desktop/CNH/processedData/catch/spid.csv", 
+  spid <- read.csv("processedData/catch/spid.csv", 
                    stringsAsFactors=F)
   
   # some problems - make common name identical across species
@@ -14,17 +15,20 @@ filter_rare <- function(data){
     # mis-spelling of vermillion
     spid$common_name[which(spid$SPID=="VRM1")] <- "NOM. VERMILION ROCKFISH"
   
+  # drop to species level records only  
   spid <- spid[which(spid$X==1),]
+  
+  # reassign nominal name as common name
   species <- spid$common_name
   species <- gsub("NOM. ", "", species)
   spid$common <- species
   
-  # build species key
+  # build species key to map nominal species names to a single common name used throughout the database
   nominal <- spid[grep("NOM.", spid$common_name),]
   nominal <- select(nominal, SPID, common)
   colnames(nominal) <- c("nominal", "common")
   reg <- spid[-grep("NOM.",spid$common_name),]
-  reg <- select(reg, SPID, common)
+  reg <- dplyr::select(reg, SPID, common)
   colnames(reg) <- c("reg", "common")
   
   species.key <- merge(reg, nominal, by = "common", all.x = TRUE, all.y = TRUE)
@@ -38,16 +42,17 @@ filter_rare <- function(data){
     #cat(i," ")
   }
   
-  # for rest then can import spid to modified column
+  # for spid without nominal counterparts we can import spid directly to modified column
   data$modified <- ifelse(is.na(data$modified), data$spid, data$modified)
   
-  # make new ftl dataset that drop dredges
-  filtered_ftl <- subset(data, grgroup != "DRG")
+  # make new ftl dataset that drop dredges. dredges catch geoducks, clams, lingcod, sea cukes
+  # filtered_ftl <- subset(data, grgroup != "DRG")
 
 # remove any trips which have more than one type of gear on it per trip ----
-  dub_gears <- unique(filtered_ftl[,c("trip_id","grgroup")])
+  # this could be an issue except it drops <0.01% of trips annually
+  dub_gears <- unique(data[,c("trip_id","grgroup")])
   rm_ves <- unique(dub_gears$trip_id[which(duplicated(dub_gears$trip_id))])
-  no_dups <- subset(filtered_ftl, !(trip_id %in% rm_ves))
+  no_dups <- subset(data, !(trip_id %in% rm_ves))
 #----
 return(no_dups)
 }
