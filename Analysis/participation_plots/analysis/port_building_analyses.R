@@ -181,11 +181,12 @@ port_df$paint[port_df$pcid %in% c("SB","ORF","CRS")] <- "example"
 ggplot(subset(port_df, !is.nan(ld)), aes(x = reorder(pcid, ld), fill=factor(paint), y = ld)) + 
   geom_bar(stat='identity') + xlab("port") + 
   ylab("port connectance") + scale_fill_manual(values = c("grey20","grey50")) + theme_pander() 
-ggsave("/Users/efuller/Desktop/CNH/Analysis/participation_plots/analysis/fig_2_ld.pdf",width = 13, height = 5)
+ggsave("/Users/efuller/Desktop/CNH/Analysis/participation_plots/analysis/fig_2_ld.pdf",
+       width = 13, height = 5, dpi = 600)
 
 which(names(port_list) %in% c("SB","ORF","CRS"))
 png("/Users/efuller/Desktop/CNH/Analysis/participation_plots/analysis/fig_2_orf.png",
-    width = 4, height = 4, res = 300, units = "in")
+    width = 4, height = 4, res = 600, units = "in")
 par(bg="transparent")
 g = port_list[[6]]
 plot(g, edge.width = E(g)$weight*.45, 
@@ -196,7 +197,7 @@ plot(g, edge.width = E(g)$weight*.45,
 dev.off()
 
 png("/Users/efuller/Desktop/CNH/Analysis/participation_plots/analysis/fig_2_crs.png",
-    width = 4, height = 4, res = 300, units = "in")
+    width = 4, height = 4, res = 600, units = "in")
 par(bg="transparent")
 g = port_list[[11]]
 plot(g, edge.width = E(g)$weight, 
@@ -207,7 +208,7 @@ plot(g, edge.width = E(g)$weight,
 dev.off()
 
 png("/Users/efuller/Desktop/CNH/Analysis/participation_plots/analysis/fig_2_sb.png",
-    width = 4, height = 4, res = 300, units = "in")
+    width = 4, height = 4, res = 600, units = "in")
 par(bg="transparent")
 g = port_list[[15]]
 plot(g, edge.width = E(g)$weight*.5, 
@@ -278,7 +279,8 @@ net_stats <- function(g, type, name){
   node_strength = strength(g)/sum(E(g)$weight)
   eigen = eigen_centrality(g,weights = ew)$vector
   btwn = betweenness(g, directed=FALSE, weights = ew, normalized = TRUE)
-  net_stats = as.data.frame(cbind(node_strength, eigen, btwn))
+  assort = assortativity_degree(g, directed=FALSE)
+  net_stats = as.data.frame(cbind(node_strength, eigen, btwn, assort))
   net_stats$metier = rownames(net_stats)
   net_stats$pcid = name
   rownames(net_stats) <- NULL
@@ -312,6 +314,11 @@ ggplot(subset(port_long, net_stat=='btwn' & !is.na(value)),
   geom_boxplot(fill='grey') + xlab("fishery") + ylab("betweeness") +
   theme(axis.text =  element_text(size=10, angle=90))
 ggsave("Analysis/participation_plots/analysis/btwn.pdf")
+
+ggplot(subset(port_long, net_stat=='assort' & !is.na(value)),
+       aes(x = reorder(metier, value, median), y = value)) + 
+  geom_boxplot(fill='grey') + xlab("fishery") + ylab("betweeness") +
+  theme(axis.text =  element_text(size=10, angle=90))
 
 # calculate centrality for each fishery for states ----
 # geom_boxplot for ports
