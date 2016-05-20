@@ -1,17 +1,16 @@
-CG1 <- read.csv("CG_2013_woc_141210_three.csv",stringsAsFactors=F, skip = 2)
-CG2 <- read.csv("CG_2009-2012_woc_141210_three.csv",stringsAsFactors = F, skip = 2)
+CG1 <- read.csv("rawData/Catch/vessel_registration/CG_2013_woc_141210_three.csv",stringsAsFactors=F, skip = 2)
+CG2 <- read.csv("rawData/Catch/vessel_registration/CG_2009-2012_woc_141210_three.csv",stringsAsFactors = F, skip = 2)
 cg <- rbind(CG1,CG2); rm(CG1, CG2)
 
-library(dplyr)
-
 # CG lengths
-lengths <- cg %>% filter(vessel_id!="") %>% group_by(vessel_id) %>% 
+library(dplyr)
+lengths <- cg %>% filter(vessel_id!="") %>% group_by(vessel_id, vessel_name) %>% 
   filter(pubyr == max(pubyr)) %>%
   dplyr::select(pubyr, length) %>% summarize(pubyr = unique(pubyr), 
                                       length = mean(length, na.rm =T))
   
 # state lengths
-sv <- read.csv("SV_2009-2013_woc_141210_two.csv",stringsAsFactors=F, skip = 2)
+sv <- read.csv("rawData/Catch/vessel_registration/SV_2009-2013_woc_141210_two.csv",stringsAsFactors=F, skip = 2)
 colnames(sv)[1] <- "year"
 
 # take most recent
