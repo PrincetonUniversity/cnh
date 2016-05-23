@@ -9,15 +9,14 @@ incomeFilter <- function(){
 # load data----
 
 # create list of data file names
-fp <- "rawData/Catch/2006-2015_pacfin_data/"
-fn <-dir("rawData/Catch/2006-2015_pacfin_data")
+fp <- "rawData/catch/2006-2015_pacfin_data/"
+fn <-dir("rawData/catch/2006-2015_pacfin_data")
 fn <- paste0(fp,fn)
 
 # read in data files
 fn <- fn[2:length(fn)]
 fn <- as.list(fn)
 dl <- lapply(fn, function(x) read.csv(x, stringsAsFactors = FALSE))
-head(dl[[1]])
 
 # paste all the data files together
 dat <- do.call(rbind,dl)
