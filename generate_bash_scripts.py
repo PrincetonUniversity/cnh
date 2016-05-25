@@ -59,7 +59,7 @@ for grgrp in grgroup:
 for grgrp in grgroup:
 	if grgrp == 'POT':
 		time = '10:00:00'
-		mem = '60000'
+		mem = '80000'
 	else:
 		time = '2:00:00'
 		mem = '60000'
@@ -67,6 +67,8 @@ for grgrp in grgroup:
 		for byr in base_years:
 			if byr == cyr:
 				continue
+			if (grgrp == 'NET') and (byr == 2006) and (cyr == 2011):
+				mem = 80000
 			f = open(file_path + 'class_%s%s_%s.sh' % (grgrp, byr, cyr), 'w')
 			f.write('#!/bin/sh\n')
 			f.write('#SBATCH -N 1\n')
@@ -79,5 +81,3 @@ for grgrp in grgroup:
 			f.write('#SBATCH --mem=%s\n\n' % (mem))
 			f.write('cd /tigress/efuller/raw_infoMap\n\n')
 			f.write('Rscript 4_knn_classify.R %s "%s" %s "modified"\n' % (byr, grgrp, cyr))
-
-

@@ -6,7 +6,7 @@
 #SBATCH --mail-user=efuller@princeton.edu
 #SBATCH --mail-type=begin
 #SBATCH --mail-type=end
-#SBATCH --mem=60000
+#SBATCH --mem=80000
 
 cd /tigress/efuller/raw_infoMap
 
