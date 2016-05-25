@@ -65,6 +65,8 @@ for grgrp in grgroup:
 		mem = '60000'
 	for cyr in class_years:
 		for byr in base_years:
+			if (grgrp == 'NET') and (byr == 2006) and (cyr == 2011):
+				mem = '80000'
 			if byr == cyr:
 				continue
 			if (grgrp == 'NET') and (byr == 2006) and (cyr == 2011):
