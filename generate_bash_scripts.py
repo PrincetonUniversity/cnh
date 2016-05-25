@@ -59,12 +59,14 @@ for grgrp in grgroup:
 for grgrp in grgroup:
 	if grgrp == 'POT':
 		time = '10:00:00'
-		mem = '60000'
+		mem = '80000'
 	else:
 		time = '2:00:00'
 		mem = '60000'
 	for cyr in class_years:
 		for byr in base_years:
+			if (grgrp == 'NET') and (byr == 2006) and (cyr == 2011):
+				mem = '80000'
 			if byr == cyr:
 				continue
 			f = open(file_path + 'class_%s%s_%s.sh' % (grgrp, byr, cyr), 'w')
