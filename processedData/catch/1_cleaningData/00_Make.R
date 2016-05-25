@@ -23,18 +23,28 @@ source("processedData/catch/1_cleaningData/01_incomeFilter.R")
   source("processedData/catch/1_cleaningData/03_sewTrips.R")
   sewTrips(base_year=2010) # base year is which clustering results to use. 
   sewTrips(base_year=2012)
+  sewTrips(base_year=2006)
 
   # load these data, combine so have both metier classifications
   d10 <- readRDS("processedData/catch/1_cleaningData/tickets_2010.RDS")
   d12 <- readRDS("processedData/catch/1_cleaningData/tickets_2012.RDS")
+  d06 <- readRDS("processedData/catch/1_cleaningData/tickets_2006.RDS")
   
   d10 <- d10 %>%
     select(trip_id, metier) %>%
     rename(metier.2010 = metier) %>%
     distinct() 
   
-    tickets <- merge(d12, d10) %>%
-    rename(metier.2012 = metier)
+  d06 <- d06 %>%
+    select(trip_id, metier) %>%
+    rename(metier.2006 = metier) %>%
+    distinct()
+  
+  tickets <- left_join(d12, d10, by = 'trip_id') %>%
+    rename(metier.2012 = metier) %>%
+    left_join(d06, by = 'trip_id')
+    
+    
   
   saveRDS(tickets, "processedData/catch/1_cleaningData/tickets.RDS")
 
