@@ -43,8 +43,6 @@ source("processedData/catch/1_cleaningData/01_incomeFilter.R")
   tickets <- left_join(d12, d10, by = 'trip_id') %>%
     rename(metier.2012 = metier) %>%
     left_join(d06, by = 'trip_id')
-    
-    
   
   saveRDS(tickets, "processedData/catch/1_cleaningData/tickets.RDS")
 

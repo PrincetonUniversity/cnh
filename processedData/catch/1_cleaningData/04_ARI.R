@@ -3,12 +3,28 @@ if(!exists("tickets")) cat("need to load tickets.RDS")
 
 # compute adjusted rand index for all data ----
 library(mclust)
-ARI_total <- with(unique(tickets[,c("trip_id","metier.2010","metier.2012")]), adjustedRandIndex(metier.2010, metier.2012)) # 0.97! nice, based on number of trips. 
-save(ARI_total,file =  "/Users/efuller/1/CNH/processedData/catch/1_cleaningData/ARI_total.Rdata")
+ARI_total10_12 <- with(unique(tickets[,c("trip_id","metier.2010","metier.2012")]), adjustedRandIndex(metier.2010, metier.2012)) 
+ARI_total10_06 <- with(unique(tickets[,c("trip_id","metier.2010","metier.2006")]), adjustedRandIndex(metier.2010, metier.2006)) 
+ARI_total12_06 <- with(unique(tickets[,c("trip_id","metier.2012","metier.2006")]), adjustedRandIndex(metier.2012, metier.2006)) 
+
+#save(ARI_total,file =  "/Users/efuller/1/CNH/processedData/catch/1_cleaningData/ARI_total.Rdata")
 
 # by year and gear ----
-  by_year <- data.frame(gear_group = c("TLS","TWL","TWS","NET","POT","HKL","MSC"), stringsAsFactors = FALSE)
-  by_year$y2009 <- NA; by_year$y2010 <- NA; by_year$y2011 <- NA; by_year$y2012 <- NA; by_year$y2013 <- NA
+  gears = c("TLS","TWL","TWS","NET","POT","HKL","MSC", "DRG")
+  years = 2006:2015
+  ari_1012 <- matrix(ncol = length(years),nrow = length(gears), data = NA)
+  colnames(ari_1012) <- years
+  rownames(ari_1012) <- gears
+  for(g in 1:length(gears)){
+    for(y in 1:length(years)){
+      ari_1012[g, y] = with(subset(tickets, year == years[y] & grgroup == gears[g]), adjustedRandIndex(metier.2010, metier.2012))
+    }
+  }
+  
+  
+  
+  by_year <- data.frame(gear_group = c("TLS","TWL","TWS","NET","POT","HKL","MSC", "DRG"), stringsAsFactors = FALSE)
+  by_year$y2009 <- NA; by_year$y2010 <- NA; by_year$y2011 <- NA; by_year$y2012 <- NA; by_year$y2013 <- NA;
   
   for(i in 1:nrow(by_year)){
     by_year[i,2:6] <- c(with(subset(tickets, year == 2009 & grgroup == by_year$gear_group[i]), adjustedRandIndex(metier.2010, metier.2012)),
