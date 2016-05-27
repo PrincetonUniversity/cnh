@@ -5,14 +5,6 @@
 # Spit out clean RDS and csv files to be used instead of raw .txt files
 
 
-# Combine all clean RDS files into a single data frame
-# Find on-land and non-West coast points and deal with them
-# split the VMS tracks by vessel and process one by one
-
-rm(list=ls())
-
-library(stringr)
-
 # load files
 setwd("/Users/jameal.samhouri/Documents/CNH_to_github/cnh/")
 
@@ -83,16 +75,3 @@ for(i in 1:length(fn2)){
   
 }
 
-# Combine all clean RDS files into a single data frame
-
-# read in data files
-
-fn3 <-dir("rawData/VMS/VMSdata_csv_NMFS16-002_clean")
-fn4 <- paste0("rawData/VMS/VMSdata_csv_NMFS16-002_clean/",fn3)
-fn4 <- as.list(fn4)
-data.list <- lapply(fn4, function(x) readRDS(x))
-
-# paste all the data files together
-df <- do.call(rbind,data.list)
-vms2013_2015 <- df[-which(duplicated(df)),]
-colnames(df) <- tolower(colnames(df))
