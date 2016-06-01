@@ -39,6 +39,7 @@ rm("data.list")
 
 # Cleaning
 
+system.time({
 # remove any rows which are duplicated in their entirety
 df <- df[-which(duplicated(df)),]
 # started at 15286753 obs. lost 2% of data
@@ -59,6 +60,9 @@ df <- df[complete,]
 
 rm("complete")
 
+})
+
+system.time({
 # Find on-land and non-EEZ coast points, and deal with them
 # the on-land and non-EEZ part requires splitting the VMS tracks by vessel and processing each one by one. 
 
@@ -79,7 +83,10 @@ df$onland <- as.vector(gContains(WC, sp_df, byid=TRUE)) # TRUE values are on lan
 # (albeit 1 column, many rows -- but messes things up)
 # need as.vector() because gContains returns a vector 
 
+})
+
 # remove sequential on-land points ----
+
 # arrange by vessel name, and date-time. 
 df <- df[order(df$docnum, df$datetime),]
 # then split into a list, where each element is a vessel
