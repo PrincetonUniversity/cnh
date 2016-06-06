@@ -62,7 +62,6 @@ rm("complete")
 
 })
 
-system.time({
 # Find on-land and non-EEZ coast points, and deal with them
 # the on-land and non-EEZ part requires splitting the VMS tracks by vessel and processing each one by one. 
 
@@ -75,15 +74,43 @@ proj4string(WC) <- CRS("+proj=longlat +datum=WGS84") # this assigns a projection
 # remove points that are smaller than -180
 wpacific <- which(df$longitude< -180)
 if(length(wpacific) >0) df <- df[-which(df$longitude< -180),]
+
+system.time({
 sp_df <- SpatialPoints(coords = df[,c("longitude","latitude")],
                        proj4string = CRS("+proj=longlat +datum=WGS84")) # this assigns a projection to the VMS points
+})
 
 # generate a vector of 1s if on land and 0s if not
-df$onland <- as.vector(gContains(WC, sp_df, byid=TRUE)) # TRUE values are on land
-# (albeit 1 column, many rows -- but messes things up)
-# need as.vector() because gContains returns a vector 
+# need to do this as a loop to break it into smaller parts
 
-})
+rows_sp_df <- nrow(as.data.frame(sp_df))
+# rows_sp_df/(10^5)
+# rows_sp_df %% (10^5) # this is the remainder
+loops <- round(rows_sp_df/(10^5))
+
+onland <- c() # initialize a vector
+
+#loops <- 2
+
+#system.time({
+# Start the clock!
+ptm <- proc.time()
+for(i in 1:loops){
+  
+  #df$onland[((i*10^5)-10^5+1):(i*10^5)] <- as.vector(gContains(WC, sp_df[((i*10^5)-10^5+1):(i*10^5),], byid=TRUE)) # TRUE values are on land
+  
+  onland <- rbind(onland,
+                  as.vector(gContains(WC, sp_df[((i*10^5)-10^5+1):(i*10^5),], byid=TRUE))
+                  ) # TRUE values are on land
+  # (albeit 1 column, many rows -- but messes things up)
+  # need as.vector() because gContains returns a vector 
+  print(paste("Loop",i,"complete"))
+}
+#})
+# Stop the clock
+proc.time() - ptm
+
+df$onland <- onland
 
 # remove sequential on-land points ----
 
@@ -136,3 +163,9 @@ for(i in 1:length(vessel_tracks)){
   # save the processed vms track
   saveRDS(fish_tracks, paste0("fish_tracks",unique(fish_tracks$docnum),".RDS"))
 }
+
+# next overlap metiers (03), which subsets to VMS trips that are also in the fish ticket data. should only need to change paths. need to copy tickets.RDS and Samhouri observer data 
+# will still need to run 04_link_mets with emma
+# this gives each trip a unique ID by breaking trips up based on each return to land
+# the output will be what we Blake needs to map crab trips and we need to look at VMS coverage of crab trips
+
