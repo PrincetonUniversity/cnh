@@ -95,7 +95,7 @@ onland <- c() # initialize a vector
 #system.time({
 # Start the clock!
 ptm <- proc.time()
-for(i in 1:loops){
+for(i in 1:(loops-1)){
   
   #df$onland[((i*10^5)-10^5+1):(i*10^5)] <- as.vector(gContains(WC, sp_df[((i*10^5)-10^5+1):(i*10^5),], byid=TRUE)) # TRUE values are on land
   
@@ -107,8 +107,15 @@ for(i in 1:loops){
   print(paste("Loop",i,"complete"))
 }
 #})
+
+
+onland <- rbind(onland,
+                as.vector(gContains(WC, sp_df[((i*10^5)-10^5+1):rows_sp_df,], byid=TRUE))
+                ) 
+
 # Stop the clock
 proc.time() - ptm
+
 
 df$onland <- onland
 
