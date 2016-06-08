@@ -12,6 +12,7 @@ library(rgdal)
 library(rgeos)
 library(sp)
 library(maps)
+library(reshape2)
 
 # Combine all clean RDS files into a single data frame
 
@@ -116,22 +117,38 @@ onland <- cbind(onland,
 # Stop the clock
 proc.time() - ptm
 
+# because the 105th column has fewer rows than the rest of the columns, check to see that there is just some recycling happening. and there is! so cut those junk rows on line 125
+# all(onland[55482:nrow(onland),105] == onland[1:(10^5-55481),105])
+
 # need to melt first
-# df$onland <- onland
+d <- melt(onland)[3]
+df$onland <- d[1:rows_sp_df,]
 
 # remove sequential on-land points ----
 
 # arrange by vessel name, and date-time. 
-df <- df[order(df$docnum, df$datetime),]
-# then split into a list, where each element is a vessel
-vessel_tracks <- split(df, df$docnum)
+system.time({
+  df <- df[order(df$docnum, df$datetime),]
+  })
 
+# then split into a list, where each element is a vessel
+system.time({
+  vessel_tracks <- split(df, df$docnum)
+})
+
+# head(df %>% filter(vesselname == "3 Sons") %>% dplyr::select(vesselname, docnum) %>% distinct()) 
+#      %>% group_by(vesselname)
+#      %>% summarize(n_docnums = length(docnum)))
 
 # process the VMS tracks by vessel one by one
 
+system.time({
 for(k in 1:length(vessel_tracks)){
-  saveRDS(vessel_tracks[[k]], paste0("vessel_track",k,".RDS"))
+  saveRDS(vessel_tracks[[k]], paste0("processedData/spatial/vms/intermediate/02_cleaned/vessel_track",k,".RDS"))
 }
+})
+
+
 
 # helper function to identify and remove sequential on-land points
 rm_onland <- function(data){
@@ -153,22 +170,27 @@ rm_onland <- function(data){
   }
 }
 
-vessel_tracks <- dir()[grep("vessel_track",dir())]
+vessel_tracks_dir <- dir()[grep("processedData/spatial/vms/intermediate/02_cleaned/vessel_track",dir())] #
+
+# merge with doc.numers ----
+# vessel_codes <- read.csv("../West_Coast_Vessels.csv",
+#                          header=TRUE,stringsAsFactors=FALSE)
+# colnames(vessel_codes) <- c("ship.number","doc.num","alt.vessel.name")
 
 # use the helper function to remove sequential on-land points and remove abnormally high speeds
-# will produce an .RDS file for each vessel taht represents all of its trips over the length of the time series
-for(i in 1:length(vessel_tracks)){
+# will produce an .RDS file for each vessel that represents all of its trips over the length of the time series
+for(i in 1:length(vessel_tracks_dir)){
   # load vms track
-  one_ves <- readRDS(vessel_tracks[i])
+  one_ves <- readRDS(vessel_tracks_dir[i])
   # remove onland points
   fish_tracks <- rm_onland(one_ves)
   if(length(fish_tracks)==1) next
   # remove any abnormally high speeds
-  fish_tracks <- fish_tracks[-which(fish_tracks$avg.speed>dropspeeds),]
+  if(length(which(fish_tracks$avg.speed>dropspeeds)) >0) {fish_tracks <- fish_tracks[-which(fish_tracks$avg.speed>dropspeeds),]}
   # if there are no off-land points, don't save
-  fish_tracks <- merge(x = fish_tracks, y = vessel_codes, by = "docnum", all.x = TRUE, all.y = FALSE)
+  #fish_tracks <- merge(x = fish_tracks, y = vessel_codes, by = "docnum", all.x = TRUE, all.y = FALSE)
   # save the processed vms track
-  saveRDS(fish_tracks, paste0("fish_tracks",unique(fish_tracks$docnum),".RDS"))
+  saveRDS(fish_tracks, paste0("processedData/spatial/vms/intermediate/02_cleaned/fish_tracks",unique(fish_tracks$docnum),".RDS"))
 }
 
 # next overlap metiers (03), which subsets to VMS trips that are also in the fish ticket data. should only need to change paths. need to copy tickets.RDS and Samhouri observer data 
