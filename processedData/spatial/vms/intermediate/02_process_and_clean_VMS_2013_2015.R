@@ -99,7 +99,7 @@ for(i in 1:(loops-1)){
   
   #df$onland[((i*10^5)-10^5+1):(i*10^5)] <- as.vector(gContains(WC, sp_df[((i*10^5)-10^5+1):(i*10^5),], byid=TRUE)) # TRUE values are on land
   
-  onland <- rbind(onland,
+  onland <- cbind(onland,
                   as.vector(gContains(WC, sp_df[((i*10^5)-10^5+1):(i*10^5),], byid=TRUE))
                   ) # TRUE values are on land
   # (albeit 1 column, many rows -- but messes things up)
@@ -109,15 +109,15 @@ for(i in 1:(loops-1)){
 #})
 
 
-onland <- rbind(onland,
-                as.vector(gContains(WC, sp_df[((i*10^5)-10^5+1):rows_sp_df,], byid=TRUE))
+onland <- cbind(onland,
+                as.vector(gContains(WC, sp_df[((i*10^5)+1):rows_sp_df,], byid=TRUE))
                 ) 
 
 # Stop the clock
 proc.time() - ptm
 
-
-df$onland <- onland
+# need to melt first
+# df$onland <- onland
 
 # remove sequential on-land points ----
 
