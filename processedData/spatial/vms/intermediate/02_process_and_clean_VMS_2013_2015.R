@@ -96,7 +96,7 @@ onland <- c() # initialize a vector
 #system.time({
 # Start the clock!
 ptm <- proc.time()
-for(i in 1:(loops-1)){
+for(i in 1:(loops)){
   
   #df$onland[((i*10^5)-10^5+1):(i*10^5)] <- as.vector(gContains(WC, sp_df[((i*10^5)-10^5+1):(i*10^5),], byid=TRUE)) # TRUE values are on land
   
@@ -121,8 +121,8 @@ proc.time() - ptm
 # all(onland[55482:nrow(onland),105] == onland[1:(10^5-55481),105])
 
 # need to melt first
-d <- melt(onland)[3]
-df$onland <- d[1:rows_sp_df,]
+d <- melt(onland)[,3]
+df$onland <- d[1:rows_sp_df]
 
 # remove sequential on-land points ----
 
@@ -170,7 +170,7 @@ rm_onland <- function(data){
   }
 }
 
-vessel_tracks_dir <- dir()[grep("processedData/spatial/vms/intermediate/02_cleaned/vessel_track",dir())] #
+vessel_tracks_dir <- dir("processedData/spatial/vms/intermediate/02_cleaned")[grep("vessel_track",dir("processedData/spatial/vms/intermediate/02_cleaned"))] #
 
 # merge with doc.numers ----
 # vessel_codes <- read.csv("../West_Coast_Vessels.csv",
@@ -181,7 +181,7 @@ vessel_tracks_dir <- dir()[grep("processedData/spatial/vms/intermediate/02_clean
 # will produce an .RDS file for each vessel that represents all of its trips over the length of the time series
 for(i in 1:length(vessel_tracks_dir)){
   # load vms track
-  one_ves <- readRDS(vessel_tracks_dir[i])
+  one_ves <- readRDS(paste0("processedData/spatial/vms/intermediate/02_cleaned/",vessel_tracks_dir[i]))
   # remove onland points
   fish_tracks <- rm_onland(one_ves)
   if(length(fish_tracks)==1) next
