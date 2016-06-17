@@ -96,7 +96,7 @@ find_trips <- function(vessel_track, coastline = wc_proj,
   
   # any points that are > 1.5 km from the coast are "out" on a trip
   vessel_track@data$trip <- ifelse(vessel_track@data$dist_coast/1000>1.5, 1, 0)
-  vessel_track <- vessel_track[order(vessel_track@data$date.time),]
+  vessel_track <- vessel_track[order(vessel_track@data$datetime),]
   # if there's a gap > 6 hours in middle of trip
   # if vessel starts in the middle of a trip, discard it because will reverse algorithm
   if(vessel_track@data$trip[1]==1){
@@ -106,7 +106,7 @@ find_trips <- function(vessel_track, coastline = wc_proj,
     vessel_track@data$trip[1:first.zero] <- 0
   }
   
-  time_diffs <- diff(vessel_track@data$date.time)
+  time_diffs <- diff(vessel_track@data$datetime)
   # if diff > 3 hours, new trip
   vessel_track@data$time_diff <- c(NA, time_diffs)
   gap_marker <- which(vessel_track@data$time_diff>60*3 & vessel_track@data$trip==1)
@@ -115,7 +115,7 @@ find_trips <- function(vessel_track, coastline = wc_proj,
     new_rows <- vessel_track[gap_marker,]
     new_rows$trip <- 0
     foo <- rbind(vessel_track, new_rows)
-    foo <- foo[order(foo$date.time, foo$trip),]
+    foo <- foo[order(foo$datetime, foo$trip),]
     vessel_track <- foo
   }
   vessel_track@data$trip_num <- c(0,cumsum(abs(diff(vessel_track@data$trip))))
@@ -242,7 +242,7 @@ for(j in 1:nrow(c2_bydate)){
 
 # merge metier with trip_id
 met_track <- merge(as.data.frame(v2_track), dplyr::select(c2_bydate, starts_with("trip_id"), metier.2010),all.x = TRUE, all.y = FALSE)
-met_track <- met_track[order(met_track$date.time),]
+met_track <- met_track[order(met_track$datetime),]
 
 # rename aggregate trips - adds an agg_id
 met_agg <- met_track %>%
@@ -311,7 +311,7 @@ if(length(trips_landed)==0){
     filter(only_trips > 0 & !is.na(agg_id)) %>%
     group_by(only_trips) %>%
     summarize(agg_id = unique(agg_id), 
-              time =  ifelse(length(date.time)==1, 1, difftime(max(date.time),min(date.time),units="hours")), 
+              time =  ifelse(length(datetime)==1, 1, difftime(max(datetime),min(datetime),units="hours")), 
               distance = sum(path_dist(lon = longitude, lat = latitude, dist_coast.vec = dist_coast))) %>%
     group_by(agg_id) %>%
     summarize(time = sum(time), distance =sum(distance))
