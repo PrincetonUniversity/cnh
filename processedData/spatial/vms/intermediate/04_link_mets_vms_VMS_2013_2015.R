@@ -138,7 +138,7 @@ assign_landings <- function(time_window, v2 = ves){
   # convert look_back window to seconds
   look_back <- time_window *60 *60
   # find landings: subset trip ID, landing dates, metier, and port
-  c2 <- unique(subset(catch, drvid == unique(v2$doc.num), select = c("trip_id","pcid","metier.2010","tdate")))
+  c2 <- unique(subset(catch, drvid == unique(v2$docnum), select = c("trip_id","pcid","metier.2010","tdate")))
   c2$tdate.start <- as.POSIXct(c2$tdate, format = "%d-%b-%y",tz = "Etc/GMT-8") - look_back
   c2$tdate.end <- as.POSIXct(c2$tdate, format = "%d-%b-%y",tz = "Etc/GMT-8")+23.9999*60*60
   c2 <- c2[order(c2$tdate.start),]
@@ -275,7 +275,7 @@ if(length(trips_landed)==0){
 }else{
   trip_tots <- subset(catch, trip_id %in% trips_landed) %>%
     group_by(trip_id) %>%
-    summarize(lbs = sum(landed_wt,na.rm=T), revenue = sum(adj_revenue, na.rm = T))
+    summarize(lbs = sum(pounds,na.rm=T), revenue = sum(adj_revenue, na.rm = T)) # replaced landed_wt with pounds 062016
   
   # use only_trips to make trip_id vector long format
   library(tidyr)
@@ -325,7 +325,7 @@ if(length(trips_landed)==0){
   met_all <- left_join(met_agg, cpue)
 }
 
-saveRDS(met_all, paste0("/Users/jameal.samhouri/Documents/CNH_to_github/cnh/processedData/spatial/vms/intermediate/04_link_mets_vms/tw_",window_size,"hr/",unique(v2_track$doc.num),".RDS"))
+saveRDS(met_all, paste0("/Users/jameal.samhouri/Documents/CNH_to_github/cnh/processedData/spatial/vms/intermediate/04_link_mets_vms/tw_",window_size,"hr/",unique(v2_track$docnum),".RDS"))
 
 }
 }
