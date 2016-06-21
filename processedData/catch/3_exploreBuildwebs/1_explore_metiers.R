@@ -20,7 +20,7 @@ neffort <- tickets %>%
 # so for each species in each metier, how many trips is it the majority?
 
 characterize_metiers <- function(metier_choice, data = tickets){
-  catch_data <- subset(tickets, metier.2010 == metier_choice, select = c("modified","landed_wt", "trip_id","drvid","ppp","drvid"))
+  catch_data <- subset(tickets, metier.2010 == metier_choice, select = c("modified","pounds", "trip_id","drvid","ppp"))
   
   # find max species by trip.
   trips <- unique(catch_data$trip_id)
@@ -28,7 +28,7 @@ characterize_metiers <- function(metier_choice, data = tickets){
   
   max_species <- catch_data %>%
     group_by(trip_id) %>%
-    summarize(species = modified[which.max(landed_wt)])
+    summarize(species = modified[which.max(pounds)])
   
   # for each metier, what are the main ports?
   metier_trips <- subset(tickets, trip_id %in% catch_data$trip_id, select = c("trip_id", "grid","pcid", "year"))
@@ -63,9 +63,9 @@ df$number_vessels <- NA
 other_ports <- c("DFO", "NWAFC")
 
 # load common names
-spid <- read.csv("/Users/efuller/Desktop/CNH/processedData/catch/1_cleaningData/spid.csv", stringsAsFactors=F)
-grid <- read.csv("/Users/efuller/Desktop/CNH/Analysis/Metiers/data/grid.csv", stringsAsFactors=F)
-pcid <- read.csv("/Users/efuller/Desktop/CNH/Analysis/Metiers/results/2015-01-09/code/data/pcid.csv", stringsAsFactors = F)
+spid <- read.csv("processedData/catch/1_cleaningData/spid.csv", stringsAsFactors=F)
+grid <- read.csv("Analysis/Metiers/data/grid.csv", stringsAsFactors=F)
+pcid <- read.csv("Analysis/Metiers/results/2015-01-09/code/data/pcid.csv", stringsAsFactors = F)
 
 for(i in 1:length(met_data)){
   df$Metier[i] <- names(met_data[i])
@@ -129,7 +129,7 @@ df$At_sea <- NULL
 df$CP_MS <- NULL
 row.names(df) <- NULL
 
-write.csv(df, "/Users/efuller/Desktop/CNH/processedData/catch/3_exploreBuildwebs/ref_tables/metier_descrp.csv")
+write.csv(df, "processedData/catch/3_exploreBuildwebs/ref_tables/metier_descrp.csv")
 
 #----
 # building participation networks
@@ -139,6 +139,8 @@ library(igraph); library(reshape2); library(vegan); library(RColorBrewer)
 # calculate the bray curtis dissimilarity to look at vessel composition across fisheries. A fishery is very similar if the same vessels participate in the same way. 
 # need a metier by drvid matrix to run vegdist on
 
+tickets <- tickets[-which(tickets$drvid=="NONE"),]
+library(reshape2); library(vegan); library(igraph); library(RColorBrewer)
 define_participationPlot <- function(year_choose, port=NA, restrict=TRUE){
   if(is.na(port)){
     yr_tickets <- tickets[which(tickets$year %in% year_choose),]}
@@ -182,15 +184,20 @@ define_participationPlot <- function(year_choose, port=NA, restrict=TRUE){
   return(g_s)
 }
 
+gs_06 <- define_participationPlot(2006)
+gs_07 <- define_participationPlot(2007)
+gs_08 <- define_participationPlot(2008)
 gs_09 <- define_participationPlot(2009)
 gs_10 <- define_participationPlot(2010)
 gs_11 <- define_participationPlot(2011)
 gs_12 <- define_participationPlot(2012)
 gs_13 <- define_participationPlot(2013)
+gs_14 <- define_participationPlot(2014)
+gs_15 <- define_participationPlot(2015)
 
-pre_ITQ <- define_participationPlot(c(2009,2010))
-post_ITQ <- define_participationPlot(c(2012,2013))
-gs_all <- define_participationPlot(c(2009, 2010, 2011, 2012,2013))
+pre_ITQ <- define_participationPlot(c(2006:2010))
+post_ITQ <- define_participationPlot(c(2012:2015))
+gs_all <- define_participationPlot(c(2006:2015))
 
 graphs <- list(gs_09, gs_10, gs_11, gs_12, gs_13, pre_ITQ, post_ITQ, gs_all)
 
@@ -203,16 +210,17 @@ port_popularity <- port_popularity[order(port_popularity$num_Ves, decreasing = T
 
 # first will look at top ten
 
-gs09NEW <- define_participationPlot(2009:2013, "NEW")
-gs09COS <- define_participationPlot(2009:2013, "COS")
-gs09AST <- define_participationPlot(2009:2013, "AST")
-gs09SF <- define_participationPlot(2009:2013, "SF")
-gs09BFG <- define_participationPlot(2009:2013, "BRG")
-gs09WPT <- define_participationPlot(2009, "WPT")
-gs09LWC <- define_participationPlot(2009, "LWC")
-gs09BDG <- define_participationPlot(2009, "BDG")
-gs09PRN <- define_participationPlot(2009, "PRN")
-gs09TLL <- define_participationPlot(2009, "TLL")
+gs09NEW <- define_participationPlot(2006:2015, "NEW")
+gs09COS <- define_participationPlot(2006:2015, "COS")
+gs09AST <- define_participationPlot(2006:2015, "AST")
+gs09SF <- define_participationPlot(2006:2015, "SF")
+gs09BFG <- define_participationPlot(2006:2015, "BRG")
+gs09WPT <- define_participationPlot(2006:2015, "WPT")
+gs09LWC <- define_participationPlot(2006:2015, "LWC")
+gs09BDG <- define_participationPlot(2006:2015, "BDG")
+gs09PRN <- define_participationPlot(2006:2015, "PRN")
+gs09TLL <- define_participationPlot(2006:2015, "TLL")
+gs09SB <- define_participationPlot(2006:2015, "SB")
 
 top_ports <- list(gs09NEW, gs09COS, gs09AST, gs09SF, gs09BFG, gs09WPT, gs09LWC, gs09BDG, gs09PRN, gs09TLL)
 saveRDS(top_ports, "code/3_exploreBuildwebs/top_ports.RDS")
@@ -239,6 +247,18 @@ ggplot(degree_df, aes(y=degree, x = reorder(metier, -degree, fun=median))) + geo
 saveRDS(degree_df, "code/3_exploreBuildwebs/degree.RDS")
 saveRDS(coloring, "code/3_exploreBuildwebs/coloring.RDS")
 
+#subsetting TWL_4 subgraph
+n_edges = length(E(gs_all))
+eids <- NA
+for(i in 1:n_edges){
+  twl_4 <- grep("TWL_4", attr(E(gs_all)[[i]], "vnames"))
+  pot_1 <- grep("POT_1", attr(E(gs_all)[[i]], "vnames"))
+  
+  eids[i] <- ifelse(length(twl_4)==1 | length(pot_1)==1, 1, 0)
+}
+
+twl_4 <- subgraph.edges(gs_all, eids = which(eids>0))
+
 #-----
 # time series
 #-----
@@ -248,26 +268,28 @@ saveRDS(coloring, "code/3_exploreBuildwebs/coloring.RDS")
 # dover: TWL_1
 
 # trips by day
-trl <- subset(tickets, metier %in% c( "HKL_1","TWL_1","TWS_1","TLS_1","TLS_2","POT_1"))
-trl$date <- paste(trl$year, trl$month, trl$day, sep="-")
+trl <- subset(tickets, metier.2010 %in% c( "HKL_1","TWL_1","TWS_1","TLS_1","TLS_2","POT_1", "TWL_4"))
 
-by_day <- ddply(trl, .(date, metier), summarize, trips = length(unique(trip_id)))
+by_day <- trl %>% group_by(tdate, metier.2010) %>% 
+  summarize(trips = sum(adj_revenue)) %>%
+  ungroup() %>%
+  mutate(tdate = as.Date(tdate, format = "%d-%b-%y"),
+         year = format(tdate, "%Y"))
 
-    # by_day$date <- as.POSIXlt(by_day$date)
-    # ggplot(by_day, aes(x = date, y = trips, group = metier, color = metier)) + 
-    #      geom_bar(stat="identity",position="dodge") + theme_minimal()
-    # 
-    # ggplot(by_day, aes(x = date, y = trips, group = metier, color = metier)) + 
-    #      geom_line() + theme_minimal()
+    ggplot(by_day, aes(x = tdate, y = trips, group = metier.2010, color = metier.2010)) +
+         geom_bar(stat="identity",position="dodge") + theme_minimal()
+
+    ggplot(by_day, aes(x = tdate, y = trips, group = metier.2010, color = metier.2010)) +
+         geom_line() + theme_minimal() + facet_wrap(~year, scale = 'free_x') + scale_y_sqrt()
 
 library(zoo)
 # need to cast in order to get into right format
-melt_day <- melt(by_day, id.vars = c("metier","date"), measure.vars = "trips")
-cast_day <- dcast(melt_day, date ~ metier, fun.aggregate = sum)
+melt_day <- melt(by_day, id.vars = c("metier.2010","tdate"), measure.vars = "trips")
+cast_day <- dcast(melt_day, tdate ~ metier.2010, fun.aggregate = sum)
 by_day.ts <- as.zoo(cast_day[,2:ncol(cast_day)],order.by =as.Date(cast_day[,1]))
 plot(by_day.ts)
 rollmeans<- rollmean(by_day.ts,k=14)
-plot(rollmeans,screen=c(1,2,3,3,1,1),col=c("steelblue","indianred","purple","dodgerblue","goldenrod","pink"),lwd=2,bty="n",ylab=c("sablefish longline,\ndover trawl,\npink shrimp trawl","crab pots","albacore, salmon troll"),main="14 day moving average of number of trips",xlab="")
+plot(rollmeans,screen=c(1,2,3,3,1,4,1),col=c("steelblue","indianred","purple","dodgerblue","goldenrod","violet", "pink"),lwd=2,bty="n",ylab=c("sablefish longline,\ndover trawl,\npink shrimp trawl","crab pots","albacore, salmon troll","sea cucumber"),main="14 day moving average of number of trips",xlab="")
 legend("bottomright",colnames(rollmeans),lty=1)
 
 saveRDS(rollmeans,"code/3_exploreBuildwebs/rollmeans.RDS")
