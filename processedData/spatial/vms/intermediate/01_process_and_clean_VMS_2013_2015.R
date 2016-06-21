@@ -4,13 +4,6 @@
 # Ensure each column is formatted properly (date-time, etc)
 # Spit out clean RDS and csv files to be used instead of raw .txt files
 
-
-# Combine all clean RDS files into a single data frame
-# Find on-land and non-West coast points and deal with them
-# split the VMS tracks by vessel and process one by one
-
-rm(list=ls())
-
 library(stringr)
 
 # load files
@@ -19,18 +12,37 @@ setwd("/Users/jameal.samhouri/Documents/CNH_to_github/cnh/")
 # write a function to open each raw VMS data file and do bare bones cleaning.
 # expect wanring messages about coercing NAs
 
-#filename <- "VMSNWFS15-002_2013_01"
+#filename <- "VMSNWFS15-002_2013_01" # 2014_05
 
 bare_bones <- function(filename){
   
   # Remove all garbage headers from each .txt file
-  my_widths <- c(21,11,11,29,11,11,21,16)
   
-  dat1 <- read.fwf(paste0("rawData/VMS/VMSdata_csv_NMFS16-002/",filename,".txt"),widths=my_widths,skip=32)
+  # read the number of dashes to determine how to break up columns
+#  dtemp <- read.table(paste0("rawData/VMS/VMSdata_csv_NMFS16-002/",filename,".txt"), skip=1,nrow=1)
+  #my_widths <- as.vector(apply(dtemp,1,nchar)+1)
+  
+  #my_widths <- c(21,11,11,29,11,11,21,16)
+  
+  # determine how many rows to skip
+  x = 0
+  bad_dash = TRUE
+  while(bad_dash){
+    dtemp <- read.table(paste0('rawData/VMS/VMSdata_csv_NMFS16-002/', filename, '.txt'), skip = x, nrow = 1,
+                        stringsAsFactors = FALSE)
+    old_length = nchar(dtemp[1])
+    new_length = nchar(gsub('-',"",dtemp[1]))
+    bad_dash = ifelse(old_length!=new_length, FALSE, TRUE)
+    x = x + 1
+  }
+  
+  my_widths <- as.vector(apply(dtemp, 1, nchar)+1)
+  
+  dat1 <- read.fwf(paste0("rawData/VMS/VMSdata_csv_NMFS16-002/",filename,".txt"),widths=my_widths,skip=x)
   #head(dat1,40)
  
   dat1a <- apply(dat1, 2, function (x) str_trim(x, side="both"))
-  #head(dat1a,40)
+  #head(dat1a)
   
   colnames(dat1a) <- c("DateTime", "Latitude", "Longitude", "VesselName", "AvgSpeed", "AvgCourse", "DocNum", "Declarations")
   dat1b <- data.frame(dat1a, stringsAsFactors = FALSE)
@@ -83,16 +95,3 @@ for(i in 1:length(fn2)){
   
 }
 
-# Combine all clean RDS files into a single data frame
-
-# read in data files
-
-fn3 <-dir("rawData/VMS/VMSdata_csv_NMFS16-002_clean")
-fn4 <- paste0("rawData/VMS/VMSdata_csv_NMFS16-002_clean/",fn3)
-fn4 <- as.list(fn4)
-data.list <- lapply(fn4, function(x) readRDS(x))
-
-# paste all the data files together
-df <- do.call(rbind,data.list)
-vms2013_2015 <- df[-which(duplicated(df)),]
-colnames(df) <- tolower(colnames(df))
