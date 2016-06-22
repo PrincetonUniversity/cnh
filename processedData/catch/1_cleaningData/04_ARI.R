@@ -21,21 +21,16 @@ ARI_total12_06 <- with(unique(tickets[,c("trip_id","metier.2012","metier.2006")]
     }
   }
   
+  ari_0612 <- matrix(ncol = length(years),nrow = length(gears), data = NA)
+  colnames(ari_0612) <- years
+  rownames(ari_0612) <- gears
   
-  
-  by_year <- data.frame(gear_group = c("TLS","TWL","TWS","NET","POT","HKL","MSC", "DRG"), stringsAsFactors = FALSE)
-  by_year$y2009 <- NA; by_year$y2010 <- NA; by_year$y2011 <- NA; by_year$y2012 <- NA; by_year$y2013 <- NA;
-  
-  for(i in 1:nrow(by_year)){
-    by_year[i,2:6] <- c(with(subset(tickets, year == 2009 & grgroup == by_year$gear_group[i]), adjustedRandIndex(metier.2010, metier.2012)),
-                        with(subset(tickets, year == 2010 & grgroup == by_year$gear_group[i]), adjustedRandIndex(metier.2010, metier.2012)),
-                        with(subset(tickets, year == 2011 & grgroup == by_year$gear_group[i]), adjustedRandIndex(metier.2010, metier.2012)),
-                        with(subset(tickets, year == 2012 & grgroup == by_year$gear_group[i]), adjustedRandIndex(metier.2010, metier.2012)),
-                        with(subset(tickets, year == 2013 & grgroup == by_year$gear_group[i]), adjustedRandIndex(metier.2010, metier.2012)))
+  for(g in 1:length(gears)){
+    for(y in 1:length(years)){
+      ari_0612[g, y] = with(subset(tickets, year == years[y] & grgroup == gears[g]), adjustedRandIndex(metier.2010, metier.2012))
+    }
   }
   
-  rownames(by_year) <- by_year$gear_group
-  by_year$gear_group <- NULL
   saveRDS(by_year, "/Users/efuller/1/CNH/processedData/catch/1_cleaningData/by_year.RDS")
 
 # examine hkl ----

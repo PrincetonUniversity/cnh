@@ -1,0 +1,8 @@
+\contentsline {section}{\numberline {1}Patch-Diet Choice Model}{1}
+\contentsline {subsection}{\numberline {1.1}On optimal diet in a patchy environment: \cite {Heller:1980}}{1}
+\contentsline {subsection}{\numberline {1.2}Current Simple Model --- extension of \cite {abramsetal:2012}}{1}
+\contentsline {subsubsection}{\numberline {1.2.1}My extension}{2}
+\contentsline {subsubsection}{\numberline {1.2.2}MSY Version and Analysis}{2}
+\contentsline {subsubsection}{\numberline {1.2.3}Coding up and running MSY model}{5}
+\contentsline {subsection}{\numberline {1.3}Notes}{5}
+\contentsline {section}{\numberline {2}Simplified patch model}{5}

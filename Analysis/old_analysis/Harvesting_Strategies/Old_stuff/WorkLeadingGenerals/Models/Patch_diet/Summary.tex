@@ -1,0 +1,192 @@
+\documentclass{article}\usepackage{graphicx, color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\definecolor{fgcolor}{rgb}{0.2, 0.2, 0.2}
+\newcommand{\hlnumber}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlfunctioncall}[1]{\textcolor[rgb]{0.501960784313725,0,0.329411764705882}{\textbf{#1}}}%
+\newcommand{\hlstring}[1]{\textcolor[rgb]{0.6,0.6,1}{#1}}%
+\newcommand{\hlkeyword}[1]{\textcolor[rgb]{0,0,0}{\textbf{#1}}}%
+\newcommand{\hlargument}[1]{\textcolor[rgb]{0.690196078431373,0.250980392156863,0.0196078431372549}{#1}}%
+\newcommand{\hlcomment}[1]{\textcolor[rgb]{0.180392156862745,0.6,0.341176470588235}{#1}}%
+\newcommand{\hlroxygencomment}[1]{\textcolor[rgb]{0.43921568627451,0.47843137254902,0.701960784313725}{#1}}%
+\newcommand{\hlformalargs}[1]{\textcolor[rgb]{0.690196078431373,0.250980392156863,0.0196078431372549}{#1}}%
+\newcommand{\hleqformalargs}[1]{\textcolor[rgb]{0.690196078431373,0.250980392156863,0.0196078431372549}{#1}}%
+\newcommand{\hlassignement}[1]{\textcolor[rgb]{0,0,0}{\textbf{#1}}}%
+\newcommand{\hlpackage}[1]{\textcolor[rgb]{0.588235294117647,0.709803921568627,0.145098039215686}{#1}}%
+\newcommand{\hlslot}[1]{\textit{#1}}%
+\newcommand{\hlsymbol}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlprompt}[1]{\textcolor[rgb]{0.2,0.2,0.2}{#1}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{url}
+\usepackage[authoryear]{natbib}
+\usepackage{gensymb}
+\usepackage{charter}
+\usepackage[bitstream-charter]{mathdesign}  % using charter font for math
+
+
+\begin{document}
+
+
+\tableofcontents
+\section{Patch-Diet Choice Model}
+
+
+This whole thing comes from reading \citep{GiraldeauCaraco:2000} and  \citep{Heller:1980}. Diet choice has been considered extensively in the optimal foraging literature. Specifically, the model assumes that an individual encounters different prey items at a constant rate, proportional to the density of that type. These prey types are then ranked based on profitability (ratio of net energy per item to handling time per item), and the model seeks to find the combination that maximizes long term energy gain. 
+
+However if other foraging individuals are present, it's likely that they might affect the probability of encountering a prey item or change the handling time. The most likely effects are reducing local density of prey and increasing a forager's uncertainty about the local relative abundances of different prey types. So the question is, what happens when prey types are being depeleted in a nonuniform manner? 
+
+\subsection{On optimal diet in a patchy environment: \cite{Heller:1980}}
+
+\cite{Heller:1980} simulates diet choice when a solitary individual can forage in two depletable patches that each have two different prey choices. Using a few different strategies he examines when maximizing the instaneous gain rate and the long-term intake differ. 
+
+
+\subsection{Current Simple Model --- extension of \cite{abramsetal:2012}}
+
+\cite{abramsetal:2012} uses a 2 patch predator-prey metapopulation model where harvesting only occurs on predators in one patch, prey do not move. The model is as follows:
+Prey ($R$) grows logistically in patch $i$ and is eaten by predators ($N_i$) according to either linear or Holling Type II function ($g[C_i,R_i]$). 
+\[\frac{dR_i}{dt}=R_i(r_i-k_iR_i)-N_ig[C_i,R_i]\]
+Predators in patch $i$ ($N_i$) grow depending on how much they eat (modified by some uptake parameter $b$), their death rate, the harvesting rate in patch $i$, and either come from or leave for the other patch $j$ depending on the differences in fitness between the two patches ($W_i$ and $W_j$).
+\[\frac{dN_i}{dt}=N_i(bg[C_i,R_i]-d_i-H_i)-N_iM_{ij}[W_j-W_i]+N_jM_{ji}[W_i-W_j]\]
+Predation term can either be linear or Type II Holling function as described above with $C$ as the attack rate in patch $i$,
+\[g[C_i,R_i]=\frac{C_iR_i}{1+C_ihR_i} or C_iR_i\]
+Fitness of patch $i$ is determined by how much a predator will eat, the death rate rate, and the harvesting rate in patch $i$. $\phi_i$ is a binary parameter (either 0, 1) that determines if the harvesting is perceived by the predator. If $\phi_i=0$, the predator the harvesting is invisible to the predator. 
+\[W_i = bg[C_i,R_i]-di-H_i\phi_i\]
+$M_{ij}$ is the sensitivity of the predator to differencs between the patches. $m$ is the baseline movement rate, and $\lambda$ is the fitness sensitivity. 
+\[M_{ij} = me^{\lambda(W_j-W_i)}\]
+\cite{abramsetal:2012} find that if predators move adaptively (i.e. follow fitness gradients) quickly and harvesting is invisible, it's possible to get global extinction from only harvesting one patch. Further these extinction events can happen quite suddenly, and multiple stable states are common for a wide-rang of parameters. The authors suggest this might have occurred with the cod collapses in the Northeast Atlantic. 
+
+\subsubsection{My extension}
+What happens if I let $H_i$ vary with conditions in patch $i$. In other words, what if you can harvest at both patches, and harvesters are also allowed to follow local gradients. What changes? To do this, I add one more equation for the fraction of harvesters in patch $i$ ($H_i$)
+\[\frac{dH_i}{dt}=-H_iQ_{ij}(\pi_j-c_t-\pi_i)+H_jQ_{ji}(\pi_i-c_t-\pi_i)\]
+Here $c_t$ is the cost of travel between the two patches, and $\pi_i$ is the profit gained from harvesting in patch $i$, calculated as:
+\[\pi_i=(P_N-C_{S,i})N_i\]
+Where $C_{S,i}$ is the cost of searching for predators in patch $i$ and $P_N$ is the price for predators. $Q_{ij}$ is the sensitivity to the differences between the patches and is caluclated (much like the predators) as:
+\[Q_{ij}=qe^{\lambda(\pi_j-c_t-\pi_I)}\]
+Where $q$ is the baseline movement rate between patches, probably will $=1$. 
+
+I'd also like to compare the MSY version of this model to see how including patches would change things. 
+
+\subsubsection{MSY Version and Analysis}
+The MSY version with constant effort harvesting (assuming linear predation term):
+\[\frac{dR}{dt}=R(r-kR)-NCR\]
+\[\frac{dN}{dt}=bNCR-d-QEN\]
+To find $N_{MSY}$ first find equilibrium:
+\[\frac{dR}{dt}=0\rightarrow R^*=0\]
+\[r -kR-NC=0\]
+\[N^* = \frac{r-KR}{C}\]
+And from $\frac{dN}{dt}$
+\[\frac{dN}{dt}=0\rightarrow N^*=0\]
+\[bCR-d-qE=0\]
+\[R^*=\frac{d+qE}{bC}\]
+
+Can plug in predator nullcline so nontrivial equlibrium will be:
+\[R^*=\frac{d+qE}{bC},N^*=\frac{r-KR}{C}\rightarrow\frac{r-K\left(\frac{d+qE}{bC}\right)}{C}\]
+
+Using parameters from \cite{abramsetal:2012}, figure 1, where possible
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=\maxwidth,]{figure/unnamed-chunk-1} 
+
+\end{knitrout}
+
+
+To find $Y_{MSY}$, know that 
+\[Y=qEN\]
+\[Y=qE\frac{r-K\left(\frac{d+qE}{bC}\right)}{C}\]
+To find maximum yield, need this to be a parabola. Graph to check:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-2} 
+
+\end{knitrout}
+
+
+To find maximum take derivative of $Y$ wrt to $E$ and set to 0. 
+
+\[Y = qE\frac{rbC-kd-kqE}{bC^2}\rightarrow \frac{qErbC-qEkd-kq^2E^2}{bC^2}\]
+\[\frac{dY}{dE}=\frac{qr}{C}-\frac{qkd}{bC^2}-\frac{2kq^2E}{bC^2}=0\]
+\[0 = \frac{r}{C}-\frac{kd}{bC^2}-\frac{2kqE}{bC^2}\]
+\[\frac{2kqE}{bC^2} = \frac{r}{C}-\frac{kd}{bC^2}\]
+\[2kqE=rbC-kd\]
+\[E_{MSY}=\frac{rbC}{2kq}-\frac{d}{2q}\]
+So $Y_{MSY}$ 
+\[Y_{MSY}=q\left(\frac{rbC}{2kq}-\frac{d}{2q}\right)\left(\frac{r-K\left(\frac{d+qE}{bC}\right)}{C}\right)\]
+\[Y_{MSY}=\left(\frac{rbC-dk}{2k}\right)\left(\frac{rbC-kd-kqE}{bC^2}\right)\]
+Lots of algebra...
+\[Y_{MSY}=\frac{r}{4}\left(\frac{rb}{k}-\frac{d}{C}\right)\]
+
+\subsubsection{Coding up and running MSY model}
+Coding it up and running the model 
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: could not find function "ode"}}
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: object 'out' not found}}\end{kframe}
+\end{knitrout}
+
+\subsection{Notes}
+\begin{itemize}
+\item I had to adjust the parameters quite a bit from \cite{abramsetal:2012} in order to get the predators to stay alive.
+\end{itemize}
+
+\section{Simplified patch model}
+Idea is for first step to just add harvesters to the \cite{abramsetal:2012} model. My first thought was to make it like the predators but remove the growth term, giving:
+\[\frac{dH}{dt}= -H_iQ_{ij}[\pi_j-\pi_i]+H_jQ_{ji}[\pi_i-pi_j]\]
+Where $\pi_i$ is the profit from patch $i$. 
+\[\pi_i = E(p_N - c_S)\]
+and $p_N$ is the price for the predator and $c_S$ is the cost of searching. $Q_{ij}$ has the same form as the \cite{abramsetal:2012} $M_{ij}$. Which looks like
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-4} 
+
+\end{knitrout}
+
+The problem is that this is more than exponential, and thus seriously nonlinear. Not sure why they choose this. Should revisit paper to see. 
+
+\bibliographystyle{jss}
+\bibliography{refs}
+\end{document}
