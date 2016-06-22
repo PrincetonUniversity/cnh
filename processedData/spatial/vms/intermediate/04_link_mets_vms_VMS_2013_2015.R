@@ -97,7 +97,6 @@ find_trips <- function(vessel_track, coastline = wc_proj,
   # any points that are > 1.5 km from the coast are "out" on a trip
   vessel_track@data$trip <- ifelse(vessel_track@data$dist_coast/1000>1.5, 1, 0)
   vessel_track <- vessel_track[order(vessel_track@data$datetime),]
-  # if there's a gap > 6 hours in middle of trip
   # if vessel starts in the middle of a trip, discard it because will reverse algorithm
   if(vessel_track@data$trip[1]==1){
     # find first zero
@@ -106,7 +105,10 @@ find_trips <- function(vessel_track, coastline = wc_proj,
     vessel_track@data$trip[1:first.zero] <- 0
   }
   
-  time_diffs <- diff(vessel_track@data$datetime)
+  time_diffs <- diff(vessel_track@data$datetime,units = 'minutes')
+  # find out units for time_diffs
+    # change to minutes
+    time_diffs = as.double(time_diffs, units = 'mins')
   # if diff > 3 hours, new trip
   vessel_track@data$time_diff <- c(NA, time_diffs)
   gap_marker <- which(vessel_track@data$time_diff>60*3 & vessel_track@data$trip==1)
