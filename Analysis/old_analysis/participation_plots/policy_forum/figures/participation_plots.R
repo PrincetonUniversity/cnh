@@ -4,6 +4,7 @@ library(igraph)
 library(maps)
 library(ggthemes)
 library(scales)
+library(ggplot2)
 
 setwd("/Users/efuller/Desktop/CNH/")
 tickets <- readRDS("processedData/catch/1_cleaningData/tickets.RDS")
@@ -430,7 +431,8 @@ beta_eff = function(g){
   if(is.null(E(g)$weight)){
     beta_eff = NA
     }else{
-    beta_eff = mean(E(g)$weight) + var(E(g)$weight)/mean(E(g)$weight)
+    beta_eff = mean(graph.strength(g)) + 
+      var(E(g)$weight)/mean(graph.strength(g))
   }
   return(beta_eff)
 }
@@ -448,7 +450,7 @@ ggplot(resilience, aes(x=lon, y = lat, col = beta_eff, label = pcgroup))  + geom
 
 # take bottom 5, medium 5 and top 5
 
-fn = 'Analysis/old_analysis/participation_plots/policy_forum/pcgroup_networks//coastwide.png'
+fn = 'Analysis/old_analysis/participation_plots/policy_forum/figures/pcgroup_networks/coastwide.png'
 png(file=fn, width = 5, height = 10, unit = 'in', res = 300)
 ggplot() + 
   geom_polygon(data = states, aes(x = long, y = lat, group = group), 
@@ -456,48 +458,16 @@ ggplot() +
   geom_point(data = resilience, 
              aes(x = lon, y = lat, color = beta_eff),
              size=3.5, alpha = 1) +
-  geom_text(data = resilience,
-            aes(x = lon, y = lat, label = pcgroup, color = beta_eff),
-            size = 3, nudge_x=-.5) +
+  # geom_text(data = resilience,
+  #           aes(x = lon, y = lat, label = pcgroup, color = beta_eff),
+  #           size = 3, nudge_x=-.5) +
   coord_map(xlim =range(resilience$lon,na.rm=T) + c(-5,2),
             ylim = range(resilience$lat, na.rm=T) + c(-.5,.5)) + 
   theme_map() + scale_colour_gradient2(low='#f46d43', high ='#66bd63', 
-                                       midpoint = 6e10, mid = '#ffffbf') + 
+                                       midpoint = 6e06, mid = '#ffffbf') + 
   theme(panel.background = element_rect(fill = '#073642', colour = '#073642'),
         legend.background = element_rect(fill = "#073642", color = "#073642"),
         legend.text = element_text(color = '#eee8d5'), 
         legend.title=element_text(color='#eee8d5'))
 dev.off()
 
-# centrality of fisheries
-
-btwn = lapply(port_list, function(x) betweenness(x, weight = 1/E(x)$weight))
-btwn = unlist(lapply(btwn, function(x) x/max(x)))
-btwn = data.frame(btwn = btwn, metier.2010 = names(btwn))
-btwn = btwn %>% group_by(metier.2010) %>% mutate(n_ports = length(metier.2010))
-
-ggplot(btwn, aes(x = reorder(tolower(metier.2010), -btwn, median), y = btwn)) + 
-  geom_boxplot() + theme(axis.text.x = element_text(angle = 90)) + xlab("")
-
-btwn %>% group_by(metier.2010) %>% 
-  summarize(median = mean(btwn), n_ports = unique(n_ports)) %>%
-  ggplot(aes(x = n_ports, y = median)) + geom_point()
-
-crab_ves <- unique(tickets$drvid[which(tickets$metier.2010 == "POT_1")])
-crab_fish <- tickets %>% filter(drvid %in% crab_ves) %>% group_by(drvid, metier.2010) %>% summarize(rev = sum(adj_revenue)) %>% group_by(drvid) %>% summarize(percent_crab = rev[metier.2010=="POT_1"]/sum(rev), n_fisheries = length(unique(metier.2010))) 
-
-# looking at percent of revenue from each jurisdiction for crab fishermen
-tickets %>% left_join(management_level, by = 'metier.2010') %>% filter(drvid %in% crab_ves & metier.2010!="POT_1") %>% group_by(drvid,jurisdiction) %>% summarize(rev = sum(adj_revenue)) %>% group_by(drvid) %>% mutate(percent_rev = rev/sum(rev)) %>% filter(jurisdiction == 'federal') %>% ungroup() %>% summarize(median = median(percent_rev)) ##99%!!
-
-# what percentage of landings and revenue are missed by only looking at crab portion of year?
-crab_ves <- unique(tickets$drvid[which(tickets$metier.2010 == "POT_1")])
-crab_fish <- tickets %>% filter(drvid %in% crab_ves) %>% 
-  mutate(crab_fish = ifelse(metier.2010 == "POT_1", 1, 0)) %>%
-  group_by(drvid, crab_fish) %>% 
-  summarize(rev = sum(adj_revenue), lbs = sum(pounds,na.rm = T)) %>%
-  group_by(drvid) %>%
-  mutate(percent_rev = rev/sum(rev), percent_lbs = lbs/sum(lbs)) 
-
-crab_fish %>% filter(crab_fish==0) %>% ggplot(aes(x = percent_rev)) + geom_histogram()
-crab_fish %>% filter(crab_fish==0) %>% ggplot(aes(x = percent_lbs)) + geom_histogram()
-crab_fish %>% filter(crab_fish==0) %>% ungroup() %>% summarize(median_rev = median(percent_rev), median_lbs = median(percent_lbs))
