@@ -4,6 +4,8 @@ library(igraph)
 library(maps)
 library(ggthemes)
 library(scales)
+library(ggplot2)
+library(GGally)
 
 setwd("/Users/efuller/Desktop/CNH/")
 tickets <- readRDS("processedData/catch/1_cleaningData/tickets.RDS")
@@ -112,23 +114,23 @@ l <- cbind(l, 1:21)
 rownames(l) <- V(big_g)$name
 
 # add common names
-V(big_g)$common_name = c('sablefish\nlongline', 
-                         'black rockfish\nlongline', 
-                         'swordfish\nlongline',
-                         'rockfish\npole',
-                         'sea urchin\ndiving',
-                         'chinook\ngill net',
-                         'market squid\npurse seine',
-                         'chum salmon\ngill net',
-                         'sockeye\ngill net',
-                         'white seabass\ngill net',
-                         'sea cucumber\ndip net',
-                         'dungeness\ncrab pot', 
-                         'spiny lobster\npot',
-                         'sablefish\npot', 'hagfish\npot', 'chinook\ntroll',
-                         'albacore\ntuna troll', 'groundfish\ntrawl', 'CA halibut\ntrawl', 
-                         'whiting\nmidwater\ntrawl',
-                         'pink shrimp\ntrawl')
+V(big_g)$common_name = c('sablefish longline', 
+                         'black rockfish longline', 
+                         'swordfish longline',
+                         'rockfish pole',
+                         'sea urchin diving',
+                         'chinook gill net',
+                         'market squid purse seine',
+                         'chum salmon gill net',
+                         'sockeye gill net',
+                         'white seabass gill net',
+                         'sea cucumber dip net',
+                         'dungeness crab pot', 
+                         'spiny lobster pot',
+                         'sablefish pot', 'hagfish pot', 'chinook troll',
+                         'albacore tuna troll', 'groundfish trawl', 'CA halibut trawl', 
+                         'whiting midwater trawl',
+                         'pink shrimp trawl')
 
 # adjust layout manually for national
 ix <- function(metier){
@@ -420,7 +422,7 @@ for(i in 1:length(port_list)){
   dev.off()
 }
 
-# calculating beta eff----
+# calculating beta eff and other net stats----
 # equation 13 from gao et al
 # beta eff = average edge weight + symmetry*heterogeneity
 # symmetry = 1 for undirected network
@@ -435,12 +437,201 @@ beta_eff = function(g){
   return(beta_eff)
 }
 
-resilience = data.frame(pcgroup = pcid$pcgroup,
-           beta_eff = unlist(lapply(port_list, beta_eff)))
+names(port_list) <- pcid$pcgroup
 
-resilience$scaled = resilience$beta_eff/max(resilience$beta_eff,na.rm=T)
+net_stats <- function(g){
+  ew = mean(E(g)$weight, na.rm = T)/E(g)$weight
+  node_strength = strength(g)/sum(E(g)$weight)
+  eigen = eigen_centrality(g, weights = E(g)$weight)$vector
+  beta_eff = beta_eff(g)
+  btwn = betweenness(g, directed = FALSE, weights = ew, normalized = TRUE)
+  assort = assortativity_degree(g, directed = FALSE)
+  ld = length(E(g))/length(V(g))
+  N = vcount(g)
+  E = ecount(g)
+  deg_max = max(degree(g))
+  deg_min = min(degree(g))
+  wtc <- cluster_walktrap(g, weights = E(g)$weight)
+  m <- modularity(g, membership(wtc))
+  return(net_stats = as.data.frame(cbind(node_strength, eigen, 
+                                         btwn, assort, beta_eff,ld, 
+                                         N,E, deg_max, deg_min, m)))
+}
 
-# plot with spectral for resilience ----
+pcgroup_net <- lapply(port_list, net_stats)
+pcgrp_node <- vector('list',length=length(pcgroup_net))
+for(i in 1:length(pcgroup_net)){
+  pcgroup_net[[i]]$pcgroup <- names(pcgroup_net)[i]
+  pcgrp_node[[i]] <- pcgroup_net[[i]][,c("node_strength","eigen","btwn",'pcgroup')]
+  pcgrp_node[[i]]$metier.2010 <- rownames(pcgrp_node[[i]])
+  rownames(pcgrp_node[[i]]) <- NULL
+  pcgroup_net[[i]] <- pcgroup_net[[i]][,c("assort",'beta_eff','ld','N','E',
+                                          'deg_max','deg_min', 'm',
+                                          'pcgroup')] %>% distinct()
+}
+
+pcgrp_netstats <- do.call(rbind, pcgroup_net) %>% arrange(-N)
+pcgrp_nodestats <- do.call(rbind, pcgrp_node) %>% arrange(-node_strength)
+
+# link density
+ld <- ggplot(pcgrp_netstats,
+             aes(x = reorder(pcgroup, -ld), 
+                 y = ld)) + theme_classic() +
+  geom_bar(stat='identity') + theme(axis.text = element_text(angle = 0, size = 10), 
+                         axis.line.x = element_line(color = 'black', size = .7),
+                         axis.line.y = element_line(color = 'black', size = .7)) +
+  xlab('') + ylab("linkage density") + coord_flip()
+
+ggsave(ld, filename = '/Users/efuller/Desktop/CNH/Analysis/old_analysis/participation_plots/policy_forum/results/ld.pdf',width = 3, height = 6, dpi = 300)
+
+m <- ggplot(pcgrp_netstats,
+             aes(x = reorder(pcgroup, m), 
+                 y = m)) + theme_classic() +
+  geom_bar(stat='identity') + theme(axis.text = element_text(angle = 90, size = 10), 
+                                    axis.line.x = element_line(color = 'black', size = .7),
+                                    axis.line.y = element_line(color = 'black', size = .7),
+                                    legend.position = 'none') +
+  xlab('') + ylab("Q")
+ggsave(m, filename = '/Users/efuller/Desktop/CNH/Analysis/old_analysis/participation_plots/policy_forum/results/m.pdf',width = 6, height = 3, dpi = 300)
+
+beta <- ggplot(pcgrp_netstats,
+             aes(x = reorder(pcgroup, beta_eff), 
+                 y = beta_eff)) + theme_classic() +
+  geom_bar(stat='identity') + theme(axis.text = element_text(angle = 90, size = 10), 
+                                    axis.line.x = element_line(color = 'black', size = .7),
+                                    axis.line.y = element_line(color = 'black', size = .7)) +
+  xlab('') + ylab("beta_eff")
+
+ggsave(beta, filename = '/Users/efuller/Desktop/CNH/Analysis/old_analysis/participation_plots/policy_forum/results/beta_eff.pdf',width = 6, height = 3, dpi = 300)
+
+# plot most and least ld
+# color by gear
+plot_net <- function(g){
+  paints <- data.frame(metier.2010 = V(g)$name, 
+                       stringsAsFactors = FALSE)
+  paints$paint <- NA
+  paints$paint[grepl("POT", paints$metier.2010)] <- "#d95f02"
+  paints$paint[grepl("TLS", paints$metier.2010)] <- "#66a61e" # green
+  paints$paint[grepl("TWS", paints$metier.2010)] <- "#e7298a"
+  paints$paint[grepl("TWL", paints$metier.2010)] <- "#a6761d"
+  paints$paint[grepl("NET", paints$metier.2010)] <- "#1b9e77"
+  paints$paint[grepl("MSC", paints$metier.2010)] <- "#7570b3"
+  paints$paint[grepl("HKL", paints$metier.2010)] <- "#e6ab02"
+  
+  plot(g, vertex.size = log(V(g)$size), vertex.color = paints$paint,
+       vertex.frame.color = paints$paint, edge.width = log(E(g)$weight),
+       edge.color=alpha("grey50",.5)
+       #, vertex.label = ''
+       )
+}
+png(filename = '/Users/efuller/Desktop/CNH/Analysis/old_analysis/participation_plots/policy_forum/results/mna.png', height = 768, width = 768, res = 300, units = 'px')
+par(mai = rep(0,4), bg='transparent')
+  plot_net(port_list[[11]])
+dev.off()
+
+
+png(filename = '/Users/efuller/Desktop/CNH/Analysis/old_analysis/participation_plots/policy_forum/results/sps.png', height = 768, width = 768, res = 300, units = 'px')
+par(mai = rep(0,4), bg='transparent')
+plot_net(port_list[[18]])
+dev.off()
+
+# plot them all
+for(i in 1:length(port_list)){
+  fn = paste0('/Users/efuller/Desktop/CNH/Analysis/old_analysis/participation_plots/policy_forum/figures/pcgroup_gear_cols/',
+              names(port_list)[i],'.png')
+  png(filename = fn, height = 768, width = 768, res = 300, units = 'px')
+  par(mai = rep(0,4), bg='transparent')
+  plot_net(port_list[[i]])
+  dev.off()
+}
+
+# add common names
+cn <- data.frame(metier.2010 = unique(pcgrp_nodestats$metier.2010))
+cn$common_name <- c("Dungeness crab pot",
+                    "Chinook troll",
+                    "Spiny lobster pot",
+                    "Chum gill net",
+                    "Pink shrimp trawl",
+                    "Albacore troll",
+                    "Rock crab pot",
+                    "Spotted prawn trap",
+                    "Pacific sardine seine",
+                    "Market squid seine",
+                    "DTS trawl",
+                    "brown, gopher rockfish pole",
+                    "sablefish longline",
+                    "Red urchin diving",
+                    "Sea cucumber diving",
+                    "Bait shrimp gill net",
+                    "Sockeye salmon gill net",
+                    "Black-and-yellow, grass rockfish, cabezon pole",
+                    "Sablefish pot",
+                    "Pacific halibut longline",
+                    "California halibut trawl",
+                    "Black rockfish longline",
+                    "Hagfish pot",
+                    "FILL IN",
+                    "Red urchin dip net",
+                    "Sea cucumber dip net",
+                    "Chinook salmon gill net",
+                    "Sea cucumber trawl",
+                    "Swordfish msc",
+                    "Ridgeback prawn shrimp trawl",
+                    "California halibut gill net",
+                    "White seabass pole",
+                    "Pacific whiting mid water trawl",
+                    "White seabass gill net",
+                    "Sea urchin dip net",
+                    "Albacore pole",
+                    "California halibut pole",
+                    "Cabezon, gopher rockfish, lingcod pot",
+                    "Pacific herring gill net",
+                    "Swordfish longline",
+                    "Smelt dip net")
+pcgrp_nodestats <- pcgrp_nodestats %>% left_join(cn, by = 'metier.2010')
+# node strength
+ns <- ggplot(pcgrp_nodestats,
+       aes(x = reorder(common_name, -node_strength, median), 
+           y = node_strength)) + theme_classic() +
+  geom_boxplot() + theme(axis.text = element_text(angle = 90, size = 8, hjust = 1), 
+                         axis.line.x = element_line(color = 'black', size = .7),
+                         axis.line.y = element_line(color = 'black', size = .7)) +
+  xlab('') + ylab("node strength")
+
+# eigen_centrality
+eigen <- ggplot(pcgrp_nodestats,
+       aes(x = reorder(common_name, -eigen, median), 
+           y = eigen)) + theme_classic() +
+  geom_boxplot() + theme(axis.text = element_text(angle = 90, size = 8, hjust=1), 
+                       axis.line.x = element_line(color = 'black', size = .7),
+                       axis.line.y = element_line(color = 'black', size = .7)) +
+  xlab('') + ylab("eigenvector centrality")
+
+# btwn
+btwn <- ggplot(pcgrp_nodestats,
+       aes(x = reorder(common_name, -btwn, median), 
+           y = btwn)) + theme_classic() +
+  geom_boxplot() + theme(axis.text = element_text(angle = 90, size = 8, hjust=1), 
+                       axis.line.x = element_line(color = 'black', size = .7),
+                       axis.line.y = element_line(color = 'black', size = .7)) +
+  xlab('') + ylab('betweenness')
+
+ggsave(ns,filename = '/Users/efuller/Desktop/CNH/Analysis/old_analysis/participation_plots/policy_forum/results/node_strength.pdf',width = 6, height = 6, dpi = 300)
+
+ggsave(eigen,filename = '/Users/efuller/Desktop/CNH/Analysis/old_analysis/participation_plots/policy_forum/results/eigen_centrality.pdf',width = 6, height = 6, dpi = 300)
+
+ggsave(btwn,filename = '/Users/efuller/Desktop/CNH/Analysis/old_analysis/participation_plots/policy_forum/results/betweenness_centrality.pdf',width = 6, height = 6, dpi = 300)
+
+# look at crab and spiny lobster
+pcgrp_nodestats %>% group_by(pcgroup) %>% 
+  summarize(max_btwn = metier.2010[which.max(btwn)],
+            max_ns = metier.2010[which.max(node_strength)],
+            pot1 = ifelse(length(which(metier.2010 %in% "POT_1")) > 0, 1, 0),
+            pot2 = ifelse(length(which(metier.2010 %in% "POT_2")) > 0, 1, 0))
+
+write.csv(pcgrp_netstats, file='/Users/efuller/Desktop/CNH/Analysis/old_analysis/participation_plots/policy_forum/results/portgrp_stats.csv',row.names = FALSE)
+
+# plot with spectral palette for resilience ----
 
 resilience <- left_join(resilience, pcid, by = 'pcgroup')
 states <- map_data("state")
@@ -501,3 +692,24 @@ crab_fish <- tickets %>% filter(drvid %in% crab_ves) %>%
 crab_fish %>% filter(crab_fish==0) %>% ggplot(aes(x = percent_rev)) + geom_histogram()
 crab_fish %>% filter(crab_fish==0) %>% ggplot(aes(x = percent_lbs)) + geom_histogram()
 crab_fish %>% filter(crab_fish==0) %>% ungroup() %>% summarize(median_rev = median(percent_rev), median_lbs = median(percent_lbs))
+
+# generate table of pcids for each port area ----
+all_ports <- read.csv('processedData/spatial/ports/all_ports.csv',
+                      stringsAsFactors = FALSE) %>%
+  rename(pcid = Pcid) %>%
+  filter(pcid %in% unique(tickets$pcid[-which(tickets$drvid=="NONE")]))
+
+tickets %>% dplyr::select(pcgroup, pcid) %>% distinct() %>% arrange(pcgroup) %>% left_join(all_ports[,c("pcid","Name")]) %>% left_join(pcid, by = "pcgroup") %>% write.csv(,file='/Users/efuller/Desktop/CNH/Analysis/old_analysis/participation_plots/policy_forum/results/pcgroups.csv',row.names = FALSE)
+
+# generate table of resilience and plots for port level ----
+
+png('')
+pm <- ggpairs(pcgrp_netstats[,c("ld","m","beta_eff")], 
+        columnLabels = c("linkage density","Q",""), 
+        diag = list(continuous = wrap("barDiag", bins = 7))) + 
+  theme_classic() + theme(axis.text = element_text(angle = 0, size = 10), 
+                          axis.line.x = element_line(color = 'black', size = .7),
+                          axis.line.y = element_line(color = 'black', size = .7))
+
+ggsave(print(pm), filename = '/Users/efuller/Desktop/CNH/Analysis/old_analysis/participation_plots/policy_forum/results/pm.pdf',width = 8, height = 6, dpi = 300)
+ 
