@@ -29,9 +29,6 @@ colnames(ftl) <- tolower(colnames(ftl))
 ################################################################
 ################################################################
 
-# because ftid (fish ticket ID) is not unique by year, compile ftid and year together
-ftl$trip_id <- paste0(ftl$ftid, ftl$year)
-
 # remove vessel 0, *****, ^ZZZ, and UNKNOWN
 if(length(grep(pattern = "[****]",ftl$drvid)>0)){
   ftl <- ftl[-grep(pattern = "[****]",ftl$drvid),]  
@@ -44,6 +41,9 @@ if(length(which(ftl$drvid %in% c("0","UNKNOWN")))>0){
 if(length(grep("^ZZZ",ftl$drvid))>0){
   ftl <- ftl[-grep("^ZZZ",ftl$drvid),]
 }
+
+# because ftid (fish ticket ID) is not unique by year, compile ftid and year together
+ftl$trip_id <- paste0(ftl$ftid, ftl$drvid, ftl$agid, ftl$year)
 
 # only keep commercial and commercial directed type fisheries (drop, scientific, tribal, etc)
 ftl <- ftl[which(ftl$removal_type %in% c("C","D")),]

@@ -1,9 +1,6 @@
 # Make file
 rm(list=ls())
-
-library(dplyr)
-
-setwd("/Users/jameal.samhouri/Documents/CNH_to_github/cnh/")
+#setwd("/Users/jameal.samhouri/Documents/CNH_to_github/cnh/")
 
 # subset to landing data from "full-income" vessels ----
 source("processedData/catch/1_cleaningData/01_incomeFilter.R")
