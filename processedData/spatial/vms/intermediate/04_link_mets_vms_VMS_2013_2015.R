@@ -83,7 +83,7 @@ find_trips <- function(vessel_track, coastline = wc_proj,
   library(sp)
   coordinates(vessel_track) <- ~longitude + latitude
   proj4string(vessel_track) <- CRS(
-    "+init=epsg:4269 +proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")
+    "+init=epsg:4269 +proj=longlat +ellps=GRS80 +datum=WGS84 +no_defs +towgs84=0,0,0") #was NAD83
   # convert into equal albers projection for gDistance
   vessel_track <- spTransform(vessel_track, projection)
 
@@ -340,3 +340,41 @@ link_vms.tickets(window_size = 168)
 
 
 
+# load together all vessel tracks for a given window
+# bind to one flat csv file
+window_size = 24
+to_csv <- function(window_size){
+  fp = paste0("processedData/spatial/vms/intermediate/04_link_mets_vms/tw_", window_size,"hr/")
+  fp = paste0(fp, dir(fp))
+  df_list <- lapply(fp, readRDS)
+  # check that same number of coloumns
+  if(length(unique(sapply(df_list, ncol)))>1){
+    # find which columns missing
+    max_cols <- max(sapply(df_list, ncol))
+    min_cols <- min(sapply(df_list,ncol))
+    
+    # find two model dataframes to deal with
+    max_names <- colnames(df_list[[which(sapply(df_list,ncol)==max_cols)[1]]])
+    min_names <- colnames(df_list[[which(sapply(df_list,ncol)==min_cols)[1]]])
+    # which columns are not present in min_names?
+    cols_to_add <- max_names[which(!(max_names %in% min_names))]
+  
+    df_list <- lapply(df_list, function(x){
+      if(ncol(x)==max_cols){
+        x = x[,-which(colnames(x) ==cols_to_add)]
+      }
+      return(x)
+    })
+    # if still different numbers of columns, warn
+    if(length(unique(sapply(df_list,ncol)))>1){
+      warning("something's going wrong with the number of columns")
+    }
+  }
+  
+  flat <- do.call(rbind, df_list)
+  return(flat)
+}
+
+tw_24 <- to_csv(24)
+write.csv(tw_24, "processedData/spatial/vms/intermediate/tw_24.csv")
+tw_0 <- to_csv(0)
