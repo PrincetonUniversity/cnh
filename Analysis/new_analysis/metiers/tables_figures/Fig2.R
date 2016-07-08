@@ -3,6 +3,7 @@
 library(dplyr)
 library(ggplot2)
 library(tidyr)
+library(vegan)
 
 tickets <- readRDS("processedData/catch/1_cleaningData/tickets.RDS")
 #tickets <- tickets %>% filter(drvid !="NONE") # don't drop dredges
@@ -48,7 +49,7 @@ sp_table$common_name <- NULL
 plotree <- hclust(vegdist(sp_table), "average")
 ## Automatic reordering of clusters
 png(filename = "Analysis/new_analysis/metiers/tables_figures/fig2b.png", 
-    height = 2400, width = 2400)
+    height = 500, width = 500)
 tabasco(sp_table, plotree, col = gray(level=seq(0,1,.001)), margins = c(20,20))
 dev.off()
 

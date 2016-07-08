@@ -1,5 +1,6 @@
 # Make file
 rm(list=ls())
+library(dplyr)
 #setwd("/Users/jameal.samhouri/Documents/CNH_to_github/cnh/")
 
 # subset to landing data from "full-income" vessels ----
@@ -21,11 +22,13 @@ source("processedData/catch/1_cleaningData/01_incomeFilter.R")
   sewTrips(base_year=2010) # base year is which clustering results to use. 
   sewTrips(base_year=2012)
   sewTrips(base_year=2006)
-
+  sewTrips(base_year=2008)
+  
   # load these data, combine so have both metier classifications
   d10 <- readRDS("processedData/catch/1_cleaningData/tickets_2010.RDS")
   d12 <- readRDS("processedData/catch/1_cleaningData/tickets_2012.RDS")
   d06 <- readRDS("processedData/catch/1_cleaningData/tickets_2006.RDS")
+  d08 <- readRDS("processedData/catch/1_cleaningData/tickets_2008.RDS")
   
   d10 <- d10 %>%
     select(trip_id, metier) %>%
@@ -37,9 +40,16 @@ source("processedData/catch/1_cleaningData/01_incomeFilter.R")
     rename(metier.2006 = metier) %>%
     distinct()
   
+  d08 <- d08 %>%
+    select(trip_id, metier) %>%
+    rename(metier.2008 = metier) %>%
+    distinct()
+  
+  
   tickets <- left_join(d12, d10, by = 'trip_id') %>%
     rename(metier.2012 = metier) %>%
-    left_join(d06, by = 'trip_id')
+    left_join(d06, by = 'trip_id') %>%
+    left_join(d08, by = 'trip_id')
   
   saveRDS(tickets, "processedData/catch/1_cleaningData/tickets.RDS")
 

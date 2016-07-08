@@ -3,7 +3,7 @@
 #----
 library(dplyr)
 # number of metiers each year
-tickets <- readRDS("/Users/efuller/Desktop/CNH/processedData/catch/1_cleaningData/tickets.RDS")
+tickets <- readRDS("processedData/catch/1_cleaningData/tickets.RDS")
 over_years <- tickets %>%
   group_by(year) %>%
   summarize(num_metiers = length(unique(metier.2010)))
@@ -39,7 +39,7 @@ characterize_metiers <- function(metier_choice, data = tickets){
   return(list(catch_data = catch_data, max_species = max_species, grid = grid, pcid = pcid))
 }
 
-mets <- as.character(unique(neffort$metier))
+mets <- as.character(unique(neffort$metier.2010))
 met_data <- list()
 for(i in 1:length(mets)){
   met_data[[mets[i]]] <- characterize_metiers(mets[i])
@@ -64,8 +64,8 @@ other_ports <- c("DFO", "NWAFC")
 
 # load common names
 spid <- read.csv("processedData/catch/1_cleaningData/spid.csv", stringsAsFactors=F)
-grid <- read.csv("Analysis/Metiers/data/grid.csv", stringsAsFactors=F)
-pcid <- read.csv("Analysis/Metiers/results/2015-01-09/code/data/pcid.csv", stringsAsFactors = F)
+grid <- read.csv("Analysis/old_analysis/Metiers/data/grid.csv", stringsAsFactors=F)
+pcid <- read.csv("Analysis/old_analysis/Metiers/results/2015-01-09/code/data/pcid.csv", stringsAsFactors = F)
 
 for(i in 1:length(met_data)){
   df$Metier[i] <- names(met_data[i])

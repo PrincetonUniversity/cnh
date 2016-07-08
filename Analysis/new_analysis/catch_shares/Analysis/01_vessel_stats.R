@@ -1,7 +1,7 @@
 # calculate independent and response variables for vessel level 
 calc_vessel_vars <- function(){
-  library(dplyr); library(tidyr)
-  vessel_landings <- readRDS("Analysis/Metiers/bin/04_data_output/vessel_landings_data.RDS")
+  library(dplyr); library(tidyr); library(vegan)
+  vessel_landings <- readRDS("Analysis/new_analysis/catch_shares/Analysis/vessel_landings_data.RDS")
   
 # vessel length ----
     # federal registration
@@ -10,7 +10,7 @@ calc_vessel_vars <- function(){
     cg2 <- read.csv("rawData/Catch/vessel_registration/CG_2013_woc_141210_three.csv",
                     stringsAsFactors = FALSE, skip = 2)
     cg <- rbind(cg1, cg2); rm(cg1, cg2) # lots of blank rows in there
-    cg <- cg[-which(cg$pubyr < 2009 | cg$pubyr > 2013),]
+    cg <- cg[-which(cg$pubyr < 2006 | cg$pubyr > 2014),]
     cg_vessels <- unique(cg[,c("hull_number","vessel_id","vessel_name","pubyr",
                                "length","horsepower","hp_main_astern","breadth",
                                "depth")])
@@ -32,7 +32,8 @@ calc_vessel_vars <- function(){
     length_ref <- length_data %>%
       group_by(drvid) %>%
       summarize(len = mean(length.x, length.y, na.rm = TRUE, trim = 0),
-                hp = mean(horsepower.x, horsepower.y, hp_main_astern,trim = 0, na.rm = TRUE),
+                hp = mean(horsepower.x, horsepower.y, 
+                          hp_main_astern,trim = 0, na.rm = TRUE),
                 weight = mean(weight, na.rm = T, trim = 0),
                 breadth = mean(breadth, na.rm = T, trim = 0),
                 depth = mean(depth, na.rm = T, trim = 0))
@@ -66,7 +67,7 @@ calc_vessel_vars <- function(){
       rename(after.rev = after, before.rev = before)
 
 # flags: alaska, ifq participation, california halibut participation ----
-    ak <- read.csv("Analysis/Metiers/data/WC_drvids_alaska.csv",stringsAsFactors = FALSE)
+    ak <- read.csv("Analysis/new_analysis/catch_shares/Analysis/WC_drvids_alaska.csv",stringsAsFactors = FALSE)
     ak <- filter(ak, drvid %in% unique(vessel_landings$drvid))
     
     # mark trawl participation beforehand. 
@@ -77,16 +78,16 @@ calc_vessel_vars <- function(){
       distinct() %>%
       filter(year < 2011) %>%
       group_by(drvid) %>%
-      summarize(twl_prior = ifelse(any(metier.2010 %in% c("TWL_1","TWL_5","TWL_6","TWL_7","TWL_8","TWL_9","TWL_10","TWL_11","TWL_12","TWL_13","TWL_14")), 1, 0))
+      summarize(twl_prior = ifelse(any(metier.2010 %in% c("TWL_1","TWL_5","TWL_7","TWL_8","TWL_9","TWL_10","TWL_11","TWL_12","TWL_13")), 1, 0))
     
     quota_post = vessel_landings %>%
-      dplyr::select(trip_id, drvid, ifq_landing, year) %>%
+      dplyr::select(trip_id, drvid, fleet, year) %>%
       distinct() %>%
       filter(year > 2011) %>%
       group_by(drvid) %>%
-      summarize(itq_post = ifelse(any(ifq_landing == "Y"), 1, 0))
+      summarize(itq_post = ifelse(any(fleet == "LE"), 1, 0))
     
-    twl_partip = full_join(twl_prior, quota_post)
+    twl_partip = full_join(twl_prior, quota_post, by = 'drvid')
     twl_partip$ifq_flag = NA
     # this means they didn't fish in twl before and didn't land itqs after but 
     # because both values are 0, means they're in the dataset both before and 
@@ -172,7 +173,7 @@ calc_vessel_vars <- function(){
       filter(both.periods==1) %>% 
       mutate(period = ifelse(year < 2011, 0,1)) %>%
       group_by(drvid, period,metier.2010) %>%
-      summarize(ntrips=length(unique(trip_id)), nrev = sum(adj_revenue), nlbs = sum(landed_wt)) %>%
+      summarize(ntrips=length(unique(trip_id)), nrev = sum(adj_revenue), nlbs = sum(pounds)) %>%
       group_by(drvid, period) %>%
       summarize(nfisheries = length(unique(metier.2010)), rev = sum(nrev), lbs = sum(nlbs)) %>%
       group_by(drvid) %>%
@@ -185,11 +186,9 @@ calc_vessel_vars <- function(){
       distinct() %>%
       group_by(drvid) %>%
       summarize(composition = ifelse(all(metier.2010[period==0] %in% metier.2010[period==1]) & all(metier.2010[period==1] %in% metier.2010[period==0]), "unchanged",
-                                     ifelse(any(!(metier.2010[period==0] %in% metier.2010[period==1])) & 
-                                              any(!(metier.2010[period==1] %in% metier.2010[period==0])), 
-                                            "added and lost",
-                                            ifelse(any(!(metier.2010[period==0] %in% metier.2010[period==1])) & all(metier.2010[period==1] %in% metier.2010[period==0]), "lost",
-                                                   ifelse(any(!(metier.2010[period==1] %in% metier.2010[period==0])) & all(metier.2010[period==0] %in% metier.2010[period==1]), "gained",NA))))) %>%
+                              ifelse(any(!(metier.2010[period==0] %in% metier.2010[period==1])) & any(!(metier.2010[period==1] %in% metier.2010[period==0])), "added and lost", 
+                              ifelse(any(!(metier.2010[period==0] %in% metier.2010[period==1])) & all(metier.2010[period==1] %in% metier.2010[period==0]), "lost", 
+                              ifelse(any(!(metier.2010[period==1] %in% metier.2010[period==0])) & all(metier.2010[period==0] %in% metier.2010[period==1]), "gained",NA))))) %>%
       left_join(le_boats)
     
 # merge all variables together ----
@@ -216,6 +215,6 @@ calc_vessel_vars <- function(){
 
     
 # save data ----    
-    saveRDS(vessel_stats, "Analysis/Metiers/bin/04_data_output/vessel_stats.RDS")
+    saveRDS(vessel_stats, "Analysis/new_analysis/catch_shares/Analysis/vessel_stats.RDS")
     return(vessel_stats)
   }

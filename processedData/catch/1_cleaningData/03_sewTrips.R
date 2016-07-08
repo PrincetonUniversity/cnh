@@ -33,5 +33,5 @@ pred_files <- files[grep(pred_fn, files)]
 
   saveRDS(tickets, paste0("processedData/catch/1_cleaningData/tickets_",base_year,".RDS"))
 #----
-return(tickets)
+#return(tickets)
 }

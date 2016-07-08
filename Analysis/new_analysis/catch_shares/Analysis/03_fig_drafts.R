@@ -1,9 +1,9 @@
 # making figures
 rm(list=ls())
-library(ggplot2);library(ggthemes);library(cowplot)
+library(ggplot2);library(ggthemes); library(cowplot)
 # load data ----
-tickets <- readRDS("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/04_data_output/vessel_landings_data.RDS")
-vessel_stats <- readRDS("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/04_data_output/vessel_stats.RDS")
+tickets <- readRDS("Analysis/new_analysis/catch_shares/Analysis/vessel_landings_data.RDS")
+vessel_stats <- readRDS("Analysis/new_analysis/catch_shares/Analysis/vessel_stats.RDS")
 
 # figure 2 ----
 # making histograms by management zone
@@ -11,7 +11,7 @@ vessel_stats <- readRDS("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/04_data
 library(dplyr)
 library(vegan)
 
-ports <- read.csv("/Users/efuller/Desktop/CNH/processedData/spatial/ports/all_ports.csv",stringsAsFactors = FALSE)
+ports <- read.csv("processedData/spatial/ports/all_ports.csv",stringsAsFactors = FALSE)
 ports <- rename(ports, pcid = Pcid)
 
 # plot
@@ -24,72 +24,9 @@ div_hist <- ggplot(subset(vessel_stats[which(!is.na(vessel_stats$zone) & vessel_
 
 all_plot <- plot_grid(coastwide, by_zone, div_hist, labels = c("A","B","C"), ncol = 3, rel_widths = c(1,1.2,1.4))
 
-ggplot2::ggsave( "/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_2.pdf", 
+ggplot2::ggsave( "Analysis/new_analysis/catch_shares/Analysis/fig_2.pdf", 
           all_plot,width = 11.4, height = 7, units = "cm" ,scale=2.5, dpi = 300)
 
-# figure 3 ----
-# make port networks and measure degree, betwenness
-port_df <- readRDS("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/04_data_output/port_stats.RDS")
-
-source("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/02_define_participationPlot.R")
-
-port_df <- port_df[order(port_df$ic_pre, decreasing = TRUE),]
-port_df <- port_df[-grep('other',port_df$name),]
-
-pdf("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_3c.pdf",width = 8, height = 2)
-  par(bg="transparent", cex = .75,cex=1.2)
-  paint = rep("normal",nrow(port_df))
-  paint[port_df$pcid %in% c("SB","ERK","OAK")] <- "example"
-  ggplot(port_df, aes(x = reorder(pcid, -ic_pre), fill=factor(paint), y = ic_pre)) + 
-           geom_bar(stat='identity') + xlab("port") + 
-    ylab("port connectance") + theme(axis.text.x  = element_text(size=5, angle=90)) + scale_fill_manual(values = c("grey20","grey50")) + theme_pander()
-dev.off()
-
-# aux ploting - drop nodes with < 3 vessels
-gp <- function(g_s){
-  g=delete.vertices(g_s,which(V(g_s)$size<3))
-  plot(g, edge.width = E(g)$weight*3, layout = layout.fruchterman.reingold, vertex.size = log(V(g)$size)*4, vertex.label.color = "grey30", vertex.label.cex = .75, vertex.label.family="sans", vertex.frame.color = NA, edge.curved=TRUE, edge.arrow.size = .25, edge.color = "black")
-}
-
-
-sb <- define_participationPlot(year=2009:2010, port = "SB", tickets = tickets)
-erk <- define_participationPlot(year=2009:2010, port = "ERK", tickets = tickets)
-oak <- define_participationPlot(year=2009:2010, port = "OAK", tickets = tickets)
-
-png("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_3a.png",
-    width = 4, height = 4, res = 300, units = "in")
-  par(bg="transparent",oma=rep(0,4),mai=rep(0,4))
-  g=delete.vertices(sb,which(V(sb)$size<3))
-  plot(g, edge.width = E(g)$weight*5, 
-       layout = layout.circle, vertex.size = log(V(g)$size)*5, 
-       vertex.label.color = "black", vertex.label.cex = .5, 
-       vertex.label.family="sans", vertex.frame.color = NA, vertex.label="",
-       edge.curved=TRUE, edge.arrow.size = .05, edge.color = alpha("black",.25))
-dev.off()
-
-png("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_3b.png",
-    width = 4, height = 4, res = 300, units = "in")
-  par(bg="transparent",oma=rep(0,4),mai=rep(0,4))
-  g = delete.vertices(erk, which(V(erk)$size<3))
-  plot(g, edge.width = E(g)$weight*5, 
-       layout = layout.circle, vertex.size = log(V(g)$size)*5, 
-       vertex.label.color = "black", vertex.label.cex = .5, 
-       vertex.label.family="sans", vertex.frame.color = NA, vertex.label="",
-       edge.curved=TRUE, edge.arrow.size = .05, edge.color = alpha("black",.25))
-  dev.off()
-  
-  
-  png("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_3d.png",
-      width = 4, height = 4, res= 300, units = "in")
-  par(bg="transparent",oma=rep(0,4),mai=rep(0,4))
-  g = delete.vertices(oak, which(V(oak)$size<3))
-  plot(g, edge.width = E(g)$weight*3, 
-       layout = layout.circle, vertex.size = log(V(g)$size)*10, 
-       vertex.label.color = "black", vertex.label.cex = .5, 
-       vertex.label.family="sans", vertex.frame.color = NA,vertex.label="",
-       edge.curved=TRUE, edge.arrow.size = .05, edge.color = alpha("black",.25))
-  dev.off()
-  
 
 # figure 4 ----
 # making linear regression
@@ -98,7 +35,7 @@ png("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_3b.png",
 lm1 <- lm(delta.eff.shannon_2010 ~ eff.shannon_2010, 
           subset(vessel_stats, alaska == 0 & 
                    both.periods==1  & 
-                   ifq_flag != "itq entrant"))
+                   ifq_flag != "itq entrant: general fleet"))
 
 lm2 <- lm(delta.eff.shannon_2010 ~  eff.shannon_2010 + ifq_flag, 
           subset(vessel_stats, alaska == 0 & 
@@ -131,35 +68,35 @@ lm2 <- lm(delta.eff.shannon_2010 ~  eff.shannon_2010 + ifq_flag,
 
 # plot
 ggplot(ifq_effect, aes(x = ifq_flag, y = mean)) + geom_point(size =7) + 
-  ylim(c(0,1.2)) + 
+  ylim(c(0,1.32)) + 
   geom_errorbar(aes(ymin = min_ci, ymax = max_ci), width = 0) + 
   theme_pander() + ylab(expression(paste(Delta,"H"))) + 
-  xlab("") + theme(panel.grid=element_blank()) + ylim(c(0,1.3))
+  xlab("") + theme(panel.grid=element_blank()) 
 
-ggplot2::ggsave("Analysis/Metiers/bin/05_figures/fig5.pdf",width=4, height = 4, 
+ggplot2::ggsave("Analysis/new_analysis/catch_shares/Analysis/fig5.pdf",width=4, height = 4, 
                 units="in",scale=1)
 
 # port model
-fp = "/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/04_data_output/port_stats.RDS"
+fp = "Analysis/new_analysis/catch_shares/Analysis/port_stats.RDS"
 port_df <- readRDS(fp)
-lm_port1 <- lm(ic_delta ~ ic_pre, 
+lm_port1 <- lm(m_delta ~ m, 
                subset(port_df, ifq_flag!="itq entrant: general landings"))
 
-lm_port <- lm(ic_delta ~  ic_pre + ifq_flag, 
+lm_port <- lm(m_delta ~  m + ifq_flag, 
               subset(port_df, ifq_flag!="itq entrant: general landings"))
 
-lm3 <- lm(ic_delta ~ lat, subset(port_df, ifq_flag!="itq entrant: general landings"))
+lm3 <- lm(m_delta ~ lat, subset(port_df, ifq_flag!="itq entrant: general landings"))
 
 # sim to get effects 
 lm_port.sim <- sim(lm_port,n=10000)
 coef.lm_port.sim <- coef(lm_port.sim)
 
 port_effect <- as.data.frame(coef.lm_port.sim)
-colnames(port_effect) <- c("intercept","ic_pre","LE_exit","general_fleet")
+colnames(port_effect) <- c("intercept","m_pre","general_fleet")
 
 port_effect <- port_effect %>%
-  dplyr::select(-ic_pre) %>%
-  mutate(general_fleet = general_fleet + intercept, LE_exit = LE_exit + intercept) %>%
+  dplyr::select(-m_pre) %>%
+  mutate(general_fleet = general_fleet + intercept) %>%
   gather() %>%
   dplyr::rename(ifq_flag = key,coefficient = value) %>%
   group_by(ifq_flag) %>%
@@ -167,8 +104,7 @@ port_effect <- port_effect %>%
             max_ci = quantile(coefficient, .975), 
             min_ci = quantile(coefficient,0.025))
 
-levels(port_effect$ifq_flag) = c("general fleet","catch share\nparticipant", 
-                                "limited entry\nexit")
+levels(port_effect$ifq_flag) = c("general fleet","catch share\nparticipant")
 
 # gather and plot
 ggplot(port_effect, aes(x = levels(ifq_flag), y = mean)) + geom_point(size =7) + 
@@ -176,7 +112,7 @@ ggplot(port_effect, aes(x = levels(ifq_flag), y = mean)) + geom_point(size =7) +
   theme_pander() + ylab(expression(paste(Delta,"C"))) + 
   xlab("") + theme(panel.grid=element_blank()) + geom_hline(yintercept=0)
 
-ggplot2::ggsave("Analysis/Metiers/bin/05_figures/fig5_port.pdf",width=4, height = 4, 
+ggplot2::ggsave("Analysis/new_analysis/catch_shares/Analysis/fig5_port.pdf",width=4, height = 4, 
                 units="in",scale=1)
 
 
@@ -234,3 +170,80 @@ ggplot(ex_space, aes(x = lat)) + geom_bar(aes(weight=revenue, fill = fishery),po
 
 load("/Users/efuller/Desktop/CNH/processedData/spatial/2_coastline.Rdata")
 plot(WC, col = 'black',bg="transparent", axes=TRUE)
+
+# figure 3 ----
+# make port networks and measure degree, betwenness
+port_df <- readRDS("Analysis/new_analysis/catch_shares/Analysis/port_stats.RDS")
+
+source("Analysis/new_analysis/participation_networks/participation_networks_fun.R")
+
+port_df <- port_df[order(port_df$ic_pre, decreasing = TRUE),]
+
+pdf("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_3c.pdf",width = 8, height = 2)
+par(bg="transparent", cex = .75,cex=1.2)
+paint = rep("normal",nrow(port_df))
+paint[port_df$pcgroup %in% c("SB","ERK","OAK")] <- "example"
+ggplot(port_df, aes(x = reorder(pcgroup, -ic_pre), fill=factor(paint), y = ic_pre)) + 
+  geom_bar(stat='identity') + xlab("port") + 
+  ylab("port connectance") + theme(axis.text.x  = element_text(size=5, angle=90)) + scale_fill_manual(values = c("grey20","grey50")) + theme_pander()
+dev.off()
+
+# aux ploting - drop nodes with < 3 vessels
+gp <- function(g_s){
+  g=delete.vertices(g_s,which(V(g_s)$size<3))
+  plot(g, edge.width = E(g)$weight/50000, layout = layout.fruchterman.reingold, vertex.size = log(V(g)$size), vertex.label.color = "grey30", vertex.label.cex = .75, vertex.label.family="sans", vertex.frame.color = NA, edge.curved=TRUE, edge.arrow.size = .25, edge.color = "black")
+}
+
+
+sb <- participation_network(year=2009:2010, pcid_choose = "MNA", tickets = tickets ,filter=TRUE)
+erk <- define_participationPlot(year=2009:2010, port = "ERK", tickets = tickets)
+oak <- define_participationPlot(year=2009:2010, port = "OAK", tickets = tickets)
+
+png("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_3a.png",
+    width = 4, height = 4, res = 300, units = "in")
+par(bg="transparent",oma=rep(0,4),mai=rep(0,4))
+g=delete.vertices(sb,which(V(sb)$size<3))
+plot(g, edge.width = E(g)$weight*5, 
+     layout = layout.circle, vertex.size = log(V(g)$size)*5, 
+     vertex.label.color = "black", vertex.label.cex = .5, 
+     vertex.label.family="sans", vertex.frame.color = NA, vertex.label="",
+     edge.curved=TRUE, edge.arrow.size = .05, edge.color = alpha("black",.25))
+dev.off()
+
+png("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_3b.png",
+    width = 4, height = 4, res = 300, units = "in")
+par(bg="transparent",oma=rep(0,4),mai=rep(0,4))
+g = delete.vertices(erk, which(V(erk)$size<3))
+plot(g, edge.width = E(g)$weight*5, 
+     layout = layout.circle, vertex.size = log(V(g)$size)*5, 
+     vertex.label.color = "black", vertex.label.cex = .5, 
+     vertex.label.family="sans", vertex.frame.color = NA, vertex.label="",
+     edge.curved=TRUE, edge.arrow.size = .05, edge.color = alpha("black",.25))
+dev.off()
+
+
+png("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_3d.png",
+    width = 4, height = 4, res= 300, units = "in")
+par(bg="transparent",oma=rep(0,4),mai=rep(0,4))
+g = delete.vertices(oak, which(V(oak)$size<3))
+plot(g, edge.width = E(g)$weight*3, 
+     layout = layout.circle, vertex.size = log(V(g)$size)*10, 
+     vertex.label.color = "black", vertex.label.cex = .5, 
+     vertex.label.family="sans", vertex.frame.color = NA,vertex.label="",
+     edge.curved=TRUE, edge.arrow.size = .05, edge.color = alpha("black",.25))
+dev.off()
+
+# figure s3------
+port_div_dist <- tickets %>% group_by(pcgroup) %>% 
+  dplyr::select(pcgroup, drvid) %>% 
+  ungroup() %>% distinct() %>%
+  left_join(dplyr::select(vessel_stats, drvid, eff.shannon_2010)) %>%
+  ungroup() %>%
+  left_join(dplyr::select(port_stats, pcgroup, m))
+
+figs3 <- ggplot(port_div_dist, aes(x=m, y = eff.shannon_2010)) + geom_point() +
+  xlab("Q") + ylab("H_pre")
+
+ggsave(figs3, filename = "Analysis/new_analysis/catch_shares/Analysis/figs3.pdf",
+       height = 5, width = 8, units = 'in')
+       

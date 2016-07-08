@@ -12,6 +12,7 @@ create_vessel_landings <- function(minrev){
   
   min_rev = 5000
   
+  # find minimum revenue and whether vessel present in both periods
   div_dat <- dat %>%
     filter(drvid != "NONE") %>%
     group_by(drvid, year) %>%                                   
@@ -20,12 +21,13 @@ create_vessel_landings <- function(minrev){
     filter(av.annual.rev >= min_rev) %>%                          # drop vessels with < min_rev
     filter(year != 2011) %>%
     group_by(drvid) %>%
-    summarize(both.periods = ifelse(any(year %in% c(2008:2010)) & any(year %in% c(2012:2014)), 1, 0))
+    summarize(both.periods = ifelse(any(year %in% c(2006:2010)) & any(year %in% c(2012:2014)), 1, 0))
   
-  div_landings <- subset(dat, drvid %in% unique(div_dat$drvid) & 
+  # drop 2015 landings, not complete
+  div_landings <- subset(dat, drvid %in% unique(div_dat$drvid) & year < 2015 &
                            year!=2011) %>% left_join(div_dat, by = 'drvid')
   
   saveRDS(div_landings,
-          file="Analysis/new_analysis/metiers/analysis/vessel_landings_data.RDS")
+          file="Analysis/new_analysis/catch_shares/Analysis/vessel_landings_data.RDS")
   return(div_landings)
 }
