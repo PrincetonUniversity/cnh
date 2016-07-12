@@ -15,7 +15,7 @@ calc_port_df <- function(){
   port_list <- list()
   prts <- unique(vessel_landings$pcgroup)
   for(p in 1:length(prts)){
-    port_list[[p]] <- participation_network(year_choose = 2006:2010,
+    port_list[[p]] <- participation_network(year_choose = 2009:2010,
                                             pcid_choose = prts[p], 
                                             filter = TRUE,
                                             tickets = vessel_landings)
@@ -31,17 +31,20 @@ calc_port_df <- function(){
   # calculate modularity
   ic <- data.frame(pcgroup = names(port_list), stringsAsFactors = FALSE)
   ic$m <- NA
+  ic$ld <- NA
   
   for(i in 1:length(port_list)){
     g <- port_list[[i]]
     wtc <- cluster_walktrap(g, weights = E(g)$weight)
     ic$m[i] <- modularity(g, membership(wtc))
+    ic$ld[i] = length(E(g))/length(V(g))
+    
   }
   
   port_post <- list()
   
   for(p in 1:length(prts)){
-    port_post[[p]] <- participation_network(year_choose = 2012:2014, 
+    port_post[[p]] <- participation_network(year_choose = 2012:2013, 
                                             pcid_choose = prts[p], 
                                             filter = TRUE, 
                                             tickets = vessel_landings)
@@ -55,16 +58,21 @@ calc_port_df <- function(){
   
   ic_post <- data.frame(pcgroup = names(port_post), stringsAsFactors = FALSE)
   ic_post$m_post <- NA
+  ic_post$ld_post <- NA
+  
   
   for(i in 1:length(port_post)){
     g <- port_post[[i]]
     wtc <- cluster_walktrap(g, weights = E(g)$weight)
     ic_post$m_post[i] <- modularity(g, membership(wtc))
+    ic_post$ld_post[i] = length(E(g))/length(V(g))
   }
   
   port_df <- full_join(ic, ic_post)
   port_df <- port_df[complete.cases(port_df),]
   port_df$m_delta <- port_df$m_post - port_df$m
+  port_df$ld_delta <- port_df$ld_post - port_df$ld
+  
   
 
 # calculate number of vessels landing before, after, overall ----

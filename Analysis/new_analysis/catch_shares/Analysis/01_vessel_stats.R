@@ -132,10 +132,10 @@ calc_vessel_vars <- function(){
       group_by(drvid, period, metier.2010) %>%
       summarize(revenue = sum(adj_revenue)) %>%
       group_by(drvid, period) %>%
-      summarize(shannon = diversity(revenue, index = 'shannon'),
-                simpson = diversity(revenue, index = 'simpson'),
-                eff.shannon = exp(diversity(revenue, index = 'shannon')),
-                eff.simpson = 1/(1-diversity(revenue, index = 'simpson'))) %>%
+      summarize(shannon = vegan::diversity(revenue, index = 'shannon'),
+                simpson = vegan::diversity(revenue, index = 'simpson'),
+                eff.shannon = exp(vegan::diversity(revenue, index = 'shannon')),
+                eff.simpson = 1/(1-vegan::diversity(revenue, index = 'simpson'))) %>%
       group_by(drvid) %>%
       mutate(delta.shannon = diff(shannon), delta.simpson = diff(simpson),
              delta.eff.shannon = diff(eff.shannon), 
@@ -152,10 +152,10 @@ calc_vessel_vars <- function(){
       group_by(drvid, period, metier.2012) %>%
       summarize(revenue = sum(adj_revenue)) %>%
       group_by(drvid, period) %>%
-      summarize(shannon_2012 = diversity(revenue, index = 'shannon'),
-                simpson_2012 = diversity(revenue, index = 'simpson'),
-                eff.shannon_2012 = exp(diversity(revenue, index = 'shannon')),
-                eff.simpson_2012 = 1/(1-diversity(revenue, index = 'simpson'))) %>%
+      summarize(shannon_2012 = vegan::diversity(revenue, index = 'shannon'),
+                simpson_2012 = vegan::diversity(revenue, index = 'simpson'),
+                eff.shannon_2012 = exp(vegan::diversity(revenue, index = 'shannon')),
+                eff.simpson_2012 = 1/(1-vegan::diversity(revenue, index = 'simpson'))) %>%
       group_by(drvid) %>%
       mutate(delta.shannon_2012 = diff(shannon_2012), delta.simpson_2012 = diff(simpson_2012),
              delta.eff.shannon_2012 = diff(eff.shannon_2012), 

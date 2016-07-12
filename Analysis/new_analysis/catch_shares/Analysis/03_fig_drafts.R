@@ -79,23 +79,23 @@ ggplot2::ggsave("Analysis/new_analysis/catch_shares/Analysis/fig5.pdf",width=4, 
 # port model
 fp = "Analysis/new_analysis/catch_shares/Analysis/port_stats.RDS"
 port_df <- readRDS(fp)
-lm_port1 <- lm(m_delta ~ m, 
+lm_port1 <- lm(ld_delta ~ ld, 
                subset(port_df, ifq_flag!="itq entrant: general landings"))
 
-lm_port <- lm(m_delta ~  m + ifq_flag, 
+lm_port <- lm(ld_delta ~  ld + ifq_flag, 
               subset(port_df, ifq_flag!="itq entrant: general landings"))
 
-lm3 <- lm(m_delta ~ lat, subset(port_df, ifq_flag!="itq entrant: general landings"))
+lm3 <- lm(ld_delta ~ lat, subset(port_df, ifq_flag!="itq entrant: general landings"))
 
 # sim to get effects 
 lm_port.sim <- sim(lm_port,n=10000)
 coef.lm_port.sim <- coef(lm_port.sim)
 
 port_effect <- as.data.frame(coef.lm_port.sim)
-colnames(port_effect) <- c("intercept","m_pre","general_fleet")
+colnames(port_effect) <- c("intercept","ld_pre","general_fleet")
 
 port_effect <- port_effect %>%
-  dplyr::select(-m_pre) %>%
+  dplyr::select(-ld_pre) %>%
   mutate(general_fleet = general_fleet + intercept) %>%
   gather() %>%
   dplyr::rename(ifq_flag = key,coefficient = value) %>%
@@ -177,15 +177,15 @@ port_df <- readRDS("Analysis/new_analysis/catch_shares/Analysis/port_stats.RDS")
 
 source("Analysis/new_analysis/participation_networks/participation_networks_fun.R")
 
-port_df <- port_df[order(port_df$ic_pre, decreasing = TRUE),]
+port_df <- port_df[order(port_df$ld, decreasing = TRUE),]
 
-pdf("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_3c.pdf",width = 8, height = 2)
+pdf("Analysis/new_analysis/catch_shares/Analysis/fig_3c.pdf",width = 8, height = 2)
 par(bg="transparent", cex = .75,cex=1.2)
 paint = rep("normal",nrow(port_df))
-paint[port_df$pcgroup %in% c("SB","ERK","OAK")] <- "example"
-ggplot(port_df, aes(x = reorder(pcgroup, -ic_pre), fill=factor(paint), y = ic_pre)) + 
+paint[port_df$pcgroup %in% c("BDA","MNA")] <- "example"
+ggplot(port_df, aes(x = reorder(pcgroup, -ld), fill=factor(paint), y = ld)) + 
   geom_bar(stat='identity') + xlab("port") + 
-  ylab("port connectance") + theme(axis.text.x  = element_text(size=5, angle=90)) + scale_fill_manual(values = c("grey20","grey50")) + theme_pander()
+  ylab("port connectance") + theme(axis.text.x  = element_text(size=5, angle=90)) + scale_fill_manual(values = c("grey50","grey20")) + theme_pander()
 dev.off()
 
 # aux ploting - drop nodes with < 3 vessels
@@ -195,29 +195,26 @@ gp <- function(g_s){
 }
 
 
-sb <- participation_network(year=2009:2010, pcid_choose = "MNA", tickets = tickets ,filter=TRUE)
-erk <- define_participationPlot(year=2009:2010, port = "ERK", tickets = tickets)
-oak <- define_participationPlot(year=2009:2010, port = "OAK", tickets = tickets)
+mna <- participation_network(year_choose=2009:2010, pcid_choose = "MNA", tickets = tickets ,filter=TRUE)
+bda <- participation_network(year_choose=2009:2010, pcid_choose = "BDA", tickets = tickets,filter=TRUE)
 
-png("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_3a.png",
+png("Analysis/new_analysis/catch_shares/Analysis/fig_3d.pdf",
     width = 4, height = 4, res = 300, units = "in")
 par(bg="transparent",oma=rep(0,4),mai=rep(0,4))
-g=delete.vertices(sb,which(V(sb)$size<3))
-plot(g, edge.width = E(g)$weight*5, 
-     layout = layout.circle, vertex.size = log(V(g)$size)*5, 
-     vertex.label.color = "black", vertex.label.cex = .5, 
-     vertex.label.family="sans", vertex.frame.color = NA, vertex.label="",
+g=mna
+plot(g, edge.width = log(E(g)$weight), vertex.color='dodgerblue',
+     layout = layout.circle, vertex.size = log(V(g)$size), 
+     vertex.label.cex = .5, vertex.frame.color = NA, vertex.label="",
      edge.curved=TRUE, edge.arrow.size = .05, edge.color = alpha("black",.25))
 dev.off()
 
-png("/Users/efuller/Desktop/CNH/Analysis/Metiers/bin/05_figures/fig_3b.png",
+png("Analysis/new_analysis/catch_shares/Analysis/fig_3e.pdf",
     width = 4, height = 4, res = 300, units = "in")
 par(bg="transparent",oma=rep(0,4),mai=rep(0,4))
-g = delete.vertices(erk, which(V(erk)$size<3))
-plot(g, edge.width = E(g)$weight*5, 
-     layout = layout.circle, vertex.size = log(V(g)$size)*5, 
-     vertex.label.color = "black", vertex.label.cex = .5, 
-     vertex.label.family="sans", vertex.frame.color = NA, vertex.label="",
+g = bda
+plot(g, edge.width = log(E(g)$weight), vertex.color='dodgerblue',
+     layout = layout.circle, vertex.size = log(V(g)$size), 
+     vertex.label.cex = .5, vertex.frame.color = NA, vertex.label="",
      edge.curved=TRUE, edge.arrow.size = .05, edge.color = alpha("black",.25))
 dev.off()
 

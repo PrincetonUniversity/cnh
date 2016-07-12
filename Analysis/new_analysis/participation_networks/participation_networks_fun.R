@@ -53,6 +53,9 @@ participation_network <- function(tickets, pcid_choose=NA, year_choose=NA, filte
   # build adjacency matrix, where elements are frac rev fishery i * frac rev fishery j * total dollars (sum)
   fisheries <- fish_df$metier.2010[which(fish_df$max_boats> nb & 
                                            fish_df$percent_contribution>percent)]
+  if(length(fisheries)==0){
+    return(NA)
+  }
   A <- matrix(ncol = length(fisheries), nrow = length(fisheries), data = 0)
   colnames(A) <- fisheries
   rownames(A) <- fisheries
