@@ -96,7 +96,7 @@ find_trips <- function(vessel_track, coastline = wc_proj,
   
   # any points that are > 1.5 km from the coast are "out" on a trip
   vessel_track@data$trip <- ifelse(vessel_track@data$dist_coast/1000>1.5, 1, 0)
-  vessel_track <- vessel_track[order(vessel_track@data$date.time),]
+  vessel_track <- vessel_track[order(vessel_track@data$datetime),]
   # if there's a gap > 6 hours in middle of trip
   # if vessel starts in the middle of a trip, discard it because will reverse algorithm
   if(vessel_track@data$trip[1]==1){
@@ -106,7 +106,7 @@ find_trips <- function(vessel_track, coastline = wc_proj,
     vessel_track@data$trip[1:first.zero] <- 0
   }
   
-  time_diffs <- diff(vessel_track@data$date.time)
+  time_diffs <- diff(vessel_track@data$datetime)
   # if diff > 3 hours, new trip
   vessel_track@data$time_diff <- c(NA, time_diffs)
   gap_marker <- which(vessel_track@data$time_diff>60*3 & vessel_track@data$trip==1)
@@ -115,7 +115,7 @@ find_trips <- function(vessel_track, coastline = wc_proj,
     new_rows <- vessel_track[gap_marker,]
     new_rows$trip <- 0
     foo <- rbind(vessel_track, new_rows)
-    foo <- foo[order(foo$date.time, foo$trip),]
+    foo <- foo[order(foo$datetime, foo$trip),]
     vessel_track <- foo
   }
   vessel_track@data$trip_num <- c(0,cumsum(abs(diff(vessel_track@data$trip))))
@@ -131,14 +131,14 @@ find_trips <- function(vessel_track, coastline = wc_proj,
 }
 
 v2_track <- find_trips(vessel_track = ves)
-
+if(nrow(v2_track)==0){next}
 # next is assigning landings to trips, argument is time window to look back in
 # look_back is in hours, represents num hours to look back for vms data
 assign_landings <- function(time_window, v2 = ves){
   # convert look_back window to seconds
   look_back <- time_window *60 *60
   # find landings: subset trip ID, landing dates, metier, and port
-  c2 <- unique(subset(catch, drvid == unique(v2$doc.num), select = c("trip_id","pcid","metier.2010","tdate")))
+  c2 <- unique(subset(catch, drvid == unique(v2$docnum), select = c("trip_id","pcid","metier.2010","tdate")))
   c2$tdate.start <- as.POSIXct(c2$tdate, format = "%d-%b-%y",tz = "Etc/GMT-8") - look_back
   c2$tdate.end <- as.POSIXct(c2$tdate, format = "%d-%b-%y",tz = "Etc/GMT-8")+23.9999*60*60
   c2 <- c2[order(c2$tdate.start),]
@@ -156,7 +156,7 @@ assign_landings <- function(time_window, v2 = ves){
            trip_id5 = as.character(ifelse(length(unique(trip_id))>4, unique(trip_id)[5], NA)),
            trip_id6 = as.character(ifelse(length(unique(trip_id))>5, unique(trip_id)[6], NA))) %>%
     dplyr::select(-trip_id) %>%
-    distinct()
+    distinct(.keep_all = TRUE)
   
   # reorder
   c2_bydate <- c2_bydate[order(c2_bydate$tdate.start),]
@@ -167,6 +167,7 @@ assign_landings <- function(time_window, v2 = ves){
 }
 
 c2_bydate <- assign_landings(time_window = window_size, v2 = ves)
+c2_bydate <- as.data.frame(c2_bydate)
 # will be more trips than landings, so go through landings
 v2_track$trip_id1 <- NA
 v2_track$trip_id2 <- NA
@@ -189,8 +190,8 @@ for(j in 1:nrow(c2_bydate)){
   }
   
   # was a trip will landed on the day? 
-  prior_trips <- unique(v2_track$only_trips[which(v2_track$date.time > c2_bydate$tdate.start[j] & 
-                                                    v2_track$date.time < c2_bydate$tdate.end[j] &
+  prior_trips <- unique(v2_track$only_trips[which(v2_track$datetime > c2_bydate$tdate.start[j] & 
+                                                    v2_track$datetime < c2_bydate$tdate.end[j] &
                                                     v2_track$only_trips!=0)])
   
   # if no trips within time window hours, record trip id and move on
@@ -201,7 +202,7 @@ for(j in 1:nrow(c2_bydate)){
     # make sure the trip(s) all occurred before tdate.end, 
     # if not replace with NA. then drop NAs again
     for(q in 1:length(prior_trips)){
-      return_time <- max(v2_track$date.time[which(v2_track$only_trips==prior_trips[q])])
+      return_time <- max(v2_track$datetime[which(v2_track$only_trips==prior_trips[q])])
       prior_trips[q] <- ifelse(return_time > c2_bydate$tdate.end[j], NA, prior_trips[q])
     }
     
@@ -242,7 +243,7 @@ for(j in 1:nrow(c2_bydate)){
 
 # merge metier with trip_id
 met_track <- merge(as.data.frame(v2_track), dplyr::select(c2_bydate, starts_with("trip_id"), metier.2010),all.x = TRUE, all.y = FALSE)
-met_track <- met_track[order(met_track$date.time),]
+met_track <- met_track[order(met_track$datetime),]
 
 # rename aggregate trips - adds an agg_id
 met_agg <- met_track %>%
@@ -275,7 +276,7 @@ if(length(trips_landed)==0){
 }else{
   trip_tots <- subset(catch, trip_id %in% trips_landed) %>%
     group_by(trip_id) %>%
-    summarize(lbs = sum(landed_wt,na.rm=T), revenue = sum(adj_revenue, na.rm = T))
+    summarize(lbs = sum(pounds,na.rm=T), revenue = sum(adj_revenue, na.rm = T))
   
   # use only_trips to make trip_id vector long format
   library(tidyr)
@@ -311,7 +312,7 @@ if(length(trips_landed)==0){
     filter(only_trips > 0 & !is.na(agg_id)) %>%
     group_by(only_trips) %>%
     summarize(agg_id = unique(agg_id), 
-              time =  ifelse(length(date.time)==1, 1, difftime(max(date.time),min(date.time),units="hours")), 
+              time =  ifelse(length(datetime)==1, 1, difftime(max(datetime),min(datetime),units="hours")), 
               distance = sum(path_dist(lon = longitude, lat = latitude, dist_coast.vec = dist_coast))) %>%
     group_by(agg_id) %>%
     summarize(time = sum(time), distance =sum(distance))
@@ -325,7 +326,7 @@ if(length(trips_landed)==0){
   met_all <- left_join(met_agg, cpue)
 }
 
-saveRDS(met_all, paste0("/Users/efuller/Desktop/CNH/processedData/spatial/vms/intermediate/04_link_mets_vms/tw_",window_size,"hr/",unique(v2_track$doc.num),".RDS"))
+saveRDS(met_all, paste0("/Users/efuller/Desktop/CNH/processedData/spatial/vms/intermediate/04_link_mets_vms/tw_",window_size,"hr/",unique(v2_track$docnum),".RDS"))
 
 }
 }

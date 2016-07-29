@@ -8,11 +8,15 @@
 # Finally for all fish tickets assigned, 
 # a revenue and pounds column is calculated and added for each time stamp. 
 
+# projection: lat/lon
+proj_latlon <- "+init=epsg:4269 +proj=longlat +ellps=GRS80 +datum=WGS84 +no_defs +towgs84=0,0,0"
+proj_flat <- "+proj=aea +lat_1=35.13863306500551 +lat_2=46.39606296952133 +lon_0=-127.6171875"
+
 link_vms.tickets <- function(window_size){
 
 # find double observed data ----
   library(dplyr)
-  obs <- read.csv("/Users/jameal.samhouri/Documents/CNH_to_github/cnh/rawData/Observers/WCGOPobs/Samhouri_OBFTfinal_Allfisheries_ProcessedwFunction_2009-2012_110613.csv",stringsAsFactors = FALSE)
+  obs <- read.csv("rawData/Observers/WCGOPobs/Samhouri_OBFTfinal_Allfisheries_ProcessedwFunction_2009-2012_110613.csv",stringsAsFactors = FALSE)
   
   dubs_tix <- obs %>%
     dplyr::select(DRVID, D_DATE, TRIPID, sector, FISHERY, FISH_TICKETS) %>%
@@ -51,17 +55,17 @@ link_vms.tickets <- function(window_size){
   
 # what's the maximum number of catches landed by a single vessel in a day? ----
   # load catch
-  catch <- readRDS("/Users/jameal.samhouri/Documents/CNH_to_github/cnh/processedData/catch/1_cleaningData/tickets.RDS")
+  catch <- readRDS("processedData/catch/1_cleaningData/tickets.RDS")
   
 # finding discrete trips ----
 # ok to generalize, boats get distance to coast measured, any point that's > 1.5 km from coastline is a trip
-load("/Users/jameal.samhouri/Documents/CNH_to_github/cnh/processedData/spatial/2_coastline.Rdata")
+load("processedData/spatial/2_coastline.Rdata")
 library(sp)
-proj4string(WC) <- CRS("+init=epsg:4269 +proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")
-wc_proj <- spTransform(WC,CRS("+proj=aea +lat_1=35.13863306500551 +lat_2=46.39606296952133 +lon_0=-127.6171875"))
+proj4string(WC) <- CRS(proj_latlon)
+wc_proj <- spTransform(WC,CRS(proj_flat))
 
 # go through each track, save both new trajectory and fish tickest that are not found in VMS
-data.dir <- "/Users/jameal.samhouri/Documents/CNH_to_github/cnh/processedData/spatial/vms/intermediate/03_overlapMetier/"
+data.dir <- "processedData/spatial/vms/intermediate/03_overlapMetier/"
 vms_files <- dir(data.dir)
 
 for(b in 1:length(vms_files)){
@@ -69,8 +73,7 @@ for(b in 1:length(vms_files)){
 ves <- readRDS(paste0(data.dir,vms_files[b]))
 
 find_trips <- function(vessel_track, coastline = wc_proj,
-                       projection = CRS("+proj=aea +lat_1=35.13863306500551 
-                                        +lat_2=46.39606296952133 +lon_0=-127.6171875"))
+                       projection = CRS(proj_flat))
   {
   # project for gDistance
   # default is Equal Area Albers
@@ -82,8 +85,7 @@ find_trips <- function(vessel_track, coastline = wc_proj,
   # make vessel track sp object, assign default lat/lon of NAD83
   library(sp)
   coordinates(vessel_track) <- ~longitude + latitude
-  proj4string(vessel_track) <- CRS(
-    "+init=epsg:4269 +proj=longlat +ellps=GRS80 +datum=WGS84 +no_defs +towgs84=0,0,0") #was NAD83
+  proj4string(vessel_track) <- CRS(proj_latlon) #was NAD83
   # convert into equal albers projection for gDistance
   vessel_track <- spTransform(vessel_track, projection)
 
@@ -158,7 +160,8 @@ assign_landings <- function(time_window, v2 = ves){
            trip_id5 = as.character(ifelse(length(unique(trip_id))>4, unique(trip_id)[5], NA)),
            trip_id6 = as.character(ifelse(length(unique(trip_id))>5, unique(trip_id)[6], NA))) %>%
     dplyr::select(-trip_id) %>%
-    distinct()
+    ungroup() %>%
+    distinct(.keep_all=TRUE)
   
   # reorder
   c2_bydate <- c2_bydate[order(c2_bydate$tdate.start),]

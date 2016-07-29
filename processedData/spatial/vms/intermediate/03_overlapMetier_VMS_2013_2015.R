@@ -1,7 +1,7 @@
 # match VMS to metiers
 
 # load data ----
-tickets <- readRDS("/Users/jameal.samhouri/Documents/CNH_to_github/cnh/processedData/catch/1_cleaningData/tickets.RDS") # /Users/efuller/Desktop/CNH/processedData/catch/1_cleaningData
+tickets <- readRDS("processedData/catch/1_cleaningData/tickets.RDS") # /Users/efuller/Desktop/CNH/processedData/catch/1_cleaningData
 names(tickets)
 
 landings <- unique(tickets[,c("trip_id","drvid","tdate","metier.2010")])
@@ -9,8 +9,10 @@ landings$tdate <- as.POSIXlt(landings$tdate, format = "%d-%b-%y", tz = "Etc/GMT-
 rm(tickets)
 
 # for each vessel track, check if it's in landings data. if not, next
-setwd("/Users/jameal.samhouri/Documents/CNH_to_github/cnh/processedData/spatial/vms/intermediate/02_cleaned/")
-fish_tracks <- dir()
+#(the below setup places better with the saving file path below)
+fp <- "processedData/spatial/vms/intermediate/02_cleaned/"
+fish_tracks <- dir(fp)
+fish_tracks <- paste0(fp, fish_tracks)
 
 # find out if VMS is in landing tickets ----
 for(i in 1:length(fish_tracks)){
@@ -20,6 +22,7 @@ for(i in 1:length(fish_tracks)){
   # if there's no track 
   # (which happens because didn't properly filter for vessels that never leave 
   # land upstream in 02_cleaning_data.R)
+  #docnum <- unique(track$docnum)
   docnum <- unique(track$docnum)
   
   if(length(docnum)>1) break # shouldn't be the case. because split on doc.num earlier
@@ -33,7 +36,7 @@ for(i in 1:length(fish_tracks)){
            track$datetime < max(single_landing$tdate))){
       
       saveRDS(track, paste0(
-        "/Users/jameal.samhouri/Documents/CNH_to_github/cnh/processedData/spatial/vms/intermediate/03_overlapMetier/v_",
-        unique(track$docnum),".RDS")) }
+        "processedData/spatial/vms/intermediate/03_overlapMetier/v_",
+        unique(track$doc.num),".RDS")) }
   }
 }

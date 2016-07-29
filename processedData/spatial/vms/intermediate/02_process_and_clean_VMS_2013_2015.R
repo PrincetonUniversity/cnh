@@ -27,7 +27,12 @@ fn3 <-dir("rawData/VMS/VMSdata_csv_NMFS16-002_clean")
 
 # ignore .csv files
 fn3a <- grep(".csv",fn3 )
-fn3b <- fn3[-fn3a]
+if(length(fn3a)>0){
+  fn3b <- fn3[-fn3a]
+}else{
+  fn3b <- fn3
+}
+
 fn4 <- paste0("rawData/VMS/VMSdata_csv_NMFS16-002_clean/",fn3b)
 fn4 <- as.list(fn4)
 data.list <- lapply(fn4, function(x) readRDS(x))
@@ -40,7 +45,7 @@ rm("data.list")
 
 # Cleaning
 
-system.time({
+
 # remove any rows which are duplicated in their entirety
 df <- df[-which(duplicated(df)),]
 # started at 15286753 obs. lost 2% of data
@@ -61,8 +66,6 @@ df <- df[complete,]
 
 rm("complete")
 
-})
-
 # Find on-land and non-EEZ coast points, and deal with them
 # the on-land and non-EEZ part requires splitting the VMS tracks by vessel and processing each one by one. 
 
@@ -76,10 +79,9 @@ proj4string(WC) <- CRS("+proj=longlat +datum=WGS84") # this assigns a projection
 wpacific <- which(df$longitude< -180)
 if(length(wpacific) >0) df <- df[-which(df$longitude< -180),]
 
-system.time({
+
 sp_df <- SpatialPoints(coords = df[,c("longitude","latitude")],
                        proj4string = CRS("+proj=longlat +datum=WGS84")) # this assigns a projection to the VMS points
-})
 
 # generate a vector of 1s if on land and 0s if not
 # need to do this as a loop to break it into smaller parts
@@ -93,7 +95,6 @@ onland <- c() # initialize a vector
 
 #loops <- 2
 
-#system.time({
 # Start the clock!
 ptm <- proc.time()
 for(i in 1:(loops)){
@@ -107,13 +108,10 @@ for(i in 1:(loops)){
   # need as.vector() because gContains returns a vector 
   print(paste("Loop",i,"complete"))
 }
-#})
-
 
 onland <- cbind(onland,
-                as.vector(gContains(WC, sp_df[((i*10^5)+1):rows_sp_df,], byid=TRUE))
-                ) 
-
+                as.vector(gContains(WC, sp_df[((i*10^5)+1):rows_sp_df,], 
+                                    byid=TRUE))) 
 # Stop the clock
 proc.time() - ptm
 
@@ -127,14 +125,11 @@ df$onland <- d[1:rows_sp_df]
 # remove sequential on-land points ----
 
 # arrange by vessel name, and date-time. 
-system.time({
   df <- df[order(df$docnum, df$datetime),]
-  })
 
 # then split into a list, where each element is a vessel
-system.time({
   vessel_tracks <- split(df, df$docnum)
-})
+
 
 # head(df %>% filter(vesselname == "3 Sons") %>% dplyr::select(vesselname, docnum) %>% distinct()) 
 #      %>% group_by(vesselname)
@@ -142,13 +137,10 @@ system.time({
 
 # process the VMS tracks by vessel one by one
 
-system.time({
+
 for(k in 1:length(vessel_tracks)){
   saveRDS(vessel_tracks[[k]], paste0("processedData/spatial/vms/intermediate/02_cleaned/vessel_track",k,".RDS"))
 }
-})
-
-
 
 # helper function to identify and remove sequential on-land points
 rm_onland <- function(data){
