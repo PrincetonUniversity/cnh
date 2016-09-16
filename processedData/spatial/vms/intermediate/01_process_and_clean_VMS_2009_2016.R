@@ -14,7 +14,7 @@ setwd("/Users/jamealsamhouri/Documents/cnh/")
 # write a function to open each raw VMS data file and do bare bones cleaning.
 # expect wanring messages about coercing NAs
 
-#filename <- "VMSNWFS16-007_2009" #
+#filename <- "VMSNWFS16-007_2010" #
 
 bare_bones <- function(filename){
 #   
@@ -62,26 +62,30 @@ bare_bones <- function(filename){
   dat1b$Latitude <- as.numeric(dat1b$Latitude)
   dat1b$Longitude <- as.numeric(dat1b$Longitude)
   # head(which(is.na(dat1b$Latitude)))
-  # dat1b[135:137,]
+  # dat1b[3042857:3042859,]
   # dat1b[235:237,]
   # dat1b[271:273,]
   
-  # remove rows with NAs for Lat-Long (we think they occur when vessel names spillover)
+  # remove rows with NAs for Lat-Long (we think they occur when vessel names spilloveror a few boats have error reporting)
   
-  dat1c <- dat1b[-which(is.na(dat1b$Latitude)),]
+  lat_problems <- length(which(is.na(dat1b$Latitude)))
+  if(lat_problems>0) dat1b <- dat1b[-which(is.na(dat1b$Latitude)),]
   
-  # head(dat1c,40)
-  # head(which(is.na(dat1c$Longitude)))
+  # head(dat1b,40)
+  
+  # check that NAs for lat-long have been removed
+  head(which(is.na(dat1b$Longitude)))
   
   # make AvgSpeed and AvgCourse columns numeric
-  dat1c$AvgSpeed <- as.numeric(dat1c$AvgSpeed)
-  dat1c$AvgCourse <- as.numeric(dat1c$AvgCourse)
+  dat1b$AvgSpeed <- as.numeric(dat1b$AvgSpeed)
+  dat1b$AvgCourse <- as.numeric(dat1b$AvgCourse)
   
-  # remove N/As from Declariations column
-  dat1c$Declarations <- as.numeric(dat1c$Declarations)
+  # change N/As to NAs for Declarations column
+  head(which(is.na(dat1b$Declarations)))
+  dat1b$Declarations <- as.numeric(dat1b$Declarations)
   
-  saveRDS(dat1c, paste0("rawData/VMS/Processed VMS csv files 2009-2016_clean/",filename,"_clean.RDS"))
-  write.csv(dat1c,paste0("rawData/VMS/Processed VMS csv files 2009-2016_clean/",filename,"_clean.csv"), row.names=FALSE)
+  saveRDS(dat1b, paste0("rawData/VMS/Processed VMS csv files 2009-2016_clean/",filename,"_clean.RDS"))
+  write.csv(dat1b,paste0("rawData/VMS/Processed VMS csv files 2009-2016_clean/",filename,"_clean.csv"), row.names=FALSE)
   
 }
 

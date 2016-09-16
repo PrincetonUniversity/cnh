@@ -80,6 +80,11 @@ proj4string(WC) <- CRS("+proj=longlat +datum=WGS84") # this assigns a projection
 wpacific <- which(df$longitude< -180)
 if(length(wpacific) >0) df <- df[-which(df$longitude< -180),]
 
+library(maps)
+# subset vms points to bounding box of SF bay (based on a quick peek at google maps)
+plot(x=longitude, y=latitude, asp=1, cex=.15) 
+maps(state, add=TRUE)
+
 
 sp_df <- SpatialPoints(coords = df[,c("longitude","latitude")],
                        proj4string = CRS("+proj=longlat +datum=WGS84")) # this assigns a projection to the VMS points
