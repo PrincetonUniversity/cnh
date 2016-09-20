@@ -41,6 +41,7 @@ data.list <- lapply(fn4, function(x) readRDS(x))
 # paste all the data files together
 df <- do.call(rbind,data.list)
 colnames(df) <- tolower(colnames(df))
+dim(df)
 
 rm("data.list")
 
@@ -51,21 +52,63 @@ rm("data.list")
 df <- df[-which(duplicated(df)),]
 # started at 15286753 obs. lost 2% of data
 
+# 9/19/16. df is too big to remove rows in one step so break into 4 steps
+#length(which(duplicated(df)))
+df_tmp <- df[1:(dim(df)[1]/4),]
+df_tmp <- df_tmp[-which(duplicated(df_tmp)),]
+df_tmp2 <- df[((dim(df)[1]/4)+1):(dim(df)[1]/2),]
+df_tmp2 <- df_tmp2[-which(duplicated(df_tmp2)),]
+df_tmp3 <- df[((dim(df)[1]/2)+1):((dim(df)[1]/4)*3),]
+df_tmp3 <- df_tmp3[-which(duplicated(df_tmp3)),]
+df_tmp4 <- df[(((dim(df)[1]/4)*3)+1):(dim(df)[1]),]
+df_tmp4 <- df_tmp4[-which(duplicated(df_tmp4)),]
+
 # Find vessel points that occur at different places at the same time
 
 # remove duplicates where vessel has same ID and same date/time
-heisenberg <- which(duplicated(df[,c("vesselname","docnum","datetime")]) | duplicated(df[,c("vesselname","docnum","datetime")], fromLast = TRUE))
+#heisenberg <- which(duplicated(df[,c("vesselname","docnum","datetime")]) | duplicated(df[,c("vesselname","docnum","datetime")], fromLast = TRUE))
 # length(heisenberg)
 # [1] 46327
 
-df <- df[-heisenberg,]
+#df <- df[-heisenberg,]
+
+heisenberg_tmp <- which(duplicated(df_tmp[,c("vesselname","docnum","datetime")]) | duplicated(df_tmp[,c("vesselname","docnum","datetime")], fromLast = TRUE))
+df_tmp <- df_tmp[-heisenberg_tmp,]
+heisenberg_tmp2 <- which(duplicated(df_tmp2[,c("vesselname","docnum","datetime")]) | duplicated(df_tmp2[,c("vesselname","docnum","datetime")], fromLast = TRUE))
+df_tmp2 <- df_tmp2[-heisenberg_tmp2,]
+heisenberg_tmp3 <- which(duplicated(df_tmp3[,c("vesselname","docnum","datetime")]) | duplicated(df_tmp3[,c("vesselname","docnum","datetime")], fromLast = TRUE))
+df_tmp3 <- df_tmp3[-heisenberg_tmp3,]
+heisenberg_tmp4 <- which(duplicated(df_tmp4[,c("vesselname","docnum","datetime")]) | duplicated(df_tmp4[,c("vesselname","docnum","datetime")], fromLast = TRUE))
+df_tmp4 <- df_tmp4[-heisenberg_tmp,]
+
 
 # make sure we have complete cases (ie, no NAs) for vessel ID, date-time, lat-lon
-complete <- complete.cases(  df[,c("vesselname","docnum","longitude","latitude","datetime")] )
+#complete <- complete.cases(  df[,c("vesselname","docnum","longitude","latitude","datetime")] )
 # length(complete)
-df <- df[complete,]
+#df <- df[complete,]
+#rm("complete")
 
-rm("complete")
+complete_tmp <- complete.cases(  df_tmp[,c("vesselname","docnum","longitude","latitude","datetime")] )
+# length(complete)
+df_tmp <- df_tmp[complete_tmp,]
+complete_tmp2 <- complete.cases(  df_tmp2[,c("vesselname","docnum","longitude","latitude","datetime")] )
+# length(complete)
+df_tmp2 <- df_tmp2[complete_tmp2,]
+complete_tmp3 <- complete.cases(  df_tmp3[,c("vesselname","docnum","longitude","latitude","datetime")] )
+# length(complete)
+df_tmp3 <- df_tmp3[complete_tmp3,]
+complete_tmp4 <- complete.cases(  df_tmp4[,c("vesselname","docnum","longitude","latitude","datetime")] )
+# length(complete)
+df_tmp4 <- df_tmp4[complete_tmp4,]
+
+rm("complete_tmp","complete_tmp2","complete_tmp3","complete_tmp4")
+
+dim(df_tmp)
+dim(df_tmp2)
+dim(df_tmp3)
+dim(df_tmp4)
+
+df <- rbind(df_tmp,df_tmp2,df_tmp3,df_tmp4)
 
 # Find on-land and non-EEZ coast points, and deal with them
 # the on-land and non-EEZ part requires splitting the VMS tracks by vessel and processing each one by one. 
@@ -75,17 +118,26 @@ rm("complete")
 load("processedData/spatial/2_coastline.Rdata") # this is the NOAA US coastline polygon. note that it is loaded with the name WC
 proj4string(WC) <- CRS("+proj=longlat +datum=WGS84") # this assigns a projection to the coastline polygon
 
-# convert lat/lon into spatial points
 # remove points that are smaller than -180
 wpacific <- which(df$longitude< -180)
 if(length(wpacific) >0) df <- df[-which(df$longitude< -180),]
 
-library(maps)
-# subset vms points to bounding box of SF bay (based on a quick peek at google maps)
-plot(x=longitude, y=latitude, asp=1, cex=.15) 
-maps(state, add=TRUE)
+saveRDS(df, "processedData/spatial/vms/intermediate/02_cleaned/df_clean.RDS")
+write.csv(df,"processedData/spatial/vms/intermediate/02_cleaned/df_clean.csv", row.names=FALSE)
 
+# # subset vms points to bounding box of SF bay (based on a quick peek at google maps)
+# sfbay <- subset(df, latitude > 36 & latitude < 38 & longitude > -128 & longitude < -122)
+# # plot before projection thing
+# plot(x=sfbay$longitude, y=sfbay$latitude, asp=1, cex=.15) 
+# map("state", add=TRUE)
+# # projection thing
+# sp_sfbay <- SpatialPoints(coords = sfbay[,c("longitude","latitude")],
+#                        proj4string = CRS("+proj=longlat +datum=WGS84"))
+# # plot after projection thing
+# plot(x=sp_sfbay$longitude, y=sp_sfbay$latitude, asp=1, cex=.15) 
+# map("state", add=TRUE)
 
+# no projection issues, so convert lat/lon into spatial points
 sp_df <- SpatialPoints(coords = df[,c("longitude","latitude")],
                        proj4string = CRS("+proj=longlat +datum=WGS84")) # this assigns a projection to the VMS points
 

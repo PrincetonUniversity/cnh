@@ -68,7 +68,7 @@ bare_bones <- function(filename){
   
   # remove rows with NAs for Lat-Long (we think they occur when vessel names spilloveror a few boats have error reporting)
   
-  lat_problems <- length(which(is.na(dat1b$Latitude)))
+  lat_problems <- length(which(is.na(dat1b$Latitude))) # added on 9/16/16 to deal with situations where none of the latitudes are NA
   if(lat_problems>0) dat1b <- dat1b[-which(is.na(dat1b$Latitude)),]
   
   # head(dat1b,40)
