@@ -125,6 +125,8 @@ if(length(wpacific) >0) df <- df[-which(df$longitude< -180),]
 saveRDS(df, "processedData/spatial/vms/intermediate/02_cleaned/df_clean.RDS")
 write.csv(df,"processedData/spatial/vms/intermediate/02_cleaned/df_clean.csv", row.names=FALSE)
 
+df <- readRDS("processedData/spatial/vms/intermediate/02_cleaned/df_clean.RDS")
+
 # # subset vms points to bounding box of SF bay (based on a quick peek at google maps)
 # sfbay <- subset(df, latitude > 36 & latitude < 38 & longitude > -128 & longitude < -122)
 # # plot before projection thing
@@ -143,6 +145,51 @@ sp_df <- SpatialPoints(coords = df[,c("longitude","latitude")],
 
 # generate a vector of 1s if on land and 0s if not
 # need to do this as a loop to break it into smaller parts
+
+############################################################
+############################################################
+
+# commercial break to figureout how big sp_df can be before breaking my computer
+
+sp_df1 <- sp_df[1:10000,]
+# 100
+#    user  system elapsed 
+#1.115   0.115   1.260 
+# 10000
+# > proc.time() - ptm
+# user  system elapsed 
+# 66.694   0.353  67.158 
+
+rows_sp_df1 <- nrow(as.data.frame(sp_df1))
+# rows_sp_df/(10^5)
+# rows_sp_df1 %% (10^5) # this is the remainder
+
+onland <- c() # initialize a vector
+
+#loops <- 2
+
+# Start the clock!
+ptm <- proc.time()
+for(i in 1:(rows_sp_df1)){
+  
+  #df$onland[((i*10^5)-10^5+1):(i*10^5)] <- as.vector(gContains(WC, sp_df[((i*10^5)-10^5+1):(i*10^5),], byid=TRUE)) # TRUE values are on land
+  onland <- as.vector(gContains(WC, sp_df1, byid=TRUE)) # TRUE values are on land
+  # (albeit 1 column, many rows -- but messes things up)
+  # need as.vector() because gContains returns a vector 
+  print(paste("Loop",i,"complete"))
+}
+
+#onland <- cbind(onland,
+#                as.vector(gContains(WC, sp_df[((i*10^5)+1):rows_sp_df,], 
+#                                    byid=TRUE))) 
+# Stop the clock
+proc.time() - ptm
+
+############################################################
+############################################################
+
+# end of commercial break. get back to business
+# generate a vector of 1s if on land and 0s if not
 
 rows_sp_df <- nrow(as.data.frame(sp_df))
 # rows_sp_df/(10^5)
