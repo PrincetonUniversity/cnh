@@ -110,14 +110,6 @@ dim(df_tmp4)
 
 df <- rbind(df_tmp,df_tmp2,df_tmp3,df_tmp4)
 
-# Find on-land and non-EEZ coast points, and deal with them
-# the on-land and non-EEZ part requires splitting the VMS tracks by vessel and processing each one by one. 
-
-# find onland points, only want to drop sequential onland points ----
-# load coastline polygon
-load("processedData/spatial/2_coastline.Rdata") # this is the NOAA US coastline polygon. note that it is loaded with the name WC
-proj4string(WC) <- CRS("+proj=longlat +datum=WGS84") # this assigns a projection to the coastline polygon
-
 # remove points that are smaller than -180
 wpacific <- which(df$longitude< -180)
 if(length(wpacific) >0) df <- df[-which(df$longitude< -180),]
@@ -126,6 +118,18 @@ saveRDS(df, "processedData/spatial/vms/intermediate/02_cleaned/df_clean.RDS")
 write.csv(df,"processedData/spatial/vms/intermediate/02_cleaned/df_clean.csv", row.names=FALSE)
 
 df <- readRDS("processedData/spatial/vms/intermediate/02_cleaned/df_clean.RDS")
+
+w_coast_dm.asc
+
+# Find on-land and non-EEZ coast points, and deal with them
+# the on-land and non-EEZ part requires splitting the VMS tracks by vessel and processing each one by one. 
+
+
+
+# find onland points, only want to drop sequential onland points ----
+# load coastline polygon
+load("processedData/spatial/2_coastline.Rdata") # this is the NOAA US coastline polygon. note that it is loaded with the name WC
+proj4string(WC) <- CRS("+proj=longlat +datum=WGS84") # this assigns a projection to the coastline polygon
 
 # # subset vms points to bounding box of SF bay (based on a quick peek at google maps)
 # sfbay <- subset(df, latitude > 36 & latitude < 38 & longitude > -128 & longitude < -122)
