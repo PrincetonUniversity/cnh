@@ -1,0 +1,53 @@
+---
+title: "VMS data processing pipeline"
+author: "Jameal Samhouri"
+date: "10/11/2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## How to deal with VMS data from OLE
+1. jameal begs for data
+2. OLE sends data in wrong format (html), but eventually in right format (csv or txt)
+3. blake compiles csv files from OLE, hand scrubs according to his "Blake's Methods Log" google doc and "VMS csv processing summary"
+
+4. run 01_process R code (bare_bones() function) on .csv files for individual years to remove junk
+- barebones() will:
+a) Remove all garbage headers from each .txt file (this part of bare_bones() is currently off)
+b) Ensure each column is formatted properly (date-time, etc)
+c)Remove NAs
+d) Spit out clean RDS and csv files to be used instead of raw .txt files
+
+5. run 02_process R code to remove duplicates, heisenbergs, complete cases, and subset raw VMS data to on-water points only
+
+- for on-water points step:
+  - bathymetry data: NOAA NGDC West Coast Coastal Relief, 3-arcsecond (~90 m) resolution. Elevation in decimeters re. sea level.
+  - consider converting all_vms to shape file in R or via Blake
+a) overlay grid for land/bathymetry on VMS data points and remove onland stuff (use jimmy's code), in addition to anything outside of CCLME
+b) use extract() function as extract(all_vms, bathymetry.ascii) to assign elevation to each row of vms data.
+c) subset new all_vms to elevations from +1m onland to -5000m
+7. remove abnormally high speeds
+8. make compilation file for each vessel of all trips in the database
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
