@@ -13,6 +13,9 @@ library(rgeos)
 library(sp)
 library(maps)
 library(reshape2)
+library(raster)
+library(dismo)
+library(sp)
 
 # Combine all clean RDS files into a single data frame
 
@@ -119,7 +122,82 @@ write.csv(df,"processedData/spatial/vms/intermediate/02_cleaned/df_clean.csv", r
 
 df <- readRDS("processedData/spatial/vms/intermediate/02_cleaned/df_clean.RDS")
 
-w_coast_dm.asc
+sp_df <- SpatialPoints(coords = df[,c("longitude","latitude")],
+                       proj4string = CRS("+proj=longlat +datum=WGS84")) # this assigns a projection to the VMS points
+
+nrow(as.data.frame(sp_df))
+#[1] 46533674
+
+sp_df2 <- SpatialPointsDataFrame(coords = coordinates(sp_df), data=df,
+                       proj4string = CRS("+proj=longlat +datum=WGS84")) # this assigns a projection to the VMS points
+
+as.data.frame(sp_df2[1:10,])
+
+#sp:::head.Spatial(sp_df)
+#sp_df[1:7,]
+coordinates(sp_df2)[1:10,]
+# longitude latitude
+# 1  -123.9480 46.07720
+# 2  -124.0437 44.63000
+# 3  -117.2390 32.75970
+# 5  -124.4253 44.42551
+# 6  -124.2357 43.65483
+# 7  -145.6460 53.23733
+# 8  -121.7880 36.80070
+# 9  -123.8016 39.42406
+# 10 -121.7870 36.80130
+# 11 -122.4190 37.80870
+
+# read in west coast relief ascii file from blake
+relief <- raster("processedData/spatial/w_coast_dm/w_coast_dm.asc")
+
+##########################################
+#########################################
+##### try with a small portion of sp_df
+##########################################
+##########################################
+# Start the clock!
+ptm <- proc.time()
+
+# try extracting depths corresponding to each location
+#df_tmp<- extract(relief,coordinates(sp_df)[1:10,], sp=TRUE)
+sp_df3 <- extract(relief,sp_df2[1:10,],sp=TRUE)
+
+# Stop the clock
+proc.time() - ptm
+# > proc.time() - ptm
+# user  system elapsed 
+# 29.651  75.307 141.844
+
+# check to see what i did
+as.data.frame(sp_df3[1:10,])
+
+##########################################
+##########################################
+##########################################
+
+##########################################
+#########################################
+##### try for realz
+##########################################
+##########################################
+# Start the clock!
+ptm <- proc.time()
+
+# try extracting depths corresponding to each location
+#df_tmp<- extract(relief,coordinates(sp_df)[1:10,], sp=TRUE)
+sp_df_full <- extract(relief,sp_df2,sp=TRUE)
+
+# Stop the clock
+proc.time() - ptm
+
+
+# check to see what i did
+as.data.frame(sp_df_full[1:10,])
+
+##########################################
+##########################################
+##########################################
 
 # Find on-land and non-EEZ coast points, and deal with them
 # the on-land and non-EEZ part requires splitting the VMS tracks by vessel and processing each one by one. 
