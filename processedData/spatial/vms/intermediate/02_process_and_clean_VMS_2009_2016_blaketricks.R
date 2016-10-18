@@ -2,7 +2,7 @@
 
 # Combine all clean RDS files into a single data frame
 # Find vessel points that occur at different places at the same time, and on-land and non-EEZ coast points, and deal with them
-  # the on-land and non-EEZ part requires splitting the VMS tracks by vessel and processing each one by one
+  # Oct 2016: now using a bathymetry layer provided by Feist, assigning depth to all VMS points, then subsetting to all depths <-1m
 # Also drop all speeds >dropspeeds, currently=25
 
 rm(list=ls())
@@ -17,7 +17,14 @@ library(raster)
 library(dismo)
 library(sp)
 
+
+#################################################################
+#################################################################
+
 # Combine all clean RDS files into a single data frame
+
+#################################################################
+#################################################################
 
 dropspeeds <- 25
 
@@ -48,10 +55,18 @@ dim(df)
 
 rm("data.list")
 
+#################################################################
+#################################################################
+
 # Cleaning
 
+#################################################################
+#################################################################
 
-# remove any rows which are duplicated in their entirety
+#################################################################
+# 1. remove any rows which are duplicated in their entirety
+#################################################################
+
 df <- df[-which(duplicated(df)),]
 # started at 15286753 obs. lost 2% of data
 
@@ -66,7 +81,9 @@ df_tmp3 <- df_tmp3[-which(duplicated(df_tmp3)),]
 df_tmp4 <- df[(((dim(df)[1]/4)*3)+1):(dim(df)[1]),]
 df_tmp4 <- df_tmp4[-which(duplicated(df_tmp4)),]
 
-# Find vessel points that occur at different places at the same time
+#################################################################
+# 2. Find vessel points that occur at different places at the same time
+#################################################################
 
 # remove duplicates where vessel has same ID and same date/time
 #heisenberg <- which(duplicated(df[,c("vesselname","docnum","datetime")]) | duplicated(df[,c("vesselname","docnum","datetime")], fromLast = TRUE))
@@ -84,8 +101,10 @@ df_tmp3 <- df_tmp3[-heisenberg_tmp3,]
 heisenberg_tmp4 <- which(duplicated(df_tmp4[,c("vesselname","docnum","datetime")]) | duplicated(df_tmp4[,c("vesselname","docnum","datetime")], fromLast = TRUE))
 df_tmp4 <- df_tmp4[-heisenberg_tmp,]
 
+#################################################################
+# 3. make sure we have complete cases (ie, no NAs) for vessel ID, date-time, lat-lon
+#################################################################
 
-# make sure we have complete cases (ie, no NAs) for vessel ID, date-time, lat-lon
 #complete <- complete.cases(  df[,c("vesselname","docnum","longitude","latitude","datetime")] )
 # length(complete)
 #df <- df[complete,]
@@ -113,23 +132,40 @@ dim(df_tmp4)
 
 df <- rbind(df_tmp,df_tmp2,df_tmp3,df_tmp4)
 
-# remove points that are smaller than -180
+#################################################################
+# 4. remove points that are smaller than -180
+#################################################################
+
 wpacific <- which(df$longitude< -180)
 if(length(wpacific) >0) df <- df[-which(df$longitude< -180),]
+
+#################################################################
+# 5. Save cleaned df
+#################################################################
 
 saveRDS(df, "processedData/spatial/vms/intermediate/02_cleaned/df_clean.RDS")
 write.csv(df,"processedData/spatial/vms/intermediate/02_cleaned/df_clean.csv", row.names=FALSE)
 
+#################################################################
+#################################################################
+
+# start spatial analyses
+
+#################################################################
+#################################################################
+
 df <- readRDS("processedData/spatial/vms/intermediate/02_cleaned/df_clean.RDS")
 
+# assign a projection to the VMS points
 sp_df <- SpatialPoints(coords = df[,c("longitude","latitude")],
-                       proj4string = CRS("+proj=longlat +datum=WGS84")) # this assigns a projection to the VMS points
+                       proj4string = CRS("+proj=longlat +datum=WGS84")) 
 
 nrow(as.data.frame(sp_df))
 #[1] 46533674
 
+# make spatial df
 sp_df2 <- SpatialPointsDataFrame(coords = coordinates(sp_df), data=df,
-                       proj4string = CRS("+proj=longlat +datum=WGS84")) # this assigns a projection to the VMS points
+                       proj4string = CRS("+proj=longlat +datum=WGS84")) 
 
 as.data.frame(sp_df2[1:10,])
 
@@ -148,14 +184,20 @@ coordinates(sp_df2)[1:10,]
 # 10 -121.7870 36.80130
 # 11 -122.4190 37.80870
 
+#################################################################
 # read in west coast relief ascii file from blake
+#################################################################
+
 relief <- raster("processedData/spatial/w_coast_dm/w_coast_dm.asc")
 
 ##########################################
 #########################################
-##### try with a small portion of sp_df
+
+##### try assigning relief to each VMS point with a small portion of sp_df
+
 ##########################################
 ##########################################
+
 # Start the clock!
 ptm <- proc.time()
 
@@ -178,9 +220,12 @@ as.data.frame(sp_df3[1:10,])
 
 ##########################################
 #########################################
-##### try for realz
+
+#####  assign relief to each VMS point for realz
+
 ##########################################
 ##########################################
+
 # Start the clock!
 ptm <- proc.time()
 
@@ -191,12 +236,15 @@ sp_df_full <- extract(relief,sp_df2,sp=TRUE)
 # Stop the clock
 proc.time() - ptm
 
-
 # check to see what i did
-as.data.frame(sp_df_full[1:10,])
+as.data.frame(sp_df_full[1:20,])
 
 saveRDS(sp_df_full, "processedData/spatial/vms/intermediate/02_cleaned/sp_df_relief.RDS")
 
+##########################################
+# subset to VMS points that fall along the west coast and
+# have relief <-1m
+##########################################
 
 # Start the clock!
 ptm <- proc.time()
@@ -204,8 +252,12 @@ sp_df_full_atsea <- subset(sp_df_full, w_coast_dm < -10)
 # Stop the clock
 proc.time() - ptm
 
+as.data.frame(sp_df_full_atsea[1:20,])
+
 plot(x=sp_df_full_atsea$longitude, y=sp_df_full_atsea$latitude, asp=1, cex=.15) 
 map("state", add=TRUE)
+
+saveRDS(sp_df_full_atsea, "processedData/spatial/vms/intermediate/02_cleaned/sp_df_relief_atsea.RDS")
 
 ##########################################
 ##########################################
@@ -215,111 +267,6 @@ map("state", add=TRUE)
 # the on-land and non-EEZ part requires splitting the VMS tracks by vessel and processing each one by one. 
 
 
-
-# find onland points, only want to drop sequential onland points ----
-# load coastline polygon
-load("processedData/spatial/2_coastline.Rdata") # this is the NOAA US coastline polygon. note that it is loaded with the name WC
-proj4string(WC) <- CRS("+proj=longlat +datum=WGS84") # this assigns a projection to the coastline polygon
-
-# # subset vms points to bounding box of SF bay (based on a quick peek at google maps)
-# sfbay <- subset(df, latitude > 36 & latitude < 38 & longitude > -128 & longitude < -122)
-# # plot before projection thing
-# plot(x=sfbay$longitude, y=sfbay$latitude, asp=1, cex=.15) 
-# map("state", add=TRUE)
-# # projection thing
-# sp_sfbay <- SpatialPoints(coords = sfbay[,c("longitude","latitude")],
-#                        proj4string = CRS("+proj=longlat +datum=WGS84"))
-# # plot after projection thing
-# plot(x=sp_sfbay$longitude, y=sp_sfbay$latitude, asp=1, cex=.15) 
-# map("state", add=TRUE)
-
-# no projection issues, so convert lat/lon into spatial points
-sp_df <- SpatialPoints(coords = df[,c("longitude","latitude")],
-                       proj4string = CRS("+proj=longlat +datum=WGS84")) # this assigns a projection to the VMS points
-
-# generate a vector of 1s if on land and 0s if not
-# need to do this as a loop to break it into smaller parts
-
-############################################################
-############################################################
-
-# commercial break to figureout how big sp_df can be before breaking my computer
-
-sp_df1 <- sp_df[1:10000,]
-# 100
-#    user  system elapsed 
-#1.115   0.115   1.260 
-# 10000
-# > proc.time() - ptm
-# user  system elapsed 
-# 66.694   0.353  67.158 
-
-rows_sp_df1 <- nrow(as.data.frame(sp_df1))
-# rows_sp_df/(10^5)
-# rows_sp_df1 %% (10^5) # this is the remainder
-
-onland <- c() # initialize a vector
-
-#loops <- 2
-
-# Start the clock!
-ptm <- proc.time()
-for(i in 1:(rows_sp_df1)){
-  
-  #df$onland[((i*10^5)-10^5+1):(i*10^5)] <- as.vector(gContains(WC, sp_df[((i*10^5)-10^5+1):(i*10^5),], byid=TRUE)) # TRUE values are on land
-  onland <- as.vector(gContains(WC, sp_df1, byid=TRUE)) # TRUE values are on land
-  # (albeit 1 column, many rows -- but messes things up)
-  # need as.vector() because gContains returns a vector 
-  print(paste("Loop",i,"complete"))
-}
-
-#onland <- cbind(onland,
-#                as.vector(gContains(WC, sp_df[((i*10^5)+1):rows_sp_df,], 
-#                                    byid=TRUE))) 
-# Stop the clock
-proc.time() - ptm
-
-############################################################
-############################################################
-
-# end of commercial break. get back to business
-# generate a vector of 1s if on land and 0s if not
-
-rows_sp_df <- nrow(as.data.frame(sp_df))
-# rows_sp_df/(10^5)
-# rows_sp_df %% (10^5) # this is the remainder
-loops <- round(rows_sp_df/(10^5))
-
-onland <- c() # initialize a vector
-
-#loops <- 2
-
-# Start the clock!
-ptm <- proc.time()
-for(i in 1:(loops)){
-  
-  #df$onland[((i*10^5)-10^5+1):(i*10^5)] <- as.vector(gContains(WC, sp_df[((i*10^5)-10^5+1):(i*10^5),], byid=TRUE)) # TRUE values are on land
-  
-  onland <- cbind(onland,
-                  as.vector(gContains(WC, sp_df[((i*10^5)-10^5+1):(i*10^5),], byid=TRUE))
-                  ) # TRUE values are on land
-  # (albeit 1 column, many rows -- but messes things up)
-  # need as.vector() because gContains returns a vector 
-  print(paste("Loop",i,"complete"))
-}
-
-onland <- cbind(onland,
-                as.vector(gContains(WC, sp_df[((i*10^5)+1):rows_sp_df,], 
-                                    byid=TRUE))) 
-# Stop the clock
-proc.time() - ptm
-
-# because the 105th column has fewer rows than the rest of the columns, check to see that there is just some recycling happening. and there is! so cut those junk rows on line 125
-# all(onland[55482:nrow(onland),105] == onland[1:(10^5-55481),105])
-
-# need to melt first
-d <- melt(onland)[,3]
-df$onland <- d[1:rows_sp_df]
 
 # remove sequential on-land points ----
 
@@ -389,3 +336,4 @@ for(i in 1:length(vessel_tracks_dir)){
 # this gives each trip a unique ID by breaking trips up based on each return to land
 # the output will be what we Blake needs to map crab trips and we need to look at VMS coverage of crab trips
 
+# need to look at fish tickets from 2006-June2016, trips by port by month for 2016
