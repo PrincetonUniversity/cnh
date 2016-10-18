@@ -1,6 +1,7 @@
 # Make file
 rm(list=ls())
 library(dplyr)
+library(testthat)
 #setwd("/Users/jameal.samhouri/Documents/CNH_to_github/cnh/")
 
 # subset to landing data from "full-income" vessels ----

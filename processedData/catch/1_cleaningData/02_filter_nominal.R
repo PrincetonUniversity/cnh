@@ -10,7 +10,8 @@ filter_nominal <- function(data){
   
   # some problems - make common name identical across species
     spid$common_name[which(spid$SPID=="CHL1")] <- "NOM. CALIFORNIA HALIBUT"
-    # RCK1 will only have nominal, because chilipeper + boccacio. Only occurs once in dataset
+    # RCK1 will only have nominal, because chilipeper + boccacio. 
+    # Only occurs once in dataset
     spid$common_name[which(spid$SPID=="SQR1")] <- "NOM. SQUARESPOT ROCKFISH"
     # mis-spelling of vermillion
     spid$common_name[which(spid$SPID=="VRM1")] <- "NOM. VERMILION ROCKFISH"
