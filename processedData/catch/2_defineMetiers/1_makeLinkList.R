@@ -15,10 +15,10 @@ tickets = ftl
 make_link_list <- function(tickets, year, gear_group, message = "NO"){
   
   if(message == "YES") cat("format trips correctly\n")
-  port_trips <- tickets[tickets[["year"]] == year & 
-                          tickets[["grgroup"]] == gear_group, ]
+  port_trips <- tickets[tickets[["pacfin_year"]] == year & 
+                          tickets[["pacfin_group_gear_code"]] == gear_group, ]
   melt_trips <- melt(port_trips, 
-                     id.vars = c("drvid","trip_id","modified","tdate","grid"), 
+                     id.vars = c("drvid","trip_id","modified","landing_date","pacfin_group_gear_code"), 
                      measure.vars = "adj_revenue")
   cast_trips <- dcast(melt_trips, 
                       trip_id ~ modified, fun.aggregate = sum)
