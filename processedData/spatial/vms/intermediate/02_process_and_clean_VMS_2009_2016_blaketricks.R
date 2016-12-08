@@ -3,6 +3,8 @@
 # Combine all clean RDS files into a single data frame
 # Find vessel points that occur at different places at the same time, and on-land and non-EEZ coast points, and deal with them
   # Oct 2016: now using a bathymetry layer provided by Feist, assigning depth to all VMS points, then subsetting to all depths <-1m
+  # Dec 2016, based on email from BEF on 10-27-2016
+  # The bathymetry extends to beyond 500 km from shore and the hypsometry now has a grid cell code of 77777 for all grid cells more than 20 km inland (see attached map for reference).  Therefore, a value of NODATA will only be returned for VMS points north of 49°N lat, south of 30°N lat, west of -132°W lon and east of -115°W lon. 
 # Also drop all speeds >dropspeeds, currently=25
 
 rm(list=ls())
@@ -17,6 +19,13 @@ library(raster)
 library(dismo)
 library(sp)
 
+# load files
+setwd("/Users/jameal.samhouri/Documents/CNH_to_github/cnh/")
+setwd("/Users/jamealsamhouri/Documents/cnh/")
+
+dropspeeds <- 25
+
+# can skip to line 155 for bathymetry stuff
 
 #################################################################
 #################################################################
@@ -26,13 +35,7 @@ library(sp)
 #################################################################
 #################################################################
 
-dropspeeds <- 25
-
 # read in data files
-
-# load files
-setwd("/Users/jameal.samhouri/Documents/CNH_to_github/cnh/")
-setwd("/Users/jamealsamhouri/Documents/cnh/")
 
 fn3 <-dir("rawData/VMS/Processed VMS csv files 2009-2016_clean")
 
@@ -188,7 +191,7 @@ coordinates(sp_df2)[1:10,]
 # read in west coast relief ascii file from blake
 #################################################################
 
-relief <- raster("processedData/spatial/w_coast_dm/w_coast_dm.asc")
+relief <- raster("~/Dropbox/VMS_topography_final/vms_bathymetry_final.asc")
 
 ##########################################
 #########################################
@@ -209,7 +212,7 @@ sp_df3 <- extract(relief,sp_df2[1:10,],sp=TRUE)
 proc.time() - ptm
 # > proc.time() - ptm
 # user  system elapsed 
-# 29.651  75.307 141.844
+# 17.524   2.618  20.520 
 
 # check to see what i did
 as.data.frame(sp_df3[1:10,])
