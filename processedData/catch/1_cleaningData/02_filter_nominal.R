@@ -10,7 +10,8 @@ filter_nominal <- function(data){
   
   # some problems - make common name identical across species
     spid$common_name[which(spid$SPID=="CHL1")] <- "NOM. CALIFORNIA HALIBUT"
-    # RCK1 will only have nominal, because chilipeper + boccacio. Only occurs once in dataset
+    # RCK1 will only have nominal, because chilipeper + boccacio. 
+    # Only occurs once in dataset
     spid$common_name[which(spid$SPID=="SQR1")] <- "NOM. SQUARESPOT ROCKFISH"
     # mis-spelling of vermillion
     spid$common_name[which(spid$SPID=="VRM1")] <- "NOM. VERMILION ROCKFISH"
@@ -50,7 +51,7 @@ filter_nominal <- function(data){
 
 # remove any trips which have more than one type of gear on it per trip ----
   # this could be an issue except it drops <0.01% of trips annually
-  dub_gears <- unique(data[,c("trip_id","grgroup")])
+  dub_gears <- unique(data[,c("trip_id","pacfin_group_gear_code")])
   rm_ves <- unique(dub_gears$trip_id[which(duplicated(dub_gears$trip_id))])
   no_dups <- subset(data, !(trip_id %in% rm_ves))
 #----

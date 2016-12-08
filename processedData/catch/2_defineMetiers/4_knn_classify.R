@@ -35,7 +35,7 @@ if(spid_def=="modified"){
 # get new year to classif 
   year_choice = class_year
   gear_choice = grgroup
-  classify <- unique(subset(filtered_ftl, grgroup==gear_choice & year==year_choice)$trip_id)
+  classify <- unique(subset(filtered_ftl, pacfin_group_gear_code==gear_choice & year==year_choice)$trip_id)
 
 # if POT grgroup or MSC 2009 that's the classifying group, then will split the classified trips into 10 groups so we can handle it. 
 if(grgroup == "POT" | grgroup == "MSC" & year_choice == 2009){

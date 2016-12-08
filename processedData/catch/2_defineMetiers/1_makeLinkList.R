@@ -15,10 +15,10 @@ tickets = ftl
 make_link_list <- function(tickets, year, gear_group, message = "NO"){
   
   if(message == "YES") cat("format trips correctly\n")
-  port_trips <- tickets[tickets[["year"]] == year & 
-                          tickets[["grgroup"]] == gear_group, ]
+  port_trips <- tickets[tickets[["pacfin_year"]] == year & 
+                          tickets[["pacfin_group_gear_code"]] == gear_group, ]
   melt_trips <- melt(port_trips, 
-                     id.vars = c("drvid","trip_id","modified","tdate","grid"), 
+                     id.vars = c("drvid","trip_id","modified","landing_date","pacfin_group_gear_code"), 
                      measure.vars = "adj_revenue")
   cast_trips <- dcast(melt_trips, 
                       trip_id ~ modified, fun.aggregate = sum)
@@ -26,8 +26,16 @@ make_link_list <- function(tickets, year, gear_group, message = "NO"){
   cast_trips$trip_id <- NULL
   
   if(message == "YES") cat("calculating hellinger distance\n")
-  hellinger_dist <- as.matrix(vegdist(decostand(cast_trips, "hellinger"), "euclidean"))
-  hellinger_sim <- sqrt(2) - hellinger_dist #sqrt(2) is max of hellinger
+  h1 <- decostand(cast_trips, 'hellinger')
+  if(message == "YES") cat("calculating euclidean distance\n")
+  h2 <- dist(h1, method = 'euclidean')
+  if(message == "YES") cat("converting to distance matrix\n")
+  h3 <- as.matrix(h2)
+  if(message == "YES") cat("converting to similarity matrix\n")
+  hellinger_sim <- sqrt(2) - h3 #sqrt(2) is max of hellinger
+  # old code
+  #hellinger_dist <- as.matrix(vegdist(decostand(cast_trips, "hellinger"), "euclidean"))
+  #hellinger_sim <- sqrt(2) - hellinger_dist #sqrt(2) is max of hellinger
   # are some rounding errors, so make anything < 0, 0 
   # http://stackoverflow.com/questions/19444674/approximation-rounding-errors-in-r-in-simple-situations
   hellinger_sim[which(hellinger_sim < 0)] <- 0

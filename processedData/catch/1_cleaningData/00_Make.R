@@ -2,6 +2,7 @@
 rm(list=ls())
 library(plyr)
 library(dplyr)
+library(testthat)
 #setwd("/Users/jameal.samhouri/Documents/CNH_to_github/cnh/")
 setwd("/Users/jamealsamhouri/Documents/cnh/")
 
