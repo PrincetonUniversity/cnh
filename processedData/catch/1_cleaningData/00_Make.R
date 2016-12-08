@@ -1,7 +1,9 @@
 # Make file
 rm(list=ls())
+library(plyr)
 library(dplyr)
 #setwd("/Users/jameal.samhouri/Documents/CNH_to_github/cnh/")
+setwd("/Users/jamealsamhouri/Documents/cnh/")
 
 # subset to landing data from "full-income" vessels ----
 source("processedData/catch/1_cleaningData/01_incomeFilter.R")
@@ -14,21 +16,22 @@ source("processedData/catch/1_cleaningData/01_incomeFilter.R")
   source("processedData/catch/1_cleaningData/02_filter_nominal.R")
   ftl_major <- filter_nominal(data = ftl)
   saveRDS(ftl_major, "processedData/catch/1_cleaningData/filtered_ftl.RDS")
-
+  tmp1 <- readRDS("processedData/catch/1_cleaningData/filtered_ftl.RDS")
+  
 # add metiers to trips ----
 # do metier clustering with infoMap: /tigress/efuller/raw_infoMap 
 # combine clustering results with filtered ticket data, requires directory 2_defineMetiers has infoMap results
   source("processedData/catch/1_cleaningData/03_sewTrips.R")
   sewTrips(base_year=2010) # base year is which clustering results to use. 
-  sewTrips(base_year=2012)
-  sewTrips(base_year=2006)
-  sewTrips(base_year=2008)
+  #sewTrips(base_year=2012)
+  #sewTrips(base_year=2006)
+  #sewTrips(base_year=2008)
   
   # load these data, combine so have both metier classifications
   d10 <- readRDS("processedData/catch/1_cleaningData/tickets_2010.RDS")
-  d12 <- readRDS("processedData/catch/1_cleaningData/tickets_2012.RDS")
-  d06 <- readRDS("processedData/catch/1_cleaningData/tickets_2006.RDS")
-  d08 <- readRDS("processedData/catch/1_cleaningData/tickets_2008.RDS")
+  #d12 <- readRDS("processedData/catch/1_cleaningData/tickets_2012.RDS")
+  #d06 <- readRDS("processedData/catch/1_cleaningData/tickets_2006.RDS")
+  #d08 <- readRDS("processedData/catch/1_cleaningData/tickets_2008.RDS")
   
   d10 <- d10 %>%
     select(trip_id, metier) %>%

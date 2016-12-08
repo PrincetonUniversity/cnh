@@ -2,7 +2,7 @@
 title: "VMS data processing pipeline"
 author: "Jameal Samhouri"
 date: "10/11/2016"
-output: html_document
+output: word_document
 ---
 
 ```{r setup, include=FALSE}
@@ -23,14 +23,25 @@ d) Spit out clean RDS and csv files to be used instead of raw .txt files
 
 5. run 02_process R code to remove duplicates, heisenbergs, complete cases, and subset raw VMS data to on-water points only
 
+a) overlay NGDC coastal bathymtery grid on VMS data points
 - for on-water points step:
   - bathymetry data: NOAA NGDC West Coast Coastal Relief, 3-arcsecond (~90 m) resolution. Elevation in decimeters re. sea level.
-  - consider converting all_vms to shape file in R or via Blake
-a) overlay grid for land/bathymetry on VMS data points and remove onland stuff (use jimmy's code), in addition to anything outside of CCLME
 b) use extract() function as extract(all_vms, bathymetry.ascii) to assign elevation to each row of vms data.
-c) subset new all_vms to elevations from +1m onland to -5000m
-7. remove abnormally high speeds
-8. make compilation file for each vessel of all trips in the database
+c) subset new all_vms to elevations <-1m and not embayments (following Blake's thematic map and atlas). 
+d) retain data points that are deeper than 2000m (NAs in this data set <=-115 W) so as not miss any fun tuna action. 
+e) slice up trips for each vessel by assigning all VMS points to 0 or 1 for at-sea or on-land, and using sequences of 2 consecutive on-land points to define the end of a trip. this part of the code will also remove abnormally high speeds and make compilation file for each vessel of all trips in the database
+
+6. Emma will run 00_make.R lines 1-20 to process the new fish ticket data, and then send the output to tigress to do the metier analysis (including 2014 metiers).
+
+7. Jameal will run 00_make.R lines 21-54 to sewTrips (including 2014) to create a new tickets.RDS 
+
+8. Jameal will run 03_overlapMetier.R to drop all VMS tracks not fishtickets.RDS.
+
+9. Jameal will run 04_link_mets_vms.R to link VMS data to metiers.
+- will comment out observer data crap
+- will beware of any() statements that use numerical indices (eg any(duplicated(c2_bydate[,3:8]))).
+
+
 
 ## R Markdown
 
