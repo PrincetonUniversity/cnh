@@ -31,6 +31,8 @@ c) subset new all_vms to elevations <-1m and not embayments (following Blake's t
 d) retain data points that are deeper than 2000m (NAs in this data set <=-115 W) so as not miss any fun tuna action. 
 e) slice up trips for each vessel by assigning all VMS points to 0 or 1 for at-sea or on-land, and using sequences of 2 consecutive on-land points to define the end of a trip. this part of the code will also remove abnormally high speeds and make compilation file for each vessel of all trips in the database
 
+120816: running lines 233-266 now. if that works, need to make files for each individual vessel (vessel_tracks), remove sequential on-land points and abnormally high speeds, and then makes clean individual files for each trip for each vessel (fish_tracks)
+
 6. Emma will run 00_make.R lines 1-20 to process the new fish ticket data, and then send the output to tigress to do the metier analysis (including 2014 metiers).
 
 7. Jameal will run 00_make.R lines 21-54 to sewTrips (including 2014) to create a new tickets.RDS 
