@@ -251,7 +251,7 @@ saveRDS(sp_df_full, "processedData/spatial/vms/intermediate/02_cleaned/sp_df_rel
 
 # Start the clock!
 ptm <- proc.time()
-sp_df_full_atsea <- subset(sp_df_full, w_coast_dm < -10)
+sp_df_full_atsea <- subset(sp_df_full, vms_bathymetry_final < -10)
 # Stop the clock
 proc.time() - ptm
 
@@ -269,18 +269,24 @@ saveRDS(sp_df_full_atsea, "processedData/spatial/vms/intermediate/02_cleaned/sp_
 # Find on-land and non-EEZ coast points, and deal with them
 # the on-land and non-EEZ part requires splitting the VMS tracks by vessel and processing each one by one. 
 
+### 120816: shoot, i think we need sp_df_full so we can distingush onland crap
 
+
+sp_df_full_atsea <- readRDS("processedData/spatial/vms/intermediate/02_cleaned/sp_df_relief_atsea.RDS")
+
+df <- as.data.frame(sp_df_full_atsea)
 
 # remove sequential on-land points ----
 
 # arrange by vessel name, and date-time. 
-  df <- df[order(df$docnum, df$datetime),]
+  df <- df[order(df$docnum, df$datetime),] # this takes a few minutes
+  head(df)
 
-# then split into a list, where each element is a vessel
+  # then split into a list, where each element is a vessel
   vessel_tracks <- split(df, df$docnum)
 
 
-# head(df %>% filter(vesselname == "3 Sons") %>% dplyr::select(vesselname, docnum) %>% distinct()) 
+# head(df %>% filter(vesselname == "3 Sons") %>% dplyr::select(vesselname, docnum) %>% distinct())
 #      %>% group_by(vesselname)
 #      %>% summarize(n_docnums = length(docnum)))
 
