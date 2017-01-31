@@ -22,6 +22,8 @@
 # cd CNH_to_github
 # git clone https://github.com/PrincetonUniversity/cnh.git
 
+# 011217: Emma migrated the repo to git clone https://github.com/emfuller/cnh.git
+
 #
 # There's a github desktop application that you can download, or do it from the command line. The desktop application should be fairly intuitive you need to "add" and "commit" the new changes locally and then "push" to the repo (I think it might be "sync" on the desktop application.
 # 
