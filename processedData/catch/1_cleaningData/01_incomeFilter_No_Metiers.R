@@ -8,7 +8,7 @@ incomeFilter <- function(){
   library(quantmod); library(lubridate); library(data.table)
 
   # load data----
-  ftl <- fread('rawData/Catch/pacfin_pull_09_2016/2009_2016_compFT.csv', 
+  ftl <- fread('rawData/Catch/PacFIN pull April 2017/pacfin_pull_04_2017_2009_2016_compFT.csv', 
                stringsAsFactors = F)
   ftl <- as.data.frame(ftl)
   colnames(ftl) <- tolower(colnames(ftl))
