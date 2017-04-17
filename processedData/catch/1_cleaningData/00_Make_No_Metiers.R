@@ -7,7 +7,7 @@ setwd("/Users/jameal.samhouri/Documents/CNH_to_github/cnh/")
 #setwd("/Users/jamealsamhouri/Documents/cnh/")
 
 # subset to landing data from "full-income" vessels ----
-source("processedData/catch/1_cleaningData/01_incomeFilter.R")
+source("processedData/catch/1_cleaningData/01_incomeFilter_No_Metiers.R")
 
 # set 10,000 as threshold for median income
   # loads fish ticket data within function

@@ -40,7 +40,7 @@ incomeFilter <- function(){
   cf <- as.data.frame(cf)
   cf$pacfin_year = strftime(as.Date(row.names(cf)),"%Y")
   ftl3 <- merge(ftl2.1, cf, by = "pacfin_year", all=FALSE)
-  ftl3$adj_revenue <- ftl3$exvessel_revenue / ftl$CPIAUCSL
+  ftl3$adj_revenue <- ftl3$exvessel_revenue / ftl3$CPIAUCSL
 
 return(ftl3)
 }
