@@ -21,7 +21,7 @@ incomeFilter <- function(){
   # keep only commercial fisheries (drop scientific, tribal, etc.)
   ftl2 <- ftl %>% 
     filter(removal_type_code %in% c('C', 'D'))
-  ftl2.1 <- plyr::rename(ftl, c(vessel_num = 'drvid', 
+  ftl2.1 <- plyr::rename(ftl2, c(vessel_num = 'drvid', # to keep with legacy pacfin
                              fish_ticket_id = 'trip_id',
                              orig_pacfin_species_code = 'spid'))
   
