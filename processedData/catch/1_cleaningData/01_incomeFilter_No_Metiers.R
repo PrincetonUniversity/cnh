@@ -17,10 +17,13 @@ incomeFilter <- function(){
   # http://pacfin.psmfc.org/pacfin_pub/data_rpts_pub/code_lists/list_cl_removal_type.txt
   unique(ftl$removal_type_code)
   
+  # ftl_byremovaltype <- ftl %>%
+  #   group_by(removal_type_code) %>%
+  #   summarise(tot_landed_weight_mtons <- sum(landed_weight_mtons, na.rm=TRUE))
+  
   # reassign to legacy columns,
-  # keep only commercial fisheries (drop scientific, tribal, etc.)
-  ftl2 <- ftl %>% 
-    filter(removal_type_code %in% c('C', 'D'))
+    ftl2 <- ftl #%>% 
+    #filter(removal_type_code %in% c('C', 'D')) # keep only commercial fisheries (drop scientific, tribal, etc.). 5/9/17 keep all removal types for now
   ftl2.1 <- plyr::rename(ftl2, c(vessel_num = 'drvid', # to keep with legacy pacfin
                              fish_ticket_id = 'trip_id',
                              orig_pacfin_species_code = 'spid'))
