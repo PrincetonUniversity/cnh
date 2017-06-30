@@ -17,6 +17,8 @@ incomeFilter <- function(){
   # http://pacfin.psmfc.org/pacfin_pub/data_rpts_pub/code_lists/list_cl_removal_type.txt
   unique(ftl$removal_type_code)
   
+  View(table(ftl$removal_type_code, ftl$port_name))
+  
   # ftl_byremovaltype <- ftl %>%
   #   group_by(removal_type_code) %>%
   #   summarise(tot_landed_weight_mtons <- sum(landed_weight_mtons, na.rm=TRUE))
