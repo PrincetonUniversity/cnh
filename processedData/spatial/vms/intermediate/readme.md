@@ -1,5 +1,6 @@
 ### Contains code to clean up raw VMS data
 
+
 `01_processing_VMS.R`
 
 + converts the minutes/seconds of lat/lon to decimal degrees
